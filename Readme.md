@@ -17,3 +17,7 @@ BROWSERSTACK_ACCESS_KEY=""
 
 1. Start local CryptPad instance 
 2. `npx playwright test`
+
+## Interactive mode
+
+`npx playwright codegen localhost:3000`
