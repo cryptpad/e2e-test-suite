@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "browserstack-local": "^1.5.2",
+    "dotenv": "^16.0.3",
+    "playwright": "^1.33.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.33.0"
+  }
+}
