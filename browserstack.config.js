@@ -18,8 +18,8 @@ const caps = {
   os_version: 'catalina',
   name: 'cp-playwright-test',
   build: 'cp-playwright-build',
-  'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'BROWSERSTACK_USERNAME_HERE',
-  'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'BROWSERSTACK_ACCESSKEY_HERE',
+  'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'zuzannaudzik_8YRtXV',
+  'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'znW58fE22J4imDaXTYqd',
   'browserstack.local': process.env.BROWSERSTACK_LOCAL || true, 
   'client.playwrightVersion': clientPlaywrightVersion,
 };
@@ -43,10 +43,12 @@ const patchCaps = (name, title) => {
   caps.browser_version = browser_version ? browser_version : 'latest';
   caps.os = os ? os : 'osx';
   caps.os_version = os_version ? os_version : 'catalina';
-  caps.name = title;
+  caps.name = name;
+  caps.title = title;
 };
 
 exports.getCdpEndpoint = (name, title) => {
+    console.log(name, title)
     patchCaps(name, title)    
     const cdpUrl = `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify(caps))}`
     console.log(`--> ${cdpUrl}`)

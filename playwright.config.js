@@ -90,9 +90,9 @@ module.exports = defineConfig({
     //   },
     // },
     {
-      name: 'playwright-firefox:Windows 11',
+      name: 'chrome:Windows 11',
       use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox:Windows 11') }
+        connectOptions: { wsEndpoint: getCdpEndpoint('chrome:Windows 11') }
       },
     }
     /* Test against mobile viewports. */
