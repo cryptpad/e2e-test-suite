@@ -18,8 +18,8 @@ const caps = {
   os_version: 'catalina',
   name: 'cp-playwright-test',
   build: 'cp-playwright-build',
-  'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'zuzannaudzik_8YRtXV',
-  'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'znW58fE22J4imDaXTYqd',
+  'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
+  'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'YOUR_KEY_HERE',
   'browserstack.local': process.env.BROWSERSTACK_LOCAL || true, 
   'client.playwrightVersion': clientPlaywrightVersion,
 };
