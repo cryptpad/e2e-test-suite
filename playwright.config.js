@@ -10,6 +10,33 @@ const { getCdpEndpoint } = require('./browserstack.config.js')
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
+
+
+// const os = ['Windows 10','Windows 11','OSX Ventura', 'OSX Monterey','OSX Big Sur', 'OSX Catalina', 'OSX Mojave']
+
+const os = ['Windows 10']
+
+const browsers = ['chrome', 'playwright-webkit', 'playwright-firefox', 'edge']
+const browserOS = browsers.flatMap((x) => os.map((y) => `${x}@latest:${y}`));
+const projects = []
+var funct = function() {
+  let project;
+  const string = [...Array(Object.keys(browserOS).length).keys()].forEach(function(i) {
+  project = { name: `${browserOS[i]}`,
+    use: {
+      connectOptions: { wsEndpoint: getCdpEndpoint(`${browserOS[i]}`) }
+    },
+  }
+  projects.push(project)
+  return project
+  })
+
+}
+
+funct()
+
+
+
 module.exports = defineConfig({
   testDir: './e2e-tests',
   /* Run tests in files in parallel */
@@ -59,42 +86,18 @@ module.exports = defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',},
+    
 
-  /* Configure projects for major browsers */
-  projects: [
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
 
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-    // {
-    //   name: 'chrome@latest:Windows 11',
+  projects: projects,
+    // [{
+    //   name: 'playwright-firefox@latest:OSX Mojave',
     //   use: {
-    //     connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:Windows 11','test1') },
+    //     connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Mojave', 'test2') }
     //   },
-    // }
-    // ,
-    // {
-    //   name: 'playwright-webkit@latest:OSX Ventura',
-    //   use: {
-    //     connectOptions: { wsEndpoint: getCdpEndpoint('playwright-webkit@latest:OSX Ventura', 'test2') }
-    //   },
-    // },
-    {
-      name: 'chrome:Windows 11',
-      use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('chrome:Windows 11') }
-      },
-    }
+    // }],
+
+    
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -114,7 +117,7 @@ module.exports = defineConfig({
     //   name: 'Google Chrome',
     //   use: { ..devices['Desktop Chrome'], channel: 'chrome' },
     // },
-  ],
+  // ],
 
   /* Run your local dev server before starting the tests */
   // webServer: {
