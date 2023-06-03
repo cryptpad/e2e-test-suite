@@ -1,18 +1,9 @@
 
 
-(Not all processes could be identified, non-owned process info
- will not be shown, you would have to be root to see it all.)
-(Not all processes could be identified, non-owned process info
- will not be shown, you would have to be root to see it all.)
-Thu May 11 2023 13:14:54:38 GMT+0100 (BST) -- Starting configuration console on http://localhost:45454
-Thu May 11 2023 13:14:54:923 GMT+0100 (BST) -- [INFO] Started the BrowserStack Binary server on 45691, PID: 322033
-Thu May 11 2023 13:14:55:123 GMT+0100 (BST) -- [SUCCESS] You can now access your local server(s) in our remote browser
+Fri Jun 02 2023 18:02:03:209 GMT+0200 (CEST) -- [WARNING] Detected instance of BrowserStackLocal Application, running in onlyAutomate mode to avoid port clash
+Fri Jun 02 2023 18:02:03:219 GMT+0200 (CEST) -- [WARNING] Skipping initialisation of configuration console because: port already in use by another Binary
+Fri Jun 02 2023 18:02:05:563 GMT+0200 (CEST) -- [SUCCESS] You can now access your local server(s) in our remote browser
 
-Thu May 11 2023 13:14:55:595 GMT+0100 (BST) -- Press Ctrl-C to exit
-Thu May 18 2023 01:55:59:913 GMT+0200 (CEST) -- [WARNING] Detected instance of BrowserStackLocal Application, running in onlyAutomate mode to avoid port clash
-Thu May 18 2023 01:55:59:928 GMT+0200 (CEST) -- [WARNING] Skipping initialisation of configuration console because: port already in use by another Binary
-Thu May 18 2023 01:56:00:786 GMT+0200 (CEST) -- [SUCCESS] You can now access your local server(s) in our remote browser
-
-Thu May 18 2023 01:56:01:79 GMT+0200 (CEST) -- Press Ctrl-C to exit
+Fri Jun 02 2023 18:02:07:251 GMT+0200 (CEST) -- Press Ctrl-C to exit
 
 

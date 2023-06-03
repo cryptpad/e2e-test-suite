@@ -12,12 +12,15 @@ const util = require('util');
 
 // BrowserStack Specific Capabilities.
 // Set 'browserstack.local:true For Local testing
+
+const dateToday = new Date()
 const caps = {
   browser: 'chrome',
   os: 'osx',
   os_version: 'catalina',
   name: 'cp-playwright-test',
   build: 'cp-playwright-build',
+  // build: `cp-playwright-build: ${dateToday}`,
   'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'YOUR_KEY_HERE',
   'browserstack.local': process.env.BROWSERSTACK_LOCAL || true, 
@@ -48,9 +51,7 @@ const patchCaps = (name, title) => {
 };
 
 exports.getCdpEndpoint = (name, title) => {
-    console.log(name, title)
     patchCaps(name, title)    
     const cdpUrl = `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify(caps))}`
-    console.log(`--> ${cdpUrl}`)
     return cdpUrl;
 }

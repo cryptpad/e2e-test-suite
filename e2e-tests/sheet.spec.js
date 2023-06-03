@@ -1,29 +1,28 @@
 const { test, expect } = require('@playwright/test');
-const { chromium } = require('@playwright/test');
+const { firefox, chromium, webkit } = require('@playwright/test');
 
-
-// const url = 'http://localhost:3000'
 const url = 'https://cryptpad.fr'
-
-
-// // ANONYMOUS USER
-
 
 let browser;
 let page;
 
-// test.beforeEach(async () => {
-//   browser = await chromium.launch();
-//   page = await browser.newPage();
-//   await page.goto(`${url}`);
-// });
+test.beforeEach(async ({}, testInfo) => {
+  const name = testInfo.project.name
+  if (name.indexOf('firefox') !== -1 ) {
+    browser = await firefox.launch();
+  } else if (name.indexOf('webkit') !== -1 ) {
+    browser = await webkit.launch();
+  } else {
+    browser = await chromium.launch();
+  }
+  page = await browser.newPage();
+  await page.goto(`${url}`);
+  test.setTimeout(240000)
+});
 
-// test('sheet doc - anon', async ({ }) => {
-//   const browser = await chromium.launch();
-//   const page = await browser.newPage();
+// test('sheet doc - anon', async () => {
+
 //   try {
-//     test.setTimeout(240000)
-//     await page.goto(`${url}`);
 //     await page.getByRole('link', { name: 'Sheet' }).click();
 //     await page.waitForLoadState('networkidle');
 //     await page.waitForTimeout(20000)
@@ -63,9 +62,8 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'sheet', status: 'failed',reason: 'Can\'t anonymously create Sheet'}})}`);
 
 //   }  
-
 // });
 
-// test.afterEach(async () => {
-//   await browser.close()
-// });
+test.afterEach(async () => {
+  await browser.close()
+});

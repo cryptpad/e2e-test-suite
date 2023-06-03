@@ -12,13 +12,15 @@ const { getCdpEndpoint } = require('./browserstack.config.js')
  */
 
 
-// const os = ['Windows 10','Windows 11','OSX Ventura', 'OSX Monterey','OSX Big Sur', 'OSX Catalina', 'OSX Mojave']
+//// MULTIPLE BROWSER/OS TESTING ////
+//// The browser/OS combination which the tests are run on is set to OS Mojave/Firefox by default, using the 'projects' variable in module.exports below.
+//// The block below creates a list of all possible browser/OS combinations and sets it to variable 'projectsList'.
+//// To test on other browsers/OS, simply comment out whatever browser/OS combination 'projects' is currently set to, and set it to 'projectsList' instead.
 
-const os = ['Windows 10']
-
+const os = ['Windows 10','Windows 11','OSX Ventura', 'OSX Monterey','OSX Big Sur', 'OSX Catalina', 'OSX Mojave']
 const browsers = ['chrome', 'playwright-webkit', 'playwright-firefox', 'edge']
 const browserOS = browsers.flatMap((x) => os.map((y) => `${x}@latest:${y}`));
-const projects = []
+const projectsList = []
 var funct = function() {
   let project;
   const string = [...Array(Object.keys(browserOS).length).keys()].forEach(function(i) {
@@ -27,7 +29,7 @@ var funct = function() {
       connectOptions: { wsEndpoint: getCdpEndpoint(`${browserOS[i]}`) }
     },
   }
-  projects.push(project)
+  projectsList.push(project)
   return project
   })
 
@@ -35,6 +37,7 @@ var funct = function() {
 
 funct()
 
+/////
 
 
 module.exports = defineConfig({
@@ -72,7 +75,7 @@ module.exports = defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  // retries: 3,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -89,13 +92,13 @@ module.exports = defineConfig({
     
 
 
-  projects: projects,
-    // [{
-    //   name: 'playwright-firefox@latest:OSX Mojave',
-    //   use: {
-    //     connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Mojave', 'test2') }
-    //   },
-    // }],
+  projects:
+    [{
+      name: 'playwright-firefox@latest:OSX Mojave',
+      use: {
+        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Mojave') }
+      },
+    }],
 
     
     /* Test against mobile viewports. */

@@ -1,30 +1,29 @@
 const { test, expect } = require('@playwright/test');
-const { chromium } = require('@playwright/test');
+const { firefox, chromium, webkit } = require('@playwright/test');
 
-
-// const url = 'http://localhost:3000'
 const url = 'https://cryptpad.fr'
-
-
-// // ANONYMOUS USER
-
 
 let browser;
 let page;
 
-// test.beforeEach(async () => {
-//   browser = await chromium.launch();
-//   page = await browser.newPage();
-//   await page.goto(`${url}`);
-// });
+test.beforeEach(async ({}, testInfo) => {
+  test.setTimeout(240000)
+  const name = testInfo.project.name
+  if (name.indexOf('firefox') !== -1 ) {
+    browser = await firefox.launch();
+  } else if (name.indexOf('webkit') !== -1 ) {
+    browser = await webkit.launch();
+  } else {
+    browser = await chromium.launch();
+  }
+  page = await browser.newPage();
+  await page.goto(`${url}`);
+  
+});
 
-// test('home page title', async ({  }) => {
-//   
-//   
+// test('home page title', async () => {
+  
 //   try {
-
-//     await page.goto(`${url}`);
-
 //     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'title', status: 'passed',reason: 'Can navigate to home page'}})}`);
 //   } catch (e) {
@@ -32,19 +31,11 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'title', status: 'failed',reason: 'Can\'t navigate to home page'}})}`);
 
 //   }  
-//   
 // });
 
-
-// test('sign up', async ({  }) => {
-//   
-//   
+// test('sign up', async () => {
+  
 //   try {
-
-//     test.setTimeout(240000)
-    
-//     await page.goto(`${url}`)
-
 //     await page.getByRole('link', { name: 'Sign up' }).click();
 //     await page.waitForLoadState('networkidle');
 //     await page.getByPlaceholder('Username').fill('test-user-4');
@@ -87,54 +78,40 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'register', status: 'failed',reason: 'Can\'t sign up'}})}`);
 
 //   }  
-//   
 // })
 
+test('log in and log out', async ({  }) => {
 
-// test('log in', async ({  }) => {
-//   
-//   
-//   try {
-//     test.setTimeout(240000)
-//     // if (url.indexOf('localhost') !== -1) {
+  try {
+
+      await page.getByRole('link', { name: 'Log in' }).click();
+  
+      await expect(page).toHaveURL(`${url}/login/`);
+      await page.getByPlaceholder('Username').fill('test-user');
+      await page.waitForTimeout(10000)
+      await page.getByPlaceholder('Password', {exact: true}).fill('password');
+
+      const login = page.locator(".login")
+      await login.waitFor({ timeout: 18000 })
+      await expect(login).toBeVisible({ timeout: 18000 })
+      if (await login.isVisible()) {
+        await login.click()
+      }
+      await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
       
 
-//     // } else {
-//       await page.goto(url);
+    // }
 
-//       await page.getByRole('link', { name: 'Log in' }).click();
-  
-//       await expect(page).toHaveURL(`${url}/login/`);
-//       await page.getByPlaceholder('Username').fill('test-user');
-//       await page.getByPlaceholder('Password', {exact: true}).fill('password');
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'login and logout', status: 'failed',reason: 'Can\'t log in and log out'}})}`);
 
-//       const login = page.locator(".login")
-//       await login.waitFor({ timeout: 18000 })
-//       await expect(login).toBeVisible({ timeout: 18000 })
-//       if (await login.isVisible()) {
-//         await login.click()
-//       }
-//       await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'login', status: 'passed',reason: 'Can log in'}})}`);
+  }  
+});
 
-//     // }
-   
+// test('home page > features', async () => {
 
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'login', status: 'failed',reason: 'Can\'t log in'}})}`);
-
-//   }  
-//   
-// });
-
-
-// test('home page > features', async ({ }) => {
-//   
-//   
 //   try {
-//     await page.goto(`${url}`);
-
 //     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //     if (url.toString() === 'https://cryptpad.fr') {
 //       await page.getByRole('link', {name: 'Pricing'}).waitFor()
@@ -151,17 +128,11 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > features', status: 'failed',reason: 'Can\'t navigate from home page to features page'}})}`);
 
 //   }  
-//   
-
 // });
 
-// test('home page > documentation', async ({  }) => {
-//   test.setTimeout(240000)
-//   
-//   
+// test('home page > documentation', async () => {
+ 
 //   try {
-//     await page.goto(`${url}`);
-
 //     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //     await page.getByRole('link', {name: 'Documentation'}).waitFor()
 //     await page.getByRole('link', {name: 'Documentation'}).click()
@@ -173,18 +144,11 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > documentation', status: 'failed',reason: 'Can\'t navigate from home page to documentation'}})}`);
 
 //   }  
-//   
-
 // });
 
-// test('home page > contact', async ({ }) => {
-//   test.setTimeout(100000)
-//   
-//   
+// test('home page > contact', async () => {
+
 //   try {
-
-//     await page.goto(`${url}`);
-
 //     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //     await page.getByRole('link', {name: 'Contact'}).waitFor()
 //     await page.getByRole('link', {name: 'Contact'}).click()
@@ -195,16 +159,11 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > contact', status: 'failed',reason: 'Can\'t navigate from home page to contact page'}})}`);
 
 //   }  
-//   
-
 // });
 
-// test('home page > project website', async ({  }) => {
-//   
-//   
+// test('home page > project website', async () => {
+  
 //   try {
-//     await page.goto(`${url}`);
-
 //     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //     await page.getByRole('link', {name: 'Project website'}).waitFor()
 //     const pagePromise = page.waitForEvent('popup')
@@ -217,16 +176,11 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > project website', status: 'failed',reason: 'Can\'t navigate from home page to project website'}})}`);
 
 //   }  
-//   
-
 // });
 
-// test('home page > donate', async ({  }) => {
-//   
-//   
-//   try {
-//     await page.goto(`${url}`);
+// test('home page > donate', async () => {
 
+//   try {
 //     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //     await page.getByRole('link', {name: 'Donate'}).waitFor()
 //     const pagePromise = page.waitForEvent('popup')
@@ -239,21 +193,26 @@ let page;
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > donate', status: 'failed',reason: 'Can\'t navigate from home page to donation website'}})}`);
 
 //   }  
-//   
-
 // });
 
+// test('home page - translation - french', async () => {
+  
+//   try {
+//     await page.getByRole('listbox').selectOption('fr');
+//     await expect(page.getByText('Instance officielle de CryptPad, suite collaborative chiffrée de bout en bout')).toBeVisible();
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > translation', status: 'passed',reason: 'Can change site language from homepage'}})}`);
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > translation', status: 'failed',reason: 'Can\'t change site language from homepage'}})}`);
 
+//   }  
+// });
 
 // if (url.toString() === 'https://cryptpad.fr') {
 
-//   test('home page > privacy policy', async ({ }) => {
-//     
-//     
+//   test('home page > privacy policy', async () => {
+ 
 //     try {
-//       test.setTimeout(100000)
-//         await page.goto(`${url}`);
-  
 //         await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //         await page.getByRole('link', {name: 'Privacy Policy'}).waitFor()
 //         await page.getByRole('link', {name: 'Privacy Policy'}).click()
@@ -265,17 +224,11 @@ let page;
 //       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > privacy', status: 'failed',reason: 'Can\'t navigate from home page to privacy policy'}})}`);
   
 //     }  
-//     
-  
 //   });
   
-//   test('home page > tos', async ({  }) => {
-//     
-//     
+//   test('home page > tos', async () => {
+
 //     try {
-//       test.setTimeout(100000)
-//         await page.goto(`${url}`);
-  
 //         await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
 //         await page.getByRole('link', {name: 'Terms of Service'}).waitFor()
 //         await page.getByRole('link', {name: 'Terms of Service'}).click()
@@ -286,55 +239,13 @@ let page;
 //       console.log(e);
 //       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > tos', status: 'failed',reason: 'Can\'t navigate from home page to TOS'}})}`);
   
-//     }  
-//     
-  
+//     }   
 //   });
-
-
 
 
 // }
 
-// //LOGGED IN USER
 
-// test('log out', async ({  }) => {
-//   
-//   
-//   try {
-//     test.setTimeout(240000)
-//     // if (url.indexOf('localhost') !== -1) {
-      
-
-//     // } else {
-//       await page.goto(`${url}/login/`);
-//       await page.getByPlaceholder('Username').fill('test-user');
-//       await page.getByPlaceholder('Password', {exact: true}).fill('password');
-
-//       const login = page.locator(".login")
-//       await login.waitFor({ timeout: 18000 })
-//       await expect(login).toBeVisible({ timeout: 18000 })
-//       if (await login.isVisible()) {
-//         await login.click()
-//       }
-//       await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-//       await page.frameLocator('#sbox-frame').locator(":has-text('Account name')").waitFor()
-//       await page.frameLocator('#sbox-frame').locator(":has-text('Account name')").click()
-//       await page.frameLocator('#sbox-frame').locator('a', {hasText: 'Log out'}).waitFor()
-//       await page.frameLocator('#sbox-frame').locator('a', {hasText: 'Log out'}).click()
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'logout', status: 'passed',reason: 'Can log out'}})}`);
-
-//     // }
-   
-
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'logout', status: 'failed',reason: 'Can\'t log out'}})}`);
-
-//   }  
-//   
-// });
-
-// test.afterEach(async () => {
-//   await browser.close()
-// });
+test.afterEach(async () => {
+  await browser.close()
+});
