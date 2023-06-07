@@ -27,7 +27,6 @@ test('kanban board - anon - new list', async () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(20000)
     await expect(page).toHaveURL(new RegExp(`^${url}/kanban/#/`), { timeout: 100000 })
-    const iframe = page.locator('#sbox-iframe')
 
     await expect(iframe).toBeVisible({ timeout: 24000 })
 
@@ -54,7 +53,6 @@ test('kanban board - anon - new list item', async () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(20000)
     await expect(page).toHaveURL(new RegExp(`^${url}/kanban/#/`), { timeout: 100000 })
-    const iframe = page.locator('#sbox-iframe')
 
     await expect(iframe).toBeVisible({ timeout: 24000 })
 

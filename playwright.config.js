@@ -94,9 +94,9 @@ module.exports = defineConfig({
 
   projects:
     [{
-      name: 'playwright-firefox@latest:OSX Mojave',
+      name: 'chrome@latest:OSX Mojave',
       use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Mojave') }
+        connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Mojave') }
       },
     }],
 

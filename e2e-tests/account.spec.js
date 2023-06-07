@@ -28,19 +28,28 @@ test.beforeEach(async ({}, testInfo) => {
   if (await login.isVisible()) {
     await login.click()
   }
-
   await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-  await page.waitForTimeout(10000)
   await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(5000)
+
 });
 
 
 test('drive - user - request to add user as contact ', async () => {
 
   try {
+
     await page.goto('https://cryptpad.fr/profile/#/2/profile/view/v5coYdvAKofy2fZkWZoAelB8KVey7SxFbDweAMZ-R3I/');
-    // await page.waitForLoadState('networkidle');
-    // await expect(page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'})).toBeVisible()
+    await page.waitForTimeout(10000)
+
+    if ( await page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel').count() === 1) {
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'Cancel'}).click();
+      await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to cancel your contact request with test-user2?')).toBeVisible();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+
+    }
+    
+    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
     await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'Cancel'}).click();
@@ -60,14 +69,23 @@ test('drive - user - add contact to team and remove them', async () => {
     
     try {
       await page.goto(`${url}/teams/`);
+      await page.waitForTimeout(5000)
       await page.waitForLoadState('networkidle');
+      
+      await page.frameLocator('#sbox-iframe').getByText('tttest team').waitFor();
       await page.frameLocator('#sbox-iframe').getByText('tttest team').click();
+      if (page.frameLocator('#sbox-iframe').getByText('Error').count() === 1) {
+        await page.frameLocator('#sbox-iframe').getByText('tttest team').waitFor();
+        await page.frameLocator('#sbox-iframe').getByText('tttest team').click();
+      }
+      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click()
       await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('test-user3').click();
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Invite', exact: true}).click()
-
+      await page.waitForLoadState('networkidle')
+      await page.frameLocator('#sbox-iframe').getByText('tetest-user3', { exact: true }).waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText('tetest-user3', { exact: true })).toBeVisible();
       await page.frameLocator('#sbox-iframe').locator('.cp-online > .fa').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('.cp-online > .fa').first().click()
@@ -104,6 +122,8 @@ test('drive - user - user menu - make team ', async () => {
 
     await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('example team')
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await page1.waitForLoadState('networkidle');
+    await page1.waitForTimeout(10000)
     await expect(page1).toHaveURL(`${url}/teams/`, { timeout: 100000 })
     await page1.waitForLoadState('networkidle');
 

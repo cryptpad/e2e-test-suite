@@ -129,10 +129,10 @@ test('drive - anon - history', async () => {
     await page.waitForTimeout(10000)
     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible()
     await page.frameLocator('#sbox-iframe').locator("[data-original-title=\"Display the document history\"]") .click();
-    // page.waitForTimeout(1000000000000000)
 
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click({
+      clickCount: 3
+    })
     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0)
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive > history', status: 'passed',reason: 'Can anonymously navigate to Drive and view history'}})}`);
