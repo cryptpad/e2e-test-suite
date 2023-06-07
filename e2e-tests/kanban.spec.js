@@ -28,7 +28,7 @@ test('kanban board - anon - new list', async () => {
     await page.waitForTimeout(20000)
     await expect(page).toHaveURL(new RegExp(`^${url}/kanban/#/`), { timeout: 100000 })
 
-    await expect(iframe).toBeVisible({ timeout: 24000 })
+    await expect(page.frameLocator('#sbox-iframe')).toBeVisible({ timeout: 24000 })
 
     await page.frameLocator('#sbox-iframe').locator('#kanban-addboard').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('New board')).toBeVisible();
@@ -54,7 +54,7 @@ test('kanban board - anon - new list item', async () => {
     await page.waitForTimeout(20000)
     await expect(page).toHaveURL(new RegExp(`^${url}/kanban/#/`), { timeout: 100000 })
 
-    await expect(iframe).toBeVisible({ timeout: 24000 })
+    await expect(page.frameLocator('#sbox-iframe')).toBeVisible({ timeout: 24000 })
 
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('example item');
