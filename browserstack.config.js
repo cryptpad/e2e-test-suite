@@ -19,7 +19,7 @@ const caps = {
   os: 'osx',
   os_version: 'catalina',
   name: 'cp-playwright-test',
-  build: 'cp-playwright-build1',
+  build: 'cp-playwright-build9',
   // 'browserstack.networkLogs': true,
   // build: `cp-playwright-build: ${dateToday}`,
   'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',

@@ -35,6 +35,6 @@ Alternately, you can run tests in individual files using `npx playwright test [f
 
 ## Multiple browser/OS testing
 
-The default browser/OS combination which the tests are run on is set to Chrome on OS Mojave, using the 'projects' variable in module.exports, in the playwright.config.js file.
+The default browser/OS combination which the tests are run on is set to Edge on OS Mojave, using the 'projects' variable in module.exports, in the playwright.config.js file. This is because the Edge browser is the most stable (results in least flaky tests).
 To test on other browsers/OS, use the code block before module.exports -- it creates a list of all possible browser/OS combinations and sets it to variable 'projectsList'. To make use of it, simply comment out whatever browser/OS combination 'projects' is currently set to, and set it to 'projectsList' instead.
 

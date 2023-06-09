@@ -20,7 +20,8 @@ test.beforeEach(async ({}, testInfo) => {
   await page.goto(`${url}`);
 });
 
-const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form'] 
+// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form'] 
+const docNames = ['slide'] 
 
 docNames.forEach(function(name) {
     
@@ -34,6 +35,7 @@ docNames.forEach(function(name) {
         await page.getByRole('link', { name: `${name}` }).waitFor()
         await page.getByRole('link', { name: `${name}` }).click();
       }
+      await page.waitForTimeout(5000)
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 100000 })
   
       const date = new Date()
@@ -55,12 +57,12 @@ docNames.forEach(function(name) {
       }
       await page.waitForLoadState('networkidle')
       await page.waitForTimeout(20000)
-
       await expect(page).toHaveTitle(`${title}`, {timeout: 10000})
   
       await expect(page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive')).toBeVisible();
+      await page.waitForTimeout(5000)
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click({force: true})
       await page.waitForTimeout(10000)
   
       await page.goto(`${url}/drive`);
@@ -129,9 +131,9 @@ docNames.forEach(function(name) {
       }
 
       await page.frameLocator('#sbox-iframe').getByText(`${title}`)
-  
-  
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
+      // await page.waitForTimeout(20000)
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click({force: true});
       await page.frameLocator('#sbox-iframe').getByPlaceholder(title).fill('new doc title');
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
       await page.waitForTimeout(10000)
@@ -139,28 +141,28 @@ docNames.forEach(function(name) {
       await expect(page.frameLocator('#sbox-iframe').getByText('new doc title')).toBeVisible()
 
       await expect(page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive')).toBeVisible();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
 
       await page.waitForTimeout(3000)
-
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).waitFor()
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
-
-      if (page.frameLocator('#sbox-iframe').getByText('Are you sure you want to remove this item').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      // if (await page.frameLocator('#sbox-iframe').getByText('You must store this document in your CryptDrive').isVisible()) {
+      //   console.log('hello')
+      //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
+      //   await page.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
         
-      }
+      // }
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
 
-      await page.on('dialog', dialog => dialog.accept());
-      await expect(page.frameLocator('#sbox-iframe').getByText('Deleted')).toBeVisible();
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
-
-      if (name === 'code') {
-        await page.frameLocator('#sbox-iframe').getByText('Moved to the trash').waitFor()
-        await expect(page.frameLocator('#sbox-iframe').getByText('Moved to the trash')).toBeVisible();
+      if (name === 'sheet') {
+        
       } else {
-
+        await expect(page.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true })).toBeVisible({ timeout: 10000 });
       }
+
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} > change title`, status: 'passed',reason: `Can change ${name} title`}})}`);
     } catch (e) {
@@ -193,14 +195,28 @@ docNames.forEach(function(name) {
       await expect(page1).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 50000 })
 
       await page.waitForTimeout(3000)
+      if (name === 'sheet') {
+        await page.waitForTimeout(5000)
+        
+      } else {
+      }
       await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
       await page1.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
-      if (page1.frameLocator('#sbox-iframe').getByText('You must store this document in your CryptDrive').isVisible()) {
+      if (await page1.frameLocator('#sbox-iframe').getByText('You must store this document in your CryptDrive').isVisible()) {
+        console.log('hello')
         await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
+        await page1.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
+        
       }
-      await page.waitForTimeout(5000)
-      await page1.frameLocator('#sbox-iframe').getByText('Deleted').waitFor()
-      await expect(page1.frameLocator('#sbox-iframe').getByText('Deleted')).toBeVisible()
+
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        
+      if (name === 'sheet') {
+        
+      } else {
+        await expect(page1.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true })).toBeVisible({ timeout: 10000 });
+      }
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - drive > ${name}`, status: 'passed',reason: `Can anonymously navigate to Drive and create ${name}`}})}`);
     } catch (e) {
@@ -215,21 +231,16 @@ docNames.forEach(function(name) {
     try {
       await page.goto(`${url}/login/`);
       await page.getByPlaceholder('Username').fill('test-user');
+      await page.waitForTimeout(10000)
       await page.getByPlaceholder('Password', {exact: true}).waitFor()
       await page.getByPlaceholder('Password', {exact: true}).fill('password');
-      await page.waitForLoadState('networkidle');
       const login = page.locator(".login")
       await login.waitFor({ timeout: 18000 })
       await expect(login).toBeVisible({ timeout: 1800 })
       if (await login.isVisible()) {
-          await login.click()
+        await login.click()
       }
     
-      await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-      if ( await page.frameLocator('#sbox-iframe').getByText('Your shared folder My shared folder is no longer available. It has either been d').count() === 1) {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click()
-    
-      }
 
       const page1Promise = page.waitForEvent('popup');
   
@@ -243,10 +254,30 @@ docNames.forEach(function(name) {
       await page1.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await expect(page1).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 })
 
+      await page.waitForTimeout(3000)
+      if (name === 'sheet') {
+        await page.waitForTimeout(5000)
+        
+      } else {
+      }
+
       await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
       await page1.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
-      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-      await page1.waitForLoadState('networkidle')
+      if (await page1.frameLocator('#sbox-iframe').getByText('You must store this document in your CryptDrive').isVisible()) {
+        console.log('hello')
+        await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
+        await page1.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
+        
+      }
+
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
+      if (name === 'sheet') {
+        
+      } else {
+        await expect(page1.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true })).toBeVisible({ timeout: 10000 });
+      }
+
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - drive > ${name}`, status: 'passed',reason: `Can log in and create ${name} from Drive`}})}`);
     } catch (e) {

@@ -17,7 +17,7 @@ const { getCdpEndpoint } = require('./browserstack.config.js')
 //// The block below creates a list of all possible browser/OS combinations and sets it to variable 'projectsList'.
 //// To test on other browsers/OS, simply comment out whatever browser/OS combination 'projects' is currently set to, and set it to 'projectsList' instead.
 
-const os = ['Windows 10','Windows 11','OSX Ventura', 'OSX Monterey','OSX Big Sur', 'OSX Catalina', 'OSX Mojave']
+const os = ['Windows 11','OSX Ventura']
 const browsers = ['chrome', 'playwright-webkit', 'playwright-firefox', 'edge']
 const browserOS = browsers.flatMap((x) => os.map((y) => `${x}@latest:${y}`));
 const projectsList = []
@@ -92,11 +92,11 @@ module.exports = defineConfig({
     
 
 
-  projects:
+  projects: 
     [{
-      name: 'chrome@latest:OSX Mojave',
+      name: 'edge@latest:OSX Mojave',
       use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Mojave') }
+        connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Mojave') }
       },
     }],
 

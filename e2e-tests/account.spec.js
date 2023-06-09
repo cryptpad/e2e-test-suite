@@ -21,7 +21,7 @@ test.beforeEach(async ({}, testInfo) => {
   await page.getByPlaceholder('Username').fill('test-user');
   await page.waitForTimeout(10000)
   await page.getByPlaceholder('Password', {exact: true}).fill('password');
-  await page.waitForLoadState('networkidle');
+  // await page.waitForLoadState('networkidle');
   const login = page.locator(".login")
   await login.waitFor({ timeout: 18000 })
   await expect(login).toBeVisible({ timeout: 1800 })
@@ -69,14 +69,18 @@ test('drive - user - add contact to team and remove them', async () => {
     
     try {
       await page.goto(`${url}/teams/`);
-      await page.waitForTimeout(5000)
+      await page.waitForTimeout(10000)
       await page.waitForLoadState('networkidle');
       
       await page.frameLocator('#sbox-iframe').getByText('tttest team').waitFor();
-      await page.frameLocator('#sbox-iframe').getByText('tttest team').click();
-      if (page.frameLocator('#sbox-iframe').getByText('Error').count() === 1) {
+      await page.frameLocator('#sbox-iframe').getByText('tttest team').click({force: true});
+
+      if (await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().count() === 0) {
+        await page.waitForTimeout(10000)
+        await page.waitForLoadState('networkidle');
+      
         await page.frameLocator('#sbox-iframe').getByText('tttest team').waitFor();
-        await page.frameLocator('#sbox-iframe').getByText('tttest team').click();
+        await page.frameLocator('#sbox-iframe').getByText('tttest team').click({force: true});
       }
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
@@ -93,7 +97,7 @@ test('drive - user - add contact to team and remove them', async () => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
       await page.waitForTimeout(1800)
       const user = page.frameLocator('#sbox-iframe').getByText('test-user3', { exact: true })
-      await expect(user).toBeHidden()
+      await expect(user).toBeHidden({ timeout: 100000 })
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user drive > add contact to team > remove', status: 'passed',reason: 'Can navigate to Drive as user and create a team'}})}`);
     } catch (e) {

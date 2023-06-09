@@ -23,7 +23,7 @@ test.beforeEach(async ({}, testInfo) => {
   await page.getByPlaceholder('Username').fill('test-user');
   await page.waitForTimeout(10000)
   await page.getByPlaceholder('Password', {exact: true}).fill('password');
-  await page.waitForLoadState('networkidle');
+//   await page.waitForLoadState('networkidle');
   const login = page.locator(".login")
   await login.waitFor({ timeout: 18000 })
   await expect(login).toBeVisible({ timeout: 1800 })
