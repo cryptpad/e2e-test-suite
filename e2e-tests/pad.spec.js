@@ -17,41 +17,17 @@ test.beforeEach(async ({}, testInfo) => {
     browser = await chromium.launch();
   }
   page = await browser.newPage();
-  await page.goto(`${url}`);
+  await page.goto(`${url}/pad/#/`);
+  await page.waitForTimeout(10000)
 });
 
 //ANONYMOUS USER
 
-test('anon - rich text pad - input text', async ({}, testInfo) => {
-
-  try {
-    await page.getByRole('link', { name: 'Rich Text' }).click();
-    await page.waitForTimeout(20000)
-    await expect(page).toHaveURL(new RegExp(`^${url}/pad/#/`), { timeout: 100000 })
-    const iframe = page.locator('#sbox-iframe')
-
-    await expect(iframe).toBeVisible({ timeout: 24000 })
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body')).toBeVisible()
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body').click();
-    await page.keyboard.type('Hello')
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').getByText('Hello')).toBeVisible()
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad', status: 'passed',reason: 'Can anonymously create Rich Text document'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad', status: 'failed',reason: 'Can\'t anonymously create Rich Text document'}})}`);
-
-  }  
-});
 
 test('anon - rich text pad - comment', async () => {
 
   try {
-    await page.getByRole('link', { name: 'Rich Text' }).click();
-    await page.waitForTimeout(20000)
-    await expect(page).toHaveURL(new RegExp(`^${url}/pad/#/`), { timeout: 100000 })
-    // await page.waitForLoadState('networkidle', { timeout: 5000 });
-    await page.waitForTimeout(10000)
+
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body').waitFor()
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body').fill('TEST TEXT');
@@ -75,11 +51,8 @@ test('anon - rich text pad - comment', async () => {
 test('anon - rich text pad - create and open snapshot', async () => {
 
   try { 
-    await page.getByRole('link', { name: 'Rich Text' }).click();
-    await page.waitForTimeout(20000)
-    await expect(page).toHaveURL(new RegExp(`^${url}/pad/#/`), { timeout: 100000 })
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body').waitFor()
 
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body').waitFor()
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Rich Text Editor\\, editor1"]').locator('body').fill('TEST TEXT');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();

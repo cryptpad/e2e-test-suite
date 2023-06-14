@@ -13,7 +13,7 @@ const { getCdpEndpoint } = require('./browserstack.config.js')
 
 
 //// MULTIPLE BROWSER/OS TESTING ////
-//// The browser/OS combination which the tests are run on is set to OS Mojave/Firefox by default, using the 'projects' variable in module.exports below.
+//// The browser/OS combination which the tests are run on is set to OS Mojave/Edge by default, using the 'projects' variable in module.exports below.
 //// The block below creates a list of all possible browser/OS combinations and sets it to variable 'projectsList'.
 //// To test on other browsers/OS, simply comment out whatever browser/OS combination 'projects' is currently set to, and set it to 'projectsList' instead.
 
@@ -93,10 +93,14 @@ module.exports = defineConfig({
 
 
   projects: 
+  // [{
+  //   name: 'chromium',
+  //   use: { ...devices['Desktop Chrome'] },
+  // }],
     [{
-      name: 'edge@latest:OSX Mojave',
+      name: 'playwright-firefox@latest:OSX Mojave',
       use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Mojave') }
+        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Mojave') }
       },
     }],
 
