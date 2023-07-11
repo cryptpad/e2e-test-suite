@@ -1,6 +1,7 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 const { getCdpEndpoint } = require('./browserstack.config.js')
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -26,6 +27,7 @@ var funct = function() {
   const string = [...Array(Object.keys(browserOS).length).keys()].forEach(function(i) {
   project = { name: `${browserOS[i]}`,
     use: {
+      permissions: ["clipboard-read", "clipboard-write", "notifications"],
       connectOptions: { wsEndpoint: getCdpEndpoint(`${browserOS[i]}`) }
     },
   }
@@ -93,27 +95,28 @@ module.exports = defineConfig({
 
 
   projects: 
-  // [{
-  //   name: 'chromium',
-  //   use: { ...devices['Desktop Chrome'] },
-  // }],
-    [{
-      name: 'playwright-firefox@latest:OSX Mojave',
-      use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Mojave') }
-      },
-    }],
+  [{
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  }],
+    // [{
+    //   name: 'edge@latest:OSX Ventura',
+    //   use: {
+    //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
+    //     connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') }
+    //   },
+    // }],
 
     
     /* Test against mobile viewports. */
-    // {
+    // [{
     //   name: 'Mobile Chrome',
     //   use: { ...devices['Pixel 5'] },
     // },
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
-    // },
+    // }],
 
     /* Test against branded browsers. */
     // {

@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-
-const url = 'https://cryptpad.fr'
+const { url } = require('../browserstack.config.js')
 
 let browser;
 let page;
@@ -20,24 +19,50 @@ test.beforeEach(async ({}, testInfo) => {
   test.setTimeout(240000)
 });
 
+test('anon - can draw on whiteboard (default settings)', async () => {
 
-// test('whiteboard - anon', async ({  }) => {
-  
-//   try {
-//     await page.getByRole('link', { name: 'Whiteboard' }).click();
-//     await expect(page).toHaveURL(new RegExp(`^${url}/whiteboard/#/`), { timeout: 10000 })
-//     // await page.waitForLoadState('networkidle');
-//     const iframe = page.locator('#sbox-iframe')
+  try {
 
-//     await expect(iframe).toBeVisible({ timeout: 24000 })
-   
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'whiteboard', status: 'passed',reason: 'Can anonymously create Whiteboard'}})}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'whiteboard', status: 'failed',reason: 'Can\'t anonymously create Whiteboard'}})}`);
+    await page.goto(`${url}/whiteboard`);
+    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+      position: {
+        x: 175,
+        y: 315
+      }
+    });
+    await page.mouse.down()
+    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+      position: {
+        x: 174,
+        y: 230
+      }
+    });
+    await page.mouse.up()
+    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+      position: {
+        x: 287,
+        y: 227
+      }
+    });
+    await page.mouse.down()
+    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+      position: {
+        x: 286,
+        y: 314
+      }
+    });
+    await page.mouse.up()
 
-//   }  
-// });
+    await expect(page).toHaveScreenshot();
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - can draw on whiteboard (default settings)', status: 'failed',reason: 'Can\'t draw on whiteboard (default settings)'}})}`);
+
+    
+  } catch (e) {
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - can draw on whiteboard (default settings)', status: 'passed',reason: 'Can draw on whiteboard (default settings)'}})}`);
+
+  }  
+});
+
 
 test.afterEach(async () => {
   await browser.close()

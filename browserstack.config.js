@@ -15,11 +15,11 @@ const util = require('util');
 
 const dateToday = new Date()
 const caps = {
-  browser: 'chrome',
+  browser: 'firefox',
   os: 'osx',
   os_version: 'catalina',
   name: 'cp-playwright-test',
-  build: 'cp-playwright-build9',
+  build: 'cp-playwright-mobiletests',
   // 'browserstack.networkLogs': true,
   // build: `cp-playwright-build: ${dateToday}`,
   'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
@@ -28,6 +28,15 @@ const caps = {
   'browserstack.playwrightVersion': '1.33.0',
   'client.playwrightVersion': '1.33.0',
 };
+
+exports.url = 'https://cryptpad.fr'
+
+const date = new Date()      
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+const weekday = days[date.getDay()]
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const month = months[date.getMonth()]
+exports.titleDate = `${weekday}, ${month} ${date.getDate()}, ${date.getFullYear()}`
 
 exports.bsLocal = new BrowserStackLocal.Local();
 

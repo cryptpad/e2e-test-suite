@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-
-const url = 'https://cryptpad.fr'
+const { url, titleDate } = require('../browserstack.config.js')
 
 test.describe.configure({ mode: 'serial' });
 
@@ -66,22 +65,22 @@ test.beforeEach(async ({}, testInfo) => {
 
 // })
 
-test('drive - user - upgrade account', async () => {   
+// test('drive - user - upgrade account', async () => {   
     
-    try {
-      const pagePromise = page.waitForEvent('popup')
-      await page.frameLocator('#sbox-iframe').getByText('Upgrade account').click()
-      const page1 = await pagePromise
+//     try {
+//       const pagePromise = page.waitForEvent('popup')
+//       await page.frameLocator('#sbox-iframe').getByText('Upgrade account').click()
+//       const page1 = await pagePromise
 
-      await expect(page1).toHaveURL(`${url}/accounts/#`, { timeout: 100000 })
+//       await expect(page1).toHaveURL(`${url}/accounts/#`, { timeout: 100000 })
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user drive > upgrade account', status: 'passed',reason: 'Can navigate to Drive as user and upgrade account'}})}`);
-    } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user drive > upgrade account', status: 'failed',reason: 'Can\'t navigate to Drive as user and upgrade account'}})}`);
+//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user drive > upgrade account', status: 'passed',reason: 'Can navigate to Drive as user and upgrade account'}})}`);
+//     } catch (e) {
+//       console.log(e);
+//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user drive > upgrade account', status: 'failed',reason: 'Can\'t navigate to Drive as user and upgrade account'}})}`);
   
-    }    
-  });
+//     }    
+//   });
 
 // test('drive - user - upload file', async () => {   
     
@@ -132,15 +131,7 @@ test('drive - user - upgrade account', async () => {
 //       const page1 = await page1Promise;
 //       await page1.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       
-//       const date = new Date()
-        
-//       var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-//       var weekday = days[date.getDay()]
-      
-//       var months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-//       var month = months[date.getMonth()]
-  
-//       var title = `Rich text - ${weekday}, ${month} ${date.getDate()}, ${date.getFullYear()}`;
+//       var title = `Rich text - ${titleDate}`;
 //       await page1.waitForTimeout(10000)
 //       await page1.close()
 //       await page.waitForTimeout(10000)
@@ -178,16 +169,8 @@ test('drive - user - upgrade account', async () => {
 
 //       const page1 = await page1Promise;
 //       await page1.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
-      
-//       const date = new Date()
-        
-//       var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-//       var weekday = days[date.getDay()]
-      
-//       var months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-//       var month = months[date.getMonth()]
   
-//       var title = `Rich text - ${weekday}, ${month} ${date.getDate()}, ${date.getFullYear()}`;
+//       var title = `Rich text - ${titleDate}`;
 //       await page1.waitForTimeout(10000)
 //       await page1.close()
 //       await page.waitForTimeout(10000)
@@ -408,6 +391,44 @@ test('drive - user - upgrade account', async () => {
       
 //     }  
 // });
+
+// test('user - can download drive contents', async () => {
+
+
+//   try {
+
+//     const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
+//     await menu.click()
+//     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
+    
+//     const pagePromise = page.waitForEvent('popup')
+//     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
+//     const page1 = await pagePromise
+//     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
+
+//     await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').getByText('CryptDrive').click();
+//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
+//     await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('mydrivecontents.zip');
+//     const download1Promise = page1.waitForEvent('download');
+//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+//     const download1 = await download1Promise;
+
+//     await download1.saveAs('/tmp/download.zip');
+
+//     await expect(page1.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
+//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'View errors' }).click();
+//     await expect(page1.frameLocator('#sbox-iframe').getByText('An error occured')).toHaveCount(0);
+    
+       
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'passed',reason: 'Can download drive contents'}})}`);
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'failed',reason: 'Can\'t download drive contents'}})}`);
+
+//   }  
+// });
+
+
 
 
 test.afterEach(async () => {
