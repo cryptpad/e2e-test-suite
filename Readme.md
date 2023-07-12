@@ -11,9 +11,9 @@ BROWSERSTACK_USERNAME=""
 BROWSERSTACK_ACCESS_KEY=""
 ```
 
-Alternately replace the username and key variable placeholders in browserstack.config.js.
+Alternately replace the username and key variable placeholders in `browserstack.config.js`.
 
-To run the tests with BrowserStack, make sure that each project in "projects" list in playwright.config.js (line 109) has "connectOptions: { wsEndpoint: getCdpEndpoint('DESIRED OS/BROWSER COMBO')" in the "use" variable, e.g. 
+To run the tests with BrowserStack, make sure that each project in `projects` list in `playwright.config.js` (line 109) has `connectOptions: { wsEndpoint: getCdpEndpoint('DESIRED OS/BROWSER COMBO')` in the `use` variable, e.g. 
 
 ```
   {
