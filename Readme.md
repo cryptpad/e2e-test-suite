@@ -30,7 +30,8 @@ Once connected, the test results can be viewed at https://automate.browserstack.
 ## Run tests
 
 1. If running locally, start local CryptPad instance and change the url in `browserstack.config.js` to https://localhost:3000. 
-2. Run `npx playwright test --headed --retries=1`
+2. If running locally or in staging for the first time, seed the database first by running `npx playwright test dbseeding.spec.js` (see "Required environment for E2E testing" below.)
+3. Run `npx playwright test --headed --retries=1`
 
 Running in headed mode prevents the browsers from closing during the test run.
 The retries flag is helpful when a test fails randomly e.g. because the browser tab crashes. 
