@@ -29,7 +29,7 @@ Once connected, the test results can be viewed at https://automate.browserstack.
 
 ## Run tests
 
-1. If running locally, start local CryptPad instance and change the url in `browserstack.config.js` to https://localhost:3000. (Note: this won't work with most tests as test database seeding is not yet included in this repo)
+1. If running locally, start local CryptPad instance and change the url in `browserstack.config.js` to https://localhost:3000. 
 2. Run `npx playwright test --headed --retries=1`
 
 Running in headed mode prevents the browsers from closing during the test run.
