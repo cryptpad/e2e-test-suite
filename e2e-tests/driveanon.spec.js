@@ -2,21 +2,11 @@ const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
 const { url, titleDate } = require('../browserstack.config.js')
 
-let browser;
-let page;
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async ({ page }) => {
   test.setTimeout(2400000);
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}/drive/`);
+  await page.goto(`${url}/drive`)
+  await page.waitForTimeout(5000)
 });
 
 // const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'survey', 'log in', 'sign up'] 
@@ -24,7 +14,7 @@ test.beforeEach(async ({}, testInfo) => {
 
 // userMenuItems.forEach(function(item) {
 
-//     test(`drive - anon - user menu - ${item}`, async () => {   
+//     test(`drive - anon - user menu - ${item}`, async ({ page }) => {   
     
 //         try {
 
@@ -76,7 +66,7 @@ test.beforeEach(async ({}, testInfo) => {
 
 // })
 
-// test('drive - anon - erase all', async () => {   
+// test('drive - anon - erase all', async ({ page }) => {   
     
 //   try {
 
@@ -111,7 +101,7 @@ test.beforeEach(async ({}, testInfo) => {
 
 // });
 
-// test('drive - anon - list/grid view', async () => {   
+// test('drive - anon - list/grid view', async ({ page }) => {   
     
 //   try {
 
@@ -143,7 +133,7 @@ test.beforeEach(async ({}, testInfo) => {
 
 // });
 
-// test('drive - anon - history', async () => {   
+// test('drive - anon - history', async ({ page }) => {   
     
 //   try {
 
@@ -170,7 +160,7 @@ test.beforeEach(async ({}, testInfo) => {
 
 // });
 
-// test('drive - anon - notifications', async () => {
+// test('drive - anon - notifications', async ({ page }) => {
    
 //   try {
 
@@ -190,7 +180,7 @@ test.beforeEach(async ({}, testInfo) => {
 // });
 
 
-// test('drive - anon - sign up from drive page', async () => {
+// test('drive - anon - sign up from drive page', async ({ page }) => {
 
 //   try {
 
@@ -208,25 +198,21 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-// test('drive - anon - log in from drive page', async () => {
+test('drive - anon - log in from drive page', async ({ page }) => {
 
-//   try {
+  try {
 
-//     await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor()
-//     await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Log in'}).waitFor()
-//     await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Log in'}).click()
-//     await page.waitForLoadState('networkidle');
-//     await expect(page).toHaveURL(`${url}/login/`, { timeout: 100000 })
+    await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Log in'}).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Log in'}).click()
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveURL(`${url}/login/`, { timeout: 100000 })
    
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive > log in', status: 'passed',reason: 'Can anonymously navigate to Drive and find link to log in'}})}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive > log in', status: 'failed',reason: 'Can\'t anonymously navigate to Drive and find link to log in'}})}`);
-//   }  
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive > log in', status: 'passed',reason: 'Can anonymously navigate to Drive and find link to log in'}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive > log in', status: 'failed',reason: 'Can\'t anonymously navigate to Drive and find link to log in'}})}`);
+  }  
 
-// });
-
-
-test.afterEach(async () => {
-  await browser.close()
 });
+

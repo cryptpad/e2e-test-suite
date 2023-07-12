@@ -2,43 +2,25 @@ const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
 const { url, titleDate } = require('../browserstack.config.js')
 
+var fs = require('fs');
+var unzipper = require('unzipper');
+
 test.describe.configure({ mode: 'serial' });
 
 let browser;
 let page;
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(2400000);
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}/login/`);
-  await page.getByPlaceholder('Username').fill('test-user');
-  await page.waitForTimeout(10000)
-  await page.getByPlaceholder('Password', {exact: true}).fill('password');
-  const login = page.locator(".login")
-  await login.waitFor({ timeout: 18000 })
-  await expect(login).toBeVisible({ timeout: 1800 })
-  if (await login.isVisible()) {
-    await login.click()
-  }
-  await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-  await page.waitForLoadState('networkidle');
+  await page.goto(`${url}/drive/#`)
   await page.waitForTimeout(5000)
-
 });
 
 // const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'] 
 
 // userMenuItems.forEach(function(item) {
 
-//     test(`drive - user - user menu - ${item}`, async () => {   
+//     test(`drive - user - user menu - ${item}`, async ({ page }) => {   
     
 //         try {
 //             const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
@@ -65,7 +47,7 @@ test.beforeEach(async ({}, testInfo) => {
 
 // })
 
-// test('drive - user - upgrade account', async () => {   
+// test('drive - user - upgrade account', async ({ page }) => {   
     
 //     try {
 //       const pagePromise = page.waitForEvent('popup')
@@ -82,7 +64,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }    
 //   });
 
-// test('drive - user - upload file', async () => {   
+// test('drive - user - upload file', async ({ page }) => {   
     
 //     try {
 //       const fileChooserPromise = page.waitForEvent('filechooser');
@@ -118,10 +100,7 @@ test.beforeEach(async ({}, testInfo) => {
     
 
 
-    
-
-
-// test('drive - user - recent files', async () => {   
+// test('drive - user - recent files', async ({ page }) => {   
     
 //     try {
 //       const page1Promise = page.waitForEvent('popup');
@@ -150,7 +129,6 @@ test.beforeEach(async ({}, testInfo) => {
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Remove' }).last().click()
         
 //       }
-
      
 //       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive > list/grid view', status: 'passed',reason: 'Can anonymously navigate to Drive and change the view to list/grid'}})}`);
 //     } catch (e) {
@@ -160,7 +138,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }    
 //   });
 
-// test('drive - user - empty trash', async () => {   
+// test('drive - user - empty trash', async ({ page }) => {   
     
 //     try {
 //       const page1Promise = page.waitForEvent('popup');
@@ -204,7 +182,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }    
 //   });
 
-// test('drive - user - notifications panel', async () => {
+// test('drive - user - notifications panel', async ({ page }) => {
 
 //     try {
 //         const notifs = page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Allow notifications' }).last()
@@ -227,19 +205,19 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('drive - filter' , async () => {
+// test('drive - filter' , async ({ page }) => {
 //     try {
 //         await page.waitForLoadState('networkidle');
-//         await page.frameLocator('#sbox-iframe').getByText('Sheet - Wed, 24 May 2023').waitFor()
+//         await page.frameLocator('#sbox-iframe').getByText('test sheet').waitFor()
 //         await page.waitForLoadState('networkidle');
-//         await page.frameLocator('#sbox-iframe').getByText('Whiteboard - Wed, 24 May 2023').waitFor()
+//         await page.frameLocator('#sbox-iframe').getByText('test whiteboard').waitFor()
 //         await page.waitForLoadState('networkidle');
 //         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Filter' }).click();
 //         await page.waitForLoadState('networkidle');
 //         await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Sheet' }).click();
 //         await page.waitForLoadState('networkidle');
-//         await expect(page.frameLocator('#sbox-iframe').getByText('Sheet - Wed, 24 May 2023')).toBeVisible();
-//         await expect(page.frameLocator('#sbox-iframe').getByText('Whiteboard - Wed, 24 May 2023')).toHaveCount(0)
+//         await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
+//         await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toHaveCount(0)
         
 //         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - filter', status: 'passed',reason: `Can filter files by file type in Drive`}})}`);
 //     } catch (e) {
@@ -249,7 +227,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('drive - create link' , async () => {
+// test('drive - create link' , async ({ page }) => {
 //     try {
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'New' }).locator('span').first().click();
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'New Link' }).click();
@@ -273,7 +251,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('drive - create folder' , async () => {
+// test('drive - create folder' , async ({ page }) => {
 //     try {
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).click();
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Folder$/ }).click();
@@ -297,7 +275,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('drive - create shared folder' , async () => {
+// test('drive - create shared folder' , async ({ page }) => {
 //     try {
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).waitFor()
 //         await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).click();
@@ -341,7 +319,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('drive - toggle sidebar' , async () => {
+// test('drive - toggle sidebar' , async ({ page }) => {
 //     try {
 //         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Files' }).click();
 //         await page.waitForLoadState('networkidle');
@@ -369,20 +347,20 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('drive - search' , async () => {
+// test('drive - search' , async ({ page }) => {
 //     try {
-//         await page.frameLocator('#sbox-iframe').getByText('Sheet - Wed, 24 May 2023').waitFor()
+//         await page.frameLocator('#sbox-iframe').getByText('test sheet').waitFor()
 //         await page.waitForLoadState('networkidle');
-//         await page.frameLocator('#sbox-iframe').getByText('Whiteboard - Wed, 24 May 2023').waitFor()
+//         await page.frameLocator('#sbox-iframe').getByText('test whiteboard').waitFor()
 //         await page.waitForLoadState('networkidle');
 //         await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Search...' }).first().click()
 //         await page.waitForLoadState('networkidle');
 //         await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').fill('sheet');
 //         await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').press('Enter');
 //         await page.waitForLoadState('networkidle');
-//         await page.frameLocator('#sbox-iframe').getByText('Sheet - Wed, 24 May 2023').waitFor()
+//         await page.frameLocator('#sbox-iframe').getByText('test sheet').waitFor()
 //         await page.waitForLoadState('networkidle');
-//         await expect(page.frameLocator('#sbox-iframe').getByText('Whiteboard - Wed, 24 May 2023')).toHaveCount(0)
+//         await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toHaveCount(0)
         
 //         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - search', status: 'passed',reason: `Can search files in Drive`}})}`);
 //     } catch (e) {
@@ -392,45 +370,56 @@ test.beforeEach(async ({}, testInfo) => {
 //     }  
 // });
 
-// test('user - can download drive contents', async () => {
+test('user - can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T DOWNLOAD', async ({ page }) => {
 
 
-//   try {
+  try {
 
-//     const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
-//     await menu.click()
-//     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
+    const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
+    await menu.click()
+    await page.waitForTimeout(6000)
+    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
     
-//     const pagePromise = page.waitForEvent('popup')
-//     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
-//     const page1 = await pagePromise
-//     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
+    const pagePromise = page.waitForEvent('popup')
+    await page.frameLocator('#sbox-iframe').getByText('Settings').click()
+    const page1 = await pagePromise
+    await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
-//     await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').getByText('CryptDrive').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('mydrivecontents.zip');
-//     const download1Promise = page1.waitForEvent('download');
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-//     const download1 = await download1Promise;
+    await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').getByText('CryptDrive').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('mydrivecontents.zip');
+    const download1Promise = page1.waitForEvent('download');
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    const download1 = await download1Promise;
 
-//     await download1.saveAs('/tmp/download.zip');
+    await download1.saveAs('/tmp/mydrivecontents.zip');
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'View errors' }).click();
-//     await expect(page1.frameLocator('#sbox-iframe').getByText('An error occured')).toHaveCount(0);
+    await expect(page1.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'View errors' }).click();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('An error occured')).toHaveCount(0);
+
+    const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png"]
+    let actualFiles = [];
+
+    fs.createReadStream('/tmp/mydrivecontents.zip')
+    .pipe(unzipper.Parse())
+    .on('entry', function (entry) {
+      var fileName = entry.path;
+      actualFiles.push(fileName)
+    });
+
+    if (actualFiles == expectedFiles) {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'passed',reason: 'Can download drive contents'}})}`);
+
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'failed',reason: 'Can\'t download drive contents'}})}`);
+
+    }
     
-       
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'passed',reason: 'Can download drive contents'}})}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'failed',reason: 'Can\'t download drive contents'}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'failed',reason: 'Can\'t download drive contents'}})}`);
 
-//   }  
-// });
-
-
-
-
-test.afterEach(async () => {
-await browser.close()
+  }  
 });
+

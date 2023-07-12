@@ -1,31 +1,19 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-
-const url = 'https://cryptpad.fr'
+const { url } = require('../browserstack.config.js')
 
 let browser;
 let page;
 
 
-
-
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ page }, testInfo) => {
 
   test.setTimeout(240000)
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
   await page.goto(`${url}`);
   
 });
 
-test('home page title', async ({  }) => {
+test('home page title', async ({ page }) => {
   
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -246,8 +234,3 @@ test('home page title', async ({  }) => {
 
 
 // }
-
-
-test.afterEach(async ({ page }) => {
-  await browser.close()
-});

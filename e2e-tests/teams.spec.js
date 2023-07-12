@@ -6,39 +6,20 @@ let browser;
 let page;
 let pageOne;
 
-test.beforeEach(async ({}, testInfo) => {
+test.describe.configure({ mode: 'serial' });
+
+
+test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(2400000);
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}/login/`);
-  await page.getByPlaceholder('Username').fill('test-user');
-  await page.waitForTimeout(5000)
-  await page.getByPlaceholder('Password', {exact: true}).fill('password');
-  // await page.waitForLoadState('networkidle');
-  const login = page.locator(".login")
-  await login.waitFor({ timeout: 18000 })
-  await expect(login).toBeVisible({ timeout: 1800 })
-  if (await login.isVisible()) {
-    await login.click()
-  }
-  await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-  await page.waitForLoadState('networkidle');
+  await page.goto(`${url}/teams/`)
   await page.waitForTimeout(5000)
 
 });
 
 
-// test('drive - user - user menu - make and delete team ', async () => {
+// test('drive - user - user menu - make and delete team ', async ({ page }) => {
   
 //   try {
-//     await page.goto(`${url}/teams/`);
 //     await page.waitForTimeout(10000)
 //     await page.waitForLoadState('networkidle');
 //     await page1.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().click();
@@ -53,7 +34,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     await page1.waitForLoadState('networkidle');
 
 //     await page1.frameLocator('#sbox-iframe').getByText('example team').first().waitFor({ timeout: 10000 })
-//     await page1.frameLocator('#sbox-iframe').getByText('example team').first().click()s
+//     await page1.frameLocator('#sbox-iframe').getByText('example team').first().click()
 //     await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').hover();
 //     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
 //     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
@@ -69,12 +50,11 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-// test('user - chat with team member', async () => {
+// test('user - chat with team member', async ({ page }, testInfo) => {
 
 
 //   try {
 
-//     await page.goto(`${url}/teams/`);
 //     await page.waitForTimeout(10000)
 //     await page.waitForLoadState('networkidle');
     
@@ -86,9 +66,25 @@ test.beforeEach(async ({}, testInfo) => {
 //     await page.frameLocator('#sbox-iframe').locator('.cp-online > span').first().click();
 
 //     ///
+//     const name = testInfo.project.name
+//     if (name.indexOf('firefox') !== -1 ) {
+//       browser = await firefox.launch();
+//     } else if (name.indexOf('webkit') !== -1 ) {
+//       browser = await webkit.launch();
+//     } else {
+//       browser = await chromium.launch();
+//     }
 //     const context = await browser.newContext();
 //     pageOne = await context.newPage();
-//     await pageOne.goto(`${url}/login/`);
+//     await pageOne.goto(`${url}/drive`);
+//     const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
+//     await menu.waitFor()
+//     await menu.click()
+//     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
+//     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
+//     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
+//     await pageOne.getByRole('link', { name: 'Log in' }).click()
+//     await expect(pageOne).toHaveURL(`${url}/login/`)
 //     await pageOne.getByPlaceholder('Username').fill('test-user3');
 //     await pageOne.waitForTimeout(10000)
 //     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
@@ -138,12 +134,11 @@ test.beforeEach(async ({}, testInfo) => {
 
 
 
-// test('user - add contact to team as viewer and remove them', async () => {
+// test('user - add contact to team as viewer and remove them', async ({ page }, testInfo) => {
 
 
 //   try {
 
-//     await page.goto(`${url}/teams/`);
 //     await page.waitForTimeout(10000)
 //     await page.waitForLoadState('networkidle');
     
@@ -165,9 +160,25 @@ test.beforeEach(async ({}, testInfo) => {
 //     await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Invite', exact: true}).click()
 
 //     ///
+//     const name = testInfo.project.name
+//     if (name.indexOf('firefox') !== -1 ) {
+//       browser = await firefox.launch();
+//     } else if (name.indexOf('webkit') !== -1 ) {
+//       browser = await webkit.launch();
+//     } else {
+//       browser = await chromium.launch();
+//     }
 //     const context = await browser.newContext();
 //     pageOne = await context.newPage();
-//     await pageOne.goto(`${url}/login/`);
+//     await pageOne.goto(`${url}/drive`);
+//     const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
+//     await menu.waitFor()
+//     await menu.click()
+//     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
+//     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
+//     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
+//     await pageOne.getByRole('link', { name: 'Log in' }).click()
+//     await expect(pageOne).toHaveURL(`${url}/login/`)
 //     await pageOne.getByPlaceholder('Username').fill('testuser');
 //     await pageOne.waitForTimeout(10000)
 //     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
@@ -253,12 +264,11 @@ test.beforeEach(async ({}, testInfo) => {
 
 
 
-// test('user - promote team viewer to member', async () => {
+// test('user - promote team viewer to member', async ({ page }, testInfo) => {
 
 
 //     try {
   
-//       await page.goto(`${url}/teams/`);
 //       await page.waitForTimeout(10000)
 //       await page.waitForLoadState('networkidle');
       
@@ -275,9 +285,25 @@ test.beforeEach(async ({}, testInfo) => {
   
   
 //       ///
-//       const context = await browser.newContext();
-//       pageOne = await context.newPage();
-//       await pageOne.goto(`${url}/login/`);
+  //     const name = testInfo.project.name
+  //     if (name.indexOf('firefox') !== -1 ) {
+  //       browser = await firefox.launch();
+  //     } else if (name.indexOf('webkit') !== -1 ) {
+  //       browser = await webkit.launch();
+  //     } else {
+  //       browser = await chromium.launch();
+  //     }
+  //     const context = await browser.newContext();
+  //     pageOne = await context.newPage();
+  //     await pageOne.goto(`${url}/drive`);
+  //     const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
+  //     await menu.waitFor()
+  //     await menu.click()
+  //     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
+  //     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
+  //     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
+  //     await pageOne.getByRole('link', { name: 'Log in' }).click()
+  //     await expect(pageOne).toHaveURL(`${url}/login/`)
 //       await pageOne.getByPlaceholder('Username').fill('test-user3');
 //       await pageOne.waitForTimeout(5000)
 //       await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
@@ -336,12 +362,11 @@ test.beforeEach(async ({}, testInfo) => {
 //   });
   
   
-  // test('user - promote team viewer to admin', async () => {
+  // test('user - promote team viewer to admin', async ({ page }, testInfo) => {
   
   
   //   try {
   
-  //     await page.goto(`${url}/teams/`);
   //     await page.waitForTimeout(10000)
   //     await page.waitForLoadState('networkidle');
       
@@ -360,9 +385,25 @@ test.beforeEach(async ({}, testInfo) => {
   
   
   //     ///
+  //     const name = testInfo.project.name
+  //     if (name.indexOf('firefox') !== -1 ) {
+  //       browser = await firefox.launch();
+  //     } else if (name.indexOf('webkit') !== -1 ) {
+  //       browser = await webkit.launch();
+  //     } else {
+  //       browser = await chromium.launch();
+  //     }
   //     const context = await browser.newContext();
   //     pageOne = await context.newPage();
-  //     await pageOne.goto(`${url}/login/`);
+  //     await pageOne.goto(`${url}/drive`);
+  //     const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
+  //     await menu.waitFor()
+  //     await menu.click()
+  //     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
+  //     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
+  //     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
+  //     await pageOne.getByRole('link', { name: 'Log in' }).click()
+  //     await expect(pageOne).toHaveURL(`${url}/login/`)
   //     await pageOne.getByPlaceholder('Username').fill('test-user3');
   //     await pageOne.waitForTimeout(5000)
   //     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
@@ -431,11 +472,10 @@ test.beforeEach(async ({}, testInfo) => {
   //   }  
   // });
   
-  test('user - promote team viewer to owner', async () => {
+  test('user - promote team viewer to owner', async ({ page }, testInfo) => {
   
     try {
   
-      await page.goto(`${url}/teams/`);
       await page.waitForTimeout(10000)
       await page.waitForLoadState('networkidle');
       
@@ -462,9 +502,25 @@ test.beforeEach(async ({}, testInfo) => {
   
       ///
       //user 2: log in
+      const name = testInfo.project.name
+      if (name.indexOf('firefox') !== -1 ) {
+        browser = await firefox.launch();
+      } else if (name.indexOf('webkit') !== -1 ) {
+        browser = await webkit.launch();
+      } else {
+        browser = await chromium.launch();
+      }
       const context = await browser.newContext();
       pageOne = await context.newPage();
-      await pageOne.goto(`${url}/login/`);
+      await pageOne.goto(`${url}/drive`);
+      const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
+      await menu.waitFor()
+      await menu.click()
+      await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
+      await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
+      await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
+      await pageOne.getByRole('link', { name: 'Log in' }).click()
+      await expect(pageOne).toHaveURL(`${url}/login/`)
       await pageOne.getByPlaceholder('Username').fill('test-user3');
       await pageOne.waitForTimeout(5000)
       await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
@@ -536,12 +592,11 @@ test.beforeEach(async ({}, testInfo) => {
   });
   
   
-  // test('user - add contact to team and contact leaves team', async () => {
+  // test('user - add contact to team and contact leaves team', async ({ page }, testInfo) => {
   
   
   //   try {
   
-  //     await page.goto(`${url}/teams/`);
   //     await page.waitForTimeout(10000)
   //     await page.waitForLoadState('networkidle');
       
@@ -563,9 +618,25 @@ test.beforeEach(async ({}, testInfo) => {
   //     await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Invite', exact: true}).click()
   
   //     ///
+  //     const name = testInfo.project.name
+  //     if (name.indexOf('firefox') !== -1 ) {
+  //       browser = await firefox.launch();
+  //     } else if (name.indexOf('webkit') !== -1 ) {
+  //       browser = await webkit.launch();
+  //     } else {
+  //       browser = await chromium.launch();
+  //     }
   //     const context = await browser.newContext();
   //     pageOne = await context.newPage();
-  //     await pageOne.goto(`${url}/login/`);
+  //     await pageOne.goto(`${url}/drive`);
+  //     const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
+  //     await menu.waitFor()
+  //     await menu.click()
+  //     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
+  //     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
+  //     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
+  //     await pageOne.getByRole('link', { name: 'Log in' }).click()
+  //     await expect(pageOne).toHaveURL(`${url}/login/`)
   //     await pageOne.getByPlaceholder('Username').fill('testuser');
   //     await pageOne.waitForTimeout(10000)
   //     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
@@ -630,10 +701,9 @@ test.beforeEach(async ({}, testInfo) => {
   //   }  
   // });
 
-// test('drive - user - invite contact to team and cancel', async () => {
+// test('drive - user - invite contact to team and cancel', async ({ page }) => {
     
 //     try {
-//       await page.goto(`${url}/teams/`);
 //       await page.waitForTimeout(10000)
 //       await page.waitForLoadState('networkidle');
       
@@ -673,12 +743,11 @@ test.beforeEach(async ({}, testInfo) => {
 //   });
 
 
-// test('user - can change team name', async () => {
+// test('user - can change team name', async ({ page }) => {
 
 
 //   try {
 
-//     await page.goto(`${url}/teams/`);
 //     await page.waitForTimeout(10000)
 //     await page.waitForLoadState('networkidle');
     
@@ -700,7 +769,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('example team');
 //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
 //     await page.waitForTimeout(5000)
-//     await page.goto(`${url}/teams/`);
+//     ;
 //     await page.frameLocator('#sbox-iframe').getByText('example team')
 //     await page.frameLocator('#sbox-iframe').getByText('et', { exact: true }).click();
 //     if (await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().count() === 0) {
@@ -718,7 +787,7 @@ test.beforeEach(async ({}, testInfo) => {
 //     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('test team');
 //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
 //     await page.waitForTimeout(5000)
-//     await page.goto(`${url}/teams/`);
+//     ;
 //     await page.frameLocator('#sbox-iframe').getByText('test team')
        
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive', status: 'passed',reason: 'Can navigate to Drive as user and delete account'}})}`);
@@ -730,12 +799,11 @@ test.beforeEach(async ({}, testInfo) => {
 // });
 
 
-// test('user - can access team public signing key', async () => {
+// test('user - can access team public signing key', async ({ page }) => {
 
 
 //   try {
 
-//     await page.goto(`${url}/teams/`);
 //     await page.waitForTimeout(10000)
     
 //     await page.frameLocator('#sbox-iframe').getByText('tttest team').waitFor();
@@ -766,8 +834,3 @@ test.beforeEach(async ({}, testInfo) => {
 
 //   }  
 // });
-
-
-test.afterEach(async () => {
-    await browser.close()
-  });

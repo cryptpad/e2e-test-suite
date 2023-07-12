@@ -1,45 +1,29 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-
-const url = 'https://cryptpad.fr'
+const { url, titleDate } = require('../browserstack.config.js')
 
 let browser;
 let page;
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(2400000);
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}`);
+  await page.goto(`${url}/slide`);
 });
 
 
-// test('markdown - anon', async () => {
-//   
-//   try {
-//     await page.getByRole('link', { name: 'Markdown slides' }).click();
-//     await page.waitForLoadState('networkidle');
-//     await page.waitForTimeout(20000)
-//     await expect(page).toHaveURL(new RegExp(`^${url}/slide/#/`), { timeout: 100000 }) 
-//     const iframe = page.locator('#sbox-iframe')
+test('markdown - anon - input text into editor', async ({ page }) => {
+  
+  try {
 
-//     await expect(iframe).toBeVisible({ timeout: 24000 })
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').click();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').type('Test text');
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeVisible();
    
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'markdown', status: 'passed',reason: 'Can anonymously create Markdown slides'}})}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'markdown', status: 'failed',reason: 'Can\'t anonymously create Markdown slides'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'markdown', status: 'passed',reason: 'Can anonymously create Markdown slides'}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'markdown', status: 'failed',reason: 'Can\'t anonymously create Markdown slides'}})}`);
 
-//   }  
-// });
-
-test.afterEach(async () => {
-  await browser.close()
+  }  
 });

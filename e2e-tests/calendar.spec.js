@@ -2,33 +2,16 @@ const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
 const { url } = require('../browserstack.config.js')
 
+test.describe.configure({ mode: 'serial' });
+
+
 let browser;
 let page;
 let pageOne;
 
 test.beforeEach(async ({}, testInfo) => {
   test.setTimeout(2400000);
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}/login/`);
-  await page.getByPlaceholder('Username').fill('test-user');
-  await page.waitForTimeout(5000)
-  await page.getByPlaceholder('Password', {exact: true}).fill('password');
-  const login = page.locator(".login")
-  await login.waitFor({ timeout: 18000 })
-  await expect(login).toBeVisible({ timeout: 1800 })
-  if (await login.isVisible()) {
-    await login.click()
-  }
-  await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-  await page.waitForTimeout(5000)
+  await page.goto(`${url}/calendar/`);
 
 });
 
@@ -41,12 +24,12 @@ const day = dayString.length > 1 ? dayString : '0' + dayString;
 const dateString = month + '/' + day + '/' + year;
 
 
-test('user - create and delete event in calendar', async ({}) => {
+test('user - create and delete event in calendar', async ({ page }) => {
 
   try {
 
     //create event
-    await page.goto(`${url}/calendar/`);
+    
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
@@ -92,12 +75,12 @@ test('user - create and delete event in calendar', async ({}) => {
 });
 
 
-test('user - create and delete repeating event in calendar', async ({}) => {
+test('user - create and delete repeating event in calendar', async ({ page }) => {
 
   try {
 
     //create event
-    await page.goto(`${url}/calendar/`);
+    
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();

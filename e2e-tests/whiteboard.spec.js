@@ -5,25 +5,16 @@ const { url } = require('../browserstack.config.js')
 let browser;
 let page;
 
-test.beforeEach(async ({}, testInfo) => {
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}`);
+test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(240000)
+  await page.goto(`${url}/whiteboard`);
+  
 });
 
-test('anon - can draw on whiteboard (default settings)', async () => {
+test('anon - can draw on whiteboard (default settings)', async ({ page }) => {
 
   try {
 
-    await page.goto(`${url}/whiteboard`);
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
       position: {
         x: 175,
@@ -61,9 +52,4 @@ test('anon - can draw on whiteboard (default settings)', async () => {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - can draw on whiteboard (default settings)', status: 'passed',reason: 'Can draw on whiteboard (default settings)'}})}`);
 
   }  
-});
-
-
-test.afterEach(async () => {
-  await browser.close()
 });

@@ -1,30 +1,18 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-
-const url = 'https://cryptpad.fr'
+const { url, titleDate } = require('../browserstack.config.js')
 
 let browser;
 let page;
 
-test.beforeEach(async ({}, testInfo) => {
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
-  await page.goto(`${url}`);
+test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(240000)
+  await page.goto(`${url}/form`);
 });
 
-// test('form - anon', async () => {
+// test('form - anon', async ({ page }) => {
 //   try {
-//     await page.getByRole('link', { name: 'Form' }).click();
-//     await page.waitForLoadState('networkidle');
-//      await expect(page).toHaveURL(new RegExp(`^${url}/form/#/`), { timeout: 100000 })
+
 //     await page.waitForTimeout(20000)
 //     const iframe = page.locator('#sbox-iframe')
 
@@ -37,7 +25,3 @@ test.beforeEach(async ({}, testInfo) => {
 
 //   }  
 // });
-
-test.afterEach(async () => {
-  await browser.close()
-});

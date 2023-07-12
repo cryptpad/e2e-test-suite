@@ -1,7 +1,19 @@
 // @ts-check
+// import { defineConfig, devices } from '@playwright/test';
+// import { getCdpEndpoint } from './browserstack.config.js'
+
+// import { path } from "node:path";
+const path  = require('node:path'); 
 const { defineConfig, devices } = require('@playwright/test');
 const { getCdpEndpoint } = require('./browserstack.config.js')
+// const { path } = require('path');
 
+// console.log(STORAGE_STATE )
+
+// export const STORAGE_STATE = path.join(__dirname, 'user.json');
+
+// const STORAGE_STATE = path.join(__dirname, 'playwright/.auth/user.json');
+// module.exports = STORAGE_STATE 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -95,9 +107,19 @@ module.exports = defineConfig({
 
 
   projects: 
-  [{
+  [
+  //   {
+  //   name: 'setup',
+  //   testMatch: /.*\.setup\.js/
+  // },
+  {
     name: 'chromium',
-    use: { ...devices['Desktop Chrome'] },
+    use: { 
+      ...devices['Desktop Chrome'],
+      // storageState: 'user.json',
+      permissions: ["clipboard-read", "clipboard-write", "notifications"],
+    },
+    // dependencies: ['setup'],
   }],
     // [{
     //   name: 'edge@latest:OSX Ventura',

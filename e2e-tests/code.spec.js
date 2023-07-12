@@ -2,25 +2,19 @@ const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
 const { url } = require('../browserstack.config.js')
 
+var fs = require('fs');
+
 let browser;
 let page;
 
-test.beforeEach(async ({}, testInfo) => {
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
+test.beforeEach(async ({ page }, testInfo) => {
+  test.setTimeout(240000);
   await page.goto(`${url}/code`);
   await page.waitForTimeout(5000)
   test.setTimeout(240000);
 });
 
-// test(`anon - code - input text`, async ({}, testInfo) => {
+// test(`anon - code - input text`, async ({ page }), testInfo) => {
 
 //   try {
 
@@ -37,7 +31,7 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-// test(`anon - code - file menu - history`, async ({}, testInfo) => {
+// test(`anon - code - file menu - history`, async ({ page }), testInfo) => {
 
 //   try {
 
@@ -61,7 +55,7 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-// test(`anon - pad - toggle toolbar`, async ({}, testInfo) => {
+// test(`anon - pad - toggle toolbar`, async ({ page }), testInfo) => {
 
 //   try {
 //     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden()
@@ -76,7 +70,7 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-// test(`anon - code - toggle preview`, async ({}, testInfo) => {
+// test(`anon - code - toggle preview`, async ({ page }), testInfo) => {
 
 //   try {
 
@@ -96,7 +90,7 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-// test(`anon - code -  make a copy`, async ({}, testInfo) => {
+// test(`anon - code -  make a copy`, async ({ page }), testInfo) => {
 
 //   try {
 
@@ -122,20 +116,61 @@ test.beforeEach(async ({}, testInfo) => {
 //   }  
 // });
 
-test(`anon - code - `, async ({}, testInfo) => {
+// test(`anon - code - import file`, async ({ page }), testInfo) => {
 
-  try {
+//   try {
 
-    
+//     const fileChooserPromise = page.waitForEvent('filechooser');
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - pad - toggle preview`, status: 'passed',reason: 'Can create document and add to team drive'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - pad - toggle preview`, status: 'failed',reason: 'Can\'t acreate document and add to team drive'}})}`);
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
 
-  }  
-});
+//     const fileChooser = await fileChooserPromise;
+//     await fileChooser.setFiles('myfile.html');
 
-test.afterEach(async () => {
-  await browser.close()
+//     await page.waitForTimeout(3000)
+
+//     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text here')).toBeVisible();
+//     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text here')).toBeVisible();
+
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - pad - toggle preview`, status: 'passed',reason: 'Can create document and add to team drive'}})}`);
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - pad - toggle preview`, status: 'failed',reason: 'Can\'t acreate document and add to team drive'}})}`);
+
+//   }  
+// });
+
+  test(`anon - code - export`, async ({ page }) => {
+
+    try {
+
+      await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
+      await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
+      await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toBeVisible();
+
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
+      
+      const downloadPromise = page.waitForEvent('download');
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      const download = await downloadPromise;
+
+      await download.saveAs('/tmp/test code.md');
+
+      const readData = fs.readFileSync("/tmp/test code.md", "utf8");
+      if (readData == "Test text") {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'passed',reason: 'Can create comment in Rich Text document'}})}`);
+
+      } else {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
+
+      }
+
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
+
+    }  
 });

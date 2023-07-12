@@ -5,26 +5,17 @@ const { url, titleDate } = require('../browserstack.config.js')
 let browser;
 let page;
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(24000000)
-  const name = testInfo.project.name
-  if (name.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (name.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
-  page = await browser.newPage();
   await page.goto(`${url}`);
 });
 
-// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form'] 
-const docNames = ['pad'] 
+const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form'] 
+// const docNames = ['pad'] 
 
 docNames.forEach(function(name) {
 
-  test(`anon - ${name} - tag`, async () => {
+  test(`anon - ${name} - tag`, async ({ page }) => {
 
     try {
       await page.goto(`${url}/login/`);
@@ -43,20 +34,33 @@ docNames.forEach(function(name) {
 
       await page.goto(`${url}/${name}`);
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+      await page.waitForTimeout(5000)
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+      await page.waitForTimeout(5000)
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click()
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
+      await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await page.waitForTimeout(3000)
       
       await page.goto(`${url}/drive/#`);
       await page.waitForTimeout(3000)
-      await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Tags' }).first().click();
+      await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Tags').click();
       await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
 
-      var title = `Rich text - ${titleDate}`;
+      var title;
+      if (name === 'pad') {
+        title = `Rich text - ${titleDate}`;
+      } else if (name === 'slide') {
+        title = `Markdown slides - ${titleDate}`
+      } else {
+        const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+        title = `${titleName} - ${titleDate}`;
+      }
       await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toBeVisible();
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'passed',reason: 'Can create comment in Rich Text document'}})}`);
@@ -67,31 +71,8 @@ docNames.forEach(function(name) {
     }  
 });
 
-//   test(`anon - ${name} - export`, async () => {
 
-//     try {
-
-//       await page.goto(`${url}/${name}`);
-//       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-//       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
-
-      
-//       const downloadPromise = page.waitForEvent('download');
-//       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-//       const download = await downloadPromise;
-
-//       await download.saveAs('/tmp/pad.zip');
-
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'passed',reason: 'Can create comment in Rich Text document'}})}`);
-//     } catch (e) {
-//       console.log(e);
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
-
-//     }  
-// });
-
-
-  // test(`user - ${name} - protect with password`, async ({}, testInfo) => {
+  // test(`user - ${name} - protect with password`, async ({ page }), testInfo) => {
 
   //   try {
 
@@ -121,7 +102,15 @@ docNames.forEach(function(name) {
   //     await page.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('password');
   //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
       
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
   //     await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible()
 
   //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - protect with password`, status: 'passed',reason: `Can protect ${name} with password`}})}`);
@@ -132,7 +121,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
 
-  // test(`anon - ${name} - file menu - create new file`, async ({}, testInfo) => {
+  // test(`anon - ${name} - file menu - create new file`, async ({ page }), testInfo) => {
 
   //   try {
 
@@ -145,7 +134,15 @@ docNames.forEach(function(name) {
   //     await page.frameLocator('#sbox-iframe').getByText('Rich text', { exact: true }).click();
   //     const page2 = await page2Promise;
 
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
   //     await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible()
 
   //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - add to team drive`, status: 'passed',reason: 'Can create document and add to team drive'}})}`);
@@ -157,7 +154,7 @@ docNames.forEach(function(name) {
   // });
 
 
-  // test(`user - ${name} - add to team drive`, async ({}, testInfo) => {
+  // test(`user - ${name} - add to team drive`, async ({ page }), testInfo) => {
 
   //   try {
 
@@ -186,7 +183,15 @@ docNames.forEach(function(name) {
   //     await page.frameLocator('#sbox-iframe').getByText('tttest team').waitFor();
   //     await page.frameLocator('#sbox-iframe').getByText('tttest team').click();
 
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
       
   //     await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible()
   //     await page.waitForTimeout(10000)
@@ -216,7 +221,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
 
-  // test(`user - ${name} - share with contact - view`, async ({}, testInfo) => {
+  // test(`user - ${name} - share with contact - view`, async ({ page }), testInfo) => {
 
   //   try {
 
@@ -263,7 +268,15 @@ docNames.forEach(function(name) {
 
   //     const date = new Date()
 
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
       
   //     const page1Promise = pageOne.waitForEvent('popup');
   //     await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).first().waitFor();
@@ -296,7 +309,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
 
-  // test(`user - ${name} - share with contact - edit`, async ({}, testInfo) => {
+  // test(`user - ${name} - share with contact - edit`, async ({ page }), testInfo) => {
 
   //   try {
 
@@ -340,7 +353,15 @@ docNames.forEach(function(name) {
   //     await notifsOne.click()
   //     await pageOne.waitForTimeout(5000)
 
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
       
   //     const page1Promise = pageOne.waitForEvent('popup');
   //     await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).first().waitFor();
@@ -377,7 +398,7 @@ docNames.forEach(function(name) {
   // });
 
 
-  // test(`user - ${name} - share with contact - view and delete`, async ({}, testInfo) => {
+  // test(`user - ${name} - share with contact - view and delete`, async ({ page }), testInfo) => {
 
   //   try {
 
@@ -423,7 +444,15 @@ docNames.forEach(function(name) {
   //     await notifsOne.click()
   //     await pageOne.waitForTimeout(5000)
 
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
       
   //     const page1Promise = pageOne.waitForEvent('popup');
   //     await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).first().waitFor();
@@ -449,7 +478,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
 
-  // test(`anon - ${name} - share (link)`, async () => {
+  // test(`anon - ${name} - share (link)`, async ({ page }) => {
 
   //   try {
   //     if (name === 'pad') {
@@ -462,7 +491,15 @@ docNames.forEach(function(name) {
   //     await page.waitForTimeout(5000)
   //     await expect(page).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 100000 })
 
-  //     var title = `Rich text - ${titleDate}`;
+  //     var title;
+  //     if (name === 'pad') {
+  //       title = `Rich text - ${titleDate}`;
+  //     } else if (name === 'slide') {
+  //       title = `Markdown slides - ${titleDate}`
+  //     } else {
+  //       const titleName = name.charAt(0).toUpperCase() + name.slice(1)
+  //       title = `${titleName} - ${titleDate}`;
+  //     }
   //     await expect(page).toHaveTitle(`${title}`)
 
   //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
@@ -489,7 +526,7 @@ docNames.forEach(function(name) {
   // });
 
 
-  // test(`anon - ${name} - chat`, async ({}, testInfo) => {
+  // test(`anon - ${name} - chat`, async ({ page }), testInfo) => {
 
     
 
@@ -517,7 +554,7 @@ docNames.forEach(function(name) {
 
 
     
-  // test(`anon - ${name} - store - delete`, async () => {
+  // test(`anon - ${name} - store - delete`, async ({ page }) => {
 
   //   try {
   //     if (name === 'pad') {
@@ -579,7 +616,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
   
-  // test(`anon - ${name} - change title`, async () => {
+  // test(`anon - ${name} - change title`, async ({ page }) => {
 
   //   try {
   //     if (name === 'pad') {
@@ -606,7 +643,7 @@ docNames.forEach(function(name) {
   //       title = `${titleName} - ${titleDate}`;
   //     }
 
-  //     await page.frameLocator('#sbox-iframe').getByText(`${title}`)
+  //     await page.frameLocator('#sbox-iframe').getByText(`${title}`).toBeVisible()
   //     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
   //     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click({force: true});
   //     await page.frameLocator('#sbox-iframe').getByPlaceholder(title).fill('new doc title');
@@ -646,7 +683,7 @@ docNames.forEach(function(name) {
   // });
       
       
-  // test(`anon - drive - ${name}`, async () => {
+  // test(`anon - drive - ${name}`, async ({ page }) => {
     
   //   try {
   //   await page.goto(`${url}/drive`);
@@ -698,7 +735,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
     
-  // test(`user - drive > ${name}` , async () => {
+  // test(`user - drive > ${name}` , async ({ page }) => {
 
   //   try {
   //     await page.goto(`${url}/login/`);
@@ -756,8 +793,3 @@ docNames.forEach(function(name) {
   // });
 
 })
-
-
-test.afterEach(async () => {
-  await browser.close()
-});
