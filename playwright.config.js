@@ -107,27 +107,23 @@ module.exports = defineConfig({
 
 
   projects: 
-  [
-  //   {
-  //   name: 'setup',
-  //   testMatch: /.*\.setup\.js/
-  // },
-  {
-    name: 'chromium',
-    use: { 
-      ...devices['Desktop Chrome'],
-      // storageState: 'user.json',
-      permissions: ["clipboard-read", "clipboard-write", "notifications"],
-    },
-    // dependencies: ['setup'],
-  }],
-    // [{
-    //   name: 'edge@latest:OSX Ventura',
-    //   use: {
-    //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
-    //     connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') }
-    //   },
-    // }],
+  // [{
+  //   name: 'chromium',
+  //   use: { 
+  //     ...devices['Desktop Chrome'],
+  //     storageState: 'user.json',
+  //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
+  //   },
+  // }],
+    [{
+      name: 'chrome@latest:OSX Ventura',
+      use: {
+        permissions: ["clipboard-read", "clipboard-write", "notifications"],
+        // storageState: 'user.json',
+        connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
+        viewport: {width: 1440, height: 764}
+      },
+    }],
 
     
     /* Test against mobile viewports. */

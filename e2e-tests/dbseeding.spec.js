@@ -238,7 +238,7 @@
 //   })
 
 
-//   test('user - link test-user and testuser as contacts', async ({ page }, testInfo) => {
+//   test(' link test-user and testuser as contacts', async ({ page }, testInfo) => {
 
 //     try {
     
@@ -303,15 +303,15 @@
 //     await pageOne.close()
 //     ////
        
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user - add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
 //   } catch (e) {
 //     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user - add and remove other user as contact', status: 'failed',reason: 'Can\'t add and remove other user as contact'}})}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'failed',reason: 'Can\'t add and remove other user as contact'}})}`);
 //   } 
 
 // });
 
-// test('user - link test-user and testuser as contacts', async ({ page }, testInfo) => {
+// test(' link test-user and testuser as contacts', async ({ page }, testInfo) => {
 
 //     try {
     
@@ -376,15 +376,15 @@
 //     await pageOne.close()
 //     ////
        
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user - add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
 //   } catch (e) {
 //     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'user - add and remove other user as contact', status: 'failed',reason: 'Can\'t add and remove other user as contact'}})}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'failed',reason: 'Can\'t add and remove other user as contact'}})}`);
 //   } 
 
 // });
 
-// test('test-user - create test team and example document', async ({ page }) => {
+// test('test- create test team and example document', async ({ page }) => {
   
 //   try {
 //     await page.goto(`${url}/login`);
@@ -441,7 +441,7 @@
 //   }  
 // });
 
-// test('test-user - create test documents in drive', async ({ page }) => {
+// test('test- create test documents in drive', async ({ page }) => {
   
 //     try {
 //       await page.goto(`${url}/login`);

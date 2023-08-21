@@ -19,7 +19,7 @@ const caps = {
   os: 'osx',
   os_version: 'catalina',
   name: 'cp-playwright-test',
-  build: 'cp-playwright-mobiletests',
+  build: 'cp-playwright-mobiletests-corrections',
   // 'browserstack.networkLogs': true,
   // build: `cp-playwright-build: ${dateToday}`,
   'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
@@ -34,7 +34,7 @@ exports.url = 'https://cryptpad.fr'
 const date = new Date()      
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 const weekday = days[date.getDay()]
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 const month = months[date.getMonth()]
 exports.titleDate = `${weekday}, ${month} ${date.getDate()}, ${date.getFullYear()}`
 

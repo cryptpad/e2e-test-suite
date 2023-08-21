@@ -1,6 +1,9 @@
 
 
-Wed Jul 12 2023 17:58:24:462 GMT+0200 (CEST) -- [ERROR] Another instance of BrowserStack Binary is running with on your system with PID: 27142
-Wed Jul 12 2023 17:58:24:463 GMT+0200 (CEST) -- [ERROR] Please close it and try again
-Wed Jul 12 2023 17:58:24:463 GMT+0200 (CEST) -- [ERROR] SYS_CONFLICT:1001 https://browserstack.com/docs/local-testing/binary/errors/1001
-Wed Jul 12 2023 17:58:24:465 GMT+0200 (CEST) -- You can learn more about BrowserStack Binary flags by running ./BrowserStackLocal --help
+Mon Aug 21 2023 11:49:52:252 GMT+0100 (BST) -- Starting configuration console on http://localhost:45454
+Mon Aug 21 2023 11:49:52:795 GMT+0100 (BST) -- [INFO] Started the BrowserStack Binary server on 45691, PID: 24168
+Mon Aug 21 2023 11:49:52:894 GMT+0100 (BST) -- [SUCCESS] You can now access your local server(s) in our remote browser
+
+Mon Aug 21 2023 11:49:53:976 GMT+0100 (BST) -- Press Ctrl-C to exit
+
+

@@ -2,20 +2,33 @@ const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
 const { url, titleDate } = require('../browserstack.config.js')
 
-let browser;
 let page;
+let pageOne;
+let browser;
 
-test.beforeEach(async ({ page }, testInfo) => {
-  test.setTimeout(24000000)
-  await page.goto(`${url}`);
+test.beforeEach(async ({  }, testInfo) => {
+  
+  test.setTimeout(2400000);
+  const name = testInfo.project.name
+  if (name.indexOf('firefox') !== -1 ) {
+    browser = await firefox.launch();
+  } else if (name.indexOf('webkit') !== -1 ) {
+    browser = await webkit.launch();
+  } else {
+    browser = await chromium.launch();
+  }
+
+  page = await browser.newPage();
+  await page.goto(`${url}/teams`)
+  await page.waitForTimeout(5000)
 });
 
-const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form'] 
+const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
 // const docNames = ['pad'] 
 
 docNames.forEach(function(name) {
 
-  test(`anon - ${name} - tag`, async ({ page }) => {
+  test(`anon - ${name} - tag`, async ({ }) => {
 
     try {
       await page.goto(`${url}/login/`);
@@ -63,16 +76,16 @@ docNames.forEach(function(name) {
       }
       await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toBeVisible();
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'passed',reason: 'Can create comment in Rich Text document'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - tag`, status: 'passed',reason: `Can tag ${name} document`}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - tag`, status: 'failed',reason: `Can\'t tag ${name} document`}})}`);
 
     }  
-});
+  });
 
 
-  // test(`user - ${name} - protect with password`, async ({ page }), testInfo) => {
+  // test(` ${name} - protect with password`, async ({ }), testInfo) => {
 
   //   try {
 
@@ -113,15 +126,15 @@ docNames.forEach(function(name) {
   //     }
   //     await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible()
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - protect with password`, status: 'passed',reason: `Can protect ${name} with password`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - protect with password`, status: 'passed',reason: `Can protect ${name} document with password`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - protect with password`, status: 'failed',reason: `Can\'t protect ${name} with password`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - protect with password`, status: 'failed',reason: `Can\'t protect ${name} document with password`}})}`);
   
   //   }  
   // });
 
-  // test(`anon - ${name} - file menu - create new file`, async ({ page }), testInfo) => {
+  // test(`anon - ${name} - create new file`, async ({ }), testInfo) => {
 
   //   try {
 
@@ -145,16 +158,16 @@ docNames.forEach(function(name) {
   //     }
   //     await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible()
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - add to team drive`, status: 'passed',reason: 'Can create document and add to team drive'}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - create new file`, status: 'passed',reason: `Can create new ${name} document from file menu`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - add to team drive`, status: 'failed',reason: 'Can\'t acreate document and add to team drive'}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - create new file`, status: 'failed',reason: `Can\'t create new ${name} document from file menu`}})}`);
   
   //   }  
   // });
 
 
-  // test(`user - ${name} - add to team drive`, async ({ page }), testInfo) => {
+  // test(` ${name} - add to team drive`, async ({ }), testInfo) => {
 
   //   try {
 
@@ -213,15 +226,15 @@ docNames.forEach(function(name) {
   //     await page.waitForTimeout(8000)
   //     await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`)).toHaveCount(0)
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - add to team drive`, status: 'passed',reason: 'Can create document and add to team drive'}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - add to team drive`, status: 'passed',reason: 'Can create document and add to team drive'}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - add to team drive`, status: 'failed',reason: 'Can\'t acreate document and add to team drive'}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - add to team drive`, status: 'failed',reason: 'Can\'t acreate document and add to team drive'}})}`);
   
   //   }  
   // });
 
-  // test(`user - ${name} - share with contact - view`, async ({ page }), testInfo) => {
+  // test(` ${name} - share with contact - view`, async ({ }), testInfo) => {
 
   //   try {
 
@@ -301,15 +314,15 @@ docNames.forEach(function(name) {
   //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
   //     await page.waitForTimeout(5000)
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - share with contact - view`, status: 'passed',reason: `Can share ${name} with contact (to view)`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view`, status: 'passed',reason: `Can share ${name} with contact (to view)`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - share with contact - view`, status: 'failed',reason: `Can\'t share ${name} with contact (to view)`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view`, status: 'failed',reason: `Can\'t share ${name} with contact (to view)`}})}`);
   
   //   }  
   // });
 
-  // test(`user - ${name} - share with contact - edit`, async ({ page }), testInfo) => {
+  // test(` ${name} - share with contact - edit`, async ({ }), testInfo) => {
 
   //   try {
 
@@ -389,16 +402,16 @@ docNames.forEach(function(name) {
   //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
   //     await page.waitForTimeout(5000)
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - share with contact - edit`, status: 'passed',reason: `Can share ${name} with contact (to edit)`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - edit`, status: 'passed',reason: `Can share ${name} with contact (to edit)`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - share with contact - edit`, status: 'failed',reason: `Can\'t share ${name} with contact (to edit)`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - edit`, status: 'failed',reason: `Can\'t share ${name} with contact (to edit)`}})}`);
   
   //   }  
   // });
 
 
-  // test(`user - ${name} - share with contact - view and delete`, async ({ page }), testInfo) => {
+  // test(` ${name} - share with contact - view and delete`, async ({ }), testInfo) => {
 
   //   try {
 
@@ -470,15 +483,15 @@ docNames.forEach(function(name) {
 
   //     await expect(page.frameLocator('#sbox-iframe').getByText('The document you are trying to open no longer exists')).toBeVisible()
       
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - share with contact - view`, status: 'passed',reason: `Can share ${name} with contact (to view)`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view once and delete`, status: 'passed',reason: `Can share ${name} with contact (to view once and delete)`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - ${name} - share with contact - view`, status: 'failed',reason: `Can\'t share ${name} with contact (to view)`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view once and delete`, status: 'failed',reason: `Can\'t share ${name} with contact (to view once and delete)`}})}`);
   
   //   }  
   // });
 
-  // test(`anon - ${name} - share (link)`, async ({ page }) => {
+  // test(`anon - ${name} - share (link)`, async ({ }) => {
 
   //   try {
   //     if (name === 'pad') {
@@ -526,7 +539,7 @@ docNames.forEach(function(name) {
   // });
 
 
-  // test(`anon - ${name} - chat`, async ({ page }), testInfo) => {
+  // test(`anon - ${name} - chat`, async ({ }), testInfo) => {
 
     
 
@@ -543,10 +556,10 @@ docNames.forEach(function(name) {
   //     await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').press('Enter');
   //     await expect(page.frameLocator('#sbox-iframe').getByText('test message')).toBeVisible();
   
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad', status: 'passed',reason: 'Can anonymously create Rich Text document'}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - chat`, status: 'passed',reason: `Can use chat in ${name} document`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad', status: 'failed',reason: 'Can\'t anonymously create Rich Text document'}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - chat`, status: 'failed',reason: `Can\'t use chat in ${name} document`}})}`);
   
   //   }  
   // });
@@ -554,7 +567,7 @@ docNames.forEach(function(name) {
 
 
     
-  // test(`anon - ${name} - store - delete`, async ({ page }) => {
+  // test(`anon - ${name} - store - delete`, async ({ }) => {
 
   //   try {
   //     if (name === 'pad') {
@@ -616,7 +629,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
   
-  // test(`anon - ${name} - change title`, async ({ page }) => {
+  // test(`anon - ${name} - change title`, async ({ }) => {
 
   //   try {
   //     if (name === 'pad') {
@@ -683,7 +696,7 @@ docNames.forEach(function(name) {
   // });
       
       
-  // test(`anon - drive - ${name}`, async ({ page }) => {
+  // test(`anon - drive - ${name}`, async ({ }) => {
     
   //   try {
   //   await page.goto(`${url}/drive`);
@@ -735,7 +748,7 @@ docNames.forEach(function(name) {
   //   }  
   // });
     
-  // test(`user - drive > ${name}` , async ({ page }) => {
+  // test(` drive > ${name}` , async ({ }) => {
 
   //   try {
   //     await page.goto(`${url}/login/`);
@@ -784,12 +797,16 @@ docNames.forEach(function(name) {
   //     }
 
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - drive > ${name}`, status: 'passed',reason: `Can log in and create ${name} from Drive`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` drive > ${name}`, status: 'passed',reason: `Can log in and create ${name} from Drive`}})}`);
   //   } catch (e) {
   //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `user - drive > ${name}`, status: 'failed',reason: `Can\'t log in and create ${name} from Drive`}})}`);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` drive > ${name}`, status: 'failed',reason: `Can\'t log in and create ${name} from Drive`}})}`);
     
   //   }  
   // });
 
 })
+
+test.afterEach(async ({  }) => {
+  await browser.close()
+});
