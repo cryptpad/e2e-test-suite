@@ -1,6 +1,0 @@
-
-
-Wed Jul 12 2023 17:58:24:462 GMT+0200 (CEST) -- [ERROR] Another instance of BrowserStack Binary is running with on your system with PID: 27142
-Wed Jul 12 2023 17:58:24:463 GMT+0200 (CEST) -- [ERROR] Please close it and try again
-Wed Jul 12 2023 17:58:24:463 GMT+0200 (CEST) -- [ERROR] SYS_CONFLICT:1001 https://browserstack.com/docs/local-testing/binary/errors/1001
-Wed Jul 12 2023 17:58:24:465 GMT+0200 (CEST) -- You can learn more about BrowserStack Binary flags by running ./BrowserStackLocal --help
