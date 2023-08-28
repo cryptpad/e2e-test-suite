@@ -1,0 +1,33 @@
+{
+  "options": [
+    "surfing",
+    "bowling",
+    "cinema"
+  ],
+  "form": {
+    "1": {
+      "type": "md"
+    },
+    "2": {
+      "type": "radio",
+      "opts": {
+        "values": [
+          {
+            "uid": "2hol6omgdhr",
+            "v": "Surf"
+          },
+          {
+            "uid": "53fsfmffu9l",
+            "v": "Cinema"
+          }
+        ]
+      },
+      "q": "What to do today?"
+    }
+  },
+  "order": [
+    "1",
+    "2"
+  ],
+  "version": 1
+}
