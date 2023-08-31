@@ -114,7 +114,7 @@ test(' add other user as contact and decline request', async ({ page }, testInfo
     }
     await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
     await pageOne.waitForLoadState('networkidle');
-    await pageOne.waitForTimeout(10000)
+    // await pageOne.waitForTimeout(10000)
 
     //user 2: decline contact request
     const notifsOne = pageOne.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Allow notifications' }).last()
@@ -430,16 +430,16 @@ test(' can change display name', async ({ page }) => {
     const page1 = await pagePromise
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Guest').click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('test-user-new');
+    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user').click();
+    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user').fill('test-user-new');
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' }).click();
     await page1.goto(`${url}/settings/#account`);
     const menu1 = page1.frameLocator('#sbox-iframe').getByAltText('User menu')
     await menu1.click();
     await expect(page1.frameLocator('#sbox-iframe').getByText('Display name: test-user-new')).toBeVisible();
 
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Guest').click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('test-user');
+    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user-new').click();
+    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user-new').fill('test-user');
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' }).click();
        
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' change display name', status: 'passed',reason: 'Can change display name'}})}`);

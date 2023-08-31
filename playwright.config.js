@@ -116,11 +116,11 @@ module.exports = defineConfig({
   //   },
   // }],
     [{
-      name: 'chrome@latest:OSX Ventura',
+      name: 'edge@latest:OSX Ventura',
       use: {
         permissions: ["clipboard-read", "clipboard-write", "notifications"],
-        // storageState: 'user.json',
-        connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
+        storageState: 'user.json',
+        connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') },
         viewport: {width: 1440, height: 764}
       },
     }],

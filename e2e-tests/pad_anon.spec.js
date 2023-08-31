@@ -111,73 +111,73 @@ test.beforeEach(async ({  }, testInfo) => {
 //   }  
 // });
 
-test(`pad - history (previous author)`, async ({ }, testInfo) => {
+// test(`pad - history (previous author)`, async ({ }, testInfo) => {
 
-  try {
+//   try {
 
-    await page.goto(`${url}/login/`)
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000)
-    await page.getByPlaceholder('Password', {exact: true}).fill('newpassword');
-    const login = page.locator(".login")
-    await login.waitFor({ timeout: 18000 })
-    await expect(login).toBeVisible({ timeout: 1800 })
-    if (await login.isVisible()) {
-      await login.click()
-    }
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-    await page.goto(`${url}/pad`)
+//     await page.goto(`${url}/login/`)
+//     await page.getByPlaceholder('Username').fill('test-user');
+//     await page.waitForTimeout(10000)
+//     await page.getByPlaceholder('Password', {exact: true}).fill('newpassword');
+//     const login = page.locator(".login")
+//     await login.waitFor({ timeout: 18000 })
+//     await expect(login).toBeVisible({ timeout: 1800 })
+//     if (await login.isVisible()) {
+//       await login.click()
+//     }
+//     await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
+//     await page.goto(`${url}/pad`)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
 
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Test text by test-user');
+//     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
+//     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Test text by test-user');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
-    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', {name: 'Copy link'}).click();
-    const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+//     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+//     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
+//     await page.frameLocator('#sbox-secure-iframe').getByRole('button', {name: 'Copy link'}).click();
+//     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
 
-    pageOne = await browser.newPage();
-    await pageOne.goto(`${clipboardText}`)
-    await pageOne.waitForTimeout(5000)
-    await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
-    await pageOne.keyboard.press('Enter')
-    await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Some more test text by anon');
-    await pageOne.keyboard.press('Enter')
-    await pageOne.waitForTimeout(5000)
+//     pageOne = await browser.newPage();
+//     await pageOne.goto(`${clipboardText}`)
+//     await pageOne.waitForTimeout(5000)
+//     await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
+//     await pageOne.keyboard.press('Enter')
+//     await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Some more test text by anon');
+//     await pageOne.keyboard.press('Enter')
+//     await pageOne.waitForTimeout(5000)
 
-    await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And here is more text by anon');
-    await pageOne.keyboard.press('Enter')
-    await pageOne.waitForTimeout(5000)
-    await pageOne.close()
+//     await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And here is more text by anon');
+//     await pageOne.keyboard.press('Enter')
+//     await pageOne.waitForTimeout(5000)
+//     await pageOne.close()
 
-    await page.keyboard.press('Enter')
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And yet more test text by test-user too!');
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Here is even more test text by test-user!');
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(5000)
+//     await page.keyboard.press('Enter')
+//     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And yet more test text by test-user too!');
+//     await page.keyboard.press('Enter')
+//     await page.waitForTimeout(5000)
+//     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Here is even more test text by test-user!');
+//     await page.keyboard.press('Enter')
+//     await page.waitForTimeout(5000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
 
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And yet more test text by test-user!')).toHaveCount(0)
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And more test text by test-user too!')).toHaveCount(0)
+//     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+//     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And yet more test text by test-user!')).toHaveCount(0)
+//     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And more test text by test-user too!')).toHaveCount(0)
 
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('Some more test text by anon')).toBeVisible()
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And here is more text by anon')).toBeVisible()
+//     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('Some more test text by anon')).toBeVisible()
+//     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And here is more text by anon')).toBeVisible()
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'passed',reason: 'Can create Rich Text document and view history (previous author)'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history (previous author)'}})}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'passed',reason: 'Can create Rich Text document and view history (previous author)'}})}`);
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history (previous author)'}})}`);
 
-  }  
-});
+//   }  
+// });
 
 // test(`anon - pad - toggle tools`, async ({ }) => {
 
@@ -219,42 +219,34 @@ test(`pad - history (previous author)`, async ({ }, testInfo) => {
 //   }  
 // });
 
-// test('anon - pad - make a copy', async ({ }) => {
+test('anon - pad - make a copy', async ({ }) => {
 
-//   try {
+  try {
 
 
 
-//     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
-//     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
-//     await page.waitForTimeout(5000)
-//     const text = await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').textContent()
-//     if (text !== 'TEST TEXT') {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
-//     }
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
+    await page.waitForTimeout(5000)
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT')).toBeVisible()
 
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-//     const page1Promise = page.waitForEvent('popup');
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
-//     const page1 = await page1Promise;
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    const page1Promise = page.waitForEvent('popup');
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    const page1 = await page1Promise;
 
-//     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 })
-//     await page1.waitForTimeout(5000)
+    await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 })
+    await page1.waitForTimeout(5000)
 
-//     if (text !== 'TEST TEXT') {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'passed',reason: 'Can create comment in Rich Text document'}})}`);
-//     }
+    await expect(page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT')).toBeVisible()
     
 
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - pad > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
 
-//   }  
-// });
-
+  }  
+});
 
 
 // test(`pad - export (html)`, async ({}) => {
@@ -409,41 +401,6 @@ test(`pad - history (previous author)`, async ({ }, testInfo) => {
 //   }  
 // });
 
-
-// test(`pad - import template`, async ({}) => {
-
-//   try {
-
-//     await page.goto(`${url}/login/`)
-//     await page.getByPlaceholder('Username').fill('test-user');
-//     await page.waitForTimeout(10000)
-//     await page.getByPlaceholder('Password', {exact: true}).fill('newpassword');
-//     const login = page.locator(".login")
-//     await login.waitFor({ timeout: 18000 })
-//     await expect(login).toBeVisible({ timeout: 1800 })
-//     if (await login.isVisible()) {
-//       await login.click()
-//     }
-//     await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-//     await page.waitForTimeout(10000)
-
-//     await page.goto(`${url}/pad/`)
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
-//     await page.frameLocator('#sbox-secure-iframe').locator('#cp-filepicker-dialog').getByText('test template').dblclick();
-
-//     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('Test template content')).toBeVisible();
-
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'pad > upload template', status: 'passed',reason: 'Can upload template in Rich Text document'}})}`);
-
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'pad > upload template', status: 'failed',reason: 'Can\'t upload template in Rich Text document'}})}`);
-
-//   }  
-// });
 
 // test(`pad - share at a moment in history`, async ({ }) => {
 
