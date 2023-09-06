@@ -25,8 +25,8 @@ const caps = {
   'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'YOUR_KEY_HERE',
   'browserstack.local': process.env.BROWSERSTACK_LOCAL || true, 
-  'browserstack.playwrightVersion': '1.33.0',
-  'client.playwrightVersion': '1.33.0',
+  'browserstack.playwrightVersion': clientPlaywrightVersion,
+  'client.playwrightVersion': clientPlaywrightVersion,
 };
 
 exports.url = 'https://cryptpad.fr'

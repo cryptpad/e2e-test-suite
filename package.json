@@ -3,12 +3,11 @@
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.5.2",
     "dotenv": "^16.0.3",
-    "playwright": "^1.33.0",
     "playwright-core": "1.33",
     "unzip": "^0.1.11",
     "unzipper": "^0.10.14"
   },
   "devDependencies": {
-    "@playwright/test": "1.33"
+    "@playwright/test": "^1.37.1"
   }
 }
