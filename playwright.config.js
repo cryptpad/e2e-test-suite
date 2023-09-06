@@ -116,9 +116,9 @@ module.exports = defineConfig({
     name: 'chromium',
     use: { 
       ...devices['Desktop Chrome'],
-      storageState: 'user.json',
+      // storageState: 'user.json',
       permissions: ["clipboard-read", "clipboard-write", "notifications"],
-      locale: 'gb-GB',
+      locale: 'en-GB',
     },
     // dependencies: ['setup'],
   }],
