@@ -1,2 +1,6 @@
 node_modules/
 .env
+playwright-report/
+local.log
+test-results
+index.html

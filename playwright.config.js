@@ -74,8 +74,8 @@ module.exports = defineConfig({
   //   /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
   //   trace: 'on-first-retry',
   // },
-  globalSetup: require.resolve('./global-setup'),
-  globalTeardown: require.resolve('./global-teardown'),
+  // globalSetup: require.resolve('./global-setup'),
+  // globalTeardown: require.resolve('./global-teardown'),
   // timeout: 9000000 ,
   // expect: {
   //   /**
