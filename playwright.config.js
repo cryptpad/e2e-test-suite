@@ -39,7 +39,7 @@ var funct = function() {
   const string = [...Array(Object.keys(browserOS).length).keys()].forEach(function(i) {
   project = { name: `${browserOS[i]}`,
     use: {
-      permissions: ["clipboard-read", "clipboard-write", "notifications"],
+      permissions: ["clipboard-read", "clipboard-write"],
       connectOptions: { wsEndpoint: getCdpEndpoint(`${browserOS[i]}`) }
     },
   }
@@ -74,8 +74,8 @@ module.exports = defineConfig({
   //   /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
   //   trace: 'on-first-retry',
   // },
-  // globalSetup: require.resolve('./global-setup'),
-  // globalTeardown: require.resolve('./global-teardown'),
+  globalSetup: require.resolve('./global-setup'),
+  globalTeardown: require.resolve('./global-teardown'),
   // timeout: 9000000 ,
   // expect: {
   //   /**
@@ -116,12 +116,13 @@ module.exports = defineConfig({
   //   },
   // }],
     [{
-      name: 'edge@latest:OSX Ventura',
+      name: 'chrome@latest:OSX Ventura',
       use: {
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-        storageState: 'user.json',
-        connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') },
-        viewport: {width: 1440, height: 764}
+        // storageState: 'user.json',
+        connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
+        viewport: {width: 1440, height: 764}, 
+        locale: 'en-GB',
+        permissions: ["clipboard-read", "clipboard-write"]
       },
     }],
 

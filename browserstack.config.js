@@ -25,18 +25,58 @@ const caps = {
   'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'YOUR_KEY_HERE',
   'browserstack.local': process.env.BROWSERSTACK_LOCAL || true, 
-  'browserstack.playwrightVersion': clientPlaywrightVersion,
-  'client.playwrightVersion': clientPlaywrightVersion,
+  'browserstack.playwrightVersion': '1.37.1',
+  'client.playwrightVersion': '1.37.1',
 };
 
 exports.url = 'https://cryptpad.fr'
+
+exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'newpassword' 
+exports.testUserPassword = process.env.TESTUSERPASSWORD || 'password'
+exports.testUser2Password = process.env.TESTUSER2PASSWORD || 'password'
+exports.testUser3Password = process.env.TESTUSER3PASSWORD || 'password'
+
 
 const date = new Date()      
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 const weekday = days[date.getDay()]
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 const month = months[date.getMonth()]
-exports.titleDate = `${weekday}, ${month} ${date.getDate()}, ${date.getFullYear()}`
+exports.titleDate = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
+
+
+
+
+const now = new Date();
+
+const monthNumeric = now.getMonth() + 1
+const monthFormatted = monthNumeric.toString().length > 1 ? monthNumeric : '0' + monthNumeric;
+
+const today = now.getDate();
+const todayFormatted = today.toString().length > 1 ? today : '0' + today;
+
+exports.dateTodayDashFormat = now.getFullYear() + '-' + monthFormatted + '-' + todayFormatted
+exports.dateTodaySlashFormat = todayFormatted + '/' + monthFormatted + '/' + now.getFullYear()
+
+const nextMonday = new Date()
+nextMonday.setDate(nextMonday.getDate() + (((1 + 7 - nextMonday.getDay()) % 7) || 7));
+const nextMondayFormatted = nextMonday.getDate().toString().length > 1 ? nextMonday.getDate() : '0' + nextMonday.getDate();
+const nextMondayMonth = nextMonday.getMonth() + 1
+
+const nextMondayMonthFormatted = nextMondayMonth.toString().length > 1 ? nextMondayMonth : '0' + nextMondayMonth;
+exports.nextMondayDashFormat = nextMonday.getFullYear() + '-' + nextMondayMonthFormatted + '-' + nextMondayFormatted
+exports.nextMondaySlashFormat =  nextMondayFormatted + '/' + nextMondayMonthFormatted + '/' +  nextMonday.getFullYear()
+
+const nextMondayMonthString = months[nextMonday.getMonth()]
+exports.nextMondayStringFormat = `${nextMondayMonthString} ${nextMonday.getDate()}, ${nextMonday.getFullYear()}`
+
+exports.year = now.getFullYear()
+exports.minutes = now.getMinutes().toString().length > 1 ? now.getMinutes() : '0' + now.getMinutes()
+exports.hours = now.getHours()
+const monthString = months[now.getMonth()]
+exports.todayStringFormat = `${monthString} ${now.getDate()}, ${now.getFullYear()}`
+
+
 
 exports.bsLocal = new BrowserStackLocal.Local();
 

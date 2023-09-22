@@ -16,7 +16,6 @@
 //     await login.click()
 //   }
 //   await expect(page).toHaveURL(`https://cryptpad.fr/drive/#`, { timeout: 100000 })
-//   await page.waitForLoadState('networkidle');
-//   await page.waitForTimeout(5000)
+//   await page.waitForTimeout(10000)
 //   await page.context().storageState({ path: authFile });
 // });

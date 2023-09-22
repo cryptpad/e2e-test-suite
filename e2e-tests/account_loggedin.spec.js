@@ -2,32 +2,49 @@ const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
 const { url } = require('../browserstack.config.js')
 
-let browser;
+var fs = require('fs');
+
+
 let page;
 let pageOne;
-let clipboardText;
+let browser;
+let browserName;
 
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({  }, testInfo) => {
+  
   test.setTimeout(2400000);
-  await page.goto(`${url}/drive`)
+  browserName = testInfo.project.name
+  if (browserName.indexOf('firefox') !== -1 ) {
+    browser = await firefox.launch();
+  } else if (browserName.indexOf('webkit') !== -1 ) {
+    browser = await webkit.launch();
+  } else {
+    browser = await chromium.launch();
+  }
 
+  page = await browser.newPage();
+  await page.waitForTimeout(5000)
 });
 
 
-test('anon - sign up and delete account', async ({}) => {
+test('sign up and delete account', async ({}) => {
   
   try {
 
-    const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.waitFor()
-    await menu.click()
+    await page.goto(`${url}/drive`)
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
+
+    await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
     await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
     await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
     
     await page.getByRole('link', { name: 'Sign up' }).click();
-    await page.waitForLoadState('networkidle');
-    await page.getByPlaceholder('Username').fill('test-user-4');
+    await page.getByPlaceholder('Username').fill('test-user4');
     await page.getByPlaceholder('Password', {exact: true}).fill('password');
     await page.getByPlaceholder('Confirm your password', {exact: true}).fill('password');
     const register = page.locator("[id='register']")
@@ -45,22 +62,27 @@ test('anon - sign up and delete account', async ({}) => {
       await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
     }
     const hashing = page.getByText('Hashing your password')
-    const existingUser = page.getByText('This user already exists, do you want to log in?')
     await expect(hashing).toBeVisible({ timeout: 200000 })
 
     await page.waitForTimeout(20000)
 
-    await page.waitForURL(`${url}/drive`)
-    await menu.click()
+    await expect(page).toHaveURL(`${url}/drive/#`)
+    await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
     const pagePromise = page.waitForEvent('popup')
     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
     const page1 = await pagePromise
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Delete your account')).toBeVisible()
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Delete your account')).click()
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Are you sure?')).click()
-    
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('password');
+    await page1.frameLocator('#sbox-iframe').getByText('Delete your account').click()
+    await page1.frameLocator('#sbox-iframe').getByText('Are you sure?').click()
+
+    await page1.waitForTimeout(5000)
+    await expect(page1.frameLocator('#sbox-iframe').getByText(/^Your user account is now deleted/)).toBeVisible({timeout: 30000})
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - register', status: 'passed',reason: 'Can sign up'}})}`);
 
   } catch (e) {
@@ -70,41 +92,34 @@ test('anon - sign up and delete account', async ({}) => {
 
 })
 
-
-test(' add other user as contact and decline request', async ({ page }, testInfo) => {
+test(' add other user as contact and decline request', async ({ }) => {
 
   try {
 
     //user 1: send user request to user 2 
     await page.goto(`${url}/profile/#/2/profile/view/v5coYdvAKofy2fZkWZoAelB8KVey7SxFbDweAMZ-R3I/`);
-    await page.waitForTimeout(10000)
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
     await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
 
     ///
     //user 2: log in
-    const name = testInfo.project.name
-    if (name.indexOf('firefox') !== -1 ) {
-      browser = await firefox.launch();
-    } else if (name.indexOf('webkit') !== -1 ) {
-      browser = await webkit.launch();
-    } else {
-      browser = await chromium.launch();
-    }
     const context = await browser.newContext();
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
-    const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.waitFor()
-    await menu.click()
+    await pageOne.frameLocator('#sbox-iframe').getByAltText('User menu').click()
     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
     await pageOne.getByRole('link', { name: 'Log in' }).click()
     await expect(pageOne).toHaveURL(`${url}/login/`)
     await pageOne.getByPlaceholder('Username').fill('test-user2');
-    await pageOne.waitForTimeout(10000)
+    await pageOne.waitForTimeout(2000)
     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
     const login = pageOne.locator(".login")
     await login.waitFor({ timeout: 18000 })
@@ -113,13 +128,10 @@ test(' add other user as contact and decline request', async ({ page }, testInfo
       await login.click()
     }
     await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-    await pageOne.waitForLoadState('networkidle');
     // await pageOne.waitForTimeout(10000)
 
     //user 2: decline contact request
-    const notifsOne = pageOne.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Allow notifications' }).last()
-    await notifsOne.waitFor({ timeout: 100000 })
-    await notifsOne.click()
+    await pageOne.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
     await pageOne.waitForTimeout(5000)
 
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
@@ -133,12 +145,10 @@ test(' add other user as contact and decline request', async ({ page }, testInfo
     //user 1: be notified of declined request
     await page.goto(`${url}/drive/`)
     await page.waitForTimeout(10000)
-    const notifs = page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Allow notifications' }).last()
-    await notifs.waitFor({ timeout: 100000 })
-    await notifs.click()
+    await page.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
     await page.waitForTimeout(5000)
     if (await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').isHidden()) {
-      await notifs.click()
+      await page.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
       await page.waitForTimeout(5000)
     }
     await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').waitFor()
@@ -153,12 +163,17 @@ test(' add other user as contact and decline request', async ({ page }, testInfo
 
 });
 
-test(' add and remove other user as contact', async ({ page }, testInfo) => {
+test(' add and remove other user as contact', async ({ }) => {
 
   try {
 
     //user 1: send user request to user 2 
     await page.goto(`${url}/profile/#/2/profile/view/v5coYdvAKofy2fZkWZoAelB8KVey7SxFbDweAMZ-R3I/`);
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
@@ -166,27 +181,19 @@ test(' add and remove other user as contact', async ({ page }, testInfo) => {
 
     ///
     //user 2: log in
-    const name = testInfo.project.name
-    if (name.indexOf('firefox') !== -1 ) {
-      browser = await firefox.launch();
-    } else if (name.indexOf('webkit') !== -1 ) {
-      browser = await webkit.launch();
-    } else {
-      browser = await chromium.launch();
-    }
+  
     const context = await browser.newContext();
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
-    const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.waitFor()
-    await menu.click()
+    await pageOne.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
     await pageOne.getByRole('link', { name: 'Log in' }).click()
     await expect(pageOne).toHaveURL(`${url}/login/`)
     await pageOne.getByPlaceholder('Username').fill('test-user2');
-    await pageOne.waitForTimeout(10000)
+    await pageOne.waitForTimeout(2000)
     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
     const login = pageOne.locator(".login")
     await login.waitFor({ timeout: 18000 })
@@ -195,13 +202,10 @@ test(' add and remove other user as contact', async ({ page }, testInfo) => {
       await login.click()
     }
     await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-    await pageOne.waitForLoadState('networkidle');
     await pageOne.waitForTimeout(10000)
 
     //user 2: accept contact request
-    const notifsOne = pageOne.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Allow notifications' }).last()
-    await notifsOne.waitFor({ timeout: 100000 })
-    await notifsOne.click()
+    await pageOne.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
     await pageOne.waitForTimeout(5000)
 
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
@@ -215,19 +219,17 @@ test(' add and remove other user as contact', async ({ page }, testInfo) => {
     //user 1: remove contact
     await page.goto(`${url}/drive/`)
     await page.waitForTimeout(10000)
-    const notifs = page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Allow notifications' }).last()
-    await notifs.waitFor({ timeout: 100000 })
-    await notifs.click()
+    await page.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
     await page.waitForTimeout(5000)
     if (await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden()) {
-      await notifs.click()
+      await page.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
       await page.waitForTimeout(5000)
     }
     await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').waitFor()
     await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'test-user2 accepted your contact request' }).locator('div').nth(1).click()
-    await page.goto('https://cryptpad.fr/profile/#/2/profile/view/v5coYdvAKofy2fZkWZoAelB8KVey7SxFbDweAMZ-R3I/');
+    await page.goto(`${url}/profile/#/2/profile/view/v5coYdvAKofy2fZkWZoAelB8KVey7SxFbDweAMZ-R3I/`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to remove test-user2 from your contacts?')).toBeVisible();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
@@ -241,7 +243,7 @@ test(' add and remove other user as contact', async ({ page }, testInfo) => {
 });
 
 
-test(' request and cancel to add user as contact', async ({ page }) => {
+test(' request and cancel to add user as contact', async ({ }) => {
 
   try {
 
@@ -271,12 +273,17 @@ test(' request and cancel to add user as contact', async ({ page }) => {
 });
 
 
-test(' chat with contacts and erase message history', async ({ page }, testInfo) => {
+test('chat with contacts and erase message history - THIS TEST WILL FAIL', async ({ }) => {
 
   try {
 
     //user 1: send message
     await page.goto(`${url}/contacts/`);
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
     await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('testuser').waitFor();
     await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('testuser').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
@@ -285,27 +292,18 @@ test(' chat with contacts and erase message history', async ({ page }, testInfo)
 
     ///
     //user 2: log in 
-    const name = testInfo.project.name
-    if (name.indexOf('firefox') !== -1 ) {
-      browser = await firefox.launch();
-    } else if (name.indexOf('webkit') !== -1 ) {
-      browser = await webkit.launch();
-    } else {
-      browser = await chromium.launch();
-    }
     const context = await browser.newContext();
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
-    const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.waitFor()
-    await menu.click()
+    await pageOne.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
     await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
     await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
     await pageOne.getByRole('link', { name: 'Log in' }).click()
     await expect(pageOne).toHaveURL(`${url}/login/`)
     await pageOne.getByPlaceholder('Username').fill('testuser');
-    await pageOne.waitForTimeout(10000)
+    await pageOne.waitForTimeout(2000)
     await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
     const login = pageOne.locator(".login")
     await login.waitFor({ timeout: 18000 })
@@ -317,7 +315,7 @@ test(' chat with contacts and erase message history', async ({ page }, testInfo)
     //user 2: view user 1's message and send own message
     await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
     await pageOne.goto(`${url}/contacts/`);
-    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').waitFor();
+    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').waitFor({timeout: 10000});
     await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').click();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toBeVisible()
     await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
@@ -332,21 +330,28 @@ test(' chat with contacts and erase message history', async ({ page }, testInfo)
     await expect(page.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0)
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0)
        
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' chat with contacts and erase message history', status: 'passed',reason: 'Can chat with contacts and erase chat history'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'chat with contacts and erase message history', status: 'passed',reason: 'Can chat with contacts and erase chat history '}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' chat with contacts and erase message history', status: 'failed',reason: 'Can\'t chat with contacts and erase chat history'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'chat with contacts and erase message history - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t chat with contacts and erase chat history - THIS TEST WILL FAIL'}})}`);
   }  
 
 });
 
 
-test(' can change password', async ({ page }) => {
+test(' can change password', async ({ }) => {
 
   try {
 
-    const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.click()
+    await page.goto(`${url}/drive`)
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
+
+    await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
     
     const pagePromise = page.waitForEvent('popup')
@@ -355,8 +360,9 @@ test(' can change password', async ({ page }) => {
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
     //change password
-    await page1.frameLocator('#sbox-iframe').locator('#cp-settings-change-password-current').click();
-    await page1.frameLocator('#sbox-iframe').locator('#cp-settings-change-password-current').fill('newpassword');
+    await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('newpassword');
     await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).click();
     await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).fill('anothernewpassword');
     await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').click();
@@ -384,7 +390,8 @@ test(' can change password', async ({ page }) => {
     }
     await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
 
-    await menu.click()
+    await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
     const pagePromise2 = page.waitForEvent('popup')
     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
@@ -392,8 +399,9 @@ test(' can change password', async ({ page }) => {
     await expect(page2).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
     //change password back
-    await page2.frameLocator('#sbox-iframe').locator('#cp-settings-change-password-current').click();
-    await page2.frameLocator('#sbox-iframe').locator('#cp-settings-change-password-current').fill('anothernewpassword');
+    await page2.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
+    await page2.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
+    await page2.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('anothernewpassword');
     await page2.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).click();
     await page2.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).fill('newpassword');
     await page2.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').click();
@@ -417,12 +425,19 @@ test(' can change password', async ({ page }) => {
 });
 
 
-test(' can change display name', async ({ page }) => {
+test('can change display name', async ({ }) => {
 
   try {
 
-    const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.click()
+    await page.goto(`${url}/drive`)
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
+
+    await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
     
     const pagePromise = page.waitForEvent('popup')
@@ -430,33 +445,40 @@ test(' can change display name', async ({ page }) => {
     const page1 = await pagePromise
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user').click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user').fill('test-user-new');
+    await page1.frameLocator('#sbox-iframe').locator('#cp-settings-displayname').click();
+    await page1.frameLocator('#sbox-iframe').locator('#cp-settings-displayname').fill('test-user-new');
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' }).click();
     await page1.goto(`${url}/settings/#account`);
-    const menu1 = page1.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu1.click();
+    await page1.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await expect(page1.frameLocator('#sbox-iframe').getByText('Display name: test-user-new')).toBeVisible();
 
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user-new').click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('test-user-new').fill('test-user');
+    await page1.frameLocator('#sbox-iframe').locator('#cp-settings-displayname').click();
+    await page1.frameLocator('#sbox-iframe').locator('#cp-settings-displayname').fill('test-user');
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' }).click();
        
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' change display name', status: 'passed',reason: 'Can change display name'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'passed',reason: 'Can change display name'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' change display name', status: 'failed',reason: 'Can\'t change display name'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change display name', status: 'failed',reason: 'Can\'t change display name'}})}`);
   }  
 
 });
 
 
-test(' can access public signing key', async ({ page }) => {
+test(' can access public signing key', async ({ }) => {
 
   try {
 
-    const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.click()
+    await page.goto(`${url}/drive`)
+    if (browserName.indexOf('firefox') !== -1 ) {
+      await page.waitForTimeout(15000)
+    } else {
+      await page.waitForTimeout(5000)
+    }
+
+    await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+
     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
     
     const pagePromise = page.waitForEvent('popup')
@@ -479,4 +501,7 @@ test(' can access public signing key', async ({ page }) => {
 
 });
 
+test.afterEach(async () => {
+  await browser.close()
+});
 
