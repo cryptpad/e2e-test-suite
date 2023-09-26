@@ -21,8 +21,11 @@ test.beforeEach(async ({  }, testInfo) => {
   } else {
     browser = await chromium.launch();
   }
-
-  page = await browser.newPage();
+  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  if (browserName.indexOf('firefox') == -1 ) {
+    context.grantPermissions(['clipboard-read', "clipboard-write"]);
+  } 
+  page = await context.newPage();
   await page.goto(`${url}/code`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)
@@ -71,6 +74,7 @@ test(`code - save as and import template`, async ({}) => {
 
     try {
 
+      // console.log(context.permissions)
       test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
   
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
@@ -119,13 +123,11 @@ test(`code - save as and import template`, async ({}) => {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code - history (previous author)`, status: 'passed',reason: 'Can create code document and view history (previous author)'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code - history (previous author)`, status: 'failed - (FF clipboard incompatibility)',reason: 'Can\'t create code document and view history (previous author) - (FF clipboard incompatibility)'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code - history (previous author) - (FF clipboard incompatibility)`, status: 'failed',reason: 'Can\'t create code document and view history (previous author) - (FF clipboard incompatibility)'}})}`);
   
     }  
   });
   
-
-
 
 test.afterEach(async ({  }) => {
     await browser.close()

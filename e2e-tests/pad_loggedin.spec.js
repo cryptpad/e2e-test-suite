@@ -16,14 +16,17 @@ test.beforeEach(async ({  }, testInfo) => {
   browserName = testInfo.project.name
   if (browserName.indexOf('firefox') !== -1 ) {
     browser = await firefox.launch();
-  } else if (browserbrowserName.indexOf('webkit') !== -1 ) {
+  } else if (browserName.indexOf('webkit') !== -1 ) {
     browser = await webkit.launch();
   } else {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
-  await page.goto(`${url}/pad`)
+  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  if (browserName.indexOf('firefox') == -1 ) {
+    context.grantPermissions(['clipboard-read', "clipboard-write"]);
+  } 
+  page = await context.newPage();
   await page.goto(`${url}/pad`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)
@@ -121,7 +124,7 @@ test(`pad - history (previous author) - (FF clipboard incompatibility)`, async (
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'passed',reason: 'Can create Rich Text document and view history (previous author)'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history (previous author)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author) - (FF clipboard incompatibility)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history (previous author) - (FF clipboard incompatibility)'}})}`);
 
   }  
 });

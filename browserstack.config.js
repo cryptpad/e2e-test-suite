@@ -31,10 +31,10 @@ const caps = {
 
 exports.url = 'https://cryptpad.fr'
 
-exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'newpassword' 
-exports.testUserPassword = process.env.TESTUSERPASSWORD || 'password'
-exports.testUser2Password = process.env.TESTUSER2PASSWORD || 'password'
-exports.testUser3Password = process.env.TESTUSER3PASSWORD || 'password'
+exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'PASSWORD_HERE' 
+exports.testUserPassword = process.env.TESTUSERPASSWORD || 'PASSWORD_HERE' 
+exports.testUser2Password = process.env.TESTUSER2PASSWORD || 'PASSWORD_HERE' 
+exports.testUser3Password = process.env.TESTUSER3PASSWORD || 'PASSWORD_HERE' 
 
 
 const date = new Date()      
@@ -59,7 +59,7 @@ exports.dateTodayDashFormat = now.getFullYear() + '-' + monthFormatted + '-' + t
 exports.dateTodaySlashFormat = todayFormatted + '/' + monthFormatted + '/' + now.getFullYear()
 
 const nextMonday = new Date()
-nextMonday.setDate(nextMonday.getDate() + (((1 + 7 - nextMonday.getDay()) % 7) || 7));
+nextMonday.getDay() !== 0 ? nextMonday.setDate(nextMonday.getDate()  + ( ((1 + 7 - nextMonday.getDay()) % 7) || 7 )) : nextMonday.setDate(nextMonday.getDate() + 8 )
 const nextMondayFormatted = nextMonday.getDate().toString().length > 1 ? nextMonday.getDate() : '0' + nextMonday.getDate();
 const nextMondayMonth = nextMonday.getMonth() + 1
 

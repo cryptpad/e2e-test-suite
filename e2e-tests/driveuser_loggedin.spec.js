@@ -21,7 +21,8 @@ test.beforeEach(async ({  }, testInfo) => {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  page = await context.newPage();
   await page.goto(`${url}/drive`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)
@@ -129,7 +130,6 @@ test('drive -  upload file', async ({ }) => {
 
   }    
 });
-    
 
 
 test('drive -  recent files', async ({ }) => {   
@@ -146,6 +146,7 @@ test('drive -  recent files', async ({ }) => {
     var title = `Rich text - ${titleDate}`;
     await page1.waitForTimeout(10000)
     await page1.close()
+    await page.reload()
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Recent' }).first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(title)).toBeVisible()
@@ -168,7 +169,7 @@ test('drive -  notifications panel', async ({ }) => {
 
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell').click()
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
     await page.frameLocator('#sbox-iframe').getByText('Open notifications panel').waitFor()
     const pagePromise = page.waitForEvent('popup')
     await page.frameLocator('#sbox-iframe').getByText('Open notifications panel').click()

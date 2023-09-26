@@ -21,7 +21,11 @@ test.beforeEach(async ({  }, testInfo) => {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext();
+  if (browserName.indexOf('firefox') == -1 ) {
+    context.grantPermissions(['clipboard-read', "clipboard-write"]);
+  } 
+  page = await context.newPage();
   await page.goto(`${url}/kanban`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)

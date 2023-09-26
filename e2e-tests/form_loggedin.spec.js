@@ -20,7 +20,8 @@ test.beforeEach(async ({  }, testInfo) => {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  page = await context.newPage();
   await page.goto(`${url}/form`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)
@@ -48,7 +49,8 @@ test('form - create quick scheduling poll', async ({ }) => {
     await page1.frameLocator('#sbox-iframe').locator('.cp-poll-cell > i').first().click();
     await page1.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-
+    await page1.close()
+    await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
     await expect(page.frameLocator('#sbox-iframe').getByRole('heading', { name: 'Total responses: 1' })).toBeVisible()
 

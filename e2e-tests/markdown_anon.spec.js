@@ -18,12 +18,14 @@ test.beforeEach(async ({  }, testInfo) => {
   } else if (browserName.indexOf('webkit') !== -1 ) {
     browser = await webkit.launch();
   } else {
-    browser = await chromium.launch(
-      {permissions: ["clipboard-read", "clipboard-write"]}
-    );
+    browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext();
+  if (browserName.indexOf('firefox') == -1 ) {
+    context.grantPermissions(['clipboard-read', "clipboard-write"]);
+  } 
+  page = await context.newPage();
   await page.goto(`${url}/slide`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)

@@ -19,7 +19,11 @@ test.beforeEach(async ({  }, testInfo) => {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext();
+  if (browserName.indexOf('firefox') == -1 ) {
+    context.grantPermissions(['clipboard-read', "clipboard-write"]);
+  } 
+  page = await context.newPage();
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 

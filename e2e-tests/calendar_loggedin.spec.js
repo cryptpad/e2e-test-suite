@@ -21,7 +21,8 @@ test.beforeEach(async ({  }, testInfo) => {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  page = await context.newPage();
   await page.goto(`${url}/calendar`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)
@@ -314,6 +315,10 @@ test('create event in calendar and edit date', async ({ }) => {
     // //check date changed
     await page.reload()
     await page.keyboard.down('End')
+    const today = new Date()
+    if (today.getDay() == 0) {
+      await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-right').click()
+    }
     await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-right').click()
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText( `${nextMondaySlashFormat} 20:00 - 20:30`)).toBeVisible()
@@ -331,64 +336,7 @@ test('create event in calendar and edit date', async ({ }) => {
 
 });
 
-test('create event in calendar and edit calendar', async ({ }) => {
-
-  try {
-
-    // //create event
-    
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').press('Tab');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
-
-    //set date
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
-
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
-    await page.keyboard.press('Enter')
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
-    await page.waitForTimeout(3000)
-
-    // //edit calendar
-    await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Meetings' }).click();
-    await page.frameLocator('#sbox-iframe').locator('li').filter({ hasText: 'My calendar' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Update' }).click();
-    await page.waitForTimeout(7000)
-
-    // //check calendar changed
-    await page.reload()
-    await page.keyboard.down('End')
-    await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click()
-    await expect(await page.frameLocator('#sbox-iframe').getByText('My calendar').nth(1)).toBeVisible()
-
-
-    //delete event
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test event').nth(0)).toBeHidden();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test event').nth(1)).toBeHidden();
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create event and edit calendar', status: 'passed',reason: 'Can create event and edit calendar'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create event and edit calendar', status: 'failed',reason: 'Can\'t create event and edit calendar'}})}`);
-  }  
-
-});
-
-test('create new calendar', async ({ }) => {
+test('create new calendar and edit calendar in event', async ({ }) => {
 
   try {
 
@@ -403,33 +351,40 @@ test('create new calendar', async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Meetings' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('list').getByText('test calendar').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
 
     await page.frameLocator('#sbox-iframe').getByText('test event').nth(1).click();
+    await expect(page.frameLocator('#sbox-iframe').getByText('My calendar').nth(3)).toBeVisible()
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'My calendar' }).click()
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test calendar').click()
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Update' }).click();
+    await page.waitForTimeout(5000)
+    await page.frameLocator('#sbox-iframe').getByText('test event').nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test calendar').nth(3)).toBeVisible()
+  
 
     //delete event
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test event').nth(0)).toBeHidden();
     await expect(page.frameLocator('#sbox-iframe').getByText('test event').nth(1)).toBeHidden();
+  
 
     //delete calendar
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^test calendarEditShareAccessImportExportPropertiesRemove$/ }).locator('.btn.btn-default.fa.fa-gear.small.cp-calendar-actions').click();
-    await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: 'Remove' }).nth(3).click();
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^test calendar/ }).locator('.btn.btn-default.fa.fa-gear.small.cp-calendar-actions').click();
+    await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: 'Remove' }).nth(1).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test calendar').nth(0)).toBeHidden();
-    
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create event and edit calendar', status: 'passed',reason: 'Can create event and edit calendar'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create new calendar and edit calendar in event', status: 'passed',reason: 'Can create new calendar and edit calendar in event'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create event and edit calendar', status: 'failed',reason: 'Can\'t create event and edit calendar'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create new calendar and edit calendar in event', status: 'failed',reason: 'Can\'t create new calendar and edit calendar in event'}})}`);
   }  
 
 });
+
 
 test.afterEach(async () => {
   await browser.close()

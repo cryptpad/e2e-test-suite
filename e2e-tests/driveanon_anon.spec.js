@@ -185,14 +185,14 @@ test('drive - anon - notifications', async ({ }) => {
    
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('.fa.cp-notifications-bell.fa-bell-o').click()
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
 
     await expect(page.frameLocator('#sbox-iframe').getByText('No notifications')).toBeVisible()
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive - notifications', status: 'passed',reason: 'Can anonymously navigate to Drive and check/switch on notifications'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive - notifications', status: 'passed',reason: 'Can check notifications'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive - notifications', status: 'failed',reason: 'Can\'t anonymously navigate to Drive and check/switch on notifications'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive - notifications', status: 'failed',reason: 'Can\'t check notifications'}})}`);
   }  
 
 });

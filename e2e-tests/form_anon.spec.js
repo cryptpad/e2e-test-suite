@@ -16,6 +16,7 @@ test.beforeEach(async ({  }, testInfo) => {
   test.setTimeout(2400000);
   browserName = testInfo.project.name
   if (browserName.indexOf('firefox') !== -1 ) {
+    browser = await firefox.launch();
     test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
   } else if (browserName.indexOf('webkit') !== -1 ) {
     browser = await webkit.launch();
@@ -23,7 +24,11 @@ test.beforeEach(async ({  }, testInfo) => {
     browser = await chromium.launch();
   }
 
-  page = await browser.newPage();
+  const context = await browser.newContext();
+  if (browserName.indexOf('firefox') == -1 ) {
+    context.grantPermissions(['clipboard-read', "clipboard-write"]);
+  } 
+  page = await context.newPage();
   await page.goto(`${url}/form`)
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)

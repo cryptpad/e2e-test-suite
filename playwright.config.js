@@ -116,15 +116,30 @@ module.exports = defineConfig({
   //   },
   // }],
     [{
-      name: 'chrome@latest:OSX Ventura',
+      name: 'firefox',
       use: {
-        // storageState: 'user.json',
+        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Ventura') },
+        viewport: {width: 1440, height: 764}, 
+        locale: 'en-GB',
+      },
+    },
+    {
+      name: 'edge',
+      use: {
+        connectOptions: { wsEndpoint: getCdpEndpoint('edgex@latest:OSX Ventura') },
+        viewport: {width: 1440, height: 764}, 
+        locale: 'en-GB',
+      },
+    },
+    {
+      name: 'chrome',
+      use: {
         connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
         viewport: {width: 1440, height: 764}, 
         locale: 'en-GB',
-        permissions: ["clipboard-read", "clipboard-write"]
       },
     }],
+    
 
     
     /* Test against mobile viewports. */
