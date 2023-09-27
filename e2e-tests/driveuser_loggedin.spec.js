@@ -27,7 +27,7 @@ test.beforeEach(async ({  }, testInfo) => {
   if (browserName.indexOf('firefox') !== -1 ) {
     await page.waitForTimeout(15000)
   } else {
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(10000)
   }
 });
 

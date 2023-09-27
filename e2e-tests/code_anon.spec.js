@@ -61,7 +61,7 @@ test(`code - file menu - history`, async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toHaveCount(0)
@@ -201,27 +201,24 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
   try {
 
     test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('One moment in history')
 
-    await page.waitForTimeout(7000)
     await page.keyboard.press("Meta+A");
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Another moment in history');
-    await page.waitForTimeout(7000)
 
     await page.keyboard.press("Meta+A");
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Yet another moment in history');
-    await page.waitForTimeout(5000)
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Another moment in history')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
@@ -231,14 +228,16 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
     const page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`)
+    await page1.waitForTimeout(20000)
 
-    await expect(page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
+    await expect(page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Another moment in history')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'code - share at a moment in history', status: 'passed',reason: 'Can share code document at a specific moment in history'}})}`);
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'code - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can share code document at a specific moment in history - (FF clipboard incompatibility)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'code - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t share code document at a specific moment in history - (FF clipboard incompatibility)'}})}`);
 
   }  
 });

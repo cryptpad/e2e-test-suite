@@ -246,7 +246,7 @@ test('invite contact to team and cancel - (EDGE) THIS TEST WILL FAIL', async ({ 
     await page.waitForTimeout(5000)
     await page.frameLocator('#sbox-iframe').getByText('tetestuser', { exact: true }).waitFor()
     await expect(page.frameLocator('#sbox-iframe').getByText('tetestuser', { exact: true })).toBeVisible();
-    await page.frameLocator('#sbox-iframe').locator('div:nth-child(11) > .cp-team-roster-member > .cp-online > .fa').click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'testuser'}).locator('.fa.fa-times').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(1800)
@@ -394,10 +394,10 @@ test('promote team viewer to member - THIS TEST WILL FAIL', async ({  }, testInf
     
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(8000)
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').click({timeout: 3000});
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(5000)
     ///log in other user
     const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
     pageOne = await context.newPage();

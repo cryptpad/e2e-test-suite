@@ -172,7 +172,7 @@ test('kanban - view history', async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new item title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new item title')).toHaveCount(0)
@@ -289,7 +289,7 @@ test(`kanban - share at a moment in history - (FF clipboard incompatibility)`, a
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 

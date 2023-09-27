@@ -206,7 +206,7 @@ test(`slide - share at a moment in history - (FF clipboard incompatibility)`, as
     
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
@@ -241,7 +241,7 @@ test(`slide - history (previous version)`, async ({ }) => {
     await page.waitForTimeout(5000)
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0)

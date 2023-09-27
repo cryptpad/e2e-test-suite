@@ -30,17 +30,17 @@ Once connected, the test results can be viewed at https://automate.browserstack.
 ## Run tests
 
 1. If running locally, start local CryptPad instance.
-2. If running locally or in staging, change the exported variable `url` in `browserstack.config.js` to https://localhost:3000 or https://freemium.cryptpad.fr/ accordingly. 
-3. If running locally or in staging for the first time, set test account passwords (see "Required environment for E2E testing" below).
-4. If running locally or in staging for the first time, seed the database, create files for storing user authentication details, and run the auth script (see "Required environment for E2E testing" below).
+2. If running locally or in production, change the exported variable `url` in `browserstack.config.js` to https://localhost:3000 or https://cryptpad.fr/ accordingly.
+3. If running for the first time, set test account passwords (see "Required environment for E2E testing" below).
+4. If running for the first time, seed the database, create files for storing user authentication details, and run the auth script (see "Required environment for E2E testing" below).
 5. If running tests for anonymous users, run `npx playwright test anon --project=[BROWSER_NAME]` (see "Fixtures" below).
 6. If running tests for logged-in users, run `npx playwright test loggedin --workers=1 --project=[BROWSER_NAME]` (see "Fixtures" below).
-7. To remove any extra files etc. created during the test run, uncomment and run the cleanup script using `npx playwright test cleanup --workers=1 --project='chrome'`. 
+7. To remove any extra files etc. created during the test run, run the cleanup script using `npx playwright test cleanup --workers=1 --project='chrome'`. 
 8. Once done with testing, to remove the user accounts from the database, run the teardown script using `npx playwright test teardown --workers=1 --project='chrome'`.
 
 The retries flag `--retries=1` can be added to identify flaky tests.
 
-Alternately, tests in individual files can be run using `npx playwright test [filename]`.
+Alternately, tests in individual files can be run using `npx playwright test [filename] --project=[BROWSER_NAME]`.
 
 ## Interactive mode
 
@@ -54,7 +54,7 @@ Alternately, tests in individual files can be run using `npx playwright test [fi
 
 [Here] (https://cryptpad.fr/code/#/3/code/edit/0def72606ece1221679bd8a6a00bcad1/)
 
-NOTE: The setup and authentication scripts MUST be run on Chrome browser as it is the most stable and least likely to result in failures or errors. Ensure browser is set to Chrome in `playwright.config.js` under `projects` (see 'Multiple browser/OS testing' below).
+NOTE: The setup, authentication, cleanup and teardown scripts MUST be run on Chrome browser as it is the most stable and least likely to result in failures or errors. 
 
 1. Set passwords for the following test accounts:
 
@@ -74,7 +74,7 @@ TESTUSER3PASSWORD = ""
 
 to your .env file and setting the variables to your chosen password, or replacing the password placeholders in `browserstack.config.js`.
 
-2. To set up the test environment, run the `dbseeding.spec.js` file ON ITS OWN, BEFORE RUNNING ANY OTHER FILE, using:
+2. To set up the test environment, run the `dbseeding.spec.js` file on its own, before any other file, using:
 
 `npx playwright test dbseeding --workers=1 --project='chrome'`
 
@@ -118,12 +118,11 @@ These tests will run in parallel mode using 2 workers (default).
 
 ## Multiple browser/OS testing
 
-The default browser/OS combination integrated with Browserstack which the tests run on is set to Chrome/OS Mojave. This is because the Chrome browser is compatible with the entire test suite. 
+The Chrome browser is compatible with the entire test suite and is most stable, and so is the recommended browser to run tests on. 
 Playwright Firefox doesn't allow clipboard-read/write permissions to be set in the use options, and therefore cannot be used for tests which make use of clipboard functionality. Such tests are labeled with `(FF clipboard incompatibility)` and set to skip during test runs using Firefox. See 'Known issues / bugs' below.
-Edge shows a security error screen when interacting with the Teams page, and therefore tests covering Teams functionality will fail during test runs using Edge and are labeled with `EDGE`.
+Edge shows a security error screen when interacting with the Teams page, and therefore tests covering Teams functionality will fail during test runs using Edge. They are labeled with `(EDGE)` for clarity.
 
-The browser and OS can be changed using the `projects` variable in module.exports, in the `playwright.config.js` file. 
-To test on other browsers/OSs, change the project name and `connectOptions` in the `use` variable. There is also code block before module.exports which creates a list of all possible browser/OS combinations and sets it to variable `projectsList`. To make use of it, simply comment out whatever browser/OS combination `projects` is currently set to, and set it to `projectsList` instead.
+The chosen browser for a test run must be specified using the `--projects` flag, e.g. `npx playwright test anon --project='playwright-firefox'`
 
 
 ## Known issues / bugs

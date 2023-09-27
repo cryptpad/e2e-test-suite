@@ -107,7 +107,7 @@ test(`pad - history (previous version)`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('Test text');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0)
@@ -335,7 +335,7 @@ test(`pad - share at a moment in history - (FF clipboard incompatibility)`, asyn
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 

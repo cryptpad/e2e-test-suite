@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat } = require('../browserstack.config.js')
+const { url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat, mainAccountPassword } = require('../browserstack.config.js')
 var fs = require('fs');
 const d3 = require('d3')
 
@@ -228,7 +228,7 @@ test('form - view history and share at a specific moment in history', async ({ }
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).press('Enter');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new option')).toHaveCount(0)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
@@ -492,7 +492,7 @@ test('form - anon (guest) access - blocked',  async ({ }) => {
 
     await page1.getByPlaceholder('Username').fill('test-user');
     await page1.waitForTimeout(10000)
-    await page1.getByPlaceholder('Password', {exact: true}).fill('newpassword');
+    await page1.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
     const login = page1.locator(".login")
     await login.waitFor({ timeout: 18000 })
     await expect(login).toBeVisible({ timeout: 1800 })

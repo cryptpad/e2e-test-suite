@@ -51,15 +51,18 @@ test('sign up and delete account', async ({}) => {
     await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
     await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
     
+    const username = (Math.random() + 1).toString(36).substring(7);
+    const password = (Math.random() + 1).toString(36).substring(7);
+    console.log(username)
+    console.log(password)
     await page.getByRole('link', { name: 'Sign up' }).click();
-    await page.getByPlaceholder('Username').fill('test-user4');
-    await page.getByPlaceholder('Password', {exact: true}).fill('password');
-    await page.getByPlaceholder('Confirm your password', {exact: true}).fill('password');
+    await page.getByPlaceholder('Username').fill(username);
+    await page.getByPlaceholder('Password', {exact: true}).fill(password);
+    await page.getByPlaceholder('Confirm your password', {exact: true}).fill(password);
     const register = page.locator("[id='register']")
     await register.waitFor()
 
-    if (`${url}`.indexOf('cryptpad') !== -1) {
-      await page.locator('#userForm span').nth(2).waitFor()
+    if (await page.locator('#userForm span').nth(2).isVisible()) {
       await page.locator('#userForm span').nth(2).click()
     }
     await register.click()
@@ -83,13 +86,13 @@ test('sign up and delete account', async ({}) => {
     const page1 = await pagePromise
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
     await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('password');
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill(password);
     await page1.frameLocator('#sbox-iframe').getByText('Delete your account').click()
     await page1.frameLocator('#sbox-iframe').getByText('Are you sure?').click()
 
     await page1.waitForTimeout(5000)
-    await expect(page1.frameLocator('#sbox-iframe').getByText(/^Your user account is now deleted/)).toBeVisible({timeout: 30000})
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
+    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account has been deleted by its owner')
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'sign up and delete account', status: 'passed',reason: 'Can sign up and delete account'}})}`);
 
@@ -138,40 +141,65 @@ test(' can change password', async ({ }) => {
     } else {
       await page.waitForTimeout(15000)
     }
-    await expect(page1).toHaveURL(new RegExp(`^${url}/login/`), { timeout: 10000 })
+    if (await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).isVisible()) {
+      await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
+      await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('password');
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).click();
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).fill(mainAccountPassword);
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').click();
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').fill(mainAccountPassword);
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Change password' }).click();
 
-    //log in with new password
-    await page1.getByPlaceholder('Username').fill('test-user');
-    await page1.waitForTimeout(5000)
-    await page1.getByPlaceholder('Password', {exact: true}).fill('password');
-    const login = page1.locator(".login")
-    await login.waitFor({ timeout: 18000 })
-    await expect(login).toBeVisible({ timeout: 1800 })
-    if (await login.isVisible()) {
-      await login.click()
-    }
-    await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
-
-    //change password back
-    await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('password');
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).fill(mainAccountPassword);
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').fill(mainAccountPassword);
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Change password' }).click();
-
-    await page1.waitForTimeout(3000)
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).waitFor()
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-    if (browserName.indexOf('firefox') !== -1 ) {
-      await page1.waitForTimeout(30000)
+      await page1.waitForTimeout(3000)
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).waitFor()
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+      if (browserName.indexOf('firefox') !== -1 ) {
+        await page1.waitForTimeout(30000)
+      } else {
+        await page1.waitForTimeout(15000)
+      }
     } else {
-      await page1.waitForTimeout(15000)
-    }
-    await expect(page1).toHaveURL(new RegExp(`^${url}/login/`), { timeout: 10000 })
+      await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+      await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log in$/ }).click()
+      await page1.getByPlaceholder('Username').fill('test-user');
+      await page1.waitForTimeout(10000)
+      await page1.getByPlaceholder('Password', {exact: true}).fill('password');
+      const login = page1.locator(".login")
+      await login.waitFor({ timeout: 18000 })
+      await expect(login).toBeVisible({ timeout: 1800 })
+      await page1.waitForTimeout(5000)
+      if (await login.isVisible()) {
+        await login.click()
+      }
+      await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+      await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
+      const pagePromise = page.waitForEvent('popup')
+      await page.frameLocator('#sbox-iframe').getByText('Settings').click()
+      const page1 = await pagePromise
+      await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
+      //change password
+      await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
+      await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
+      await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('password');
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).click();
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).fill(mainAccountPassword);
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').click();
+      await page1.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').fill(mainAccountPassword);
+      await page.waitForTimeout(5000)
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Change password' }).click();
+      await page1.waitForTimeout(3000)
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).waitFor()
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+      if (browserName.indexOf('firefox') !== -1 ) {
+        await page.waitForTimeout(30000)
+      } else {
+        await page.waitForTimeout(15000)
+      }
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' change password', status: 'failed',reason: 'Can\'t change password'}})}`);
+
+    }
+    
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' change password', status: 'passed',reason: 'Can change password'}})}`);
   } catch (e) {
     console.log(e);
@@ -244,11 +272,22 @@ test(' can access public signing key', async ({ }) => {
 
     const key = await page1.frameLocator('#sbox-iframe').getByRole('textbox').first().inputValue()
 
-    if (key.indexOf('test-user@cryptpad.fr') !== -1) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
+    if (url.toString() === 'https://freemium.cryptpad.fr') {
+      if (key.indexOf('test-user@freemium.cryptpad.fr') !== -1 ) {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
+      } else {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
+      }
+
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
+      if (key.indexOf('test-user@cryptpad.fr') !== -1 ) {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
+      } else {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
+      }
+
     }
+    
        
   } catch (e) {
     console.log(e);

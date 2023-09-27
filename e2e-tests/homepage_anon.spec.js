@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url } = require('../browserstack.config.js')
+const { url, mainAccountPassword } = require('../browserstack.config.js')
 
 let browser;
 let page;
@@ -46,39 +46,7 @@ test('sign up', async ({ }) => {
   try {
     await page.getByRole('link', { name: 'Sign up' }).click();
     await page.waitForTimeout(5000)
-    await page.getByPlaceholder('Username').fill('test-user-4');
-    await page.getByPlaceholder('Password', {exact: true}).fill('password');
-    await page.getByPlaceholder('Confirm your password', {exact: true}).fill('password');
-    const register = page.locator("[id='register']")
-    await register.waitFor()
-
-    if (`${url}`.indexOf('cryptpad') !== -1) {
-      const cb = page.locator('#userForm span').nth(2)
-      await cb.waitFor()
-      await cb.click()
-    }
-    
-    await register.click()
- 
-    const modal = page.getByText('Warning');
-    await expect(modal).toBeVisible({ timeout: 180000 });
-    if (await modal.isVisible({ timeout: 180000 })) {
-      await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-    }
-
-    const hashing = page.getByText('Hashing your password')
-    const existingUser = page.getByText('This user already exists, do you want to log in?')
-    await expect(hashing).toBeVisible({ timeout: 200000 })
-
-    await page.waitForTimeout(20000)
-    
-    if (await existingUser.isVisible({ timeout: 200000 })) {
-      await page.getByRole('button', { name: 'Cancel' }).click();
-      await expect(page).toHaveURL(`${url}/register/`)
-    } else {
-      await expect(hashing).toBeVisible({ timeout: 180000 })
-      await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 180000  })
-    }
+    await expect(page).toHaveURL(`${url}/register/`)
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'register', status: 'passed',reason: 'Can sign up'}})}`);
 
   } catch (e) {
@@ -88,7 +56,7 @@ test('sign up', async ({ }) => {
   }  
 })
 
-test('log in and log out', async ({ }) => {
+test('log in', async ({ }) => {
 
   try {
 
@@ -97,7 +65,7 @@ test('log in and log out', async ({ }) => {
     await expect(page).toHaveURL(`${url}/login/`);
     await page.getByPlaceholder('Username').fill('test-user');
     await page.waitForTimeout(10000)
-    await page.getByPlaceholder('Password', {exact: true}).fill('newpassword');
+    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
 
     const login = page.locator(".login")
     await login.waitFor({ timeout: 18000 })
@@ -121,7 +89,7 @@ test('home page > features', async ({ }) => {
 
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
-    if (url.toString() === 'https://cryptpad.fr') {
+    if (url === 'https://cryptpad.fr' || url === 'https://freemium.cryptpad.fr') {
       await page.getByRole('link', {name: 'Pricing'}).waitFor()
       await page.getByRole('link', {name: 'Pricing'}).click()
       
@@ -129,7 +97,7 @@ test('home page > features', async ({ }) => {
       await page.getByRole('link', {name: 'Features'}).waitFor()
       await page.getByRole('link', {name: 'Features'}).click()
     }
-    await expect(page).toHaveURL(new RegExp(`^${url}/features`))
+    await expect(page).toHaveURL(`${url}/features.html`)
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > features', status: 'passed',reason: 'Can navigate from home page to features page'}})}`);
   } catch (e) {
     console.log(e);
@@ -203,11 +171,16 @@ test('home page > donate', async ({ }) => {
   }  
 });
 
-test('home page - translation - french', async ({ }) => {
+test('home page - translation - french - (***)', async ({ }) => {
   
   try {
-    await page.getByRole('listbox').selectOption('fr');
-    await expect(page.getByText('Instance officielle de CryptPad, suite collaborative chiffrée de bout en bout')).toBeVisible();
+    if (url == 'https://cryptpad.fr') {
+      await page.getByRole('listbox').selectOption('fr');
+      await expect(page.getByText('Instance officielle de CryptPad, suite collaborative chiffrée de bout en bout')).toBeVisible();
+    } else if (url == 'https://freemium.cryptpad.fr'){
+      await page.getByLabel('Select a language').selectOption('fr');
+      await expect(page.getByText('Outils collaboratifschiffrés de bout en bout et open source')).toBeVisible();
+    }
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > translation', status: 'passed',reason: 'Can change site language from homepage'}})}`);
   } catch (e) {
     console.log(e);

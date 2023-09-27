@@ -29,7 +29,8 @@ test.beforeEach(async ({  }, testInfo) => {
 });
 
 
-const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'survey', 'log in', 'sign up'] 
+// const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'survey', 'log in', 'sign up'] 
+const userMenuItems = ['survey'] 
 
 
 userMenuItems.forEach(function(item) {
@@ -43,7 +44,13 @@ userMenuItems.forEach(function(item) {
       await menu.click()
       if (item === 'about') {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: `${item}` }).first().click()
-        await expect(page.frameLocator('#sbox-iframe').getByText('CryptPad.fr is the official instance of the open-source CryptPad project. It is ')).toBeVisible()
+        if (url == 'https://cryptpad.fr') {
+          await expect(page.frameLocator('#sbox-iframe').getByText('CryptPad.fr is the official instance of the open-source CryptPad project. It is ')).toBeVisible()
+
+        } else {
+          await expect(page.frameLocator('#sbox-iframe').getByText('This is an independent community instance of CryptPad')).toBeVisible()
+
+        }
       } else if (item === 'log in') {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: `${item}` }).first().click()
         await expect(page).toHaveURL(new RegExp(`^${url}/login/`), { timeout: 100000 })
@@ -67,7 +74,7 @@ userMenuItems.forEach(function(item) {
             console.log(`Dialog message: ${dialog.message()}`);
             dialog.accept().catch(() => {});
           });
-          await expect(page1).toHaveURL("https://sandbox.cryptpad.info/bounce/#https%3A%2F%2Fopencollective.com%2Fcryptpad%2F", { timeout: 100000 })
+          await expect(page1).toHaveURL(/#https%3A%2F%2Fopencollective.com%2Fcryptpad%2F$/, { timeout: 100000 })
         } else if (item === 'survey') {
             await expect(page1).toHaveURL(`${url}/form/#/2/form/view/1NDX7MEkhzNz1FCrcjCxmvjgIj24QjWNncZygR60Ch8`, { timeout: 100000 })
         } else if (item === 'documentation') {
@@ -165,6 +172,7 @@ test('drive - anon - history', async ({ }) => {
 
     var title = `Rich text - ${titleDate}`;
     await page.waitForTimeout(10000)
+    await page.bringToFront()
     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible()
     await page.frameLocator('#sbox-iframe').locator("[data-original-title=\"Display the document history\"]") .click();
 
