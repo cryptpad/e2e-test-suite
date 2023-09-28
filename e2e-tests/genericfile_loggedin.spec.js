@@ -304,7 +304,7 @@ docNames.forEach(function(name) {
         
         await page1.goto(`${clipboardText}`)
         
-        await expect(page1.frameLocator('#sbox-iframe').getByText(/^The document you are trying to open is protected with a new password/)).toBeVisible({timeout: 30000})
+        await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible({timeout: 30000})
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click();
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('password');
         await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
@@ -337,7 +337,7 @@ docNames.forEach(function(name) {
         await page1.bringToFront()
         await page1.goto(`${clipboardText1}`)
   
-        await expect(page1.frameLocator('#sbox-iframe').getByText(/^The document you are trying to open is protected with a new password/)).toBeVisible({timeout:5000})
+        await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible({timeout:5000})
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click({timeout:5000});
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('newpassword');
         await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
@@ -505,11 +505,13 @@ docNames.forEach(function(name) {
       await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible()
       await page1.reload()
-      await expect(page1.frameLocator('#sbox-iframe').getByText('This document has been destroyed by its owner')).toBeVisible()
+      await expect(page1.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
+')).toBeVisible()
 
       ////
 
-      await expect(page.frameLocator('#sbox-iframe').getByText('This document has been destroyed by its owner')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
+')).toBeVisible()
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view once and delete`, status: 'passed',reason: `Can share ${name} with contact (to view once and delete)`}})}`);
     } catch (e) {
@@ -548,12 +550,14 @@ docNames.forEach(function(name) {
 
       await pageOne.reload()
       await pageOne.waitForTimeout(20000)
-      await expect(pageOne.frameLocator('#sbox-iframe').getByText('This document has been destroyed by its owner')).toBeVisible()
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
+')).toBeVisible()
       await pageOne.close()
 
       ////
 
-      await expect(page.frameLocator('#sbox-iframe').getByText('This document has been destroyed by its owner')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
+')).toBeVisible()
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share link - view once and delete`, status: 'passed',reason: `Can share link to ${name} (to view once and delete)`}})}`);
     } catch (e) {

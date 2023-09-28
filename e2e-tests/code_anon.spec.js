@@ -61,7 +61,13 @@ test(`code - file menu - history`, async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toHaveCount(0)
@@ -78,6 +84,8 @@ test(`code - file menu - history`, async ({ }) => {
 test(`code - toggle toolbar`, async ({ }) => {
 
   try {
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).waitFor()
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible()
@@ -94,6 +102,7 @@ test(`code - toggle preview`, async ({ }) => {
 
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
@@ -125,13 +134,14 @@ test(`code -  make a copy`, async ({ }) => {
     await expect(page1).toHaveURL(new RegExp(`^${url}/code`), { timeout: 100000 })
 
     await page1.waitForTimeout(4000)
+    await page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
     
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code - toggle preview`, status: 'passed',reason: 'Can toggle preview in Code document'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code -  make a copy`, status: 'passed',reason: 'Can make a copy'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code - toggle preview`, status: 'failed',reason: 'Can\'t toggle preview in Code document'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code -  make a copy`, status: 'failed',reason: 'Can\'t make a copy'}})}`);
 
   }  
 });
@@ -203,22 +213,28 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
     test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('One moment in history')
-
+    await page.waitForTimeout(5000)
     await page.keyboard.press("Meta+A");
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Another moment in history');
-
+    await page.waitForTimeout(5000)
     await page.keyboard.press("Meta+A");
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Yet another moment in history');
-
+    await page.waitForTimeout(5000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Another moment in history')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
@@ -231,7 +247,7 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
     await page1.waitForTimeout(20000)
 
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
-    await expect(page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Another moment in history')).toBeVisible();
+    await expect(page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'code - share at a moment in history', status: 'passed',reason: 'Can share code document at a specific moment in history'}})}`);
 

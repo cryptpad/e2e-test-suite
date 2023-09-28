@@ -92,7 +92,7 @@ test('sign up and delete account', async ({}) => {
 
     await page1.waitForTimeout(5000)
     const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account has been deleted by its owner')
+    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'sign up and delete account', status: 'passed',reason: 'Can sign up and delete account'}})}`);
 

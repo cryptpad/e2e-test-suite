@@ -122,10 +122,10 @@ The Chrome browser is compatible with the entire test suite and is most stable, 
 Playwright Firefox doesn't allow clipboard-read/write permissions to be set in the use options, and therefore cannot be used for tests which make use of clipboard functionality. Such tests are labeled with `(FF clipboard incompatibility)` and set to skip during test runs using Firefox. See 'Known issues / bugs' below.
 Edge shows a security error screen when interacting with the Teams page, and therefore tests covering Teams functionality will fail during test runs using Edge. They are labeled with `(EDGE)` for clarity.
 
-The chosen browser for a test run must be specified using the `--projects` flag, e.g. `npx playwright test anon --project='playwright-firefox'`
+The chosen browser for a test run must be specified using the `--projects` flag. The available browsers are `chrome`, `firefox`, and `edge`.
 
 
 ## Known issues / bugs
 
 Reproducible bugs and known issues related to testing can be found [here] (https://cryptpad.fr/code/#/2/code/view/6QTjYfGzXVSPUrZx0qW8FX3cH5-cyI8GilCLN9G7IUc/).
-Tests which are expected to fail are labeled with `THIS TEST WILL FAIL` - if this is due to browser incompatibility, this will be indicated in the label (see 'Multiple browser/OS testing' above). 
+Most of the tests which have identified unexpected behaviour are labeled with `THIS TEST WILL FAIL` - if this is due to browser incompatibility, this will be indicated in the label (see 'Multiple browser/OS testing' above). 

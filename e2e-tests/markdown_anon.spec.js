@@ -67,8 +67,14 @@ test('markdown - anon - create new slide', async ({  }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('More test text');
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Don\'t store' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Not now' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Don\'t store' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Don\'t store' }).click()
+    }
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Not now' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Don\'t store' }).click();
+
+    }
+
     await page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').filter({ hasText: 'Test text' }).click();
     await page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-right span').hover();
     await page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-right span').click();
@@ -147,7 +153,7 @@ test('anon - slide - make a copy', async ({ }) => {
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - slide > comment', status: 'failed',reason: 'Can\'t create comment in Rich Text document'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - slide > comment', status: 'failed',reason: 'Can\'t create comment in Markdown document'}})}`);
 
   }  
 });
@@ -173,16 +179,16 @@ test(`slide - export (md)`, async ({ }) => {
 
     const readData = fs.readFileSync("/tmp/test markdown", "utf8");
     if (readData.trim() == "Test text") {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - export (md)', status: 'passed',reason: 'Can export Rich Text document as .md'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - export (md)', status: 'passed',reason: 'Can export Markdown document as .md'}})}`);
 
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - export (md)', status: 'failed',reason: 'Can\'t export Rich Text document as .md'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - export (md)', status: 'failed',reason: 'Can\'t export Markdown document as .md'}})}`);
 
     }
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - export (md)', status: 'failed',reason: 'Can\'t export Rich Text document as .md'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - export (md)', status: 'failed',reason: 'Can\'t export Markdown document as .md'}})}`);
 
   }  
 });
@@ -206,7 +212,13 @@ test(`slide - share at a moment in history - (FF clipboard incompatibility)`, as
     
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
@@ -220,14 +232,14 @@ test(`slide - share at a moment in history - (FF clipboard incompatibility)`, as
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
     const page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`)
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('One moment in history').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Another moment in history')).toBeVisible();
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('One moment in history')).toBeVisible();
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history', status: 'passed',reason: 'Can share Rich Text at a specific moment in history'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history', status: 'passed',reason: 'Can share Markdown at a specific moment in history'}})}`);
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can share Rich Text at a specific moment in history - (FF clipboard incompatibility)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can share Markdown at a specific moment in history - (FF clipboard incompatibility)'}})}`);
 
   }  
 });
@@ -241,15 +253,21 @@ test(`slide - history (previous version)`, async ({ }) => {
     await page.waitForTimeout(5000)
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0)
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `slide - file menu - history (previous version)`, status: 'passed',reason: 'Can create Rich Text document and view history'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `slide - file menu - history (previous version)`, status: 'passed',reason: 'Can create Markdown document and view history'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `slide - file menu - history (previous version)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `slide - file menu - history (previous version)`, status: 'failed',reason: 'Can\'t create Markdown document and view history'}})}`);
 
   }  
 });

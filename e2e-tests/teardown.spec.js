@@ -25,7 +25,7 @@ let deletionMessage;
 if (url.toString() === 'https://cryptpad.fr') {
   deletionMessage = 'Your user account is now deleted'
 } else {
-  deletionMessage = 'This account has been deleted by its owner'
+  deletionMessage = 'This account was deleted by its owner'
 }
 
 test('delete test-user account', async ({ }) => {
@@ -58,7 +58,7 @@ test('delete test-user account', async ({ }) => {
 
       await page1.waitForTimeout(5000)
       const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account has been deleted by its owner')
+      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete test-user account', status: 'passed',reason: 'Can delete test-user account'}})}`);
   
@@ -100,7 +100,7 @@ test('delete testuser account', async ({ }) => {
         await page1.waitForTimeout(5000)
 
         const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-        await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account has been deleted by its owner')
+        await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete testuser account', status: 'passed',reason: 'Can delete testuser account'}})}`);
   
@@ -141,7 +141,7 @@ test('delete test-user2 account', async ({ }) => {
 
       await page1.waitForTimeout(5000)
       const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account has been deleted by its owner')
+      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
         
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete test-user2 account', status: 'passed',reason: 'Can delete test-user2 account'}})}`);
   
@@ -184,7 +184,7 @@ test('delete test-user3 account', async ({ }) => {
       await page1.waitForTimeout(5000)
       
       const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account has been deleted by its owner')
+      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete test-user3 account', status: 'passed',reason: 'Can delete test-user3 account'}})}`);
   

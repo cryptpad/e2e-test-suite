@@ -29,8 +29,8 @@ test.beforeEach(async ({  }, testInfo) => {
 });
 
 
-// const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'survey', 'log in', 'sign up'] 
-const userMenuItems = ['survey'] 
+const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'survey', 'log in', 'sign up'] 
+// const userMenuItems = ['survey'] 
 
 
 userMenuItems.forEach(function(item) {
@@ -107,6 +107,8 @@ test('drive - anon - erase all', async ({ }) => {
 
     var title = `Rich text - ${titleDate}`;
     await page1.waitForTimeout(10000)
+    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+    await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
     await page1.close()
     await page.reload()
     await page.waitForTimeout(10000)

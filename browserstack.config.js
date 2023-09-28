@@ -29,7 +29,7 @@ const caps = {
   'client.playwrightVersion': '1.37.1',
 };
 
-exports.url = 'https://freemium.cryptpad.fr'
+exports.url = 'https://cryptpad.fr'
 
 exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'PASSWORD_HERE' 
 exports.testUserPassword = process.env.TESTUSERPASSWORD || 'PASSWORD_HERE' 

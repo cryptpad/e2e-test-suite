@@ -33,54 +33,42 @@ test('home page title', async ({ }) => {
   
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'title', status: 'passed',reason: 'Can navigate to home page'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage title', status: 'passed',reason: 'Can navigate to home page'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'title', status: 'failed',reason: 'Can\'t navigate to home page'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage title', status: 'failed',reason: 'Can\'t navigate to home page'}})}`);
 
   }  
 });
 
-test('sign up', async ({ }) => {
+test('homepage - access sign up', async ({ }) => {
   
   try {
     await page.getByRole('link', { name: 'Sign up' }).click();
     await page.waitForTimeout(5000)
     await expect(page).toHaveURL(`${url}/register/`)
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'register', status: 'passed',reason: 'Can sign up'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'homepage - access sign up', status: 'passed',reason: 'Can access sign up from homepage'}})}`);
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'register', status: 'failed',reason: 'Can\'t sign up'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'homepage - access sign up', status: 'failed',reason: 'Can\'t access sign up from homepage'}})}`);
 
   }  
 })
 
-test('log in', async ({ }) => {
+test('homepage - access log in', async ({ }) => {
 
   try {
 
     await page.getByRole('link', { name: 'Log in' }).click();
 
     await expect(page).toHaveURL(`${url}/login/`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000)
-    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
-
-    const login = page.locator(".login")
-    await login.waitFor({ timeout: 18000 })
-    await expect(login).toBeVisible({ timeout: 18000 })
-    if (await login.isVisible()) {
-      await login.click()
-    }
-    await page.waitForTimeout(5000)
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'register', status: 'passed',reason: 'Can sign up'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'homepage - access log in', status: 'passed',reason: 'Can acces login from homepage'}})}`);
 
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'login and logout', status: 'failed',reason: 'Can\'t log in and log out'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'homepage - access log in', status: 'failed',reason: 'Can\'t acces login from homepage'}})}`);
 
   }  
 });

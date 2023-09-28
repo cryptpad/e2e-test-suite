@@ -31,6 +31,7 @@ test('anon - can draw on whiteboard (default settings)', async ({ }) => {
 
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor()
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
       position: {
         x: 175,

@@ -111,7 +111,7 @@ module.exports = defineConfig({
   //   name: 'chromium',
   //   use: { 
   //     ...devices['Desktop Chrome'],
-  //     storageState: 'user.json',
+  //     // storageState: 'user.json',
   //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
   //   },
   // }],
@@ -126,7 +126,8 @@ module.exports = defineConfig({
     {
       name: 'edge',
       use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('edgex@latest:OSX Ventura') },
+        connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') },
+        permissions: ["clipboard-read", "clipboard-write", "notifications"],
         viewport: {width: 1440, height: 764}, 
         locale: 'en-GB',
       },
@@ -136,6 +137,7 @@ module.exports = defineConfig({
       use: {
         connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
         viewport: {width: 1440, height: 764}, 
+        permissions: ["clipboard-read", "clipboard-write", "notifications"],
         locale: 'en-GB',
       },
     }],

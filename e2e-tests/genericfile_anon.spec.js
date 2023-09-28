@@ -27,6 +27,8 @@ test.beforeEach(async ({  }, testInfo) => {
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
+// const docNames = ['pad'] 
+
 
 docNames.forEach(function(name) {
 
@@ -76,7 +78,7 @@ docNames.forEach(function(name) {
 
   if (name !== 'form') {
 
-    test(`anon - ${name} - share (link) - edit - (FF clipboard incompatibility)`, async ({ }) => {
+    test(`${name} - share (link) - edit - (FF clipboard incompatibility)`, async ({ }) => {
 
       try {
   
@@ -95,6 +97,7 @@ docNames.forEach(function(name) {
         
         await page1.goto(`${clipboardText}`)
         await page.waitForTimeout(10000)
+        await page1.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
         await expect(page1.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
   
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
@@ -128,7 +131,8 @@ docNames.forEach(function(name) {
         
         await page1.goto(`${clipboardText}`)
         await page1.waitForTimeout(10000)
-        await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
+        await page1.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
+        await expect(page1.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
 
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible()
         
@@ -198,8 +202,9 @@ docNames.forEach(function(name) {
       
       await expect(page2).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 60000 })
       page.waitForTimeout(5000)
+      await page2.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
       await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
-
+      await page2.waitForTimeout(10000)
       await page2.goto(`${url}/drive`);
       await page2.waitForTimeout(10000)
       await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible();
@@ -212,10 +217,10 @@ docNames.forEach(function(name) {
       await page2.waitForTimeout(10000)
       await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toHaveCount(0)
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} > store`, status: 'passed',reason: `Can anonymously create ${name} in Drive and store`}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - move to trash`, status: 'passed',reason: `Can anonymously create ${name} in Drive and move to trash`}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} > store`, status: 'failed',reason: `Can\'t anonymously create ${name} in Drive and store`}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - move to trash`, status: 'failed',reason: `Can\'t anonymously create ${name} in Drive annd move to trash`}})}`);
   
     }  
   });
@@ -231,6 +236,7 @@ docNames.forEach(function(name) {
         await page.waitForTimeout(5000)
       }
 
+      await page.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
       await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
@@ -250,12 +256,14 @@ docNames.forEach(function(name) {
   test(`anon - ${name} - move to trash`, async ({ }) => {
 
     try {
+
       await page.goto(`${url}/${name}/`);
       if (browserName.indexOf('firefox') !== -1 ) {
         await page.waitForTimeout(15000)
       } else {
         await page.waitForTimeout(5000)
       }
+      await page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive').waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive')).toBeVisible();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
@@ -266,12 +274,8 @@ docNames.forEach(function(name) {
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-
-      if (name === 'sheet') {
-        
-      } else {
-        await expect(page.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true })).toBeVisible({ timeout: 10000 });
-      }
+      await page.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true }).waitFor()
+      await expect(page.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true })).toBeVisible({ timeout: 10000 });
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - move to trash`, status: 'passed',reason: `Can move ${name} to trash`}})}`);
     } catch (e) {

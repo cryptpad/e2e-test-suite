@@ -43,6 +43,8 @@ test('pad - comment', async ({ }) => {
   try {
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT').click({
@@ -67,15 +69,22 @@ test('pad - create and open snapshot', async ({ }) => {
   try { 
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
+    await page.waitForTimeout(5000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
+    await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Snapshots', exact: true }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Snapshots', exact: true }).click();
+    await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').waitFor()
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').fill('snap1');
+    await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).click();
+    await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('');
@@ -107,7 +116,13 @@ test(`pad - history (previous version)`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('Test text');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0)
@@ -125,6 +140,7 @@ test(`pad - toggle tools`, async ({ }) => {
 
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all').waitFor()
     await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeVisible()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
     await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden()
@@ -166,6 +182,8 @@ test('pad - make a copy', async ({ }) => {
   try {
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
     await page.waitForTimeout(5000)
     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT')).toBeVisible()
@@ -196,6 +214,8 @@ test(`pad - export (html)`, async ({}) => {
   try {
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
@@ -209,6 +229,7 @@ test(`pad - export (html)`, async ({}) => {
     await download.saveAs('/tmp/test pad');
 
     const readData = fs.readFileSync("/tmp/test pad", "utf8");
+    console.log(readData)
 
     var expectedString;
     if (browserName.indexOf('firefox') !== -1) {
@@ -237,6 +258,8 @@ test(`pad - export (.doc)`, async ({}) => {
   try {
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
@@ -279,6 +302,8 @@ test(`pad - export (md)`, async ({ }) => {
   try {
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
@@ -318,6 +343,10 @@ test(`pad - share at a moment in history - (FF clipboard incompatibility)`, asyn
   try {
 
     test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+    
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
+    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('One moment in history')
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('One moment in history').click({
@@ -335,7 +364,13 @@ test(`pad - share at a moment in history - (FF clipboard incompatibility)`, asyn
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
+.click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
@@ -348,8 +383,8 @@ test(`pad - share at a moment in history - (FF clipboard incompatibility)`, asyn
 
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
     const page1 = await browser.newPage();
-    await page1.goto(`${clipboardText}`)
-
+    await page1.goto(`${clipboardText}`)  
+    await page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('One moment in history').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('One moment in history')).toBeVisible();
 
 
