@@ -84,10 +84,9 @@ The database seeding must be run using Chrome, as it is the most stable browser 
 
 * change directory to auth folder using `cd auth` and create files to store authentication information for each test account using:
 
-`touch mainuser.json`
-`touch testuser.json`
-`touch testuser2.json`
-`touch testuser3.json`
+```bash
+touch mainuser.json testuser.json testuser2.json testuser3.json
+```
 
 * then run 
 
