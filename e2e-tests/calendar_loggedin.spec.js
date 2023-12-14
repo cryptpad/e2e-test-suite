@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat, minutes, hours, todayStringFormat, year } = require('../browserstack.config.js')
+const { caps, patchCaps, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat, minutes, hours, todayStringFormat, year } = require('../browserstack.config.js')
 
 
 
@@ -8,27 +8,50 @@ let browser;
 let page;
 let pageOne;
 let browserName;
+let context
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
-  }
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
+  } else 
+  {
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
 
-  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+    browser = await playwright.firefox.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+        firefoxUserPrefs: {
+              'dom.events.asyncClipboard.readText': true,
+              'dom.events.testing.asyncClipboard': true,
+            },
+    });
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  }
+  // browser = await firefox.launch({
+  //   firefoxUserPrefs: {
+  //     'dom.events.asyncClipboard.readText': true,
+  //     'dom.events.testing.asyncClipboard': true,
+  //   },
+  // })
+  // context = await browser.newContext({ storageState: 'auth/mainuser.json' })
   page = await context.newPage();
   await page.goto(`${url}/calendar`)
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(5000)
-  }
+  await page.waitForTimeout(15000)
+
 });
 
 
@@ -111,7 +134,7 @@ test('create and delete repeating event in calendar', async ({ }) => {
     await page.waitForTimeout(3000)
 
     //check if repeats next week
-    await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-right').click()
+    await page.frameLocator('#sbox-iframe').getByLabel('Right').click()
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test event')).toBeVisible()
 
     //delete event
@@ -123,7 +146,7 @@ test('create and delete repeating event in calendar', async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(0)).toBeHidden();
     await expect(page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(1)).toBeHidden();
 
-    await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-right').click()
+    await page.frameLocator('#sbox-iframe').getByLabel('Right').click()
     await expect(page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(0)).toBeHidden();
     await expect(page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(1)).toBeHidden();
 
@@ -317,9 +340,9 @@ test('create event in calendar and edit date', async ({ }) => {
     await page.keyboard.down('End')
     const today = new Date()
     if (today.getDay() == 0) {
-      await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-right').click()
+      await page.frameLocator('#sbox-iframe').getByLabel('Right').click()
     }
-    await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-right').click()
+    await page.frameLocator('#sbox-iframe').getByLabel('Right').click()
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText( `${nextMondaySlashFormat} 20:00 - 20:30`)).toBeVisible()
 

@@ -1,34 +1,56 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, nextMondaySlashFormat } = require('../browserstack.config.js')
+const { caps, patchCaps, url, nextMondaySlashFormat } = require('../browserstack.config.js')
 
 var fs = require('fs');
 
 let browser;
 let page;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
   } else {
-    browser = await chromium.launch();
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
   }
-
-  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  // browser = await firefox.launch({
+  //   firefoxUserPrefs: {
+  //     'dom.events.asyncClipboard.readText': true,
+  //     'dom.events.testing.asyncClipboard': true,
+  //   },
+  //   locale: 'en-GB',
+  // })
+  // context = await browser.newContext({ storageState: 'auth/mainuser.json' })
   page = await context.newPage();
+
   await page.goto(`${url}/form`)
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(5000)
-  }
+  await page.waitForTimeout(15000)
 });
+
 
 
 test('form - create quick scheduling poll', async ({ }) => {
@@ -51,7 +73,7 @@ test('form - create quick scheduling poll', async ({ }) => {
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await page1.close()
     await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button').filter({hasText: 'Responses'}).click();
     await expect(page.frameLocator('#sbox-iframe').getByRole('heading', { name: 'Total responses: 1' })).toBeVisible()
 
     await page.waitForTimeout(10000)
@@ -100,7 +122,7 @@ test(`form - save as and import template - THIS TEST WILL FAIL`, async ({}) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
-    await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example form template' }).nth(0).click();
+    await page.frameLocator('#sbox-secure-iframe').getByText('example form template').click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('example text')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox')).toHaveValue('example question?')

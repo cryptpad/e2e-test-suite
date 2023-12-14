@@ -1,34 +1,42 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, titleDate, testUser2Password, testUser3Password } = require('../browserstack.config.js')
+const { caps, patchCaps, url, titleDate, testUser2Password, testUser3Password } = require('../browserstack.config.js')
 
 let page;
 let pageOne;
 let browser;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
-  test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
+  test.setTimeout(180000);
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
   } else {
-    browser = await chromium.launch();
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
   }
-
-  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
-  if (browserName.indexOf('firefox') == -1 ) {
-    context.grantPermissions(['clipboard-read', "clipboard-write"]);
-  } 
   page = await context.newPage();
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(5000)
-  }
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
@@ -157,9 +165,9 @@ docNames.forEach(function(name) {
       //remove test-user3 as an owner
       await page.reload()
       await page.waitForTimeout(5000)
-      if (browserName.indexOf('firefox') !== -1 ) {
-        await page.waitForTimeout(10000)
-      }
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(10000)
+      // }
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
       await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-owners').click();
       await page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user.large').filter({hasText: 'test-user3'}).locator('.fa.fa-times').click();
@@ -280,7 +288,7 @@ docNames.forEach(function(name) {
 
       try {
       
-        test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+           //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
 
         await page.goto(`${url}/${name}/`);
   
@@ -505,13 +513,11 @@ docNames.forEach(function(name) {
       await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible()
       await page1.reload()
-      await expect(page1.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
-')).toBeVisible()
+      await expect(page1.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
 
       ////
 
-      await expect(page.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
-')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view once and delete`, status: 'passed',reason: `Can share ${name} with contact (to view once and delete)`}})}`);
     } catch (e) {
@@ -525,7 +531,7 @@ docNames.forEach(function(name) {
 
     try {
 
-      test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+         //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
 
       await page.goto(`${url}/${name}`);
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
@@ -550,14 +556,12 @@ docNames.forEach(function(name) {
 
       await pageOne.reload()
       await pageOne.waitForTimeout(20000)
-      await expect(pageOne.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
-')).toBeVisible()
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
       await pageOne.close()
 
       ////
 
-      await expect(page.frameLocator('#sbox-iframe').getByText('This document has been destroyed by an owner
-')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share link - view once and delete`, status: 'passed',reason: `Can share link to ${name} (to view once and delete)`}})}`);
     } catch (e) {
@@ -571,7 +575,7 @@ docNames.forEach(function(name) {
 
     try {
 
-      test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+         //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
     
       await page.goto(`${url}/${name}/`);
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
@@ -628,9 +632,9 @@ docNames.forEach(function(name) {
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
 
       await pageOne.reload()
-      await page.waitForTimeout(5000)
+      await pageOne.waitForTimeout(5000)
 
-      await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible({timeout: 200000})
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible({timeout: 20000})
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${name} - enable and add to access list`, status: 'passed',reason: `Can enable and add to access list in ${name} document`}})}`);
     } catch (e) {

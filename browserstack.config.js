@@ -15,21 +15,49 @@ const util = require('util');
 
 const dateToday = new Date()
 const caps = {
-  browser: 'firefox',
-  os: 'osx',
-  os_version: 'catalina',
-  name: 'cp-playwright-test',
-  build: 'cp-playwright-mobiletests-corrections',
-  // 'browserstack.networkLogs': true,
-  // build: `cp-playwright-build: ${dateToday}`,
-  'browserstack.username': process.env.BROWSERSTACK_USERNAME || 'YOUR_USERNAME_HERE',
-  'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY || 'YOUR_KEY_HERE',
-  'browserstack.local': process.env.BROWSERSTACK_LOCAL || true, 
-  'browserstack.playwrightVersion': '1.37.1',
-  'client.playwrightVersion': '1.37.1',
+  // osVersion: "13.0",
+  // deviceName: "Samsung Galaxy S23", // "Samsung Galaxy S22 Ultra", "Google Pixel 7 Pro", "OnePlus 9", etc.
+  browserName: "chrome",
+  // realMobile: "true",
+  name: "My android playwright test",
+  build: "playwright-build-1",
+  "browserstack.username": process.env.BROWSERSTACK_USERNAME || "<USERNAME>",
+  "browserstack.accessKey":
+    process.env.BROWSERSTACK_ACCESS_KEY || "<ACCESS_KEY>",
+  "browserstack.local": process.env.BROWSERSTACK_LOCAL || false,
 };
 
-exports.url = 'https://cryptpad.fr'
+const patchMobileCaps = (name, title) => {
+  let combination = name.split(/@browserstack/)[0];
+  let [browerCaps, osCaps] = combination.split(/:/);
+  let [browser, deviceName] = browerCaps.split(/@/);
+  let osCapsSplit = osCaps.split(/ /);
+  let os = osCapsSplit.shift();
+  let osVersion = osCapsSplit.join(" ");
+  caps.browser = browser ? browser : "chrome";
+  caps.deviceName = deviceName ? deviceName : "Samsung Galaxy S22 Ultra";
+  caps.osVersion = osVersion ? osVersion : "12.0";
+  caps.name = title;
+  caps.realMobile = "true";
+};
+
+exports.patchCaps = (name, title) => {
+  let combination = name.split(/@browserstack/)[0];
+  let [browerCaps, osCaps] = combination.split(/:/);
+  let [browser, browser_version] = browerCaps.split(/@/);
+  let osCapsSplit = osCaps.split(/ /);
+  let os = osCapsSplit.shift();
+  let os_version = osCapsSplit.join(" ");
+  caps.browser = browser ? browser : "chrome";
+  caps.browser_version = browser_version ? browser_version : "latest";
+  caps.os = os ? os : "osx";
+  caps.os_version = os_version ? os_version : "catalina";
+  caps.name = title;
+};
+
+exports.caps = caps;
+
+exports.url = 'https://freemium.cryptpad.fr'
 
 exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'PASSWORD_HERE' 
 exports.testUserPassword = process.env.TESTUSERPASSWORD || 'PASSWORD_HERE' 

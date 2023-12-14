@@ -1,29 +1,43 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
 
 let page;
 let pageOne;
 let browser;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
   } else {
-    browser = await chromium.launch();
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext(testInfo.project.use);
   }
-
-  const context = await browser.newContext();
-  if (browserName.indexOf('firefox') == -1 ) {
-    context.grantPermissions(['clipboard-read', "clipboard-write"]);
-  } 
   page = await context.newPage();
+
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
@@ -47,11 +61,14 @@ docNames.forEach(function(name) {
     try {
 
       await page.goto(`${url}/${name}/`);
-      if (browserName.indexOf('firefox') !== -1 ) {
-        await page.waitForTimeout(15000)
-      } else {
-        await page.waitForTimeout(5000)
+      if (name == 'sheet' | 'diagram') {
+        await page.waitForTimeout(10000)
       }
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New', exact: true }).click();
@@ -82,7 +99,7 @@ docNames.forEach(function(name) {
 
       try {
   
-        test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+           //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
 
         await page.goto(`${url}/${name}/`);
         await page.waitForTimeout(10000)
@@ -115,7 +132,7 @@ docNames.forEach(function(name) {
 
       try {
 
-        test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+           //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
 
         await page.goto(`${url}/${name}/`);
         await page.waitForTimeout(10000)
@@ -152,11 +169,14 @@ docNames.forEach(function(name) {
     try {
 
       await page.goto(`${url}/${name}`);
-      if (browserName.indexOf('firefox') !== -1 ) {
-        await page.waitForTimeout(15000)
-      } else {
-        await page.waitForTimeout(5000)
+      if (name == 'sheet' | 'diagram') {
+        await page.waitForTimeout(10000)
       }
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Chat' }).click();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Don\'t store', exact: true }).waitFor()
@@ -182,11 +202,11 @@ docNames.forEach(function(name) {
     try {
 
       await page.goto(`${url}/drive`);
-      if (browserName.indexOf('firefox') !== -1 ) {
-        await page.waitForTimeout(15000)
-      } else {
-        await page.waitForTimeout(5000)
-      }
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
 
       await page.frameLocator('#sbox-iframe').getByText('New', { exact: true }).click();
 
@@ -230,11 +250,16 @@ docNames.forEach(function(name) {
     try {
 
       await page.goto(`${url}/${name}/`);
-      if (browserName.indexOf('firefox') !== -1 ) {
-        await page.waitForTimeout(15000)
-      } else {
-        await page.waitForTimeout(5000)
+
+      if (name == 'sheet' | 'diagram') {
+        await page.waitForTimeout(10000)
       }
+
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
 
       await page.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
@@ -258,11 +283,14 @@ docNames.forEach(function(name) {
     try {
 
       await page.goto(`${url}/${name}/`);
-      if (browserName.indexOf('firefox') !== -1 ) {
-        await page.waitForTimeout(15000)
-      } else {
-        await page.waitForTimeout(5000)
+      if (name == 'sheet' | 'diagram') {
+        await page.waitForTimeout(10000)
       }
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
       await page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive').waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive')).toBeVisible();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()

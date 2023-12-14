@@ -107,40 +107,67 @@ module.exports = defineConfig({
 
 
   projects: 
+  [
+    // {
+    //   name: "playwright-firefox@latest:OSX Ventura@browserstack",
+    //   use: {
+    //     launchOptions: {
+    //       firefoxUserPrefs: {
+    //         'dom.events.asyncClipboard.readText': true,
+    //         'dom.events.testing.asyncClipboard': true,
+    //       },
+    //     }, 
+    //     locale: 'en-GB',
+    //   },
+    // },
+    
+      {
+        name: "chrome@latest:OSX Ventura@browserstack",
+        use: {
+        browserName: "chromium",
+        channel: "chrome",
+          locale: 'en-GB',
+          permissions: ["clipboard-read", "clipboard-write", "notifications"],
+          contextOptions: {
+            permissions: ['clipboard-read', 'clipboard-write']
+        },
+        },
+      }
+    ],
   // [{
-  //   name: 'chromium',
+  //   name: 'firefox',
   //   use: { 
-  //     ...devices['Desktop Chrome'],
+  //     ...devices['Desktop Firefox'],
   //     // storageState: 'user.json',
-  //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
+  //     // permissions: ["clipboard-read", "clipboard-write", "notifications"],
   //   },
   // }],
-    [{
-      name: 'firefox',
-      use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Ventura') },
-        viewport: {width: 1440, height: 764}, 
-        locale: 'en-GB',
-      },
-    },
-    {
-      name: 'edge',
-      use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') },
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-        viewport: {width: 1440, height: 764}, 
-        locale: 'en-GB',
-      },
-    },
-    {
-      name: 'chrome',
-      use: {
-        connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
-        viewport: {width: 1440, height: 764}, 
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-        locale: 'en-GB',
-      },
-    }],
+    // [{
+    //   name: 'firefox',
+    //   use: {
+    //     connectOptions: { wsEndpoint: getCdpEndpoint('playwright-firefox@latest:OSX Ventura') },
+    //     viewport: {width: 1440, height: 764}, 
+    //     locale: 'en-GB',
+    //   },
+    // },
+    // {
+    //   name: 'edge',
+    //   use: {
+    //     connectOptions: { wsEndpoint: getCdpEndpoint('edge@latest:OSX Ventura') },
+    //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
+    //     viewport: {width: 1440, height: 764}, 
+    //     locale: 'en-GB',
+    //   },
+    // },
+    // {
+    //   name: 'chrome',
+    //   use: {
+    //     connectOptions: { wsEndpoint: getCdpEndpoint('chrome@latest:OSX Ventura') },
+    //     viewport: {width: 1440, height: 764}, 
+    //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
+    //     locale: 'en-GB',
+    //   },
+    // }],
     
 
     

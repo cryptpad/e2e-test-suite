@@ -1,14 +1,44 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
 
 let browser;
 let page;
+let context;
 
-test.beforeEach(async ({ page }, testInfo) => {
-  test.setTimeout(240000)
-  await page.goto(`${url}/sheet`);
+test.beforeEach(async ({ playwright }, testInfo) => {
   
+  test.setTimeout(2400000);
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
+  } else {
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext(testInfo.project.use);
+  }
+  page = await context.newPage();
+
+  await page.goto(`${url}/sheet`)
+  await page.waitForTimeout(15000)
+
 });
 
 // test('sheet doc - anon', async ({ page }) => {

@@ -1,6 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat, mainAccountPassword } = require('../browserstack.config.js')
+const { firefox, chromium, webkit, expect, test } = require('@playwright/test');
+const { patchCaps, caps, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat, mainAccountPassword } = require('../browserstack.config.js')
 var fs = require('fs');
 const d3 = require('d3')
 
@@ -8,33 +7,52 @@ const d3 = require('d3')
 let browser;
 let page;
 let browserName;
+let device;
+let context;
 // let pageOne;
 
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-    test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch();
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
+  } else 
+  {
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    browser = await playwright.firefox.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+        firefoxUserPrefs: {
+              'dom.events.asyncClipboard.readText': true,
+              'dom.events.testing.asyncClipboard': true,
+            },
+    });
+    context = await browser.newContext(testInfo.project.use);
   }
-
-  const context = await browser.newContext();
-  if (browserName.indexOf('firefox') == -1 ) {
-    context.grantPermissions(['clipboard-read', "clipboard-write"]);
-  } 
+  // browser = await firefox.launch({
+  //   firefoxUserPrefs: {
+  //     'dom.events.asyncClipboard.readText': true,
+  //     'dom.events.testing.asyncClipboard': true,
+  //   },
+  // })
+  context = await browser.newContext()
   page = await context.newPage();
   await page.goto(`${url}/form`)
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(5000)
-  }
+  await page.waitForTimeout(15000)
+
 });
 
 
@@ -48,10 +66,10 @@ test('form - close and open', async ({ }) => {
 
     const visible = await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).isVisible();
     
-    // if (visible === false) {
-    //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
-    //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
-    // }
+    if (visible === false) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
+    }
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).click();
     await page.waitForTimeout(3000)
@@ -80,7 +98,8 @@ test('form - close and open', async ({ }) => {
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`)
 
-    await page1.waitForTimeout(20000)
+    await page1.waitForTimeout(30000)
+    await page1.frameLocator('#sbox-iframe').getByText('Your question here?').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').getByText('Your question here?')).toBeVisible()
     await expect(page1.frameLocator('#sbox-iframe').getByText(`This form was closed on ${dateTodaySlashFormat}`)).toBeVisible();
     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' })).toBeHidden();
@@ -90,6 +109,8 @@ test('form - close and open', async ({ }) => {
     await page.waitForTimeout(1000)
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('This form is open')).toBeVisible();
 
+    await page1.reload()
+    await page1.waitForTimeout(30000)
     await expect(page1.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form was closed on ${dateTodaySlashFormat}`)).toHaveCount(0);
     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' })).toBeVisible();
 
@@ -106,27 +127,47 @@ test('form - set future closing date and open //needs user interaction + DATEINJ
 
   try {
 
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
+
+    const visible = await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).isVisible();
+    
+    if (visible === false) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
+    }
+
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).click();
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).click();
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
+    await page.waitForTimeout(3000)
+    console.log(nextMondaySlashFormat)
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor()
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible();
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
+    console.log(nextMondaySlashFormat)
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).dblclick();
+    await page.waitForTimeout(3000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
+    await page.waitForTimeout(3000)
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
 
     const context = await browser.newContext();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`)
 
-    await page1.waitForTimeout(1000)
+    await page1.waitForTimeout(60000)
+    await page1.frameLocator('#sbox-iframe').getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor()
+    await expect(page1.frameLocator('#sbox-iframe').getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible()
+
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).click();
-    await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).click();
-
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(3000)
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor()
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible();
-    await page.waitForTimeout(3000)
-    await page1.frameLocator('#sbox-iframe').getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor()
-    await expect(page1.frameLocator('#sbox-iframe').getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible();
-
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Remove closing date', exact: true }).click();
     await page.waitForTimeout(5000)
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('This form is open')).toBeVisible();
@@ -223,7 +264,7 @@ test('form - publish responses', async ({ }) => {
 test('form - view history and share at a specific moment in history', async ({ }) => {
   
   try {
-    
+
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).nth(1).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).fill('new option');

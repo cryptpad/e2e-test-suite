@@ -1,29 +1,53 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../browserstack.config.js')
+const { patchCaps, caps, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../browserstack.config.js')
 
 let pageOne;
 let browser;
 let page;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
   } else {
-    browser = await chromium.launch();
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext(testInfo.project.use);
   }
-
-  const context = await browser.newContext();
-  if (browserName.indexOf('firefox') == -1 ) {
-    context.grantPermissions(['clipboard-read', "clipboard-write"]);
-  } 
+  // browser = await firefox.launch({
+  //   firefoxUserPrefs: {
+  //     'dom.events.asyncClipboard.readText': true,
+  //     'dom.events.testing.asyncClipboard': true,
+  //   },
+  //   locale: 'en-GB',
+  // })
+  // context = await browser.newContext()
   page = await context.newPage();
+
+  await page.goto(`${url}`)
+  await page.waitForTimeout(15000)
 
 });
 
@@ -433,6 +457,7 @@ test('create test files in test-user drive', async ({ }) => {
     await page.waitForTimeout(5000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000)
+    console.log(titleDate)
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`)).toBeVisible({timeout: 5000})
     await page.waitForTimeout(3000)
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
@@ -557,6 +582,7 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
     await page.waitForTimeout(2000)
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
+    await page.waitForTimeout(10000)
 
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
     const page2Promise = page.waitForEvent('popup');
@@ -573,9 +599,10 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await expect(page2.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible()
     await page2.close()
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await page.waitForTimeout(5000)
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
     const page3Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Sheet', {exact: true}).click();
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: ' Sheet' }).click();
     const page3 = await page3Promise;
     await page3.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page3.waitForTimeout(5000)
@@ -588,9 +615,9 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await expect(page3.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible()
     await page3.close()
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
     const page4Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Code', {exact: true}).click();
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Code' }).click({timeout: 5000});
     const page4 = await page4Promise;
     await page4.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page4.waitForTimeout(5000)
@@ -603,9 +630,9 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await expect(page4.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible()
     await page4.close()
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
     const page5Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Markdown slides', {exact: true}).click();
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Markdown slides' }).click();
     const page5 = await page5Promise;
     await page5.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page5.waitForTimeout(5000)
@@ -618,9 +645,15 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await expect(page5.frameLocator('#sbox-iframe').getByText('test markdown')).toBeVisible()
     await page5.close()
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await page.reload()
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await page.waitForTimeout(2000)
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
+    await page.waitForTimeout(10000)
+
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
     const page6Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Form', {exact: true}).click();
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Form' }).click();
     const page6 = await page6Promise;
     await page6.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page6.waitForTimeout(5000)
@@ -633,9 +666,15 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await expect(page6.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible()
     await page6.close()
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await page.reload()
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await page.waitForTimeout(2000)
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
+    await page.waitForTimeout(10000)
+
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
     const page7Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Whiteboard', {exact: true}).click();
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Whiteboard' }).click();
     const page7 = await page7Promise;
     await page7.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page7.waitForTimeout(10000)
@@ -648,9 +687,15 @@ test('create test files in team drive and add avatar', async ({ }) => {
     await expect(page7.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible()
     await page7.close()
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await page.reload()
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await page.waitForTimeout(2000)
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
+    await page.waitForTimeout(10000)
+
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
     const page8Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Diagram', {exact: true}).click();
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Diagram' }).click();
     const page8 = await page8Promise;
     await page8.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page8.waitForTimeout(5000)

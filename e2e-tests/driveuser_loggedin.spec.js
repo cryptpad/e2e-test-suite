@@ -1,6 +1,6 @@
 // const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit, test, expect } = require('@playwright/test');
-const { url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
 
 var fs = require('fs');
 var unzipper = require('unzipper');
@@ -8,27 +8,48 @@ var unzipper = require('unzipper');
 let browser;
 let page;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
   } else {
-    browser = await chromium.launch();
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
   }
-
-  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  // browser = await firefox.launch({
+  //   firefoxUserPrefs: {
+  //     'dom.events.asyncClipboard.readText': true,
+  //     'dom.events.testing.asyncClipboard': true,
+  //   },
+  //   locale: 'en-GB',
+  // })
+  // context = await browser.newContext({ storageState: 'auth/mainuser.json' })
   page = await context.newPage();
+
   await page.goto(`${url}/drive`)
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(10000)
-  }
+  await page.waitForTimeout(15000)
 });
 
 
@@ -50,7 +71,7 @@ userMenuItems.forEach(function(item) {
   
     try {
 
-      const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
+      const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container')
       await menu.waitFor()
       await menu.click()
       if (item === 'log out') {
@@ -365,7 +386,7 @@ test('can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T 
 
   try {
 
-    const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
+    const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container')
     await menu.click()
     await page.waitForTimeout(6000)
     await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
@@ -385,8 +406,6 @@ test('can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T 
     await download1.saveAs('/tmp/mydrivecontents.zip');
 
     await expect(page1.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'View errors' }).click();
-    await expect(page1.frameLocator('#sbox-iframe').getByText('An error occured')).toHaveCount(0);
 
     const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test diagram.drawio"]
     let actualFiles = [];

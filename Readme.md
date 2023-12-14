@@ -29,11 +29,13 @@ Once connected, the test results can be viewed at https://automate.browserstack.
 
 ## Run tests
 
+0. To update Playwright to the latest version compatible with Browserstack, run `npm install @playwright/test@1.39.0` and then `npx playwright install`. 
+
 1. If running locally, start local CryptPad instance.
 2. If running locally or in production, change the exported variable `url` in `browserstack.config.js` to https://localhost:3000 or https://cryptpad.fr/ accordingly.
 3. If running for the first time, set test account passwords (see "Required environment for E2E testing" below).
 4. If running for the first time, seed the database, create files for storing user authentication details, and run the auth script (see "Required environment for E2E testing" below).
-5. If running tests for anonymous users, run `npx playwright test anon --project=[BROWSER_NAME]` (see "Fixtures" below).
+5. If running tests for anonymous users, run `npx playwright test anon --project=[project_]` (see "Fixtures" below).
 6. If running tests for logged-in users, run `npx playwright test loggedin --workers=1 --project=[BROWSER_NAME]` (see "Fixtures" below).
 7. To remove any extra files etc. created during the test run, run the cleanup script using `npx playwright test cleanup --workers=1 --project='chrome'`. 
 8. Once done with testing, to remove the user accounts from the database, run the teardown script using `npx playwright test teardown --workers=1 --project='chrome'`.
@@ -116,6 +118,8 @@ These tests will run in parallel mode using 2 workers (default).
 
 
 ## Multiple browser/OS testing
+
+NOTE: As of 14/12/23, the test suite only supports Chrome browser and should be run with the flag `--project=chrome@latest:OSX Ventura@browserstack`.
 
 The Chrome browser is compatible with the entire test suite and is most stable, and so is the recommended browser to run tests on. 
 Playwright Firefox doesn't allow clipboard-read/write permissions to be set in the use options, and therefore cannot be used for tests which make use of clipboard functionality. Such tests are labeled with `(FF clipboard incompatibility)` and set to skip during test runs using Firefox. See 'Known issues / bugs' below.

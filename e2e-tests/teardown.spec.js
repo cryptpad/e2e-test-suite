@@ -1,38 +1,58 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, mainAccountPassword, testUser2Password, testUserPassword, testUser3Password } = require('../browserstack.config.js')
+const { patchCaps, caps, url, mainAccountPassword, testUser2Password, testUserPassword, testUser3Password } = require('../browserstack.config.js')
 
 let page;
 let browser;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
-    test.setTimeout(2400000);
-    browserName = testInfo.project.name
-    if (browserName.indexOf('firefox') !== -1 ) {
-      browser = await firefox.launch();
-    } else if (browserName.indexOf('webkit') !== -1 ) {
-      browser = await webkit.launch();
-    } else {
-      browser = await chromium.launch();
-    }
-    const context = await browser.newContext();
-    page = await context.newPage();
+  test.setTimeout(2400000);
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
+  } else {
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.firefox.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext(testInfo.project.use);
+  }
+  page = await context.newPage();
+  await page.waitForTimeout(15000)
+  await page.goto(`${url}/login`);
+
 });
 
 let deletionMessage;
 if (url.toString() === 'https://cryptpad.fr') {
   deletionMessage = 'Your user account is now deleted'
 } else {
-  deletionMessage = 'This account was deleted by its owner'
+  deletionMessage = 'Account deletion'
 }
 
 test('delete test-user account', async ({ }) => {
 
     try {
 
-      await page.goto(`${url}/login`);
+      
       await page.getByPlaceholder('Username').fill('test-user');
       await page.waitForTimeout(10000)
       await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
@@ -44,7 +64,7 @@ test('delete test-user account', async ({ }) => {
       }
       await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })  
       await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click()
 
       await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
       const pagePromise = page.waitForEvent('popup')
@@ -58,7 +78,7 @@ test('delete test-user account', async ({ }) => {
 
       await page1.waitForTimeout(5000)
       const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
+      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('Account deletion')
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete test-user account', status: 'passed',reason: 'Can delete test-user account'}})}`);
   
@@ -73,7 +93,7 @@ test('delete testuser account', async ({ }) => {
 
     try {
   
-      await page.goto(`${url}/login`);
+      
       await page.getByPlaceholder('Username').fill('testuser');
       await page.waitForTimeout(10000)
       await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
@@ -85,7 +105,7 @@ test('delete testuser account', async ({ }) => {
       }
       await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })  
         await page.waitForTimeout(5000)
-        await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click()
 
         await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
         const pagePromise = page.waitForEvent('popup')
@@ -100,7 +120,7 @@ test('delete testuser account', async ({ }) => {
         await page1.waitForTimeout(5000)
 
         const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-        await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
+        await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('Account deletion')
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete testuser account', status: 'passed',reason: 'Can delete testuser account'}})}`);
   
@@ -115,7 +135,7 @@ test('delete test-user2 account', async ({ }) => {
 
     try {
   
-      await page.goto(`${url}/login`);
+      
       await page.getByPlaceholder('Username').fill('test-user2');
       await page.waitForTimeout(10000)
       await page.getByPlaceholder('Password', {exact: true}).fill(testUser2Password);
@@ -127,7 +147,7 @@ test('delete test-user2 account', async ({ }) => {
       }
       await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })  
       await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click()
 
       await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
       const pagePromise = page.waitForEvent('popup')
@@ -141,7 +161,7 @@ test('delete test-user2 account', async ({ }) => {
 
       await page1.waitForTimeout(5000)
       const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
+      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('Account deletion')
         
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete test-user2 account', status: 'passed',reason: 'Can delete test-user2 account'}})}`);
   
@@ -155,8 +175,7 @@ test('delete test-user2 account', async ({ }) => {
 test('delete test-user3 account', async ({ }) => {
 
     try {
-  
-      await page.goto(`${url}/login`);
+
 
       await page.getByPlaceholder('Username').fill('test-user3');
       await page.waitForTimeout(10000)
@@ -169,7 +188,7 @@ test('delete test-user3 account', async ({ }) => {
       }
       await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })  
       await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-iframe').getByAltText('User menu').click()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click()
 
       await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible()
       const pagePromise = page.waitForEvent('popup')
@@ -184,7 +203,7 @@ test('delete test-user3 account', async ({ }) => {
       await page1.waitForTimeout(5000)
       
       const text = await page.frameLocator('#sbox-iframe').locator('#cp-loading-message').textContent()
-      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('This account was deleted by its owner')
+      await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('Account deletion')
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'delete test-user3 account', status: 'passed',reason: 'Can delete test-user3 account'}})}`);
   

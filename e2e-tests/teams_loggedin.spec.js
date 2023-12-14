@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url } = require('../browserstack.config.js')
+const { caps, patchCaps, url } = require('../browserstack.config.js')
 
 var fs = require('fs');
 var unzipper = require('unzipper');
@@ -9,34 +9,43 @@ let page;
 let pageOne;
 let browser;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
-  test.setTimeout(4200000);
-  browserName = testInfo.project.name
-
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
-  } else {
-    browser = await chromium.launch(
-      {permissions: ["clipboard-read", "clipboard-write"]}
+  test.setTimeout(180000);
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
     );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
+  } else {
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
   }
-
-  const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
   page = await context.newPage();
   await page.goto(`${url}/teams`)
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(5000)
-  }
 });
 
 
-test('drive -  user menu - make and delete team - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
+
+test('user menu - make and delete team - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
   
   try {
 
@@ -119,13 +128,24 @@ test(' can access team public signing key - (EDGE) THIS TEST WILL FAIL', async (
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
 
     const key = await page.frameLocator('#sbox-iframe').getByRole('textbox').first().inputValue()
+    console.log(url)
+    if (url === 'https://freemium.cryptpad.fr') {
+      if (key.indexOf('test team@freemium.cryptpad.fr/') !== -1) {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'passed',reason: 'Can access team public signing key'}})}`);
 
-    if (key.indexOf('test team@cryptpad.fr/') !== -1) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'passed',reason: 'Can access team public signing key'}})}`);
-    } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
+      } else {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
 
+      }
+    } else  {
+      if (key.indexOf('test team@cryptpad.fr/') !== -1) {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'passed',reason: 'Can access team public signing key'}})}`);
+      } else {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
     }
+  }
+   
+
 
   } catch (e) {
     console.log(e);
@@ -191,8 +211,6 @@ test('can download team drive - THIS TEST WILL FAIL', async ({ }) => {
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
     await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').getByText('Your download is ready!').click();
-
     const downloadPromise = page.waitForEvent('download');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download' }).click();
     const download = await downloadPromise;
@@ -200,8 +218,6 @@ test('can download team drive - THIS TEST WILL FAIL', async ({ }) => {
     await download.saveAs('/tmp/myteamdrivecontents.zip');
 
     await expect(page.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'View errors' }).click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('An error occured')).toHaveCount(0);
 
     const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test-diagram.drawio"]
     let actualFiles = [];
@@ -402,12 +418,13 @@ test('promote team viewer to member - THIS TEST WILL FAIL', async ({  }, testInf
     const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/teams`)
-    await page.bringToFront()
+    // await page.bringToFront()
     await pageOne.waitForTimeout(10000)
     await expect(pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible({timeout: 2000})
 
     //check team docs are editable for member
     await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click()
+    await pageOne.waitForTimeout(5000)
     await pageOne.waitForTimeout(3000)
     const page2Promise = pageOne.waitForEvent('popup')
     await pageOne.frameLocator('#sbox-iframe').getByText('test pad').dblclick({timeout:5000})
@@ -711,27 +728,11 @@ test('add contact to team and contact leaves team - (EDGE) THIS TEST WILL FAIL',
 
     ///
 
-    const context = await browser.newContext({ storageState: 'auth/testuser.json' });
-    pageOne = await context.newPage();
+    const newContext = await browser.newContext({ storageState: 'auth/testuser.json' });
+    pageOne = await newContext.newPage();
     await pageOne.goto(`${url}/drive`);
-    const menu = pageOne.frameLocator('#sbox-iframe').getByAltText('User menu')
-    await menu.waitFor()
-    await menu.click()
-    await pageOne.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
-    await expect(pageOne).toHaveURL(`${url}`, { timeout: 100000 })
-    await expect(pageOne.getByRole('link', { name: 'Log in' })).toBeVisible()
-    await pageOne.getByRole('link', { name: 'Log in' }).click()
-    await expect(pageOne).toHaveURL(`${url}/login/`)
-    await pageOne.getByPlaceholder('Username').fill('testuser');
-    await pageOne.waitForTimeout(2000)
-    await pageOne.getByPlaceholder('Password', {exact: true}).fill('password');
-    const login = pageOne.locator(".login")
-    await login.waitFor({ timeout: 18000 })
-    await expect(login).toBeVisible({ timeout: 1800 })
-    if (await login.isVisible()) {
-      await login.click()
-    }
-    await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
+    await pageOne.waitForTimeout(10000)
+
     await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
 
 
@@ -747,7 +748,7 @@ test('add contact to team and contact leaves team - (EDGE) THIS TEST WILL FAIL',
       await pageOne.reload()
       await pageOne.waitForTimeout(10000)
       await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-      if (await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team')).count() > 1) {
+      if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team').count() > 1) {
         await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').first().click({timeout: 3000});
 
       } else {

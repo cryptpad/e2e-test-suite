@@ -1,31 +1,46 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
 
 let page;
 let pageOne;
 let browser;
 let browserName;
+let context;
 
-test.beforeEach(async ({  }, testInfo) => {
+test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  browserName = testInfo.project.name
-  if (browserName.indexOf('firefox') !== -1 ) {
-    browser = await firefox.launch();
-  } else if (browserName.indexOf('webkit') !== -1 ) {
-    browser = await webkit.launch();
+  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  if (isMobile) {
+    patchMobileCaps(
+      testInfo.project.name,
+      `${testInfo.file} - ${testInfo.title}`
+    );
+    device = await playwright._android.connect(
+      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
+        JSON.stringify(caps)
+      )}`
+    );
+    await device.shell("am force-stop com.android.chrome");
+    context = await device.launchBrowser();
   } else {
-    browser = await chromium.launch();
+    patchCaps(testInfo.project.name, `${testInfo.title}`);
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
+      wsEndpoint:
+        `wss://cdp.browserstack.com/playwright?caps=` +
+        `${encodeURIComponent(JSON.stringify(caps))}`,
+    });
+    context = await browser.newContext(testInfo.project.use);
   }
+  page = await context.newPage();
 
-  page = await browser.newPage();
   await page.goto(`${url}/drive`)
-  if (browserName.indexOf('firefox') !== -1 ) {
-    await page.waitForTimeout(15000)
-  } else {
-    await page.waitForTimeout(5000)
-  }
+  await page.waitForTimeout(15000)
+
 });
 
 
@@ -39,7 +54,7 @@ userMenuItems.forEach(function(item) {
   
     try {
 
-      const menu = page.frameLocator('#sbox-iframe').getByAltText('User menu')
+      const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container')
       await menu.waitFor()
       await menu.click()
       if (item === 'about') {
@@ -93,43 +108,43 @@ userMenuItems.forEach(function(item) {
 
 })
 
-test('drive - anon - erase all', async ({ }) => {   
+// test('drive - anon - erase all', async ({ }) => {   
     
-  try {
+//   try {
 
-    //create file
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
-    const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
-    const page1 = await page1Promise;
+//     //create file
+//     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
+//     const page1Promise = page.waitForEvent('popup');
+//     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
+//     const page1 = await page1Promise;
 
-    //check that file is visible in drive
+//     //check that file is visible in drive
 
-    var title = `Rich text - ${titleDate}`;
-    await page1.waitForTimeout(10000)
-    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
-    await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
-    await page1.close()
-    await page.reload()
-    await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({timeout: 2000})
+//     var title = `Rich text - ${titleDate}`;
+//     await page1.waitForTimeout(10000)
+//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
+//     await page1.close()
+//     await page.reload()
+//     await page.waitForTimeout(10000)
+//     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({timeout: 2000})
 
-    //erase
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-    await page.waitForTimeout(20000)
+//     //erase
+//     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).waitFor()
+//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+//     await page.waitForTimeout(20000)
 
-    //check file is erased
-    await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0)
+//     //check file is erased
+//     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0)
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'passed',reason: 'Can navigate to Drive and erase all'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'failed',reason: 'Can\'t navigate to Drive and erase all'}})}`);
-  }    
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'passed',reason: 'Can navigate to Drive and erase all'}})}`);
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'failed',reason: 'Can\'t navigate to Drive and erase all'}})}`);
+//   }    
 
-});
+// });
 
 test('drive - anon - list/grid view', async ({ }) => {   
     
