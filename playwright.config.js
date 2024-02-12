@@ -86,6 +86,7 @@ module.exports = defineConfig({
   // },
   /* Run tests in files in parallel */
   fullyParallel: true,
+  
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -98,6 +99,7 @@ module.exports = defineConfig({
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
+    locale: 'en-GB',
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000',
 
@@ -108,31 +110,56 @@ module.exports = defineConfig({
 
   projects: 
   [
-    // {
-    //   name: "playwright-firefox@latest:OSX Ventura@browserstack",
-    //   use: {
-    //     launchOptions: {
-    //       firefoxUserPrefs: {
-    //         'dom.events.asyncClipboard.readText': true,
-    //         'dom.events.testing.asyncClipboard': true,
-    //       },
-    //     }, 
-    //     locale: 'en-GB',
-    //   },
-    // },
-    
-      {
-        name: "chrome@latest:OSX Ventura@browserstack",
-        use: {
-        browserName: "chromium",
-        channel: "chrome",
+    {
+      name: "chrome@latest:OSX Ventura@browserstack",
+      use: {
+        launchOptions: {
+          // firefoxUserPrefs: {
+          //   'dom.events.asyncClipboard.readText': true,
+          //   'dom.events.testing.asyncClipboard': true,
+          // },
+        }, 
+        permissions: ["clipboard-read", "clipboard-write", "notifications"],
+        contextOptions: {
           locale: 'en-GB',
-          permissions: ["clipboard-read", "clipboard-write", "notifications"],
-          contextOptions: {
-            permissions: ['clipboard-read', 'clipboard-write']
+          permissions: ['clipboard-read', 'clipboard-write']
         },
-        },
-      }
+        locale: 'en-GB',
+      },
+    },
+    // {
+    //   name: "chrome@Samsung Galaxy S22:13@browserstack-mobile",
+    //   use: {
+    //     browserName: "chromium",
+    //     channel: "chrome",
+    //     locale: 'en-GB',
+    //       permissions: ["clipboard-read", "clipboard-write", "notifications"],
+    //       contextOptions: {
+    //         locale: 'en-GB',
+    //         permissions: ['clipboard-read', 'clipboard-write']
+    //     },
+    //   },    
+    // }  
+
+    // },
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'], 
+    //   permissions: ["clipboard-read", "clipboard-write", "notifications"],},
+    // }
+    
+      // {
+      //   name: "chrome@latest:OSX Ventura@browserstack",
+      //   use: {
+      //   browserName: "chromium",
+      //   channel: "chrome",
+      //     locale: 'en-GB',
+      //     permissions: ["clipboard-read", "clipboard-write", "notifications"],
+      //     contextOptions: {
+      //       permissions: ['clipboard-read', 'clipboard-write']
+      //   },
+      //   },
+      // }
     ],
   // [{
   //   name: 'firefox',
@@ -172,14 +199,16 @@ module.exports = defineConfig({
 
     
     /* Test against mobile viewports. */
-    // [{
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // }],
+  //   [
+  //     {
+  //     name: 'Mobile Chrome',
+  //     use: { ...devices['Pixel 5'] },
+  //   }
+  //   // {
+  //   //   name: 'Mobile Safari',
+  //   //   use: { ...devices['iPhone 12'] },
+  //   // }
+  // ]
 
     /* Test against branded browsers. */
     // {

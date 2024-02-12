@@ -22,7 +22,7 @@ test.beforeEach(async ({  }, testInfo) => {
 
 const toDelete = ['Sheet - ', 'Rich text - ', 'Kanban -', 'Markdown slides - ', 'Diagram - ', 'Whiteboard - ', 'Form - ']
 
-// toDelete.forEach((file) => {
+toDelete.forEach((file) => {
     
   test(`test-user drive - cleanup leftover files - ${file}`, async ({ }) => {
 
@@ -61,86 +61,91 @@ const toDelete = ['Sheet - ', 'Rich text - ', 'Kanban -', 'Markdown slides - ', 
     }
   });
 
-  test(`test team drive - cleanup leftover files - ${file}`, async ({ }) => {
+  // test(`test team drive - cleanup leftover files - ${file}`, async ({ }) => {
 
-    try {
+  //   try {
 
-      const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
-      page = await context.newPage();
-      await page.goto(`${url}/drive`)
-      await page.waitForTimeout(10000)
-      let elementCount = await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
+  //     const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+  //     page = await context.newPage();
+  //     await page.goto(`${url}/drive`)
+  //     await page.waitForTimeout(10000)
+  //     let elementCount = await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
 
-      if (elementCount > 0) {
-        while (elementCount > 0) {
+  //     if (elementCount > 0) {
+  //       while (elementCount > 0) {
             
-          if (elementCount > 1) {
-              await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount-1).click({ button: 'right' })
-          } else {
-              await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' })
+  //         if (elementCount > 1) {
+  //             await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount-1).click({ button: 'right' })
+  //         } else {
+  //             await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' })
+  //         }
+  //         await page.waitForTimeout(3000)
+  //         await page.frameLocator('#sbox-iframe').getByText('Destroy').click()
+  //         await page.waitForTimeout(3000)
+  //         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+  //         await page.waitForTimeout(10000)
+  //         elementCount = elementCount-1
+  //         console.log(elementCount)
+  //         console.log('done')
+  //       }
+  //     }
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup leftover test-user files', status: 'passed',reason: 'Can cleanup leftover test-user files'}})}`);
+
+  //   } catch (e) {
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup leftover test-user files', status: 'failed',reason: 'Can\'t cleanup leftover test-user files'}})}`);
+  
+  //     console.log(e);
+  //   }
+  // });
+
+  
+
+      test(`test team drive - cleanup leftover files - ${file}`, async ({ }) => {
+
+      try {
+
+        const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+        page = await context.newPage();
+        await page.goto(`${url}/teams`)
+        await page.waitForTimeout(5000)
+        await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+        await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
+        await page.waitForTimeout(5000)
+        let elementCount = await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
+
+        if (elementCount > 0) {
+          while (elementCount > 0) {
+              
+            if (elementCount > 1) {
+                await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount-1).click({ button: 'right' })
+            } else {
+                await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' })
+            }
+            await page.waitForTimeout(3000)
+            await page.frameLocator('#sbox-iframe').getByText('Destroy').click()
+            await page.waitForTimeout(3000)
+            await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+            await page.waitForTimeout(10000)
+            elementCount = elementCount-1
+            console.log(elementCount)
+            console.log('done')
           }
-          await page.waitForTimeout(3000)
-          await page.frameLocator('#sbox-iframe').getByText('Destroy').click()
-          await page.waitForTimeout(3000)
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-          await page.waitForTimeout(10000)
-          elementCount = elementCount-1
-          console.log(elementCount)
-          console.log('done')
         }
+
+
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup test-user templates', status: 'passed',reason: 'Can cleanup test-user templates'}})}`);
+
+
+      }  catch (e) {
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup test-user templates', status: 'passed',reason: 'Can cleanup test-user templates'}})}`);
+
       }
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup leftover test-user files', status: 'passed',reason: 'Can cleanup leftover test-user files'}})}`);
-
-    } catch (e) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup leftover test-user files', status: 'failed',reason: 'Can\'t cleanup leftover test-user files'}})}`);
-  
-      console.log(e);
-    }
-  });
-
-  
-
-      // test(`test team drive - cleanup leftover files - ${file}`, async ({ }) => {
-
-        
-      //   // try {}
-
-      //   //   const context = await browser.newContext({ storageState: 'auth/mainuser.json' });
-      //   //   page = await context.newPage();
-      //   //   await page.goto(`${url}/teams`)
-      //   //   await page.waitForTimeout(5000)
-      //   //   await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      //   //   await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
-      //   //   await page.waitForTimeout(5000)
-      //   //   let elementCount = await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
-  
-      //   //   if (elementCount > 0) {
-      //   //     while (elementCount > 0) {
-                
-      //   //       if (elementCount > 1) {
-      //   //           await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount-1).click({ button: 'right' })
-      //   //       } else {
-      //   //           await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' })
-      //   //       }
-      //   //       await page.waitForTimeout(3000)
-      //   //       await page.frameLocator('#sbox-iframe').getByText('Destroy').click()
-      //   //       await page.waitForTimeout(3000)
-      //   //       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-      //   //       await page.waitForTimeout(10000)
-      //   //       elementCount = elementCount-1
-      //   //       console.log(elementCount)
-      //   //       console.log('done')
-      //   //     }
-      //   //   }
-      //   //   await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'cleanup leftover test team files', status: 'passed',reason: 'Can cleanup leftover test team files}})}`);
+      
+      })
 
 
 
-      // })
-
-
-
-// })
+})
 
 test(`test-user drive - cleanup templates`, async ({ }) => {
 

@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, patchMobileCaps, caps, url, titleDate } = require('../browserstack.config.js')
 var fs = require('fs');
 
 
@@ -9,11 +9,13 @@ let pageOne;
 let browser;
 let browserName;
 let context;
+let device;
+let isMobile;
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -26,6 +28,8 @@ test.beforeEach(async ({ playwright }, testInfo) => {
     );
     await device.shell("am force-stop com.android.chrome");
     context = await device.launchBrowser();
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
   } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
     delete caps.osVersion;
@@ -103,9 +107,19 @@ test('markdown - toggle toolbar', async ({ }) => {
   
   try {
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').waitFor()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden();
    
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'markdown - input text into editor', status: 'passed',reason: 'Can input '}})}`);
@@ -126,11 +140,21 @@ test('markdown - toggle preview', async ({  }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Preview' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
+
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Preview' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeHidden();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Preview' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
+
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Preview' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeVisible();
    
@@ -151,7 +175,11 @@ test('anon - slide - make a copy', async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await page.waitForTimeout(5000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
     const page1 = await page1Promise;
@@ -178,7 +206,11 @@ test(`slide - export (md)`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await page.waitForTimeout(5000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test markdown');
     
@@ -212,21 +244,23 @@ test(`slide - share at a moment in history - (FF clipboard incompatibility)`, as
 
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('One moment in history');
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(7000)
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('');
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Another moment in history');
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(7000)
 
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('');
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Yet another moment in history');
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(7000)
     
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -250,7 +284,7 @@ test(`slide - share at a moment in history - (FF clipboard incompatibility)`, as
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can share Markdown at a specific moment in history - (FF clipboard incompatibility)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t share Markdown at a specific moment in history - (FF clipboard incompatibility)'}})}`);
 
   }  
 });
@@ -263,11 +297,13 @@ test(`slide - history (previous version)`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await page.waitForTimeout(5000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -290,7 +326,11 @@ test(`markdown - import file`, async ({ }) => {
 
     const fileChooserPromise = page.waitForEvent('filechooser');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
 
     const fileChooser = await fileChooserPromise;
@@ -309,5 +349,10 @@ test(`markdown - import file`, async ({ }) => {
 });
 
 test.afterEach(async ({  }) => {
-  await browser.close()
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });

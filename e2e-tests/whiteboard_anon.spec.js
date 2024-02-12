@@ -1,16 +1,18 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url } = require('../browserstack.config.js')
+const { patchCaps, patchMobileCaps, caps, url } = require('../browserstack.config.js')
 
 let browser;
 let page;
 let browserName;
 let context;
+let device;
+let isMobile;
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -87,5 +89,10 @@ test('anon - can draw on whiteboard (default settings)', async ({ }) => {
 });
 
 test.afterEach(async ({  }) => {
-  await browser.close()
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });

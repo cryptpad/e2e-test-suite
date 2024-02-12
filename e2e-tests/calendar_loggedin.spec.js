@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { caps, patchCaps, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat, minutes, hours, todayStringFormat, year } = require('../browserstack.config.js')
+const { mainAccountPassword, caps, patchCaps, patchMobileCaps, url, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat, minutes, hours, todayStringFormat, year } = require('../browserstack.config.js')
 
 
 
@@ -8,12 +8,15 @@ let browser;
 let page;
 let pageOne;
 let browserName;
+let isMobile
 let context
+let device
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  console.log('issmob', isMobile)
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -25,9 +28,21 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       )}`
     );
     await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-  } else 
-  {
+    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
+    page = await context.newPage();
+    await page.goto(`${url}/login`)
+    await page.getByPlaceholder('Username').fill('test-user');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    await page.waitForTimeout(5000)
+    if (await login.isVisible()) {
+      await login.click()
+    }
+    await page.waitForTimeout(10000)
+  } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
 
     browser = await playwright.firefox.connect({
@@ -51,6 +66,11 @@ test.beforeEach(async ({ playwright }, testInfo) => {
   page = await context.newPage();
   await page.goto(`${url}/calendar`)
   await page.waitForTimeout(15000)
+  if (await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count() > 0) {
+    await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+  }
 
 });
 
@@ -60,27 +80,38 @@ test('create and delete event in calendar', async ({ }) => {
   try {
 
     //create event
-    
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({force:true});
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    }
+
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').press('Tab');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
-    //set date
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
-    await page.keyboard.press('Enter')
-
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
-    await page.keyboard.press('Enter')
+    //set date 
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
 
     //delete
@@ -106,30 +137,46 @@ test('create and delete repeating event in calendar', async ({ }) => {
 
     //create event
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({force:true});
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').press('Tab');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
-    //set date and time
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
-    await page.frameLocator('#sbox-iframe').getByLabel(`${todayStringFormat}`).nth(1).click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+     //make repeating
+     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' }).click();
+    //  await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' }).click();
+     await page.frameLocator('#sbox-iframe').getByRole('link', { name: `Weekly on ${weekday}` }).click();
+     await page.waitForTimeout(3000)
 
-    //make repeating
-    await page.frameLocator('#sbox-iframe').getByText('RepeatOne timeOne timeDaily').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Weekly' }).click();
-    await page.waitForTimeout(3000)
+    //set date and time
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+      // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+    }
+
+   
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
     await page.waitForTimeout(3000)
 
@@ -164,31 +211,38 @@ test('create event in calendar and edit location', async ({ }) => {
 
     //create event
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({force:true});
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').press('Tab');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     //set date
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Year' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Year' }).fill(`${year}`);
-    await page.frameLocator('#sbox-iframe').getByLabel(`${todayStringFormat}`).nth(1).click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-
-    //set time
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+      // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+    }
 
     //set location
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').click();
@@ -208,7 +262,7 @@ test('create event in calendar and edit location', async ({ }) => {
     //check location changed
     await page.reload()
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Location: somewhere else')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').getByText('somewhere else')).toBeVisible();
 
     //delete event
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
@@ -229,46 +283,73 @@ test('create event in calendar and edit time', async ({ }) => {
   try {
 
     //create event
+
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({force:true});
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').press('Tab');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     //set date
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Year' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Year' }).fill(`${year}`);
-    await page.frameLocator('#sbox-iframe').getByLabel(`${todayStringFormat}`).nth(1).click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+      // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+    }
 
-    //set time
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
-    await page.keyboard.press('Enter')
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
 
     //edit time
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('15');
+    
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).waitFor()
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).click();
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:15`);
+      // await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').fill('2024-01-02T21:15');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+      // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('15');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Update' }).click();
-    await page.waitForTimeout(5000)
-
+    await page.waitForTimeout(3000)
     //check time changed
     await page.reload()
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
@@ -294,44 +375,68 @@ test('create event in calendar and edit date', async ({ }) => {
 
     //create event
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({force:true});
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').press('Tab');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     //set time
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
-    await page.keyboard.press('Enter')
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+      // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({timeout: 3000});
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
 
     // //edit date
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click({timeout: 10000});
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
-    await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).nth(1).click({timeout: 3000})
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${nextMondayDashFormat}T20:00`);
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${nextMondayDashFormat}T20:30`);
+      await page.keyboard.press('Enter')
+
+    } else {
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor()
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
+      await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).nth(1).click({timeout: 3000})
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').waitFor()
+      await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
+      await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).first().click({timeout: 3000})
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
+      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await page.keyboard.press('Enter')
+
+    }
     
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').waitFor()
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
-    await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).first().click({timeout: 3000})
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-    await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
-    await page.keyboard.press('Enter')
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Update' }).click();
     await page.waitForTimeout(7000)
 
@@ -371,7 +476,13 @@ test('create new calendar and edit calendar in event', async ({ }) => {
     await page.waitForTimeout(5000)
 
     //create event as part of calendar
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({force:true});
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).waitFor();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New event' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Title').fill('test event');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save' }).click();
@@ -409,7 +520,13 @@ test('create new calendar and edit calendar in event', async ({ }) => {
 });
 
 
-test.afterEach(async () => {
-  await browser.close()
+
+test.afterEach(async ({  }) => {
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });
 

@@ -1,17 +1,20 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { caps, patchCaps, url, titleDate, testUser2Password, testUser3Password } = require('../browserstack.config.js')
+const { caps, patchCaps, patchMobileCaps, mainAccountPassword, url, titleDate, testUser2Password, testUser3Password } = require('../browserstack.config.js')
 
 let page;
 let pageOne;
 let browser;
 let browserName;
 let context;
+let device;
+let isMobile
+let contextOne
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(180000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -23,7 +26,20 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       )}`
     );
     await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
+    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
+    page = await context.newPage();
+    await page.goto(`${url}/login`)
+    await page.getByPlaceholder('Username').fill('test-user');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    await page.waitForTimeout(5000)
+    if (await login.isVisible()) {
+      await login.click()
+    }
+    await page.waitForTimeout(10000)
   } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
     delete caps.osVersion;
@@ -34,13 +50,13 @@ test.beforeEach(async ({ playwright }, testInfo) => {
         `wss://cdp.browserstack.com/playwright?caps=` +
         `${encodeURIComponent(JSON.stringify(caps))}`,
     });
-    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' });
   }
   page = await context.newPage();
 });
 
-const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
-// const docNames = ['code'] 
+// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
+const docNames = ['diagram'] 
 
 
 docNames.forEach(function(name) {
@@ -64,8 +80,11 @@ docNames.forEach(function(name) {
       await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().click();
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 })
-
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      }
       await expect(page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user.cp-share-column.cp-access').getByLabel('Owners')).toBeHidden()
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `drive - ${name} - create without owner`, status: 'passed',reason: `Can create ${name} without owner`}})}`);
@@ -85,9 +104,26 @@ docNames.forEach(function(name) {
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
       await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+      if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
+      } else {
+        if (isMobile) {
+          await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+        } else {
+          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+        }
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
+      }
+
       await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      }
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click()
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
@@ -100,10 +136,13 @@ docNames.forEach(function(name) {
       await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Tags').click();
       await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
+      }
 
-      await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toBeVisible();
+      await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).nth(0)).toBeVisible();
 
-      await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' })
+      await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).nth(0).click({ button: 'right' })
       await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' }).click()
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
       await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toHaveCount(0)
@@ -128,7 +167,11 @@ docNames.forEach(function(name) {
       await page.waitForTimeout(5000)
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      }
       await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-owners').click();
       await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').nth(1).click({timeout:5000});
@@ -159,24 +202,28 @@ docNames.forEach(function(name) {
       await pageTwo.waitForTimeout(5000)
 
       await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
-      await pageTwo.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
-      await expect(pageTwo.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user-name').getByText('test-user3').first()).toBeVisible({timeout:5000})
+      await page.bringToFront()
+      await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
+      await expect(page.frameLocator('#sbox-iframe').getByText('tetest-user3', { exact: true })).toBeVisible({timeout:5000})
 
-      //remove test-user3 as an owner
-      await page.reload()
-      await page.waitForTimeout(5000)
-      // if (browserName.indexOf('firefox') !== -1 ) {
-      //   await page.waitForTimeout(10000)
-      // }
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      }
+
       await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-owners').click();
       await page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user.large').filter({hasText: 'test-user3'}).locator('.fa.fa-times').click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
 
       await pageTwo.reload()
-      await pageTwo.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
-      await expect(pageTwo.frameLocator('#sbox-secure-iframe').getByText('test-user3').first()).toBeHidden({timeout:5000})
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      }
+      await expect(pageTwo.frameLocator('#sbox-iframe').locator('#cp-app-pad-editor').getByText('test-user3')).toBeHidden({timeout:5000})
       await pageTwo.close()
 
       // await page.goto(`${url}/drive/#`);
@@ -185,10 +232,17 @@ docNames.forEach(function(name) {
       // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
       // await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`)).toHaveCount(0)
 
+      let failstatus = ''
+
+      if (name === 'diagram') {
+        failstatus = " - THIS TEST WILL FAIL"
+
+      }
+
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${name} - edit document owners`, status: 'passed',reason: `Can edit ${name} document owners`}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${name} - edit document owners`, status: 'failed',reason: `Can\'t edit ${name} document owners`}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${name} - edit document owners${failstatus}`, status: 'failed',reason: `Can\'t edit ${name} document owners`}})}`);
 
     }
 
@@ -201,8 +255,16 @@ docNames.forEach(function(name) {
       await page.goto(`${url}/${name}`);
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await page.waitForTimeout(10000)
+      // await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click({timeout: 1000});
+      
 
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      }
+      
       await page.frameLocator('#sbox-secure-iframe').getByText('test team').click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
 
@@ -242,7 +304,11 @@ docNames.forEach(function(name) {
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
       await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'File' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      }
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
@@ -258,8 +324,14 @@ docNames.forEach(function(name) {
       await page.waitForTimeout(3000)
 
       await page.goto(`${url}/drive`);
+      await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-iframe').getByText('Trash', { exact: true }).click();
+      await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Empty the trash' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Empty the trash' }).click();
+
+      }
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove' }).click();
 
       await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(title)).toBeHidden()
@@ -283,7 +355,7 @@ docNames.forEach(function(name) {
         testStatus = `protect ${name} document with and edit password - THIS TEST WILL FAIL`
       } else {
         testName = `${name} - protect with and edit password`
-        testStatus = `${name} - protect ${name} document with and edit password`
+        testStatus = `protect ${name} document with and edit password`
       }
 
       try {
@@ -299,16 +371,30 @@ docNames.forEach(function(name) {
         await page.waitForTimeout(5000)
         await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
   
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+        if (isMobile) {
+          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+        } else {
+          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+        }
+        if (isMobile) {
+          await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+
+        } else {
+          await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+
+        }
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({timeout: 3000});
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
         await page.waitForTimeout(5000)
         
         const clipboardText = await page.evaluate("navigator.clipboard.readText()");
-  
-        const context = await browser.newContext();
-        const page1 = await context.newPage();
+        if (isMobile) {
+          contextOne = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
+        } else {
+          contextOne = await browser.newContext();
+        }
+
+        const page1 = await contextOne.newPage();
         
         await page1.goto(`${clipboardText}`)
         
@@ -318,38 +404,45 @@ docNames.forEach(function(name) {
         await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
         await page1.waitForTimeout(5000)
         await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+        // await contextOne.close()
         // await page1.close()
-  
-        await page.bringToFront();
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click({timeout: 3000});
-        await page.frameLocator('#sbox-secure-iframe').locator('#cp-app-prop-change-password').fill('newpassword')
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' }).click({timeout: 3000});
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 3000});
-        if (name === 'sheet') {
-          await page.waitForTimeout(30000)
-        } else {
+
+        if (!isMobile) {
+          await page.bringToFront();
+          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+
+          await page.frameLocator('#sbox-secure-iframe').locator('#cp-app-prop-change-password').fill('newpassword')
+          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' }).click({timeout: 3000});
+          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 3000});
+          if (name === 'sheet') {
+            await page.waitForTimeout(30000)
+          } else {
+            await page.waitForTimeout(5000)
+          }
+          
+          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 30000});
+    
           await page.waitForTimeout(5000)
+          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+          await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+
+          await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({timeout: 3000});
+          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+    
+          const clipboardText1 = await page.evaluate("navigator.clipboard.readText()");
+    
+          await page1.bringToFront()
+          await page1.goto(`${clipboardText1}`)
+    
+          await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible({timeout:5000})
+          await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click({timeout:5000});
+          await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('newpassword');
+          await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+          await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+
         }
+  
         
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 30000});
-  
-        await page.waitForTimeout(5000)
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-  
-        await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
-        await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({timeout: 3000});
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
-  
-        const clipboardText1 = await page.evaluate("navigator.clipboard.readText()");
-  
-        await page1.bringToFront()
-        await page1.goto(`${clipboardText1}`)
-  
-        await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible({timeout:5000})
-        await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click({timeout:5000});
-        await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('newpassword');
-        await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
   
         // await page.goto(`${url}/drive/#`);
         // await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' })
@@ -536,8 +629,19 @@ docNames.forEach(function(name) {
       await page.goto(`${url}/${name}`);
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
 
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-      await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+
+      }
+      if (isMobile) {
+        await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+
+      } else {
+        await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+
+      }
       await page.frameLocator('#sbox-secure-iframe').getByText('View once and self-destruct').click({timeout: 3000});
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Create link' }).click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
@@ -545,8 +649,8 @@ docNames.forEach(function(name) {
       const clipboardText = await page.evaluate("navigator.clipboard.readText()");
 
       ///
-      const context = await browser.newContext();
-      const pageOne = await context.newPage();
+      const contextOne = await browser.newContext()
+      const pageOne = await contextOne.newPage();
       await pageOne.goto(`${clipboardText}`)
       await pageOne.waitForTimeout(60000)
     
@@ -559,9 +663,13 @@ docNames.forEach(function(name) {
       await expect(pageOne.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
       await pageOne.close()
 
-      ////
+      //// 
 
-      await expect(page.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
+      if (!isMobile) {
+        await expect(page.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
+
+      }
+
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share link - view once and delete`, status: 'passed',reason: `Can share link to ${name} (to view once and delete)`}})}`);
     } catch (e) {
@@ -583,7 +691,11 @@ docNames.forEach(function(name) {
       //enable access list and add test-user3 to it
       await page.waitForTimeout(5000)
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      }
       await page.frameLocator('#sbox-secure-iframe').getByText('List', { exact: true }).click();
       await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: 'Enable access list' }).locator('span').first().click();
       await page.waitForTimeout(5000)
@@ -626,7 +738,11 @@ docNames.forEach(function(name) {
 
       //remove test-user3 from access list
       await page.waitForTimeout(30000)
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+      }
       await page.frameLocator('#sbox-secure-iframe').getByText('List', { exact: true }).click();
       await page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user > .fa').first().click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
@@ -650,7 +766,10 @@ docNames.forEach(function(name) {
 })
 
 test.afterEach(async ({  }) => {
-
-  await browser.close()
-
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });

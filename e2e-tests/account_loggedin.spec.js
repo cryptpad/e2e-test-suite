@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url, mainAccountPassword } = require('../browserstack.config.js')
+const { patchCaps, patchMobileCaps, caps, url, mainAccountPassword, testUser2Password } = require('../browserstack.config.js')
 
 var fs = require('fs');
 
@@ -10,12 +10,16 @@ let pageOne;
 let browser;
 let browserName;
 let context;
+let device;
+let contextOne;
+let isMobile
 
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  // console.log('mb', isMobile[0])
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -27,23 +31,38 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       )}`
     );
     await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-  } else 
-  {
+    context = await device.launchBrowser({ permissions: ["clipboard-read", "clipboard-write"] });
+    page = await context.newPage();
+    await page.goto(`${url}/login`)
+    await page.getByPlaceholder('Username').fill('test-user');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    await page.waitForTimeout(5000)
+    if (await login.isVisible()) {
+      await login.click()
+    }
+    await page.waitForTimeout(10000)
+    await page.goto(`${url}`)
+    await page.waitForTimeout(15000)
+
+  } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
-    // delete caps.osVersion;
-    // delete caps.deviceName;
-    // delete caps.realMobile;
-    browser = await playwright.firefox.connect({
+    delete caps.osVersion;
+    delete caps.deviceName;
+    delete caps.realMobile;
+    browser = await playwright.chromium.connect({
       wsEndpoint:
         `wss://cdp.browserstack.com/playwright?caps=` +
         `${encodeURIComponent(JSON.stringify(caps))}`,
-        firefoxUserPrefs: {
-              'dom.events.asyncClipboard.readText': true,
-              'dom.events.testing.asyncClipboard': true,
-            },
     });
     context = await browser.newContext({ storageState: 'auth/mainuser.json' });
+    page = await context.newPage();
+
+    await page.goto(`${url}`)
+    await page.waitForTimeout(15000)
   }
   // browser = await firefox.launch({
   //   firefoxUserPrefs: {
@@ -52,10 +71,7 @@ test.beforeEach(async ({ playwright }, testInfo) => {
   //   },
   // })
   // context = await browser.newContext({ storageState: 'auth/mainuser.json' })
-  page = await context.newPage();
-
-  await page.goto(`${url}`)
-  await page.waitForTimeout(15000)
+  
 
 });
 
@@ -74,8 +90,8 @@ test('sign up and delete account', async ({}) => {
     await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
     await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
     
-    const username = (Math.random() + 1).toString(36).substring(7);
-    const password = (Math.random() + 1).toString(36).substring(7);
+    const username = (Math.random() + 1).toString(36)
+    const password = (Math.random() + 1).toString(36)
     console.log(username)
     console.log(password)
     await page.getByRole('link', { name: 'Sign up' }).click();
@@ -202,7 +218,7 @@ test(' can change password', async ({ }) => {
     await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).waitFor()
     await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
     
-    await page.waitForTimeout(15000)
+    await page2.waitForTimeout(5000)
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' change password', status: 'failed',reason: 'Can\'t change password'}})}`);
     
@@ -304,251 +320,274 @@ test(' can access public signing key', async ({ }) => {
 
 });
 
-test('add other user as contact and decline request - (FF clipboard incompatibility)', async ({ }) => {
+// if (isMobile === 'browserstack-mobile') {
 
-  try {
-    
-       //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-    
-    //user 2: log in
-    const context = await browser.newContext({ storageState: 'auth/testuser2.json' });
-    // if (browserName.indexOf('firefox') == -1 ) {
-    //   context.grantPermissions(['clipboard-read', "clipboard-write"]);
-    // } 
-    pageOne = await context.newPage();
-    await pageOne.goto(`${url}/profile`)
-    await page.waitForTimeout(15000)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await pageOne.waitForTimeout(15000)
-    // } else {
-    //   await pageOne.waitForTimeout(5000)
-    // }
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    const testuser2ProfileLink = await pageOne.evaluate("navigator.clipboard.readText()");
-    
-    await page.goto(`${testuser2ProfileLink}`)
-    await page.waitForTimeout(15000)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await page.waitForTimeout(15000)
-    // } else {
-    //   await page.waitForTimeout(5000)
-    // }
-    
-    //user 1: send user request to user 2 
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
-    await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
+  test('add other user as contact and decline request - (FF clipboard incompatibility)', async ({ }) => {
 
-    //user 2: decline contact request
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-    await pageOne.waitForTimeout(5000)
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).waitFor()
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).click();
-    await pageOne.close()
-    ////
-
-    //user 1: be notified of declined request
-    await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-    await page.waitForTimeout(5000)
-    if (await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').isHidden()) {
+    try {
+      
+      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
+      
+      await pageOne.goto(`${url}/profile`)
+      await pageOne.waitForTimeout(15000)
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      const testuser2ProfileLink = await pageOne.evaluate("navigator.clipboard.readText()");
+      
+      await page.goto(`${testuser2ProfileLink}`)
+      await page.waitForTimeout(15000)
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
+      
+      //user 1: send user request to user 2 
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
+      await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
+  
+      //user 2: decline contact request
+      await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+      await pageOne.waitForTimeout(5000)
+      await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
+      await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).waitFor()
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).click();
+      await pageOne.close()
+      ////
+  
+      //user 1: be notified of declined request
+      await page.waitForTimeout(10000)
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
       await page.waitForTimeout(5000)
-    }
-    await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').waitFor()
-    await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request')).toBeVisible();
+      if (await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').isHidden()) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+        await page.waitForTimeout(5000)
+      }
+      await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').waitFor()
+      await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request')).toBeVisible();
+  
+         
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t add and remove other user as contact - (FF clipboard incompatibility)'}})}`);
+    } 
+  
+  });
+  
+  test(' add and remove other user as contact - (FF clipboard incompatibility)', async ({ }) => {
 
-       
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t add and remove other user as contact - (FF clipboard incompatibility)'}})}`);
-  } 
+    test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
 
-});
-
-test(' add and remove other user as contact - (FF clipboard incompatibility)', async ({ }) => {
-
-  try {
-       //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-
-    //user 2: log in
-    const context = await browser.newContext({ storageState: 'auth/testuser2.json' });
-    // if (browserName.indexOf('firefox') == -1 ) {
-    //  context.grantPermissions(['clipboard-read', "clipboard-write"]);
-    // } 
-    pageOne = await context.newPage();
-    await pageOne.goto(`${url}/profile`)
-    await pageOne.waitForTimeout(15000)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await pageOne.waitForTimeout(15000)
-    // } else {
-    //   await pageOne.waitForTimeout(5000)
-    // }
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    const testuser2ProfileLink = await pageOne.evaluate("navigator.clipboard.readText()");
-    
-    await page.goto(`${testuser2ProfileLink}`)
-    await page.waitForTimeout(15000)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await page.waitForTimeout(15000)
-    // } else {
-    //   await page.waitForTimeout(5000)
-    // }
-    
-    //user 1: send user request to user 2 
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
-    await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
-
-    //user 2: accept contact request
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-    await pageOne.waitForTimeout(5000)
-
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
-    await pageOne.close()
-    ////
-
-    //user 1: remove contact
-    await page.goto(`${url}/drive/`)
-    await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-    await page.waitForTimeout(5000)
-    if (await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden()) {
+  
+    try {
+         //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+  
+      //user 2: log in
+      contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
+      pageOne = await contextOne.newPage();
+      await pageOne.goto(`${url}/profile`)
+      await pageOne.waitForTimeout(15000)
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await pageOne.waitForTimeout(15000)
+      // } else {
+      //   await pageOne.waitForTimeout(5000)
+      // }
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      const testuser2ProfileLink = await pageOne.evaluate("navigator.clipboard.readText()");
+      
+      await page.goto(`${testuser2ProfileLink}`)
+      await page.waitForTimeout(15000)
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
+      
+      //user 1: send user request to user 2 
+      if ( await page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel').count() === 1) {
+        await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'Cancel'}).click();
+        await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to cancel your contact request with test-user2?')).toBeVisible();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      } else if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).count() === 1) {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).click()
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      }
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
+      await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
+  
+      //user 2: accept contact request
+      await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+      await pageOne.waitForTimeout(5000)
+  
+      await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
+      await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+      await pageOne.close()
+      ////
+  
+      //user 1: remove contact
+      await page.goto(`${url}/drive/`)
+      await page.waitForTimeout(10000)
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
       await page.waitForTimeout(5000)
-    }
-    await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').waitFor()
-    await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request')).toBeVisible();
+      if (await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden()) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+        await page.waitForTimeout(5000)
+      }
+      await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').waitFor()
+      await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request')).toBeVisible();
+  
+      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'test-user2 accepted your contact request' }).locator('div').nth(1).click()
+      await page.goto(`${testuser2ProfileLink}`);
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).click();
+      await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to remove test-user2 from your contacts?')).toBeVisible();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await page.waitForTimeout(5000)
+      await expect(page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'})).toBeVisible()
+         
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t add and remove other user as contact - (FF clipboard incompatibility)'}})}`);
+    } 
+  
+  });
+  
+  
+  test('request and cancel to add user as contact - (FF clipboard incompatibility)', async ({ }) => {
+  
+    try {
+  
+      //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
 
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'test-user2 accepted your contact request' }).locator('div').nth(1).click()
-    await page.goto(`${testuser2ProfileLink}`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to remove test-user2 from your contacts?')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-    await page.waitForTimeout(5000)
-    await expect(page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'})).toBeVisible()
-       
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact', status: 'passed',reason: 'Can add and remove other user as contact'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' add and remove other user as contact - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t add and remove other user as contact - (FF clipboard incompatibility)'}})}`);
-  } 
-
-});
-
-
-test('request and cancel to add user as contact - (FF clipboard incompatibility)', async ({ }) => {
-
-  try {
-
-    //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-
-    //user 2: log in
-    const context = await browser.newContext({ storageState: 'auth/testuser2.json' });
-    // if (browserName.indexOf('firefox') == -1 ) {
-    //  context.grantPermissions(['clipboard-read', "clipboard-write"]);
-    // } 
-    pageOne = await context.newPage();
-    await pageOne.goto(`${url}/profile`)
-    await page.waitForTimeout(15000)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await pageOne.waitForTimeout(15000)
-    // } else {
-    //   await pageOne.waitForTimeout(5000)
-    // }
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    const testuser2ProfileLink = await pageOne.evaluate("navigator.clipboard.readText()");
-    
-    await page.goto(`${testuser2ProfileLink}`)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await page.waitForTimeout(15000)
-    // } else {
-    //   await page.waitForTimeout(5000)
-    // }
-    await page.waitForTimeout(15000)
-    
-    //user 1: send user request to user 2 
-    if ( await page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel').count() === 1) {
+  
+      //user 2: log in
+      const context = await browser.newContext({ storageState: 'auth/testuser2.json' });
+      // if (browserName.indexOf('firefox') == -1 ) {
+      //  context.grantPermissions(['clipboard-read', "clipboard-write"]);
+      // } 
+      pageOne = await context.newPage();
+      await pageOne.goto(`${url}/profile`)
+      await page.waitForTimeout(15000)
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await pageOne.waitForTimeout(15000)
+      // } else {
+      //   await pageOne.waitForTimeout(5000)
+      // }
+      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      const testuser2ProfileLink = await pageOne.evaluate("navigator.clipboard.readText()")
+      await page.bringToFront()
+      console.log(testuser2ProfileLink)
+      await page.goto(`${testuser2ProfileLink}`)
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
+      await page.waitForTimeout(15000)
+      
+      //user 1: send user request to user 2 
+      if ( await page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel').count() === 1) {
+        await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'Cancel'}).click();
+        await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to cancel your contact request with test-user2?')).toBeVisible();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      } else if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).count() === 1) {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove this contact' }).click()
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      } 
+  
+      await page.waitForTimeout(3000)
+  
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
+      await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
+      
       await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'Cancel'}).click();
       await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to cancel your contact request with test-user2?')).toBeVisible();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-    }
+      await expect(page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'})).toBeVisible()
+  
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' request and cancel to add user as contact', status: 'passed',reason: 'Can request to add user as contact and cancel request'}})}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' request and cancel to add user as contact - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t request to add user as contact and cancel request - (FF clipboard incompatibility)'}})}`);
+    }  
+  
+  });
+  
+  
+  test('chat with contacts and erase message history - THIS TEST WILL FAIL', async ({ }) => {
+  
+    try {
+  
+      //user 1: send message
+      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
 
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
-    await expect(page.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
-    
-    await page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'Cancel'}).click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Are you sure you want to cancel your contact request with test-user2?')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-    await expect(page.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'})).toBeVisible()
+      await page.goto(`${url}/contacts/`);
+      await page.waitForTimeout(15000)
+      // if (browserName.indexOf('firefox') !== -1 ) {
+      //   await page.waitForTimeout(15000)
+      // } else {
+      //   await page.waitForTimeout(5000)
+      // }
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' request and cancel to add user as contact', status: 'passed',reason: 'Can request to add user as contact and cancel request'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' request and cancel to add user as contact - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t request to add user as contact and cancel request - (FF clipboard incompatibility)'}})}`);
-  }  
 
+      await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('testuser').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('testuser').click();
+
+      if (await page.frameLocator('#sbox-iframe').getByText('hello').count() > 0) {
+        await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-messaging div').filter({ hasText: /^tetestuser$/ }).locator('span').nth(4).click();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      }
+      await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill('hello');
+      await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
+  
+      ///
+      //user 2: log in 
+      const context = await browser.newContext({ storageState: 'auth/testuser.json' });
+      pageOne = await context.newPage();
+      await pageOne.goto(`${url}/contacts/`);
+      await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').waitFor({timeout: 10000});
+      await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').click();
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toBeVisible()
+      await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
+      await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill('hello to you too!');
+      await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
+      ////
+  
+      //user 1: view user 2's message and erase message history
+      await expect(page.frameLocator('#sbox-iframe').getByText('hello to you too!')).toBeVisible()
+      await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-messaging div').filter({ hasText: /^tetestuser$/ }).locator('span').nth(4).click();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await expect(page.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0)
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0)
+         
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'chat with contacts and erase message history', status: 'passed',reason: 'Can chat with contacts and erase chat history '}})}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'chat with contacts and erase message history - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t chat with contacts and erase chat history - THIS TEST WILL FAIL'}})}`);
+    }  
+  
+  });
+
+// }
+
+
+
+
+test.afterEach(async ({  }) => {
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });
-
-
-test('chat with contacts and erase message history - THIS TEST WILL FAIL', async ({ }) => {
-
-  try {
-
-    //user 1: send message
-
-    await page.goto(`${url}/contacts/`);
-    await page.waitForTimeout(15000)
-    // if (browserName.indexOf('firefox') !== -1 ) {
-    //   await page.waitForTimeout(15000)
-    // } else {
-    //   await page.waitForTimeout(5000)
-    // }
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('testuser').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('testuser').click();
-    await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill('hello');
-    await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
-
-    ///
-    //user 2: log in 
-    const context = await browser.newContext({ storageState: 'auth/testuser.json' });
-    pageOne = await context.newPage();
-    await pageOne.goto(`${url}/contacts/`);
-    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').waitFor({timeout: 10000});
-    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toBeVisible()
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill('hello to you too!');
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
-    ////
-
-    //user 1: view user 2's message and erase message history
-    await expect(page.frameLocator('#sbox-iframe').getByText('hello to you too!')).toBeVisible()
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-messaging div').filter({ hasText: /^tetestuser$/ }).locator('span').nth(4).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0)
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0)
-       
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'chat with contacts and erase message history', status: 'passed',reason: 'Can chat with contacts and erase chat history '}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'chat with contacts and erase message history - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t chat with contacts and erase chat history - THIS TEST WILL FAIL'}})}`);
-  }  
-
-});
-
-
-test.afterEach(async () => {
-  await browser.close()
-});
-

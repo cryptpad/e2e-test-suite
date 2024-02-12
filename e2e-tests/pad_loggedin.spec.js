@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { caps, patchCaps, url, titleDate } = require('../browserstack.config.js')
+const { caps, patchCaps, patchMobileCaps, mainAccountPassword, url, titleDate } = require('../browserstack.config.js')
 
 var fs = require('fs');
 
@@ -10,11 +10,14 @@ let pageOne;
 let browser;
 let browserName;
 let context;
+let device
+let isMobile
+let contextOne
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(180000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -26,7 +29,20 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       )}`
     );
     await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
+    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
+    page = await context.newPage();
+    await page.goto(`${url}/login`)
+    await page.getByPlaceholder('Username').fill('test-user');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    await page.waitForTimeout(5000)
+    if (await login.isVisible()) {
+      await login.click()
+    }
+    await page.waitForTimeout(10000)
   } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
     delete caps.osVersion;
@@ -51,14 +67,22 @@ test(`pad - save as and import template`, async ({}) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('example template content');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example pad template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000)
     await page.goto(`${url}/pad/`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example pad template' }).nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('example template content')).toBeVisible();
@@ -80,69 +104,96 @@ test(`pad - save as and import template`, async ({}) => {
   }  
 });
 
-test(`pad - history (previous author) - (FF clipboard incompatibility)`, async ({ }, testInfo) => {
+if (isMobile) {
 
-  try {
+  test(`pad - history (previous author) - (FF clipboard incompatibility)`, async ({ }, testInfo) => {
 
-       //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+    try {
+  
+         //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
+  
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+  
+      await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
+      await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Test text by test-user');
+  
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      }
+      if (isMobile) {
+        await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+      } else {
+        await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+  
+      }
+      await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
+      await page.frameLocator('#sbox-secure-iframe').getByRole('button', {name: 'Copy link'}).click();
+      const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+  
+      if (isMobile) {
+        contextOne = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
+      } else {
+        contextOne = await browser.newContext();
+      }
+      pageOne = await contextOne.newPage()
+      await pageOne.goto(`${clipboardText}`)
+      await pageOne.waitForTimeout(5000)
+      await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
+      await pageOne.keyboard.press('Enter')
+      await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Some more test text by anon');
+      await pageOne.keyboard.press('Enter')
+      await pageOne.waitForTimeout(5000)
+  
+      await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And here is more text by anon');
+      await pageOne.keyboard.press('Enter')
+      await pageOne.waitForTimeout(5000)
+      // await pageOne.close()
+  
+      await page.keyboard.press('Enter')
+      await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And yet more test text by test-user too!');
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(5000)
+      await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Here is even more test text by test-user!');
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(5000)
+  
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      }
+      if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      }
+  
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+      await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And yet more test text by test-user!')).toHaveCount(0)
+      await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And more test text by test-user too!')).toHaveCount(0)
+  
+      await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('Some more test text by anon')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And here is more text by anon')).toBeVisible()
+  
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'passed',reason: 'Can create Rich Text document and view history (previous author)'}})}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author) - (FF clipboard incompatibility)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history (previous author) - (FF clipboard incompatibility)'}})}`);
+  
+    }  
+  });
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+}
 
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Test text by test-user');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
-    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', {name: 'Copy link'}).click();
-    const clipboardText = await page.evaluate("navigator.clipboard.readText()");
-
-    pageOne = await browser.newPage();
-    await pageOne.goto(`${clipboardText}`)
-    await pageOne.waitForTimeout(5000)
-    await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click()
-    await pageOne.keyboard.press('Enter')
-    await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Some more test text by anon');
-    await pageOne.keyboard.press('Enter')
-    await pageOne.waitForTimeout(5000)
-
-    await pageOne.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And here is more text by anon');
-    await pageOne.keyboard.press('Enter')
-    await pageOne.waitForTimeout(5000)
-    await pageOne.close()
-
-    await page.keyboard.press('Enter')
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('And yet more test text by test-user too!');
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Here is even more test text by test-user!');
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(5000)
-
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
-
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And yet more test text by test-user!')).toHaveCount(0)
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And more test text by test-user too!')).toHaveCount(0)
-
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('Some more test text by anon')).toBeVisible()
-    await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('And here is more text by anon')).toBeVisible()
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author)`, status: 'passed',reason: 'Can create Rich Text document and view history (previous author)'}})}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `pad - file menu - history (previous author) - (FF clipboard incompatibility)`, status: 'failed',reason: 'Can\'t create Rich Text document and view history (previous author) - (FF clipboard incompatibility)'}})}`);
-
-  }  
-});
 
 test.afterEach(async ({  }) => {
+  if (browser) {
     await browser.close()
-  });
+  } else {
+    await context.close()
+  }
+  
+});

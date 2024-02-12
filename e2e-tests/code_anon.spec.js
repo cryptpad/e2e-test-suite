@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url } = require('../browserstack.config.js')
+const { patchCaps, caps, url, patchMobileCaps } = require('../browserstack.config.js')
 
 var fs = require('fs');
 
@@ -9,11 +9,13 @@ let pageOne;
 let browser;
 let browserName;
 let context;
+let device;
+let isMobile;
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-    const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+    isMobile = testInfo.project.name.match(/browserstack-mobile/);
     if (isMobile) {
       patchMobileCaps(
         testInfo.project.name,
@@ -25,7 +27,7 @@ test.beforeEach(async ({ playwright }, testInfo) => {
         )}`
       );
       await device.shell("am force-stop com.android.chrome");
-      context = await device.launchBrowser();
+      context = await device.launchBrowser({ permissions: ["clipboard-read", "clipboard-write"] },  {locale: 'en-GB'});
     } else {
       patchCaps(testInfo.project.name, `${testInfo.title}`);
       delete caps.osVersion;
@@ -73,12 +75,14 @@ test(`code - file menu - history`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
-
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
+    
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -99,9 +103,16 @@ test(`code - toggle toolbar`, async ({ }) => {
 
   try {
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).waitFor()
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').waitFor()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+    }
+    
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible()
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `code - toggle toolbar`, status: 'passed',reason: 'Can toggle toolbar in Code document'}})}`);
@@ -121,7 +132,13 @@ test(`code - toggle preview`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Preview' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
+
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Preview' }).click();
+    }
+
 
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeHidden()
 
@@ -140,7 +157,11 @@ test(`code -  make a copy`, async ({ }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
     const page1 = await page1Promise;
@@ -164,9 +185,15 @@ test(`code - import file`, async ({ }) => {
 
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
+
     const fileChooserPromise = page.waitForEvent('filechooser');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
 
     const fileChooser = await fileChooserPromise;
@@ -193,7 +220,11 @@ test(`code - import file`, async ({ }) => {
       await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
       await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toBeVisible();
 
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      if (isMobile) {
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      }
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
       await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
       
@@ -227,21 +258,23 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
        //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('One moment in history')
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(7000)
     await page.keyboard.press("Meta+A");
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Another moment in history');
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(7000)
     await page.keyboard.press("Meta+A");
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Yet another moment in history');
-    await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    await page.waitForTimeout(7000)
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -255,20 +288,15 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
     await page.waitForTimeout(5000)
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
     await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
-    await page.waitForTimeout(5000)
-
 
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    console.log('text', clipboardText)
-    if (clipboardText == "") {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-      await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
-      await page.waitForTimeout(5000)
-      await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).dblclick();
-      await page.waitForTimeout(5000)
+    let page1;
+    if (isMobile) {
+      page1 = await context.newPage()
+    } else {
+      page1 = await browser.newPage();
     }
-    const page1 = await browser.newPage();
+    
     await page1.goto(`${clipboardText}`)
     await page1.waitForTimeout(20000)
 
@@ -286,11 +314,11 @@ test(`code - share at a moment in history - (FF clipboard incompatibility)`, asy
   
 
 
-
-
-
-
-
 test.afterEach(async ({  }) => {
-  await browser.close()
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });

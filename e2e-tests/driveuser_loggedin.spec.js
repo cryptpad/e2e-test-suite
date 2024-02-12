@@ -1,6 +1,6 @@
 // const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit, test, expect } = require('@playwright/test');
-const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, patchMobileCaps, caps, mainAccountPassword, url, titleDate } = require('../browserstack.config.js')
 
 var fs = require('fs');
 var unzipper = require('unzipper');
@@ -9,11 +9,13 @@ let browser;
 let page;
 let browserName;
 let context;
+let device
+let isMobile
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -25,7 +27,20 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       )}`
     );
     await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
+    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
+    page = await context.newPage();
+    await page.goto(`${url}/login`)
+    await page.getByPlaceholder('Username').fill('test-user');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    await page.waitForTimeout(5000)
+    if (await login.isVisible()) {
+      await login.click()
+    }
+    await page.waitForTimeout(10000)
   } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
     delete caps.osVersion;
@@ -36,7 +51,7 @@ test.beforeEach(async ({ playwright }, testInfo) => {
         `wss://cdp.browserstack.com/playwright?caps=` +
         `${encodeURIComponent(JSON.stringify(caps))}`,
     });
-    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
+    context = await browser.newContext({ storageState: 'auth/mainuser.json' });
   }
   // browser = await firefox.launch({
   //   firefoxUserPrefs: {
@@ -78,7 +93,10 @@ userMenuItems.forEach(function(item) {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
         await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible()
-      } else {
+      } else if (item === 'support' && url === 'https://freemium.cryptpad.fr') {
+        return;
+      } 
+      else {
         const pagePromise = page.waitForEvent('popup')
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: `${item}` }).click()
         const page1 = await pagePromise
@@ -367,10 +385,10 @@ test('drive - search' , async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByText('test whiteboard').waitFor()
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Search...' }).first().click()
     await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').fill('sheet');
+    await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').fill('test sheet');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').press('Enter');
     await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').getByText('test sheet').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('test sheet').first().waitFor()
     await page.waitForTimeout(5000)
     await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toHaveCount(0)
     
@@ -414,13 +432,21 @@ test('can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T 
     .pipe(unzipper.Parse())
     .on('entry', function (entry) {
       var fileName = entry.path;
+      console.log("test 1")
       actualFiles.push(fileName)
     });
 
+    
+
+    // console.log(expectedFiles)
+    // console.log(actualFiles)
+
     if (actualFiles == expectedFiles) {
+      console.log("test 2")
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents', status: 'passed',reason: 'Can download drive contents'}})}`);
 
     } else {
+      console.log("test 2")
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t download drive contents - THIS TEST WILL FAIL'}})}`);
 
     }
@@ -432,7 +458,11 @@ test('can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T 
   }  
 });
 
-
 test.afterEach(async ({  }) => {
-  await browser.close()
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });

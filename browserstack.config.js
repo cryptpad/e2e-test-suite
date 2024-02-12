@@ -27,7 +27,7 @@ const caps = {
   "browserstack.local": process.env.BROWSERSTACK_LOCAL || false,
 };
 
-const patchMobileCaps = (name, title) => {
+exports.patchMobileCaps = (name, title) => {
   let combination = name.split(/@browserstack/)[0];
   let [browerCaps, osCaps] = combination.split(/:/);
   let [browser, deviceName] = browerCaps.split(/@/);
@@ -67,7 +67,9 @@ exports.testUser3Password = process.env.TESTUSER3PASSWORD || 'PASSWORD_HERE'
 
 const date = new Date()      
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const weekday = days[date.getDay()]
+exports.weekday = weekDays[date.getDay()]
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 const month = months[date.getMonth()]
 exports.titleDate = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
@@ -75,7 +77,14 @@ exports.titleDate = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()
 
 
 
-const now = new Date();
+// const dateNow = new Date();
+// function changeTimeZone(date, timeZone) {
+
+const dateNow = new Date()
+const setTimeZone = new Date().toLocaleString("en-US", {timeZone: "Europe/London"})
+
+
+const now = new Date(setTimeZone)
 
 const monthNumeric = now.getMonth() + 1
 const monthFormatted = monthNumeric.toString().length > 1 ? monthNumeric : '0' + monthNumeric;

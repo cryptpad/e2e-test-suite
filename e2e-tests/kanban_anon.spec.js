@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, patchMobileCaps, caps, url, titleDate } = require('../browserstack.config.js')
 var fs = require('fs');
 
 
@@ -9,11 +9,13 @@ let pageOne;
 let browser;
 let browserName;
 let context;
+let device;
+let isMobile;
 
 test.beforeEach(async ({ playwright }, testInfo) => {
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -103,10 +105,10 @@ test('kanban - edit board', async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('new title')).toBeVisible();
 
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit board', status: 'passed',reason: 'Can anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit board', status: 'passed',reason: 'Can edit Kanban board'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit board', status: 'failed',reason: 'Can\'t anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit board', status: 'failed',reason: 'Can\'t edit Kanban board'}})}`);
 
   }  
 });
@@ -116,15 +118,15 @@ test('kanban board - anon - edit list item title', async ({ }) => {
   try {
 
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Title').click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Title').click({force: true});
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new item title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('new item title')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'passed',reason: 'Can anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit list item title', status: 'passed',reason: 'Can edit Kanban list item title'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'failed',reason: 'Can\'t anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit list item title', status: 'failed',reason: 'Can\'t edit Kanban list item title'}})}`);
 
   }  
 });
@@ -139,10 +141,10 @@ test('kanban board - anon - edit list item content', async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new item content')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'passed',reason: 'Can anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit list item content', status: 'passed',reason: 'Can edit Kanban list item content'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'failed',reason: 'Can\'t anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - edit list item content', status: 'failed',reason: 'Can\'t edit Kanban list item content'}})}`);
 
   }  
 });
@@ -167,10 +169,10 @@ test('kanban board - anon - add and filter by tag', async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('Item 1')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').getByText('Item 2')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'passed',reason: 'Can anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - add and filter by tag', status: 'passed',reason: 'Can add and filter by tag in Kanban board'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'failed',reason: 'Can\'t anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - add and filter by tag', status: 'failed',reason: 'Can\'t add and filter by tag in Kanban board'}})}`);
 
   }  
 });
@@ -182,11 +184,13 @@ test('kanban - view history', async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByAltText('Edit this board').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new item title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -198,10 +202,10 @@ test('kanban - view history', async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('new item title')).toBeVisible()
     
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'passed',reason: 'Can anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - view history', status: 'passed',reason: 'Can view Kanban history'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban', status: 'failed',reason: 'Can\'t anonymously create Kanban board'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - view history', status: 'failed',reason: 'Can\'t view Kanban history'}})}`);
 
   }  
 });
@@ -212,7 +216,11 @@ test('kanban - import file', async ({ }) => {
 
     const fileChooserPromise = page.waitForEvent('filechooser');
     
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
 
     const fileChooser = await fileChooserPromise;
@@ -252,7 +260,11 @@ test('kanban - make a copy', async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
     await page.waitForTimeout(3000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
     const page1 = await page1Promise;
@@ -304,7 +316,11 @@ test(`kanban - share at a moment in history - (FF clipboard incompatibility)`, a
     await expect(page.frameLocator('#sbox-iframe').getByText('Yet another moment in history')).toBeVisible();
     await page.waitForTimeout(7000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     
     if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
 .isVisible()) {
@@ -369,10 +385,12 @@ test(`kanban - can drag items`, async ({ }) => {
 
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first()
+    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().dragTo(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first())
+
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
     await page.mouse.down();
     await page.mouse.move(0, 50);
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first()
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
     await page.mouse.up(); 
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 1800 });
@@ -390,7 +408,11 @@ test('kanban - export as .json',  async ({ }) => {
  
   try {
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test kanban');
     
@@ -417,5 +439,10 @@ test('kanban - export as .json',  async ({ }) => {
 });
 
 test.afterEach(async ({  }) => {
-  await browser.close()
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });

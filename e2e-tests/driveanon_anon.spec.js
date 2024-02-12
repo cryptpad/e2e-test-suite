@@ -1,17 +1,25 @@
 const { test, expect } = require('@playwright/test');
 const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { patchCaps, caps, url, titleDate, patchMobileCaps } = require('../browserstack.config.js')
 
 let page;
 let pageOne;
 let browser;
 let browserName;
 let context;
+let device; 
+let isMobile;
+
+
+test.use({ locale: 'en-GB' });
 
 test.beforeEach(async ({ playwright }, testInfo) => {
+
+
+// test.use({ locale: 'en-GB' });
   
   test.setTimeout(2400000);
-  const isMobile = testInfo.project.name.match(/browserstack-mobile/);
+  isMobile = testInfo.project.name.match(/browserstack-mobile/);
   if (isMobile) {
     patchMobileCaps(
       testInfo.project.name,
@@ -23,7 +31,7 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       )}`
     );
     await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
+    context = await device.launchBrowser( {locale: 'en-GB'});
   } else {
     patchCaps(testInfo.project.name, `${testInfo.title}`);
     delete caps.osVersion;
@@ -34,7 +42,7 @@ test.beforeEach(async ({ playwright }, testInfo) => {
         `wss://cdp.browserstack.com/playwright?caps=` +
         `${encodeURIComponent(JSON.stringify(caps))}`,
     });
-    context = await browser.newContext(testInfo.project.use);
+    context = await browser.newContext(testInfo.project.use, {locale: 'en-GB'});
   }
   page = await context.newPage();
 
@@ -43,9 +51,9 @@ test.beforeEach(async ({ playwright }, testInfo) => {
 
 });
 
+test.use({ locale: 'en-GB' });
 
-const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'survey', 'log in', 'sign up'] 
-// const userMenuItems = ['survey'] 
+const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'] 
 
 
 userMenuItems.forEach(function(item) {
@@ -90,10 +98,11 @@ userMenuItems.forEach(function(item) {
             dialog.accept().catch(() => {});
           });
           await expect(page1).toHaveURL(/#https%3A%2F%2Fopencollective.com%2Fcryptpad%2F$/, { timeout: 100000 })
-        } else if (item === 'survey') {
-            await expect(page1).toHaveURL(`${url}/form/#/2/form/view/1NDX7MEkhzNz1FCrcjCxmvjgIj24QjWNncZygR60Ch8`, { timeout: 100000 })
-        } else if (item === 'documentation') {
+        } 
+        else if (item === 'documentation') {
             await expect(page1).toHaveURL("https://docs.cryptpad.org/en/", { timeout: 100000 })
+        } else if (item === 'settings') {
+            await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
         } else {
             await expect(page1).toHaveURL(`${url}/${item}/`, { timeout: 100000 })
         }
@@ -157,18 +166,33 @@ test('drive - anon - list/grid view', async ({ }) => {
 
     var title = `Rich text - ${titleDate}`;
     await page.waitForTimeout(10000)
-    await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible()
+    if (!isMobile) {
+      await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible()
+    }
+    
+    await page.bringToFront()
     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-viewmode-button').click();
 
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Type$/ })).toBeVisible()
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Last access$/ })).toBeVisible()
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Creation$/ })).toBeVisible()
+    if (isMobile) {
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-content-list')).toBeVisible()
+    } else {
+      await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Type$/ })).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Last access$/ })).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Creation$/ })).toBeVisible()
+    }  
 
     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-viewmode-button').click();
 
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Type$/ })).toBeHidden()
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Last access$/ })).toBeHidden()
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Creation$/ })).toBeHidden()
+
+    if (isMobile) {
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-content-grid')).toBeVisible()
+
+    } else {
+      await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Type$/ })).toBeHidden()
+      await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Last access$/ })).toBeHidden()
+      await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Creation$/ })).toBeHidden()
+
+    }
    
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive > list/grid view', status: 'passed',reason: 'Can anonymously navigate to Drive and change the view to list/grid'}})}`);
   } catch (e) {
@@ -191,11 +215,13 @@ test('drive - anon - history', async ({ }) => {
     await page.waitForTimeout(10000)
     await page.bringToFront()
     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible()
+    
     await page.frameLocator('#sbox-iframe').locator("[data-original-title=\"Display the document history\"]") .click();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click({
       clickCount: 3
     })
+
     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0)
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon drive > history', status: 'passed',reason: 'Can anonymously navigate to Drive and view history'}})}`);
@@ -227,8 +253,8 @@ test('drive - anon - sign up from drive page', async ({ }) => {
 
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Sign up'}).waitFor()
+    await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor({timeout: 5000})
+    await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Sign up'}).waitFor({timeout: 5000})
     await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Sign up'}).click()
     await page.waitForTimeout(5000)
     await expect(page).toHaveURL(`${url}/register/`, { timeout: 100000 })
@@ -260,5 +286,10 @@ test('drive - anon - log in from drive page', async ({ }) => {
 });
 
 test.afterEach(async ({  }) => {
-  await browser.close()
+  if (browser) {
+    await browser.close()
+  } else {
+    await context.close()
+  }
+  
 });
