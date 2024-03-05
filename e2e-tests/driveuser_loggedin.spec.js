@@ -1,34 +1,23 @@
-// const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit, test, expect } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps, mainAccountPassword, url, titleDate } = require('../browserstack.config.js')
+const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
+const { expect } = require('@playwright/test');
+const { Cleanup } = require('./test-pages.spec.js');
+
 
 var fs = require('fs');
-var unzipper = require('unzipper');
+var unzipper = require('unzipper')
 
-let browser;
 let page;
-let browserName;
+let isMobile;
 let context;
-let device
-let isMobile
+let browserName;
+let cleanUp
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
+test.beforeEach(async ({ page }, testInfo) => {
+
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
+
   if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
-    page = await context.newPage();
     await page.goto(`${url}/login`)
     await page.getByPlaceholder('Username').fill('test-user');
     await page.waitForTimeout(10000)
@@ -41,48 +30,18 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       await login.click()
     }
     await page.waitForTimeout(10000)
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext({ storageState: 'auth/mainuser.json' });
   }
-  // browser = await firefox.launch({
-  //   firefoxUserPrefs: {
-  //     'dom.events.asyncClipboard.readText': true,
-  //     'dom.events.testing.asyncClipboard': true,
-  //   },
-  //   locale: 'en-GB',
-  // })
-  // context = await browser.newContext({ storageState: 'auth/mainuser.json' })
-  page = await context.newPage();
 
-  await page.goto(`${url}/drive`)
-  await page.waitForTimeout(15000)
+    
+  
 });
-
 
 const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'] 
 
+
 userMenuItems.forEach(function(item) {
 
-  test(`drive -  user menu - ${item}`, async ({ }) => {   
-
-    var testName; 
-    var testStatus;
-    if (item === 'teams') {
-      testName = `drive -  user menu - ${item} - (EDGE) THIS TEST WILL FAIL`
-      testStatus = `access ${item} from Drive menu - (EDGE) THIS TEST WILL FAIL`
-    } else {
-      testName = `drive -  user menu - ${item}`
-      testStatus = `access ${item} from Drive menu`
-    }
+  test(`drive -  user menu - ${item}`, async ({ page }) => {   
   
     try {
 
@@ -92,6 +51,7 @@ userMenuItems.forEach(function(item) {
       if (item === 'log out') {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click()
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
+        await page.waitForTimeout(10000)
         await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible()
       } else if (item === 'support' && url === 'https://freemium.cryptpad.fr') {
         return;
@@ -106,14 +66,14 @@ userMenuItems.forEach(function(item) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `drive - user menu - ${item}`, status: 'passed',reason: `Can access ${item} from Drive menu`}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${testName}`, status: 'failed',reason: `Can\'t ${testStatus}`}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `drive -  user menu - ${item}`, status: 'failed',reason: `Can\'t access ${item} from Drive menu`}})}`);
 
     }    
   });
 
 })
 
-test('drive -  upgrade account', async ({ }) => {   
+test('drive -  upgrade account', async ({ page }) => {   
     
   try {
 
@@ -130,7 +90,7 @@ test('drive -  upgrade account', async ({ }) => {
   }    
   });
 
-test('drive -  upload file', async ({ }) => {   
+test('drive -  upload file', async ({ page }) => {   
     
   try {
 
@@ -171,9 +131,12 @@ test('drive -  upload file', async ({ }) => {
 });
 
 
-test('drive -  recent files', async ({ }) => {   
+test('drive -  recent files', async ({ page }) => {   
     
   try {
+
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanUserDrive('Rich text - ');
 
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).locator('span').first().click();
@@ -204,7 +167,7 @@ test('drive -  recent files', async ({ }) => {
   });
 
 
-test('drive -  notifications panel', async ({ }) => {
+test('drive -  notifications panel', async ({ page }) => {
 
   try {
 
@@ -224,7 +187,7 @@ test('drive -  notifications panel', async ({ }) => {
   }  
 });
 
-test('drive - filter' , async ({ }) => {
+test('drive - filter' , async ({ page }) => {
 
   try {
 
@@ -248,9 +211,12 @@ test('drive - filter' , async ({ }) => {
   }  
 });
 
-test('drive - create link' , async ({ }) => {
+test('drive - create link' , async ({ page }) => {
 
   try {
+
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanUserDrive('Cryptpad Docs');
 
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'New' }).locator('span').first().click();
     await page.waitForTimeout(2000)
@@ -272,9 +238,12 @@ test('drive - create link' , async ({ }) => {
   }  
 });
 
-test('drive - create folder' , async ({ }) => {
+test('drive - create folder' , async ({ page }) => {
 
   try {
+
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanUserDrive('My test folder');
 
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).click();
     await page.waitForTimeout(2000)
@@ -346,7 +315,7 @@ test('drive - create folder' , async ({ }) => {
 //   }  
 // });
 
-test('drive - toggle sidebar' , async ({ }) => {
+test('drive - toggle sidebar' , async ({ page }) => {
 
   try {
 
@@ -376,7 +345,7 @@ test('drive - toggle sidebar' , async ({ }) => {
   }  
 });
 
-test('drive - search' , async ({ }) => {
+test('drive - search' , async ({ page }) => {
 
   try {
 
@@ -400,7 +369,7 @@ test('drive - search' , async ({ }) => {
   }  
 });
 
-test('can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T DOWNLOAD', async ({ }) => {
+test('can download drive contents', async ({ page }) => {
 
   try {
 
@@ -428,41 +397,31 @@ test('can download drive contents THIS TEST WILL FAIL - WHITEBOARD FILES DON\'T 
     const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test diagram.drawio"]
     let actualFiles = [];
 
-    fs.createReadStream('/tmp/mydrivecontents.zip')
-    .pipe(unzipper.Parse())
-    .on('entry', function (entry) {
-      var fileName = entry.path;
-      console.log("test 1")
-      actualFiles.push(fileName)
-    });
+    var compareFiles = function () {
+      fs.createReadStream('/tmp/mydrivecontents.zip')
+      .pipe(unzipper.Parse())
+      .on('entry', function (entry) {
+        var fileName = entry.path;
+        actualFiles.push(fileName)
+      });
 
-    
+      if (expectedFiles == actualFiles) {
+        return true
+      } else {
+        return false
+      }
+    }
 
-    // console.log(expectedFiles)
-    // console.log(actualFiles)
-
-    if (actualFiles == expectedFiles) {
-      console.log("test 2")
+    if (compareFiles()) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents', status: 'passed',reason: 'Can download drive contents'}})}`);
-
     } else {
-      console.log("test 2")
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t download drive contents - THIS TEST WILL FAIL'}})}`);
-
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents ', status: 'failed',reason: 'Can\'t download drive contents'}})}`);
     }
     
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t download drive contents - THIS TEST WILL FAIL'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents', status: 'failed',reason: 'Can\'t download drive contents'}})}`);
 
   }  
 });
 
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
-});

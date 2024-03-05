@@ -1,35 +1,18 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { mainAccountPassword, caps, patchCaps, patchMobileCaps, url, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat, minutes, hours, todayStringFormat, year } = require('../browserstack.config.js')
+const { test, url, mainAccountPassword, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat, minutes, hours, todayStringFormat, year } = require('../fixture.js');
+const { expect } = require('@playwright/test');
 
+var fs = require('fs');
 
-
-let browser;
 let page;
-let pageOne;
+let isMobile;
 let browserName;
-let isMobile
-let context
-let device
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  console.log('issmob', isMobile)
+test.beforeEach(async ({ page }, testInfo) => {
+
+  isMobile = testInfo.project.use['isMobile']
+  browserName = testInfo.project.name.split(/@/)[0]
+
   if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
-    page = await context.newPage();
     await page.goto(`${url}/login`)
     await page.getByPlaceholder('Username').fill('test-user');
     await page.waitForTimeout(10000)
@@ -42,30 +25,9 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       await login.click()
     }
     await page.waitForTimeout(10000)
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-
-    browser = await playwright.firefox.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-        firefoxUserPrefs: {
-              'dom.events.asyncClipboard.readText': true,
-              'dom.events.testing.asyncClipboard': true,
-            },
-    });
-    context = await browser.newContext({ storageState: 'auth/mainuser.json' });
   }
-  // browser = await firefox.launch({
-  //   firefoxUserPrefs: {
-  //     'dom.events.asyncClipboard.readText': true,
-  //     'dom.events.testing.asyncClipboard': true,
-  //   },
-  // })
-  // context = await browser.newContext({ storageState: 'auth/mainuser.json' })
-  page = await context.newPage();
   await page.goto(`${url}/calendar`)
-  await page.waitForTimeout(15000)
+  await page.waitForTimeout(10000)
   if (await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count() > 0) {
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
@@ -75,7 +37,7 @@ test.beforeEach(async ({ playwright }, testInfo) => {
 });
 
 
-test('create and delete event in calendar', async ({ }) => {
+test('create and delete event in calendar', async ({ page }) => {
 
   try {
 
@@ -131,7 +93,7 @@ test('create and delete event in calendar', async ({ }) => {
 });
 
 
-test('create and delete repeating event in calendar', async ({ }) => {
+test('create and delete repeating event in calendar', async ({ page }) => {
 
   try {
 
@@ -205,7 +167,7 @@ test('create and delete repeating event in calendar', async ({ }) => {
 
 });
 
-test('create event in calendar and edit location', async ({ }) => {
+test('create event in calendar and edit location', async ({ page }) => {
 
   try {
 
@@ -278,7 +240,7 @@ test('create event in calendar and edit location', async ({ }) => {
 
 });
 
-test('create event in calendar and edit time', async ({ }) => {
+test('create event in calendar and edit time', async ({ page }) => {
 
   try {
 
@@ -369,7 +331,7 @@ test('create event in calendar and edit time', async ({ }) => {
 });
 
 
-test('create event in calendar and edit date', async ({ }) => {
+test('create event in calendar and edit date', async ({ page }) => {
 
   try {
 
@@ -464,7 +426,7 @@ test('create event in calendar and edit date', async ({ }) => {
 
 });
 
-test('create new calendar and edit calendar in event', async ({ }) => {
+test('create new calendar and edit calendar in event', async ({ page }) => {
 
   try {
 
@@ -517,16 +479,5 @@ test('create new calendar and edit calendar in event', async ({ }) => {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create new calendar and edit calendar in event', status: 'failed',reason: 'Can\'t create new calendar and edit calendar in event'}})}`);
   }  
 
-});
-
-
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
 });
 

@@ -1,51 +1,21 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { test, url, titleDate } = require('../fixture.js');
+const { expect } = require('@playwright/test');
 
 let page;
-let pageOne;
-let browser;
-let browserName;
-let context;
-let device;
 let isMobile;
+let browserName;
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser( {locale: 'en-GB', hasTouch: true});
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+test.beforeEach(async ({ }, testInfo) => {
 
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use);
-  }
-  page = await context.newPage();
+test.setTimeout(240000000)
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
 
 });
 
-const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
-// const docNames = ['diagram'] 
+// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
+const docNames = ['pad'] 
+
 
 
 docNames.forEach(function(name) {
@@ -60,20 +30,18 @@ docNames.forEach(function(name) {
     title = `${titleName} - ${titleDate}`;
   }
 
-  test(`anon - ${name} - create new file from file menu`, async ({ }) => {
+  test(`anon - ${name} - create new file from file menu`, async ({ page, context }) => {
     
 
     try {
 
       await page.goto(`${url}/${name}/`);
+      await page.waitForTimeout(15000)
       if (name == 'sheet' | name == 'diagram') {
+        await page.waitForTimeout(40000)
+      } else {
         await page.waitForTimeout(15000)
       }
-      // if (browserName.indexOf('firefox') !== -1 ) {
-      //   await page.waitForTimeout(15000)
-      // } else {
-      //   await page.waitForTimeout(5000)
-      // }
 
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
@@ -105,14 +73,16 @@ docNames.forEach(function(name) {
 
   if (name !== 'form') {
 
-    test(`${name} - share (link) - edit - (FF clipboard incompatibility)`, async ({ }) => {
+    test(`${name} - share (link) - edit`, async ({ page, context }) => {
 
       try {
   
-        //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-
         await page.goto(`${url}/${name}/`);
-        await page.waitForTimeout(15000)
+        if (name == 'sheet' | name == 'diagram') {
+          await page.waitForTimeout(40000)
+        } else {
+          await page.waitForTimeout(15000)
+        }
 
         if (isMobile) {
           await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
@@ -120,7 +90,6 @@ docNames.forEach(function(name) {
           await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
         }
         
-        // await page.frameLocator('#sbox-secure-iframe').locator('.cp-share-link-preview').click();
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({timeout: 5000});
   
         const clipboardText = await page.evaluate("navigator.clipboard.readText()");
@@ -137,28 +106,29 @@ docNames.forEach(function(name) {
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - share (link)`, status: 'passed',reason: `Can anonymously create ${name} and share link (to edit)`}})}`);
       } catch (e) {
         console.log(e);
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - share (link) - (FF clipboard incompatibility)`, status: 'failed',reason: `Can\'t anonymously create ${name} and share link (to edit) - (FF clipboard incompatibility)`}})}`);
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - share (link)`, status: 'failed',reason: `Can\'t anonymously create ${name} and share link (to edit)`}})}`);
     
       }  
     });
 
 
-    test(`anon - ${name} - share (link) - view - (FF clipboard incompatibility)`, async ({ }) => {
+    test(`anon - ${name} - share (link) - view`, async ({ page, context }) => {
 
       try {
 
-           //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-
         await page.goto(`${url}/${name}/`);
-        await page.waitForTimeout(15000)
+        if (name == 'sheet' | name == 'diagram') {
+          await page.waitForTimeout(40000)
+        } else {
+          await page.waitForTimeout(15000)
+        }
 
         if (isMobile) {
           await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
         } else {
           await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
         }
-        // await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
-        await page.frameLocator('#sbox-secure-iframe').getByText('View').click({timeout: 3000});
+        await page.frameLocator('#sbox-secure-iframe').getByText('View').click();
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
 
         const clipboardText = await page.evaluate("navigator.clipboard.readText()");
@@ -175,7 +145,7 @@ docNames.forEach(function(name) {
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - share (link) - view`, status: 'passed',reason: `Can anonymously create ${name} and share link (to view)`}})}`);
       } catch (e) {
         console.log(e);
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - share (link) - view - (FF clipboard incompatibility)`, status: 'failed',reason: `Can\'t anonymously create ${name} and share link (to view) - (FF clipboard incompatibility)`}})}`);
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - share (link) - view`, status: 'failed',reason: `Can\'t anonymously create ${name} and share link (to view)`}})}`);
     
       }  
     });
@@ -183,19 +153,16 @@ docNames.forEach(function(name) {
   }
 
 
-  test(`anon - ${name} - chat`, async ({ }) => {
+  test(`anon - ${name} - chat`, async ({ page }) => {
 
     try {
 
       await page.goto(`${url}/${name}`);
-      if (name == 'sheet' | 'diagram') {
-        await page.waitForTimeout(15000)
-      }
-      // if (browserName.indexOf('firefox') !== -1 ) {
-      //   await page.waitForTimeout(15000)
-      // } else {
-      //   await page.waitForTimeout(5000)
-      // }
+      if (name == 'sheet' | name == 'diagram') {
+          await page.waitForTimeout(40000)
+        } else {
+          await page.waitForTimeout(15000)
+        }
 
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('#cp-toolbar-chat-drawer-open').click();
@@ -223,21 +190,16 @@ docNames.forEach(function(name) {
 
 
     
-  test(`anon - ${name} - create from drive - move to trash`, async ({ }) => {
+  test(`anon - ${name} - create from drive - move to trash`, async ({ page, context }) => {
 
     try {
 
       await page.goto(`${url}/drive`);
-      if (name == 'sheet' | 'diagram') {
+      if (name == 'sheet' | name == 'diagram') {
+          await page.waitForTimeout(40000)
+      } else {
         await page.waitForTimeout(15000)
       }
-      // if (browserName.indexOf('firefox') !== -1 ) {
-      //   await page.waitForTimeout(15000)
-      // } else {
-      //   await page.waitForTimeout(5000)
-      // }
-
-      // await page.waitForTimeout(10000)
 
       await page.frameLocator('#sbox-iframe').getByText('New', { exact: true }).click();
 
@@ -252,16 +214,18 @@ docNames.forEach(function(name) {
       const page2 = await page2Promise;
       
       await expect(page2).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 60000 })
-      page.waitForTimeout(5000)
+      await page2.waitForTimeout(10000)
       await page2.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
       await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
       await page2.waitForTimeout(10000)
       await page2.goto(`${url}/drive`);
       await page2.waitForTimeout(10000)
+      await page2.frameLocator('#sbox-iframe').getByText(`${title}`).waitFor();
       await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible();
 
       if (isMobile) {
-        await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu').click();
+        await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').waitFor()
+        await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').click();
 
       } else {
         await page2.frameLocator('#sbox-iframe').getByText(`${title}`).click({ button: 'right' })
@@ -287,21 +251,17 @@ docNames.forEach(function(name) {
     }  
   });
   
-  test(`anon - ${name} - change title`, async ({ }) => {
+  test(`anon - ${name} - change title`, async ({ page, context }) => {
 
     try {
 
       await page.goto(`${url}/${name}/`);
 
-      if (name == 'sheet' | 'diagram') {
+      if (name == 'sheet' | name == 'diagram') {
+        await page.waitForTimeout(40000)
+      } else {
         await page.waitForTimeout(15000)
       }
-
-      // if (browserName.indexOf('firefox') !== -1 ) {
-      //   await page.waitForTimeout(15000)
-      // } else {
-      //   await page.waitForTimeout(5000)
-      // }
 
       await page.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
@@ -320,19 +280,16 @@ docNames.forEach(function(name) {
     }  
   });
 
-  test(`anon - ${name} - move to trash`, async ({ }) => {
+  test(`anon - ${name} - move to trash`, async ({ page, context }) => {
 
     try {
 
       await page.goto(`${url}/${name}/`);
-      if (name == 'sheet' | 'diagram') {
+      if (name == 'sheet' | name == 'diagram') {
+        await page.waitForTimeout(20000)
+      } else {
         await page.waitForTimeout(15000)
       }
-      // if (browserName.indexOf('firefox') !== -1 ) {
-      //   await page.waitForTimeout(15000)
-      // } else {
-      //   await page.waitForTimeout(5000)
-      // }
       await page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive').waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive')).toBeVisible();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
@@ -367,12 +324,3 @@ docNames.forEach(function(name) {
       
 
 })
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
-});

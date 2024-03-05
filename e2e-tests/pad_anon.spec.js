@@ -1,57 +1,25 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, patchMobileCaps, url, titleDate } = require('../browserstack.config.js')
+const { test, url } = require('../fixture.js');
+const { expect } = require('@playwright/test');
 
 var fs = require('fs');
 
-
-let page;
-let pageOne;
-let browser;
-let browserName;
-let context;
-let device;
 let isMobile;
+let browserName;
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use);
-  }
-  page = await context.newPage();
+test.beforeEach(async ({ page }, testInfo) => {
+
+  test.setTimeout(240000000)
+
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
 
   await page.goto(`${url}/pad`)
-  await page.waitForTimeout(15000)
+  await page.waitForTimeout(10000)
 
 });
 
 
-
-test('pad - comment', async ({ }) => {
+test('pad - comment', async ({ page, context }) => {
 
   try {
 
@@ -77,7 +45,7 @@ test('pad - comment', async ({ }) => {
   }  
 });
 
-test('pad - create and open snapshot', async ({ }) => {
+test('pad - create and open snapshot', async ({ page, context }) => {
 
   try { 
 
@@ -128,7 +96,7 @@ test('pad - create and open snapshot', async ({ }) => {
   }  
 });
 
-test(`pad - history (previous version)`, async ({ }) => {
+test(`pad - history (previous version)`, async ({ page, context }) => {
 
   try {
 
@@ -160,7 +128,7 @@ test(`pad - history (previous version)`, async ({ }) => {
 });
 
 
-test(`pad - toggle tools`, async ({ }) => {
+test(`pad - toggle tools`, async ({ page, context }) => {
 
   try {
 
@@ -187,7 +155,9 @@ test(`pad - toggle tools`, async ({ }) => {
   }  
 });
 
-test(`pad - import file`, async ({ }) => {
+test(`pad - import file`, async ({ page }) => {
+
+  test.skip(browserstackMobile, 'browserstack mobile import incompatibility')
 
   try {
 
@@ -215,7 +185,7 @@ test(`pad - import file`, async ({ }) => {
   }  
 });
 
-test('pad - make a copy', async ({ }) => {
+test('pad - make a copy', async ({ page, context }) => {
 
   try {
 
@@ -251,7 +221,7 @@ test('pad - make a copy', async ({ }) => {
 });
 
 
-test(`pad - export (html)`, async ({}, testInfo) => {
+test(`pad - export (html)`, async ({ page }) => {
 
   try {
 
@@ -301,7 +271,7 @@ test(`pad - export (html)`, async ({}, testInfo) => {
   }  
 });
 
-test(`pad - export (.doc)`, async ({}, testInfo) => {
+test(`pad - export (.doc)`, async ({ page }) => {
 
   try {
 
@@ -349,7 +319,7 @@ test(`pad - export (.doc)`, async ({}, testInfo) => {
   }  
 });
 
-test(`pad - export (md)`, async ({ }) => {
+test(`pad - export (md)`, async ({ page, context }) => {
 
   try {
 
@@ -394,12 +364,9 @@ test(`pad - export (md)`, async ({ }) => {
 
 
 
-test(`pad - share at a moment in history - (FF clipboard incompatibility)`, async ({ }) => {
+test(`pad - share at a moment in history`, async ({ page, context }) => {
 
   try {
-
-       //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-    test.setTimeout(2400000);
 
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').waitFor()
     await expect(page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body')).toBeVisible()
@@ -450,16 +417,7 @@ test(`pad - share at a moment in history - (FF clipboard incompatibility)`, asyn
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'pad - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can share Rich Text at a specific moment in history - (FF clipboard incompatibility)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'pad - share at a moment in history', status: 'failed',reason: 'Can share Rich Text at a specific moment in history'}})}`);
 
   }  
-});
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
 });

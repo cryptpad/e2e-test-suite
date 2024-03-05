@@ -1,49 +1,21 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps, url, mainAccountPassword } = require('../browserstack.config.js')
+const { test, url } = require('../fixture.js');
+const { expect } = require('@playwright/test');
 
-let browser;
-let page;
-let browserName;
-let context;
-let device;
 let isMobile;
+let browserName;
 
+test.beforeEach(async ({ page }, testInfo) => {
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use);
-  }
-  page = await context.newPage();
-  await page.goto(`${url}`);
+test.setTimeout(240000000)
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
+
+  await page.goto(`${url}`)
+  await page.waitForTimeout(10000)
 
 });
 
-test('home page title', async ({ }) => {
+test('home page title', async ({ page }) => {
   
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -55,7 +27,7 @@ test('home page title', async ({ }) => {
   }  
 });
 
-test('homepage - access sign up', async ({ }) => {
+test('homepage - access sign up', async ({ page }) => {
   
   try {
     await page.getByRole('link', { name: 'Sign up' }).click();
@@ -70,7 +42,7 @@ test('homepage - access sign up', async ({ }) => {
   }  
 })
 
-test('homepage - access log in', async ({ }) => {
+test('homepage - access log in', async ({ page }) => {
 
   try {
 
@@ -87,7 +59,7 @@ test('homepage - access log in', async ({ }) => {
   }  
 });
 
-test('home page > features', async ({ }) => {
+test('home page > features', async ({ page }) => {
 
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -108,7 +80,7 @@ test('home page > features', async ({ }) => {
   }  
 });
 
-test('home page > documentation', async ({ }) => {
+test('home page > documentation', async ({ page }) => {
  
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -124,7 +96,7 @@ test('home page > documentation', async ({ }) => {
   }  
 });
 
-test('home page > contact', async ({ }) => {
+test('home page > contact', async ({ page }) => {
 
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -139,7 +111,7 @@ test('home page > contact', async ({ }) => {
   }  
 });
 
-test('home page > project website', async ({ }) => {
+test('home page > project website', async ({ page }) => {
   
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -156,7 +128,7 @@ test('home page > project website', async ({ }) => {
   }  
 });
 
-test('home page > donate', async ({ }) => {
+test('home page > donate', async ({ page }) => {
 
   try {
     await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
@@ -173,7 +145,7 @@ test('home page > donate', async ({ }) => {
   }  
 });
 
-test('home page - translation - french - (***)', async ({ }) => {
+test('home page - translation - french - (***)', async ({ page }) => {
   
   try {
     if (url == 'https://cryptpad.fr') {
@@ -193,7 +165,7 @@ test('home page - translation - french - (***)', async ({ }) => {
 
 if (url.toString() === 'https://cryptpad.fr') {
 
-  test('home page > privacy policy', async ({ }) => {
+  test('home page > privacy policy', async ({ page }) => {
  
     try {
     
@@ -210,7 +182,7 @@ if (url.toString() === 'https://cryptpad.fr') {
     }  
   });
   
-  test('home page > tos', async ({ }) => {
+  test('home page > tos', async ({ page }) => {
 
     try {
 
@@ -230,11 +202,3 @@ if (url.toString() === 'https://cryptpad.fr') {
 
 }
 
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
-});

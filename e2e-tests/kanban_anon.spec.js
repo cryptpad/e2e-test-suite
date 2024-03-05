@@ -1,53 +1,21 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { test, url } = require('../fixture.js');
+const { expect } = require('@playwright/test');
+
 var fs = require('fs');
 
-
-let page;
-let pageOne;
-let browser;
-let browserName;
-let context;
-let device;
 let isMobile;
+let browserName;
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use);
-  }
-  page = await context.newPage();
-
+test.beforeEach(async ({ page }, testInfo) => {
+  test.setTimeout(240000000)
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
   await page.goto(`${url}/kanban`)
-  await page.waitForTimeout(15000)
+  await page.waitForTimeout(10000)
 
 });
 
-test('kanban - new board', async ({ }) => {
+test('kanban - new board', async ({ page }) => {
   
   try {
 
@@ -70,7 +38,7 @@ test('kanban - new board', async ({ }) => {
   
 });
 
-test('kanban - new list item', async ({ }) => {
+test('kanban - new list item', async ({ page }) => {
   
   try {
 
@@ -94,7 +62,7 @@ test('kanban - new list item', async ({ }) => {
   }  
 });
 
-test('kanban - edit board', async ({ }) => {
+test('kanban - edit board', async ({ page }) => {
   
   try {
 
@@ -113,7 +81,7 @@ test('kanban - edit board', async ({ }) => {
   }  
 });
 
-test('kanban board - anon - edit list item title', async ({ }) => {
+test('kanban board - anon - edit list item title', async ({ page }) => {
   
   try {
 
@@ -131,7 +99,7 @@ test('kanban board - anon - edit list item title', async ({ }) => {
   }  
 });
 
-test('kanban board - anon - edit list item content', async ({ }) => {
+test('kanban board - anon - edit list item content', async ({ page }) => {
   
   try {
 
@@ -149,7 +117,7 @@ test('kanban board - anon - edit list item content', async ({ }) => {
   }  
 });
 
-test('kanban board - anon - add and filter by tag', async ({ }) => {
+test('kanban board - anon - add and filter by tag', async ({ page }) => {
   
   try {
 
@@ -177,7 +145,7 @@ test('kanban board - anon - add and filter by tag', async ({ }) => {
   }  
 });
 
-test('kanban - view history', async ({ }) => {
+test('kanban - view history', async ({ page }) => {
   
   try {
 
@@ -210,7 +178,9 @@ test('kanban - view history', async ({ }) => {
   }  
 });
 
-test('kanban - import file', async ({ }) => {
+test('kanban - import file', async ({ page }) => {
+
+  test.skip(browserstackMobile, 'browserstack mobile import incompatibility')
   
   try {
 
@@ -244,7 +214,7 @@ test('kanban - import file', async ({ }) => {
   }  
 });
 
-test('kanban - make a copy', async ({ }) => {
+test('kanban - make a copy', async ({ page }) => {
   
   try {
 
@@ -283,11 +253,9 @@ test('kanban - make a copy', async ({ }) => {
 });
 
 
-test(`kanban - share at a moment in history - (FF clipboard incompatibility)`, async ({ }) => {
+test(`kanban - share at a moment in history`, async ({ page }) => {
 
   try {
-
-       //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
 
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
@@ -322,10 +290,8 @@ test(`kanban - share at a moment in history - (FF clipboard incompatibility)`, a
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true })
-.click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -333,7 +299,6 @@ test(`kanban - share at a moment in history - (FF clipboard incompatibility)`, a
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
-
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
@@ -353,13 +318,13 @@ test(`kanban - share at a moment in history - (FF clipboard incompatibility)`, a
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can share Kanban at a specific moment in history - (FF clipboard incompatibility)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - share at a moment in history', status: 'failed',reason: 'Can share Kanban at a specific moment in history'}})}`);
 
   }  
 });
 
 
-test(`kanban - can drag boards`, async ({ }) => {
+test(`kanban - can drag boards`, async ({ page }) => {
 
   try {
     
@@ -381,7 +346,7 @@ test(`kanban - can drag boards`, async ({ }) => {
   }  
 });
 
-test(`kanban - can drag items`, async ({ }) => {
+test(`kanban - can drag items`, async ({ page }) => {
 
   try {
 
@@ -389,8 +354,10 @@ test(`kanban - can drag items`, async ({ }) => {
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
     await page.mouse.down();
-    await page.mouse.move(0, 50);
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
+    await page.mouse.move(0, 200);
+    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
+    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
+
     await page.mouse.up(); 
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 1800 });
@@ -404,7 +371,7 @@ test(`kanban - can drag items`, async ({ }) => {
   }  
 });
 
-test('kanban - export as .json',  async ({ }) => { 
+test('kanban - export as .json',  async ({ page }) => { 
  
   try {
 
@@ -436,13 +403,4 @@ test('kanban - export as .json',  async ({ }) => {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - export as .json', status: 'failed',reason: 'Can\'t export Kanban document as .json'}})}`);
     console.log(e);
   }
-});
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
 });

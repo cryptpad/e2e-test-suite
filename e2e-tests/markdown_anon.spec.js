@@ -1,55 +1,23 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps, url, titleDate } = require('../browserstack.config.js')
+const { test, url } = require('../fixture.js');
+const { expect } = require('@playwright/test');
+
 var fs = require('fs');
 
-
-let page;
-let pageOne;
-let browser;
-let browserName;
-let context;
-let device;
 let isMobile;
+let browserName;
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+test.beforeEach(async ({ page }, testInfo) => {
 
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use);
-  }
-  page = await context.newPage();
+  test.setTimeout(240000000)
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
 
   await page.goto(`${url}/slide`)
-  await page.waitForTimeout(15000)
+  await page.waitForTimeout(10000)
 
 });
 
-test('markdown - anon - input text into editor and create slide', async ({  }) => {
+test('markdown - anon - input text into editor and create slide', async ({ page, context }) => {
   
   try {
 
@@ -67,7 +35,7 @@ test('markdown - anon - input text into editor and create slide', async ({  }) =
   }  
 });
 
-test('markdown - anon - create new slide', async ({  }) => {
+test('markdown - anon - create new slide', async ({ page, context }) => {
   
   try {
 
@@ -103,7 +71,7 @@ test('markdown - anon - create new slide', async ({  }) => {
   }  
 });
 
-test('markdown - toggle toolbar', async ({ }) => {
+test('markdown - toggle toolbar', async ({ page, context }) => {
   
   try {
 
@@ -132,7 +100,7 @@ test('markdown - toggle toolbar', async ({ }) => {
 
 
 
-test('markdown - toggle preview', async ({  }) => {
+test('markdown - toggle preview', async ({ page, context }) => {
   
   try {
 
@@ -167,7 +135,7 @@ test('markdown - toggle preview', async ({  }) => {
 });
 
 
-test('anon - slide - make a copy', async ({ }) => {
+test('anon - slide - make a copy', async ({ page, context }) => {
 
   try {
 
@@ -198,7 +166,7 @@ test('anon - slide - make a copy', async ({ }) => {
 });
 
 
-test(`slide - export (md)`, async ({ }) => {
+test(`slide - export (md)`, async ({ page, context }) => {
 
   try {
 
@@ -236,11 +204,9 @@ test(`slide - export (md)`, async ({ }) => {
   }  
 });
 
-test(`slide - share at a moment in history - (FF clipboard incompatibility)`, async ({ }) => {
+test(`slide - share at a moment in history`, async ({ page, context }) => {
 
   try {
-
-       //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
 
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('One moment in history');
@@ -284,12 +250,12 @@ test(`slide - share at a moment in history - (FF clipboard incompatibility)`, as
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history - (FF clipboard incompatibility)', status: 'failed',reason: 'Can\'t share Markdown at a specific moment in history - (FF clipboard incompatibility)'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'slide - share at a moment in history', status: 'failed',reason: 'Can\'t share Markdown at a specific moment in history'}})}`);
 
   }  
 });
 
-test(`slide - history (previous version)`, async ({ }) => {
+test(`slide - history (previous version)`, async ({ page, context }) => {
 
   try {
 
@@ -320,7 +286,9 @@ test(`slide - history (previous version)`, async ({ }) => {
 });
 
 
-test(`markdown - import file`, async ({ }) => {
+test(`markdown - import file`, async ({ page }) => {
+
+  test.skip(browserstackMobile, 'browserstack mobile import incompatibility')
 
   try {
 
@@ -346,13 +314,4 @@ test(`markdown - import file`, async ({ }) => {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `slide - import file`, status: 'failed',reason: 'Can\'t import file into Slide document'}})}`);
 
   }  
-});
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
 });

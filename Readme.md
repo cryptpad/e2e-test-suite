@@ -2,6 +2,15 @@
 
 `npm install`
 
+## Updating Playwright 
+
+Running tests using an outdated local version of Playwright and/or a mismatch between the local Playwright version and the one used by Browserstack can result in bugs. Because the local version needs to be checked for Browserstack compatibility, it is recommended to update manually.
+
+1. Check the local Playwright version using `npx playwright --version`
+2. Check the latest Playwright version listed [here] (https://www.browserstack.com/docs/automate/playwright/browsers-and-os). You can compare this to the Issues with connecting to Browserstack can be caused both by outdated and mismatched Playwright browser versions. Sometimes the most recent Playwright version listed as compatible includes a browser which is not compatible with the version used by Browserstack (this can be verified by checking the 'Input Capabilities'). It is recommended to try installing and running the tests using the latest Playwright version and 
+3. To update locally, run `npm install -D @playwright/test@[version number]`
+4. Run `npx playwright install` to download Playwright browsers
+
 ## Browsertack authentication and integration
 
 Create an `.env` file with

@@ -1,64 +1,29 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, caps, url, titleDate, patchMobileCaps } = require('../browserstack.config.js')
+const { test, url, titleDate } = require('../fixture.js');
+const { expect } = require('@playwright/test');
+
+var fs = require('fs');
+const d3 = require('d3')
 
 let page;
-let pageOne;
-let browser;
-let browserName;
-let context;
-let device; 
 let isMobile;
+let browserName;
 
+test.beforeEach(async ({ page, context }, testInfo) => {
 
-test.use({ locale: 'en-GB' });
-
-test.beforeEach(async ({ playwright }, testInfo) => {
-
-
-// test.use({ locale: 'en-GB' });
-  
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser( {locale: 'en-GB'});
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use, {locale: 'en-GB'});
-  }
-  page = await context.newPage();
-
+  test.setTimeout(240000000)
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
   await page.goto(`${url}/drive`)
-  await page.waitForTimeout(15000)
+  await page.waitForTimeout(1000)
 
 });
-
-test.use({ locale: 'en-GB' });
 
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'] 
 
 
 userMenuItems.forEach(function(item) {
 
-  test(`drive - anon - user menu - ${item}`, async ({ }) => {   
+  test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {   
   
     try {
 
@@ -117,7 +82,7 @@ userMenuItems.forEach(function(item) {
 
 })
 
-// test('drive - anon - erase all', async ({ }) => {   
+// test('drive - anon - erase all', async ({ page, context }) => {   
     
 //   try {
 
@@ -155,7 +120,7 @@ userMenuItems.forEach(function(item) {
 
 // });
 
-test('drive - anon - list/grid view', async ({ }) => {   
+test('drive - anon - list/grid view', async ({ page, context }) => {   
     
   try {
 
@@ -202,7 +167,7 @@ test('drive - anon - list/grid view', async ({ }) => {
 
 });
 
-test('drive - anon - history', async ({ }) => {   
+test('drive - anon - history', async ({ page, context }) => {   
     
   try {
 
@@ -212,8 +177,9 @@ test('drive - anon - history', async ({ }) => {
     const page1 = await page1Promise;
 
     var title = `Rich text - ${titleDate}`;
-    await page.waitForTimeout(10000)
+    await page.waitForTimeout(15000)
     await page.bringToFront()
+    await page.frameLocator('#sbox-iframe').getByText(title).waitFor()
     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible()
     
     await page.frameLocator('#sbox-iframe').locator("[data-original-title=\"Display the document history\"]") .click();
@@ -232,7 +198,7 @@ test('drive - anon - history', async ({ }) => {
 
 });
 
-test('drive - anon - notifications', async ({ }) => {
+test('drive - anon - notifications', async ({ page, context }) => {
    
   try {
 
@@ -249,12 +215,14 @@ test('drive - anon - notifications', async ({ }) => {
 });
 
 
-test('drive - anon - sign up from drive page', async ({ }) => {
+test('drive - anon - sign up from drive page', async ({ page, context }) => {
 
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor({timeout: 5000})
-    await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Sign up'}).waitFor({timeout: 5000})
+    await page.waitForTimeout(5000)
+
+    await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Sign up'}).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Sign up'}).click()
     await page.waitForTimeout(5000)
     await expect(page).toHaveURL(`${url}/register/`, { timeout: 100000 })
@@ -267,9 +235,12 @@ test('drive - anon - sign up from drive page', async ({ }) => {
   }  
 });
 
-test('drive - anon - log in from drive page', async ({ }) => {
+test('drive - anon - log in from drive page', async ({ page, context }) => {
 
   try {
+
+    await page.waitForTimeout(5000)
+
 
     await page.frameLocator('#sbox-iframe').locator('body').filter({hasText: "You are not logged in"}).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('link', {name: 'Log in'}).waitFor()
@@ -285,11 +256,3 @@ test('drive - anon - log in from drive page', async ({ }) => {
 
 });
 
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
-});

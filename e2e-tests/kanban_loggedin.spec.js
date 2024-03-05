@@ -1,36 +1,18 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { caps, patchCaps, patchMobileCaps, mainAccountPassword, url, titleDate } = require('../browserstack.config.js')
-var fs = require('fs');
+const { test, url, mainAccountPassword } = require('../fixture.js');
+const { Cleanup } = require('./test-pages.spec.js');
+const { expect } = require('@playwright/test');
 
-
-let page;
 let pageOne;
-let browser;
+let isMobile;
 let browserName;
-let context;
-let device
-let isMobile
+let cleanUp
 
-test.beforeEach(async ({ playwright }, testInfo) => {
+test.beforeEach(async ({ page }, testInfo) => {
+
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
   
-  test.setTimeout(180000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  console.log(isMobile)
-
   if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
-    page = await context.newPage();
     await page.goto(`${url}/login`)
     await page.getByPlaceholder('Username').fill('test-user');
     await page.waitForTimeout(10000)
@@ -43,24 +25,20 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       await login.click()
     }
     await page.waitForTimeout(10000)
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
   }
-  page = await context.newPage();
+
+  const template = testInfo.title.match(/import template/)
+  if (template) {
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanTemplates();
+  }
+
   await page.goto(`${url}/kanban`)
+  await page.waitForTimeout(10000)
+
 });
 
-
-test(`kanban - save as and import template`, async ({ }) => {
+test(`kanban - save as and import template`, async ({ page }) => {
 
   try {
 
@@ -92,7 +70,7 @@ test(`kanban - save as and import template`, async ({ }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
-    await page.frameLocator('#sbox-iframe').getByText('Templates').click();
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
     await page.frameLocator('#sbox-iframe').getByText('example kanban template').click({button: 'right'});
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
@@ -108,12 +86,10 @@ test(`kanban - save as and import template`, async ({ }) => {
 
 if (!isMobile) {
 
-  test(`kanban - history (previous author) - THIS TEST WILL FAIL - (FF clipboard incompatibility)`, async ({ }, testInfo) => {
+  test(`kanban - history (previous author) - THIS TEST WILL FAIL`, async ({ page, browser }) => {
 
     try {
-      
-         //test.skip(browserName.indexOf('firefox') !== -1, 'firefox clipboard incompatibility')
-  
+        
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
   
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor()
@@ -173,22 +149,9 @@ if (!isMobile) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `kanban - history (previous author)`, status: 'passed',reason: 'Can create Kanban document and view history (previous author)'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `kanban - history (previous author) - THIS TEST WILL FAIL - (FF clipboard incompatibility)`, status: 'failed',reason: 'Can\'t create Kanban document and view history (previous author) - THIS TEST WILL FAIL - (FF clipboard incompatibility)'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `kanban - history (previous author) - THIS TEST WILL FAIL`, status: 'failed',reason: 'Can\'t create Kanban document and view history (previous author) - THIS TEST WILL FAIL'}})}`);
   
     }  
   });
   
 }
-
-
-
-
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
-});

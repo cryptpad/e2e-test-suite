@@ -1,35 +1,23 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { caps, patchCaps, patchMobileCaps, mainAccountPassword, url } = require('../browserstack.config.js')
+const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
+const { expect } = require('@playwright/test');
+const { Cleanup } = require('./test-pages.spec.js');
 
 var fs = require('fs');
-var unzipper = require('unzipper');
+var unzipper = require('unzipper')
 
-let page;
 let pageOne;
-let browser;
+let isMobile;
 let browserName;
-let context;
-let device
-let isMobile
+let cleanUp
+let browserstackMobile;
 
-test.beforeEach(async ({ playwright }, testInfo) => {
-  
-  test.setTimeout(180000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
+test.beforeEach(async ({ page }, testInfo) => {
+
+  isMobile = testInfo.project.use['isMobile']  
+  browserName = testInfo.project.name.split(/@/)[0]
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
+
   if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser({ locale: 'en-GB', permissions: ["clipboard-read", "clipboard-write"] });
-    page = await context.newPage();
     await page.goto(`${url}/login`)
     await page.getByPlaceholder('Username').fill('test-user');
     await page.waitForTimeout(10000)
@@ -42,29 +30,19 @@ test.beforeEach(async ({ playwright }, testInfo) => {
       await login.click()
     }
     await page.waitForTimeout(10000)
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext({ storageState: 'auth/mainuser.json' }, testInfo.project.use);
   }
-  page = await context.newPage();
   await page.goto(`${url}/teams`)
+  await page.waitForTimeout(10000)
+
 });
 
+test('user menu - make and delete team', async ({ page }) => {
 
-
-test('user menu - make and delete team - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
+  test.skip(browserName === 'edge', 'microsoft edge incompatibility')
   
   try {
 
-    await page.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().click({timeout:8000});
+    await page.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().click();
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example team')
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
@@ -83,17 +61,18 @@ test('user menu - make and delete team - (EDGE) THIS TEST WILL FAIL', async ({ }
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'make team' , status: 'passed',reason: 'Can create a team'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'make team - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t create a team - (EDGE) THIS TEST WILL FAIL'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'make team', status: 'failed',reason: 'Can\'t create a team'}})}`);
 
   }  
 });
 
 
-test('can change team name - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
+test('can change team name', async ({ page }) => {
 
+  test.skip(browserName === 'edge', 'microsoft edge incompatibility')
 
   try {
-    
+
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
     await page.waitForTimeout(2000)
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
@@ -118,20 +97,20 @@ test('can change team name - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('test team');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(5000)
-    ;
-    await page.frameLocator('#sbox-iframe').getByText('test team')
+    await page.frameLocator('#sbox-iframe').getByText('test team').toBeVisible()
        
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change team name', status: 'passed',reason: 'Can change team name'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change team name - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t change team name - (EDGE) THIS TEST WILL FAIL'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change team name', status: 'failed',reason: 'Can\'t change team name'}})}`);
 
   }  
 });
 
 
-test(' can access team public signing key - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
+test(' can access team public signing key', async ({ page }) => {
 
+  test.skip(browserName === 'edge', 'microsoft edge incompatibility')
 
   try {
     
@@ -159,17 +138,19 @@ test(' can access team public signing key - (EDGE) THIS TEST WILL FAIL', async (
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
     }
   }
-   
 
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key - (EDGE) THIS TEST WILL FAIL'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
 
   }  
 });
 
-test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
+test('change team avatar', async ({ page }) => {
+
+  test.skip(browserName === 'edge', 'microsoft edge incompatibility')
+  test.skip(browserstackMobile, 'browserstack mobile import incompatibility')
 
   try {
 
@@ -205,22 +186,36 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change team avatar - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t change team avatar - (EDGE) THIS TEST WILL FAIL' }})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change team avatar', status: 'failed',reason: 'Can\'t change team avatar' }})}`);
 
 
   }  
 });
 
-  test('can download team drive - THIS TEST WILL FAIL', async ({ }) => {
+  test('can download team drive', async ({ page }) => {
 
+    test.skip(browserName === 'edge', 'microsoft edge incompatibility')
+    test.skip(browserstackMobile, 'browserstack mobile download incompatibility')
 
     try {
 
-      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
-  
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
+      cleanUp = new Cleanup(page);
+      const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
+      for (const i in docNames) {
+        let titleName
+        const name = docNames[i]
+        if (name === 'pad') {
+          titleName = 'Rich text -'
+        } else if (name === 'slide') {
+          titleName = 'Markdown slides -'
+        } else {
+          titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -'
+        }
+
+        await cleanUp.cleanTeamDrive(titleName);
+
+      }
+      
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
   
@@ -240,41 +235,42 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test-diagram.drawio"]
       let actualFiles = [];
   
-      fs.createReadStream('/tmp/myteamdrivecontents.zip')
-      .pipe(unzipper.Parse())
-      .on('entry', function (entry) {
-        var fileName = entry.path;
-        actualFiles.push(fileName)
-        console.log(fileName)
-      });
+      var compareFiles = function () {
+        fs.createReadStream('/tmp/mydrivecontents.zip')
+        .pipe(unzipper.Parse())
+        .on('entry', function (entry) {
+          var fileName = entry.path;
+          actualFiles.push(fileName)
+        });
   
-      if (actualFiles == expectedFiles) {
+        if (expectedFiles == actualFiles) {
+          return true
+        } else {
+          return false
+        }
+      }
+  
+      if (compareFiles) {
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive', status: 'passed',reason: 'Can download team drive contents'}})}`);
-  
       } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive  - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t download team drive contents - THIS TEST WILL FAIL'}})}`);
-  
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive ', status: 'failed',reason: 'Can\'t download team drive contents'}})}`);
       }
   
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t download team drive contents - THIS TEST WILL FAIL'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive', status: 'failed',reason: 'Can\'t download team drive contents'}})}`);
   
     }  
   });
 
-  test('add contact to team as viewer and remove them - (EDGE) THIS TEST WILL FAIL', async ({ }, testInfo) => {
+  test('add contact to team as viewer and remove them', async ({ page, browser }) => {
+
+    test.skip(browserName === 'edge', 'microsoft edge incompatibility')
 
     try {
 
-      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
-  
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
-  
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
+      cleanUp = new Cleanup(page);
+      await cleanUp.cleanTeamMembership();
   
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click()
       await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('testuser').click();
@@ -382,35 +378,34 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'add contact to team as viewer and remove them', status: 'passed',reason: 'Can add contact to team as viewer and remove them'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'add contact to team as viewer and remove them - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t add contact to team as viewer and remove them - (EDGE) THIS TEST WILL FAIL'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'add contact to team as viewer and remove them', status: 'failed',reason: 'Can\'t add contact to team as viewer and remove them'}})}`);
   
     } 
   });
   
   
-  test('promote team viewer to member - THIS TEST WILL FAIL', async ({  }, testInfo) => {
+  test('promote team viewer to member', async ({ page, browser }) => {
+
+    test.skip(browserName === 'edge', 'microsoft edge incompatibility')
   
     try {
 
-      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
-      
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
-      
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
+      cleanUp = new Cleanup(page);
+      await cleanUp.cleanTeamMembership();
+
       await page.waitForTimeout(8000)
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').waitFor();
-      await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').click({timeout: 3000});
       await page.waitForTimeout(5000)
+      await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').click();
+      await page.waitForTimeout(5000)
+
       ///log in other user
       const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
       pageOne = await context.newPage();
       await pageOne.goto(`${url}/teams`)
-      // await page.bringToFront()
       await pageOne.waitForTimeout(10000)
-      await expect(pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible({timeout: 2000})
+      await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor()
+      await expect(pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible()
   
       //check team docs are editable for member
       await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click()
@@ -431,7 +426,6 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
   
-      // await pageTwo.waitForTimeout(7000)
       await pageTwo.bringToFront()
       await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText('test pad').waitFor()
       await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
@@ -458,25 +452,22 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to member', status: 'passed',reason: 'Can promote team viewer to member and demote them'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to member - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t promote team viewer to member and demote them- (EDGE) THIS TEST WILL FAIL'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to member', status: 'failed',reason: 'Can\'t promote team viewer to member and demote them- (EDGE) THIS TEST WILL FAIL'}})}`);
   
     }  
   
   });
     
     
-  test('promote team viewer to admin - (EDGE) THIS TEST WILL FAIL', async ({ }, testInfo) => {
+  test('promote team viewer to admin', async ({ page, browser }) => {
+
+    test.skip(browserName === 'edge', 'microsoft edge incompatibility')
   
     try {
 
-      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
+      cleanUp = new Cleanup(page);
+      await cleanUp.cleanTeamMembership();
       
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:15000});
-      
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
       await page.waitForTimeout(2000)
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').click();
@@ -489,7 +480,9 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       pageOne = await context.newPage();
       await pageOne.goto(`${url}/teams`)
       await pageOne.waitForTimeout(10000)
-      await expect(pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible({timeout: 15000})
+      await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor()
+
+      await expect(pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible()
   
       //check team docs are editable for member
       await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click()
@@ -509,7 +502,6 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
   
-      // await pageTwo.waitForTimeout(7000)
       await pageTwo.bringToFront()
       await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText('test pad').waitFor()
       await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
@@ -539,24 +531,20 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to admin', status: 'passed',reason: 'Can promote team viewer to admin and demote them'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to admin - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t promote team viewer to admin and demote them - (EDGE) THIS TEST WILL FAIL'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to admin', status: 'failed',reason: 'Can\'t promote team viewer to admin and demote them'}})}`);
   
     }  
   });
     
-  test('promote team viewer to owner - THIS TEST WILL FAIL', async ({ }, testInfo) => {
-  
+  test('promote team viewer to owner', async ({ page, browser }) => {
+
+    test.skip(browserName === 'edge', 'microsoft edge incompatibility')
+
     try {
 
-      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
-        
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:15000});
-      
-      //user 1: team owner promotes viewer to owner
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
+      cleanUp = new Cleanup(page);
+      await cleanUp.cleanTeamMembership();
+
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').click();
       await page.waitForTimeout(4000)
@@ -590,71 +578,26 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
       
       //user 2: check team docs are editable for new owner
+      await pageOne.waitForTimeout(3000)
+      const page2Promise = pageOne.waitForEvent('popup')
+      await pageOne.frameLocator('#sbox-iframe').getByText('test pad').dblclick({timeout:5000})
+      const pageTwo = await page2Promise
+
+      await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
+      const dateTimeStamp = new Date()
+      await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
+      await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
+      await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
   
-       await pageOne.waitForTimeout(3000)
-       const page2Promise = pageOne.waitForEvent('popup')
-       await pageOne.frameLocator('#sbox-iframe').getByText('test pad').dblclick({timeout:5000})
-       const pageTwo = await page2Promise
-  
-       await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
-       const dateTimeStamp = new Date()
-       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
-       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
-   
-       //check member can't add members or access admin panel
-  
-       await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
-       await expect(pageOne.frameLocator('#sbox-iframe').getByText('Invite members')).toBeVisible()
-  
-       if (!await pageOne.frameLocator('#sbox-iframe').getByText('Administration').isVisible()) {
-  
-        await page.reload()
-        await page.waitForTimeout(6000)
-        await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-        await page.waitForTimeout(2000)
-        await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+      //check member can add members and access admin panel
+      await expect(pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first()).toBeVisible()
+      await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText('Invite members')).toBeVisible()
     
-        await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-        await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
-        const user = page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('test-user3', {exact: true})
-        await expect(user).toBeVisible({ timeout: 5000 })
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').last().waitFor();
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').last().click();
-        await page.waitForTimeout(5000)
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').last().waitFor();
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').last().click();
-        await page.waitForTimeout(5000)
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').last().waitFor();
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').last().click();
-        await page.waitForTimeout(5000)
-  
-        await pageOne.reload()
-        await pageOne.waitForTimeout(10000)
-        await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').waitFor()
-        await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-  
-        if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').count() > 1) {
-          await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').first()).toBeVisible()
-          await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').first().click();
-        } else {
-          await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team')).toBeVisible()
-          if (await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').count() > 1) {
-            await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').first().click();
-          } else {
-            await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').click();
-          }
-        }
-      }
-  
-      await expect(pageOne.frameLocator('#sbox-iframe').getByText('Administration')).toBeVisible()
-  
-      // await pageTwo.waitForTimeout(7000)
       await pageTwo.bringToFront()
       await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText('test pad').waitFor()
       await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
       await pageTwo.close()
-      // await pageOne.close()
       
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
       await expect(page.frameLocator('#sbox-iframe').getByText(`hello at ${dateTimeStamp}`)).toBeVisible()    
@@ -684,7 +627,7 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
   
       if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').count() > 1) {
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team')).first().toBeVisible()
+        await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').first()).toBeVisible()
         await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').first().click();
       } else {
         await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team')).toBeVisible()
@@ -699,24 +642,20 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to owner', status: 'passed',reason: 'Can add contact to team as owner and demote them'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to owner - THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t add contact to team as owner and demote them - THIS TEST WILL FAIL'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'promote team viewer to owner', status: 'failed',reason: 'Can\'t add contact to team as owner and demote them'}})}`);
   
     }  
   });
     
     
-  test('add contact to team and contact leaves team - (EDGE) THIS TEST WILL FAIL', async ({  }) => {
-  
-    try {
+  test('add contact to team and contact leaves team', async ({ page, browser }) => {
 
-      test.skip(isMobile === 'browserstack-mobile', 'mobile incompatibility')
-        
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-      await page.waitForTimeout(2000)
-      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
-  
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-      await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
+    test.skip(browserName === 'edge', 'microsoft edge incompatibility')
+
+    try {
+ 
+      cleanUp = new Cleanup(page);
+      await cleanUp.cleanTeamMembership();
   
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click()
       await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('testuser').click();
@@ -781,23 +720,21 @@ test('change team avatar - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'add contact to team and contact leaves', status: 'passed',reason: 'Can add contact to team and contact can leave team'}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'add contact to team and contact leaves - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t add contact to team / contact can\'t leave team - (EDGE) THIS TEST WILL FAIL'}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'add contact to team and contact leaves', status: 'failed',reason: 'Can\'t add contact to team / contact can\'t leave team'}})}`);
   
     }  
   });
   
 
 
-test('invite contact to team and cancel - (EDGE) THIS TEST WILL FAIL', async ({ }) => {
+test('invite contact to team and cancel', async ({ page }) => {
+
+  test.skip(browserName === 'edge', 'microsoft edge incompatibility')
     
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000)
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
-
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanTeamMembership();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click()
     await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('testuser').click();
@@ -815,20 +752,8 @@ test('invite contact to team and cancel - (EDGE) THIS TEST WILL FAIL', async ({ 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'invite contact to team - cancel', status: 'passed',reason: 'Can invite contact to team and cancel invite'}})}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'invite contact to team - cancel - (EDGE) THIS TEST WILL FAIL', status: 'failed',reason: 'Can\'t invite contact to team and cancel invite - (EDGE) THIS TEST WILL FAIL'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'invite contact to team - cancel', status: 'failed',reason: 'Can\'t invite contact to team and cancel invite'}})}`);
 
   }   
 });
 
-
-
-
-
-test.afterEach(async ({  }) => {
-  if (browser) {
-    await browser.close()
-  } else {
-    await context.close()
-  }
-  
-});
