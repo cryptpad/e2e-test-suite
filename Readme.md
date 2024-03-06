@@ -86,7 +86,7 @@ npx playwright test auth --workers=1 --project='chrome@latest:OSX Ventura'
 
 ### Browsertack authentication and integration
 
-Create an `.env` file with the following variables and set them to the value of your Browserstack username and access key:
+Create an `.env` file with the following variables and set them to your Browserstack username and access key:
 
 ```env
 BROWSERSTACK_USERNAME=""
@@ -101,7 +101,7 @@ Once connected, the test results can be viewed at https://automate.browserstack.
 
 ### Development vs. live testing
 
-The tests run on the CryptPad [staging instance](https://freemium.cryptpad.fr/) by default. They can also be run against the flagship CryptPad instance or a development instance running locally. To change, set the `exports.url` variable under `GLOBAL VARIABLES` in `fixture.js`. To test against a development instance, make sure it is running locally when running the tests.
+The tests run on the [CryptPad staging instance](https://freemium.cryptpad.fr/) by default. They can also be run against the [flagship CryptPad instance](https://cryptpad.fr/) or a development instance running locally. To change, set the `exports.url` variable under `GLOBAL VARIABLES` in `fixture.js`. To test against a development instance, make sure it is running locally when running the tests.
 
 ### Choose browser and OS/device
 
@@ -160,12 +160,26 @@ Some tests are 'flaky', i.e. will occasionally fail due to timeouts, inconsisten
 
 Running tests using an outdated local version of Playwright and/or a mismatch between the local Playwright version and the one used by Browserstack can result in bugs. Because the local version needs to be checked for Browserstack compatibility, it is recommended to update manually.
 
-1. Check the local Playwright version using `npx playwright --version`.
+1. Check the local Playwright version using:
+
+```
+ npx playwright --version
+
+ ```
 2. Check the latest Playwright version listed [here](https://www.browserstack.com/docs/automate/playwright/browsers-and-os). You can compare this to the version used by Browserstack in the 'Input Capabilities' section of each test recording. 
    * Issues with connecting to Browserstack can be caused by an outdated Playwright version as well as a conflict between individual browser versions used by Playwright and Browserstack. 
     * It is recommended to install and use the latest Playwright version listed as compatible with Browserstack under the link above.
-3. To update locally, run `npm install -D @playwright/test@[version number]`.
-4. Run `npx playwright install` to download Playwright browsers.
+3. To update locally, run:
+
+```
+npm install -D @playwright/test@[version number]
+```
+
+4. To download Playwright browsers run:
+
+```
+npx playwright install
+```
 
 ### Known bugs (Playwright issues) 
 
