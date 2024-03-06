@@ -37,7 +37,7 @@ These tests have `_loggedin` in the file name, and can be run collectively using
 
 #### Seeding the database
 
-> [!WARNING]
+>  :exclamation:
 > The setup, authentication and teardown scripts **must** be run on Chrome as it is the most stable browser and least likely to result in failures or errors. 
 
 
@@ -121,7 +121,7 @@ To run the tests using Browserstack, add `@browserstack` (for desktop) or `@brow
 
 ### Running tests
 
-> [!IMPORTANT]
+>  :exclamation:
 > It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using BrowserStack. Tests run over slow connections will often time out and fail or hang indefinitely. 
 
 1. If running tests for anonymous users, run: 
