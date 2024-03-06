@@ -315,7 +315,7 @@ test('form - import file', async ({ page }) => {
 
     const fileChooser = await fileChooserPromise;
     await page.waitForTimeout(5000)
-    await fileChooser.setFiles('testform.json');
+    await fileChooser.setFiles('testdocuments/testform.json');
     await page.waitForTimeout(3000)
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox')).toHaveValue('What to do today?')
