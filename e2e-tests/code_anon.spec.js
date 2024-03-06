@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 });
 
-test(`anon - code - input text`, async ({ page }) => {
+test(`anon - code - input text #1367`, async ({ page }) => {
 
   try {
 
@@ -36,7 +36,7 @@ test(`anon - code - input text`, async ({ page }) => {
   }  
 });
 
-test(`code - file menu - history`, async ({ page }) => {
+test(`code - file menu - history #1367`, async ({ page }) => {
 
   try {
 
@@ -68,7 +68,7 @@ test(`code - file menu - history`, async ({ page }) => {
   }  
 });
 
-test(`code - toggle toolbar`, async ({ page }) => {
+test(`code - toggle toolbar #1367`, async ({ page }) => {
 
   try {
 
@@ -92,7 +92,7 @@ test(`code - toggle toolbar`, async ({ page }) => {
   }  
 });
 
-test(`code - toggle preview`, async ({ page }) => {
+test(`code - toggle preview #1367`, async ({ page }) => {
 
   try {
 
@@ -117,7 +117,7 @@ test(`code - toggle preview`, async ({ page }) => {
   }  
 });
 
-test(`code -  make a copy`, async ({ page }) => {
+test(`code -  make a copy #1367`, async ({ page }) => {
 
   try {
 
@@ -148,7 +148,7 @@ test(`code -  make a copy`, async ({ page }) => {
   }  
 });
 
-test(`code - import file`, async ({ page }) => {
+test(`code - import file #1367`, async ({ page }) => {
 
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility')
 

@@ -190,7 +190,7 @@ docNames.forEach(function(name) {
 
 
     
-  test(`anon - ${name} - create from drive - move to trash`, async ({ page, context }) => {
+  test(`anon - ${name} - create from drive - move to trash #1263`, async ({ page, context }) => {
 
     try {
 

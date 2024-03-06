@@ -476,7 +476,7 @@ docNames.forEach(function(name) {
       }  
     });
 
-  test(`${name} - share with contact - edit`, async ({ page, browser }) => {
+  test(`${name} - share with contact - edit #1264`, async ({ page, browser }) => {
 
     var testName; 
     var testStatus;
@@ -543,10 +543,10 @@ docNames.forEach(function(name) {
         await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-kanban-editor').getByText('test-user3')).toBeVisible();
       }
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${testName}`, status: 'passed',reason: `Can ${testStatus}`}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `share ${name} with contact (to edit)`, status: 'passed',reason: `Can share ${name} with contact (to edit)`}})}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${testName}`, status: 'failed',reason: `Can\'t ${testStatus}`}})}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `share ${name} with contact (to edit)`, status: 'failed',reason: `Can\'t share ${name} with contact (to edit)`}})}`);
   
     }  
   });

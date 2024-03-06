@@ -12,7 +12,7 @@ const clientPlaywrightVersion = cp
 const BrowserStackLocal = require("browserstack-local");
 const util = require("util");
 
-exports.bsLocal = new BrowserStackLocal.Local();
+const bsLocal = new BrowserStackLocal.Local();
 
 // replace YOUR_ACCESS_KEY with your key. You can also set an environment variable - "BROWSERSTACK_ACCESS_KEY".
 exports.BS_LOCAL_ARGS = {
@@ -126,6 +126,8 @@ exports.test = base.test.extend({
     }
   ],
 });
+
+///GLOBAL VARIABLES///
 
 exports.url = 'https://freemium.cryptpad.fr'
 exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'PASSWORD_HERE' 

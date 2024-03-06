@@ -324,7 +324,7 @@ test(`kanban - share at a moment in history`, async ({ page }) => {
 });
 
 
-test(`kanban - can drag boards`, async ({ page }) => {
+test(`kanban - can drag boards #1372`, async ({ page }) => {
 
   try {
     
