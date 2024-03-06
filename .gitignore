@@ -5,4 +5,4 @@ local.log
 test-results
 index.html
 auth/*.json
-.DS_STORE
+**/.DS_STORE
