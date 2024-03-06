@@ -248,7 +248,7 @@ test(`pad - export (html)`, async ({ page }) => {
     console.log(readData)
 
     var expectedString;
-    if (testInfo.project.name.indexOf('firefox') !== -1) {
+    if (browserName === 'playwright-firefox') {
       expectedString = '<!DOCTYPEhtml><html><head><metacharset="utf-8"></head><body>TESTTEXT</body></html>'
     } else {
       expectedString = '<!DOCTYPEhtml><html><head><metacharset="utf-8"></head><body>TESTTEXT<p></p></body></html>'
@@ -299,7 +299,7 @@ test(`pad - export (.doc)`, async ({ page }) => {
     const readData = fs.readFileSync("/tmp/test pad", "utf8");
 
     var expectedString;
-    if (testInfo.project.name.indexOf('firefox') !== -1) {
+    if (browserName === 'playwright-firefox') {
       expectedString = "<htmlxmlns:o='urn:schemas-microsoft-com:office:office'xmlns:w='urn:schemas-microsoft-com:office:word'xmlns='http://www.w3.org/TR/REC-html40'><head><metacharset='utf-8'><title>ExportHTMLToDoc</title></head><body>TESTTEXT</body></html>"
     } else {
       expectedString = "<htmlxmlns:o='urn:schemas-microsoft-com:office:office'xmlns:w='urn:schemas-microsoft-com:office:word'xmlns='http://www.w3.org/TR/REC-html40'><head><metacharset='utf-8'><title>ExportHTMLToDoc</title></head><body>TESTTEXT<p></p></body></html>"
