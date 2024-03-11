@@ -92,8 +92,6 @@ BROWSERSTACK_ACCESS_KEY=""
 
 Alternately replace the username and key variable placeholders in `browserstack.config.js`.
 
-Once connected, the test results can be viewed at https://automate.browserstack.com/dashboard/.
-
 ## Running tests
 
 ### Development vs. live testing
@@ -112,9 +110,13 @@ You can choose a browser and OS/device combination from those available in `play
 
 ### Choose Playwright only or Plawright and Browserstack
 
-The tests can be run locally using Playwright only. This is usually slightly quicker and does not require connection to Browserstack. 
+The tests can be run locally using Playwright only. This is usually slightly quicker and does not require connection to Browserstack. The tests results, including stack traces in case of error, are displayed in real time on the console. At the end of each test run, a report is generated and should open automatically in the default browser. To open the report page manually, use:
 
-To run the tests using Browserstack, add `@browserstack` (for desktop) or `@browserstack-mobile` (for mobile) to the project name, for example `chrome@latest:OSX Ventura@browserstack`.
+```
+npx playwright show-report
+```
+
+To run the tests using Browserstack, add `@browserstack` (for desktop) or `@browserstack-mobile` (for mobile) to the project name, for example `chrome@latest:OSX Ventura@browserstack`. Once connected, the test results can be viewed at https://automate.browserstack.com/dashboard/.
 
 ### Running tests
 
