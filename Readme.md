@@ -67,15 +67,17 @@ You can specify another OS name or run the file using Browserstack as desired (s
 
 3. To save the authentication information for test accounts:
 
-* change directory to auth folder using `cd auth` and create files to store authentication information for each test account using:
+* change directory to auth folder and create files to store authentication information for each test account using:
 
 ```bash
+cd auth
 touch mainuser.json testuser.json testuser2.json testuser3.json
 ```
 
-* then change back to project root directory and run: 
+* then change back to project root directory and run the auth script using: 
 
 ```
+cd ..
 npx playwright test auth --workers=1 --project='chrome@latest:OSX Ventura'
 ```
 
@@ -117,7 +119,7 @@ To run the tests using Browserstack, add `@browserstack` (for desktop) or `@brow
 ### Running tests
 
 > :exclamation:
-> It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using BrowserStack. Tests run over slow connections will often time out and fail or hang indefinitely. 
+> It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using Browserstack. Tests run over slow connections will often time out and fail or hang indefinitely. 
 
 1. If running tests for anonymous users, run: 
 
@@ -126,7 +128,7 @@ npx playwright test anon --project='chrome@latest:OSX Ventura'
 ```
 
 These tests will run in parallel mode using two workers (default).
-You can set another browser/OS combination of your choosing using the `projects` flag (see' Choose browser and OS/device').
+You can set another browser/OS combination of your choosing using the `projects` flag (see 'Choose browser and OS/device').
 
 > :information_source:
 > If the command to run tests is used without the `projects` flag, the chosen tests will run on all available `projects` listed in `playwright.spec.js`. 
@@ -190,7 +192,7 @@ Currently some mobile tests are marked as skipped when running with Browserstack
 This and other issues are documented in the Issues section of the repository.
 
 
-### Known bugs (CryptPad issue)
+### Known bugs (CryptPad issues)
 
 Reproducible bugs and problem behaviours which cause tests to fail are listed [here](https://cryptpad.fr/code/#/2/code/view/dva4JIIHCrRYWkBRub8LhYTWJ7o2cmiq-4zC3hbNRfc/). Most of the tests which consistently fail are listed here, and labeled with the number of the related GitHub issue both in this document and in the test name.
 
