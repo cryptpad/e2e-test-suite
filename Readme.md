@@ -27,10 +27,7 @@ Some of the suite is focused on anonymous interaction with CryptPad and its apps
 
 These tests have `_anon` in the file name, and can be run collectively using the `anon` command line variable (see 'Running tests' below.)
 
-The rest deals with the functionality related to user accounts, and relies on seeding the database with accounts, documents, teams etc. before any tests can be run. A description of the required initial data can be found
-[here](https://cryptpad.fr/code/#/3/code/edit/0def72606ece1221679bd8a6a00bcad1/).
-
-
+The rest deals with the functionality related to user accounts, and relies on seeding the database with accounts, documents, teams etc. before any tests can be run. A description of the required initial data can be found [here](https://cryptpad.fr/code/#/3/code/edit/0def72606ece1221679bd8a6a00bcad1/). This environment must be kept constant and replicable between tests, i.e. if as part of a test a document is created and added to the user's drive, it must be deleted before the test is run again. To ensure this in case of code malfunction or test failure, there are several cleanup scripts in `test-pages.spec.js` integrated into the test files, which run in order to return the test environment to base state. However, there may be situations in which these do not work as expected, and one may be required to manually intervene in the test environment.
 
 These tests have `_loggedin` in the file name, and can be run collectively using the `loggedin` command line variable (see 'Running tests' below.)
 
@@ -39,7 +36,6 @@ These tests have `_loggedin` in the file name, and can be run collectively using
 
 >  :exclamation:
 > The setup, authentication and teardown scripts **must** be run on Chrome as it is the most stable browser and least likely to result in failures or errors. 
-
 
 1. Set passwords for the following test accounts:
 
@@ -83,7 +79,6 @@ touch mainuser.json testuser.json testuser2.json testuser3.json
 npx playwright test auth --workers=1 --project='chrome@latest:OSX Ventura'
 ```
 
-
 ### Browsertack authentication and integration
 
 Create an `.env` file with the following variables and set them to your Browserstack username and access key:
@@ -121,7 +116,7 @@ To run the tests using Browserstack, add `@browserstack` (for desktop) or `@brow
 
 ### Running tests
 
->  :exclamation:
+> :exclamation:
 > It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using BrowserStack. Tests run over slow connections will often time out and fail or hang indefinitely. 
 
 1. If running tests for anonymous users, run: 
@@ -131,6 +126,11 @@ npx playwright test anon --project='chrome@latest:OSX Ventura'
 ```
 
 These tests will run in parallel mode using two workers (default).
+You can set another browser/OS combination of your choosing using the `projects` flag (see' Choose browser and OS/device').
+
+> :information_source:
+> If the command to run tests is used without the `projects` flag, the chosen tests will run on all available `projects` listed in `playwright.spec.js`. 
+
 
 2. If running tests for logged-in users (see 'Required environment for authenticated tests' above) run: 
 
@@ -143,14 +143,16 @@ npx playwright test loggedin --workers=1 --project='chrome@latest:OSX Ventura'
 ```
 npx playwright test [filename] --project='chrome@latest:OSX Ventura'
 ```
-If running a test file with `loggedin` in the name, a `--workers=1` flag must be added, for example:
+**If running a test file with `loggedin` in the name, a `--workers=1` flag must be added**, for example:
 
 ```
 npx playwright test code_loggedin --workers=1 --project='chrome@latest:OSX Ventura'
 
 ```
 
-The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
+> :information_source:
+> The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
+
 
 ## Troubleshooting
 
