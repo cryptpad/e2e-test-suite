@@ -102,7 +102,7 @@ The tests run on the [CryptPad staging instance](https://freemium.cryptpad.fr/) 
 
 ### Choose browser and OS/device
 
-The tests can be run on different browser and OSs/device combinations, set under `projects` in `playwright.config.js`. The format is as follows:
+The tests can be run on different browser and OS/device combinations, set under `projects` in `playwright.config.js`. The format is as follows:
 
 `[browser name]@[os/device name]`, for example `chrome@latest:OSX Ventura`. 
 
@@ -110,7 +110,7 @@ The project uses Chrome, Edge, Firefox and Webkit on the latest available versio
 
 You can choose a browser and OS/device combination from those available in `playwright.config.js`, or you can add your own. You can see a full list of supported browsers and OS/devices [here](https://playwright.dev/docs/browsers). To see how they compare to what is supported by integration with Browserstack, see [here](https://www.browserstack.com/docs/automate/playwright/browsers-and-os). 
 
-### Run with Playwright only or Plawright and Browserstack
+### Choose Playwright only or Plawright and Browserstack
 
 The tests can be run locally using Playwright only. This is usually slightly quicker and does not require connection to Browserstack. 
 
@@ -131,7 +131,7 @@ These tests will run in parallel mode using two workers (default).
 You can set another browser/OS combination of your choosing using the `projects` flag (see 'Choose browser and OS/device').
 
 > :information_source:
-> If the command to run tests is used without the `projects` flag, the chosen tests will run on all available `projects` listed in `playwright.spec.js`. 
+> If the command to run tests is used without the `projects` flag, the chosen tests will run on all available `projects` listed in `playwright.config.js`. 
 
 
 2. If running tests for logged-in users (see 'Required environment for authenticated tests' above) run: 
