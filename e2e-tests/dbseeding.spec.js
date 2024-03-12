@@ -1,6 +1,6 @@
-const { test, expect } = require('@playwright/test');
-const { firefox, chromium, webkit } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../browserstack.config.js')
+const { expect } = require('@playwright/test');
+const { test, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js')
+
 
 let pageOne;
 let browser;
@@ -10,50 +10,14 @@ let context;
 let device;
 let isMobile
 
-test.beforeEach(async ({ playwright }, testInfo) => {
+test.beforeEach(async ({ page, browser }, testInfo) => {
   
-  test.setTimeout(2400000);
-  isMobile = testInfo.project.name.match(/browserstack-mobile/);
-  if (isMobile) {
-    patchMobileCaps(
-      testInfo.project.name,
-      `${testInfo.file} - ${testInfo.title}`
-    );
-    device = await playwright._android.connect(
-      `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(
-        JSON.stringify(caps)
-      )}`
-    );
-    await device.shell("am force-stop com.android.chrome");
-    context = await device.launchBrowser();
-  } else {
-    patchCaps(testInfo.project.name, `${testInfo.title}`);
-    delete caps.osVersion;
-    delete caps.deviceName;
-    delete caps.realMobile;
-    browser = await playwright.chromium.connect({
-      wsEndpoint:
-        `wss://cdp.browserstack.com/playwright?caps=` +
-        `${encodeURIComponent(JSON.stringify(caps))}`,
-    });
-    context = await browser.newContext(testInfo.project.use);
-  }
-  // browser = await firefox.launch({
-  //   firefoxUserPrefs: {
-  //     'dom.events.asyncClipboard.readText': true,
-  //     'dom.events.testing.asyncClipboard': true,
-  //   },
-  //   locale: 'en-GB',
-  // })
-  // context = await browser.newContext()
-  page = await context.newPage();
-
   await page.goto(`${url}`)
   await page.waitForTimeout(15000)
 
 });
 
-test('test-user account setup', async ({ }) => {
+test('test-user account setup', async ({ page }) => {
   
   try {
 
@@ -92,7 +56,7 @@ test('test-user account setup', async ({ }) => {
 })
 
 
-test('testuser account setup', async ({ }) => {
+test('testuser account setup', async ({ page }) => {
   
   try {
 
@@ -131,7 +95,7 @@ test('testuser account setup', async ({ }) => {
   
 })
 
-test('test-user2 account setup', async ({ }) => {
+test('test-user2 account setup', async ({ page }) => {
   
     try {
   
@@ -170,7 +134,7 @@ test('test-user2 account setup', async ({ }) => {
   
 })
 
-test('test-user3 account setup', async ({ }) => {
+test('test-user3 account setup', async ({ page }) => {
   
     try {
   
@@ -209,7 +173,7 @@ test('test-user3 account setup', async ({ }) => {
   
 })
 
-test('create test team', async ({ }) => {
+test('create test team', async ({ page }) => {
   
   try {
     await page.goto(`${url}/login`);
@@ -247,136 +211,139 @@ test('create test team', async ({ }) => {
 });
 
 
-test('link test-user and testuser as contacts', async ({ }, testInfo) => {
+test('link test-user and testuser as contacts', async ({ page, browser }, testInfo) => {
 
-    try {
+  try {
 
-        await page.goto(`${url}/login`);
-        await page.getByPlaceholder('Username').fill('testuser');
-        await page.waitForTimeout(10000)
-        await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
-        const login = page.locator(".login")
-        await login.waitFor({ timeout: 18000 })
-        await expect(login).toBeVisible({ timeout: 1800 })
-        if (await login.isVisible()) {
-            await login.click()
-        }
-        await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })   
-        await page.goto(`${url}/profile`)
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        const testuserProfileLink = await page.evaluate("navigator.clipboard.readText()");
-
-        //login test-user
-        const context = await browser.newContext();
-        pageOne = await context.newPage();
-        await pageOne.goto(`${url}/login`);
-        await pageOne.getByPlaceholder('Username').fill('test-user');
-        await pageOne.waitForTimeout(2000)
-        await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
-        const login1 = pageOne.locator(".login")
-        await login1.waitFor({ timeout: 18000 })
-        await expect(login1).toBeVisible({ timeout: 1800 })
-        if (await login1.isVisible()) {
-            await login1.click()
-        }
-        await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-        await pageOne.waitForTimeout(10000)
-
-        //send testuser contact request
-        await pageOne.goto(`${testuserProfileLink}`)
-        await pageOne.waitForTimeout(10000)
-        await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
-        await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
-
-        await page.waitForTimeout(7000)
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-        await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
-        await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click()
-        await expect(page.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
-        await page.waitForTimeout(5000)
-        // await page.close()
-        ////
-
-        await pageOne.waitForTimeout(7000)
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts')).toBeVisible()
-            
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'passed',reason: 'Can link test-user and testuser as contacts'}})}`);
-    } catch (e) {
-        console.log(e);
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'failed',reason: 'Can\'t link test-user and testuser as contacts'}})}`);
-    } 
-
-});
+        console.log(mainAccountPassword)
 
 
-test('link test-user and test-user3 as contacts', async ({ }, testInfo) => {
+    await page.goto(`${url}/login`);
+    await page.getByPlaceholder('Username').fill('testuser');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    if (await login.isVisible()) {
+        await login.click()
+    }
+    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })   
+    await page.goto(`${url}/profile`)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    const testuserProfileLink = await page.evaluate("navigator.clipboard.readText()");
 
-    try {
+    //login test-user
+    const context = await browser.newContext();
+    pageOne = await context.newPage();
+    await pageOne.goto(`${url}/login`);
+    await pageOne.getByPlaceholder('Username').fill('test-user');
+    await pageOne.waitForTimeout(2000)
+    await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login1 = pageOne.locator(".login")
+    await login1.waitFor({ timeout: 18000 })
+    await expect(login1).toBeVisible({ timeout: 1800 })
+    if (await login1.isVisible()) {
+        await login1.click()
+    }
+    await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
+    await pageOne.waitForTimeout(10000)
 
-        await page.goto(`${url}/login`);
-        await page.getByPlaceholder('Username').fill('test-user3');
-        await page.waitForTimeout(10000)
-        await page.getByPlaceholder('Password', {exact: true}).fill(testUser3Password);
-        const login = page.locator(".login")
-        await login.waitFor({ timeout: 18000 })
-        await expect(login).toBeVisible({ timeout: 1800 })
-        if (await login.isVisible()) {
-            await login.click()
-        }
-        await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })   
-        await page.goto(`${url}/profile`)
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        const testuserProfileLink = await page.evaluate("navigator.clipboard.readText()");
+    //send testuser contact request
+    await pageOne.goto(`${testuserProfileLink}`)
+    await pageOne.waitForTimeout(10000)
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
+    await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
 
-        //login test-user
-        const context = await browser.newContext();
-        pageOne = await context.newPage();
-        await pageOne.goto(`${url}/login`);
-        await pageOne.getByPlaceholder('Username').fill('test-user');
-        await pageOne.waitForTimeout(2000)
-        await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
-        const login1 = pageOne.locator(".login")
-        await login1.waitFor({ timeout: 18000 })
-        await expect(login1).toBeVisible({ timeout: 1800 })
-        if (await login1.isVisible()) {
-            await login1.click()
-        }
-        await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-        await pageOne.waitForTimeout(10000)
+    await page.waitForTimeout(7000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+    await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click()
+    await expect(page.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+    await page.waitForTimeout(5000)
+    // await page.close()
+    ////
 
-        //send testuser contact request
-        await pageOne.goto(`${testuserProfileLink}`)
-        await pageOne.waitForTimeout(10000)
-        await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
-        await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
-
-        await page.waitForTimeout(7000)
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
-        await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
-        await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click()
-        await expect(page.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
-        await page.waitForTimeout(5000)
-        // await page.close()
-        ////
-
-        await pageOne.waitForTimeout(7000)
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts')).toBeVisible()
-            
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and test-user3 as contacts', status: 'passed',reason: 'Can link test-user and test-user3 as contacts'}})}`);
-    } catch (e) {
-        console.log(e);
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and test-user3 as contacts', status: 'failed',reason: 'Can\'t link test-user and test-user3 as contacts'}})}`);
-    } 
+    await pageOne.waitForTimeout(7000)
+    await expect(pageOne.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts')).toBeVisible()
+        
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'passed',reason: 'Can link test-user and testuser as contacts'}})}`);
+  } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'failed',reason: 'Can\'t link test-user and testuser as contacts'}})}`);
+  } 
 
 });
 
-test('add test-user3 to test team', async ({ }) => {
+
+test('link test-user and test-user3 as contacts', async ({ page, browser }, testInfo) => {
+
+  try {
+
+    await page.goto(`${url}/login`);
+    await page.getByPlaceholder('Username').fill('test-user3');
+    await page.waitForTimeout(10000)
+    await page.getByPlaceholder('Password', {exact: true}).fill(testUser3Password);
+    const login = page.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    if (await login.isVisible()) {
+        await login.click()
+    }
+    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })   
+    await page.goto(`${url}/profile`)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    const testuserProfileLink = await page.evaluate("navigator.clipboard.readText()");
+
+    //login test-user
+    const context = await browser.newContext();
+    pageOne = await context.newPage();
+    await pageOne.goto(`${url}/login`);
+    await pageOne.getByPlaceholder('Username').fill('test-user');
+    await pageOne.waitForTimeout(2000)
+    await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login1 = pageOne.locator(".login")
+    await login1.waitFor({ timeout: 18000 })
+    await expect(login1).toBeVisible({ timeout: 1800 })
+    if (await login1.isVisible()) {
+        await login1.click()
+    }
+    await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
+    await pageOne.waitForTimeout(10000)
+
+    //send testuser contact request
+    await pageOne.goto(`${testuserProfileLink}`)
+    await pageOne.waitForTimeout(10000)
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).waitFor()
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request'}).click()
+    await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible()
+
+    await page.waitForTimeout(7000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+    await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click()
+    await expect(page.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+    await page.waitForTimeout(5000)
+    // await page.close()
+    ////
+
+    await pageOne.waitForTimeout(7000)
+    await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts')).toBeVisible()
+        
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and test-user3 as contacts', status: 'passed',reason: 'Can link test-user and test-user3 as contacts'}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and test-user3 as contacts', status: 'failed',reason: 'Can\'t link test-user and test-user3 as contacts'}})}`);
+  } 
+
+});
+
+test('add test-user3 to test team', async ({ page, browser }) => {
 
   try {
 
@@ -438,7 +405,7 @@ test('add test-user3 to test team', async ({ }) => {
 });
 
 
-test('create test files in test-user drive', async ({ }) => {
+test('create test files in test-user drive', async ({ page }) => {
   
   try {
 
@@ -564,7 +531,7 @@ test('create test files in test-user drive', async ({ }) => {
   }  
 });
 
-test('create test files in team drive and add avatar', async ({ }) => {
+test('create test files in team drive and add avatar', async ({ page }) => {
   
   try {
 
@@ -734,8 +701,3 @@ test('create test files in team drive and add avatar', async ({ }) => {
 
   }  
 });
-
-
-test.afterEach(async ({  }) => {
-    await browser.close()
-  });

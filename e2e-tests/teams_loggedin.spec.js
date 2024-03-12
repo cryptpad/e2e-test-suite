@@ -73,6 +73,7 @@ test('can change team name', async ({ page }) => {
 
   try {
 
+    //access team admin panel
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
     await page.waitForTimeout(2000)
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
@@ -80,6 +81,7 @@ test('can change team name', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
 
+    //change team name
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('example team');
@@ -92,6 +94,7 @@ test('can change team name', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
 
+    //change team name back
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('test team');
@@ -154,11 +157,14 @@ test('change team avatar', async ({ page }) => {
 
   try {
 
+    //access team administration panel
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
     await page.waitForTimeout(2000)
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
+
+    //upload new avatar
     const fileChooserPromise = page.waitForEvent('filechooser');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
     const fileChooser = await fileChooserPromise;
@@ -172,6 +178,8 @@ test('change team avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
+
+    //change avatar back to original
     const fileChooserPromise1 = page.waitForEvent('filechooser');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
     const fileChooser1 = await fileChooserPromise1;
@@ -211,17 +219,16 @@ test('change team avatar', async ({ page }) => {
         } else {
           titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -'
         }
-
         await cleanUp.cleanTeamDrive(titleName);
-
       }
       
+      //access administration panel
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
-  
       await page.frameLocator('#sbox-iframe').getByText('Administration').click();
+
+      //download drive
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download' }).click();
-  
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
       await page.waitForTimeout(10000)
       const downloadPromise = page.waitForEvent('download');
@@ -232,6 +239,7 @@ test('change team avatar', async ({ page }) => {
   
       await expect(page.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
   
+      //verify contents
       const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test-diagram.drawio"]
       let actualFiles = [];
   
@@ -272,11 +280,12 @@ test('change team avatar', async ({ page }) => {
       cleanUp = new Cleanup(page);
       await cleanUp.cleanTeamMembership();
   
+      //invite contact to team
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click()
       await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('testuser').click();
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Invite', exact: true}).click()
   
-      ///
+      //login as other user
       const context = await browser.newContext({ storageState: 'auth/testuser.json' });
       pageOne = await context.newPage();
       await pageOne.goto(`${url}/drive`);
@@ -286,7 +295,7 @@ test('change team avatar', async ({ page }) => {
   
       if (!await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').isVisible({timeout: 3000})) {
   
-        //notification about being added to team doesn't display
+        //notification about being added to team doesn't display - re-add contact
         await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'testuser'}).locator('.fa.fa-times').click();
         await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
@@ -310,6 +319,7 @@ test('change team avatar', async ({ page }) => {
       
       }
   
+      //contact accepts team invitation
       await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').click({timeout: 3000});
       await pageOne.waitForTimeout(3000)
       await expect(pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' })).toBeVisible()
@@ -317,7 +327,6 @@ test('change team avatar', async ({ page }) => {
       const page2Promise = pageOne.waitForEvent('popup')
       await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
       const pageTwo = await page2Promise
-  
       await pageTwo.waitForTimeout(5000)
   
       await page.reload()
@@ -329,7 +338,6 @@ test('change team avatar', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
       await expect(page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('testuser', { exact: true })).toBeVisible({ timeout: 100000 })
       
-      ///
   
       await expect(pageTwo.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible()
       await pageTwo.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click()
@@ -393,6 +401,7 @@ test('change team avatar', async ({ page }) => {
       cleanUp = new Cleanup(page);
       await cleanUp.cleanTeamMembership();
 
+      //promote viewer to member
       await page.waitForTimeout(8000)
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-up').waitFor();
       await page.waitForTimeout(5000)
@@ -419,13 +428,15 @@ test('change team avatar', async ({ page }) => {
       await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
       await expect(pageOne.frameLocator('#sbox-iframe').getByText('Invite members')).toBeHidden()
       await expect(pageOne.frameLocator('#sbox-iframe').getByText('Administration')).toHaveCount(0)
+
+      //check member can send team messages
       await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
-  
       const dateTimeStamp = new Date()
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
       await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
   
+      //check member can edit team docs
       await pageTwo.bringToFront()
       await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText('test pad').waitFor()
       await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
@@ -438,9 +449,11 @@ test('change team avatar', async ({ page }) => {
       await page.waitForTimeout(2000)
       await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
   
+      //check messages sent by member are visible to team
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
       await expect(page.frameLocator('#sbox-iframe').getByText(`hello at ${dateTimeStamp}`)).toBeVisible()    
   
+      //demote member back to viewer
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click()
       const user = page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('test-user3', {exact: true})

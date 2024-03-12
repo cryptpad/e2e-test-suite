@@ -1,5 +1,5 @@
 import { test as setup, expect } from '@playwright/test';
-const { url, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../browserstack.config.js')
+const { url, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js')
 
 const authFileMainAccount = 'auth/mainuser.json';
 
