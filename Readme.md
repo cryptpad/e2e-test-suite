@@ -31,8 +31,8 @@ This environment is kept constant and replicable between tests, i.e. if as part 
 
 #### Seeding the database
 
->  :exclamation:
-> The setup, authentication and teardown scripts **must** be run on Chromium as we have found it to be the most stable browser for this process and least likely to result in failures or errors. 
+> :exclamation:
+> The setup, authentication and teardown scripts **must** be run on Chromium as we have found it to be the most stable browser for this process and least likely to result in failures or errors. It can also be run on either OSX or Windows, but **not** on a mobile device.
 
 1. Set passwords for the following test accounts:
 
@@ -127,13 +127,13 @@ npx playwright test anon --project='chrome@latest:OSX Ventura'
 ```
 
 These tests will run in parallel mode using two workers (default).
-You can set another browser/OS combination of your choosing using the `projects` flag (see 'Choose browser and OS/device').
+You can set another browser/OS combination of your choosing using the `projects` flag (see [Choose browser and OS/device](## Choose browser and OS/device)).
 
 > :information_source:
 > If the command to run tests is used without the `projects` flag, the chosen tests will run on all available `projects` listed in `playwright.config.js`. 
 
 
-2. If running tests for logged-in users (see 'Required environment for authenticated tests' above) run: 
+2. If running tests for logged-in users (see [Required environment for authenticated tests](## Required environment for authenticated tests)) run: 
 
 ```bash
 npx playwright test loggedin --workers=1 --project='chrome@latest:OSX Ventura'
@@ -193,7 +193,7 @@ This and other issues are documented in the Issues section of the repository.
 
 ### Known bugs (CryptPad issues)
 
-Reproducible bugs and problem behaviours which cause tests to fail are listed [here](https://cryptpad.fr/code/#/2/code/view/dva4JIIHCrRYWkBRub8LhYTWJ7o2cmiq-4zC3hbNRfc/). Most of the tests which consistently fail are listed here, and labeled with the number of the related GitHub issue both in this document and in the test name.
+Reproducible bugs and problem behaviours which reliably cause tests to fail are [listed as issues in the CryptPad GitHub repository under the `discovered in testing` label](https://github.com/cryptpad/cryptpad/labels/Discovered%20in%20testing). There is also a [list and discussion of problem behaviours which are difficult to reproduce or intermittent](https://cryptpad.fr/code/#/2/code/view/dva4JIIHCrRYWkBRub8LhYTWJ7o2cmiq-4zC3hbNRfc/). Most of the tests which consistently fail are labeled with the number of the related GitHub issue in the test name.
 
 Currently all tests interacting with the Teams functionality are set to skip if running on Edge browser due to an unfixable incompatibility. 
 

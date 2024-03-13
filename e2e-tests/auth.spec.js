@@ -6,6 +6,8 @@ const authFileMainAccount = 'auth/mainuser.json';
 setup('authenticate test-user', async ({ page }) => {
   setup.setTimeout(2400000);
   await page.goto(`${url}/login`);
+  await page.waitForTimeout(10000)
+  await page.getByPlaceholder('Username').waitFor()
   await page.getByPlaceholder('Username').fill('test-user');
   await page.waitForTimeout(10000)
   await page.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
