@@ -25,7 +25,7 @@ npm install
 
 Some of the suite is focused on "anonymous" or guest user interaction with CryptPad and its apps. This requires no database setup or authentication. These tests have `_anon` in the file name, and can be run collectively using the `anon` command line variable (see [Running tests](## Running tests))
 
-For tests that rely on being logged in to user accounts (drive, sharing, collaboration, etc), and/or on opening of specific test documents and drives, the instance database must be seeded with [the required initial data](https://cryptpad.fr/code/#/3/code/edit/0def72606ece1221679bd8a6a00bcad1/) before testing can begin. These tests have `_loggedin` in the file name, and can be run collectively using the `loggedin` command line variable (see [Running tests](## Running tests))
+For tests that rely on being logged in to user accounts (drive, sharing, collaboration, etc), and/or on opening of specific test documents and drives, the instance database must be seeded with [the required initial data](https://cryptpad.fr/code/#/2/code/view/umjXf-hxeI6r1ymuOIbHWmsgJoc-UuxTR4Q-b-ZAXB4/) before testing can begin. These tests have `_loggedin` in the file name, and can be run collectively using the `loggedin` command line variable (see [Running tests](## Running tests))
 
 This environment is kept constant and replicable between tests, i.e. if as part of a test a document is created and added to the user's drive, it must be deleted before the test is run again. To ensure this in case of code malfunction or test failure, there are several cleanup scripts in `test-pages.spec.js` integrated into the test files, which run in order to return the test environment to its base state. However, there may be situations in which these do not work as expected, and one may be required to manually intervene in the test environment.
 
@@ -193,14 +193,14 @@ This and other issues are documented in the Issues section of the repository.
 
 ### Known bugs (CryptPad issues)
 
-Reproducible bugs and problem behaviours which reliably cause tests to fail are [listed as issues in the CryptPad GitHub repository under the `discovered in testing` label](https://github.com/cryptpad/cryptpad/labels/Discovered%20in%20testing). There is also a [list and discussion of problem behaviours which are difficult to reproduce or intermittent](https://cryptpad.fr/code/#/2/code/view/dva4JIIHCrRYWkBRub8LhYTWJ7o2cmiq-4zC3hbNRfc/). Most of the tests which consistently fail are labeled with the number of the related GitHub issue in the test name.
+Reproducible bugs and problem behaviours which reliably cause tests to fail are [listed as issues in the CryptPad GitHub repository under the `discovered in testing` label](https://github.com/cryptpad/cryptpad/labels/Discovered%20in%20testing). There is also a [list and discussion of problem behaviours which are difficult to reproduce or intermittent](https://cryptpad.fr/code/#/2/code/view/p2kQvGJCmj1c6ghKyLlHERS0PsxkxutLFwvQCIm3hfw/). Most of the tests which consistently fail are labeled with the number of the related GitHub issue in the test name.
 
 Currently all tests interacting with the Teams functionality are set to skip if running on Edge browser due to an unfixable incompatibility. 
 
 
 ## Contributing 
 
-We welcome contributions to this test suite as an important part of making CryptPad more stable. Anything from reproducing the tests to find bugs in CryptPad to extending the [coverage checklist](https://cryptpad.fr/code/#/2/code/edit/JURoNH7f0zbWYBYsaPLgHqkp/) is useful and appreciated.
+We welcome contributions to this test suite as an important part of making CryptPad more stable. Anything from reproducing the tests to find bugs in CryptPad to extending the [coverage checklist](https://cryptpad.fr/code/#/2/code/view/cnfy4kKHOkS+X79iy3rQ88qVICUAFV3BWxc-UR+m5MU/) is useful and appreciated.
 
 
 ### Interactive mode
