@@ -4,14 +4,15 @@ const { expect } = require('@playwright/test');
 var fs = require('fs');
 const d3 = require('d3')
 
-// let page;
 let pageOne;
 let isMobile;
 let browserName;
+let browserstackMobile;
 
 test.beforeEach(async ({ page }, testInfo) => {
 
   isMobile = testInfo.project.use['isMobile']
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/form`)
   await page.waitForTimeout(10000)
 
@@ -273,8 +274,8 @@ test('form - view history and share at a specific moment in history', async ({ p
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -311,7 +312,7 @@ test('form - import file', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Import').click();
 
     const fileChooser = await fileChooserPromise;
     await page.waitForTimeout(5000)
@@ -356,7 +357,7 @@ test('form - make a copy', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const pageOnePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a').click();
     await page.waitForTimeout(5000)
     pageOne = await pageOnePromise;
     await pageOne.waitForTimeout(10000)
@@ -399,7 +400,7 @@ test('form - export file',  async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     const downloadPromise = page.waitForEvent('download');
     const download = await downloadPromise;
@@ -1098,7 +1099,7 @@ test('form - add and respond to conditional section question (OR)',  async ({ pa
   }
   });
 
-test('form - add and respond to respond to conditional section question (AND)',  async ({ page, context }) => { 
+test('form - add and respond to conditional section question (AND)',  async ({ page, context }) => { 
  
   try {
 

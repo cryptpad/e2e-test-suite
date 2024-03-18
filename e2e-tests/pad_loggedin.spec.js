@@ -142,8 +142,8 @@ test(`pad - history (previous author)`, async ({ page, browser }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
+        await page.frameLocator('#sbox-iframe').getByText('History').click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }

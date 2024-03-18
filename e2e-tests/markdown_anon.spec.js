@@ -5,13 +5,14 @@ var fs = require('fs');
 
 let isMobile;
 let browserName;
+let browserstackMobile;
 
 test.beforeEach(async ({ page }, testInfo) => {
 
   test.setTimeout(240000000)
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0]
-
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/slide`)
   await page.waitForTimeout(10000)
 
@@ -149,7 +150,7 @@ test('anon - slide - make a copy', async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Make a copy').click();
     const page1 = await page1Promise;
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/slide`), { timeout: 100000 })
@@ -179,7 +180,7 @@ test(`slide - export (md)`, async ({ page, context }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test markdown');
     
     const downloadPromise = page.waitForEvent('download');
@@ -225,8 +226,8 @@ test(`slide - share at a moment in history`, async ({ page, context }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByText('History').click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -268,8 +269,8 @@ test(`slide - history (previous version)`, async ({ page, context }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByText('History').click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -299,7 +300,7 @@ test(`markdown - import file`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Import').click();
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/testslide.md');

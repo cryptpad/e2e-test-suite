@@ -5,6 +5,7 @@ var fs = require('fs');
 
 let isMobile;
 let browserName;
+let browserstackMobile;
 
 test.beforeEach(async ({ page }, testInfo) => {
 
@@ -12,7 +13,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0]
-
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/pad`)
   await page.waitForTimeout(10000)
 
@@ -109,8 +110,8 @@ test(`pad - history (previous version)`, async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    if (await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByText('History').click();
 
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
@@ -168,7 +169,7 @@ test(`pad - import file`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Import').click();
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/myfile.html');
@@ -202,7 +203,7 @@ test('pad - make a copy', async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Make a copy').click();
     const page1 = await page1Promise;
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 })
@@ -235,7 +236,7 @@ test(`pad - export (html)`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     
     const downloadPromise = page.waitForEvent('download');
@@ -285,7 +286,7 @@ test(`pad - export (.doc)`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.doc' }).click();
@@ -333,7 +334,7 @@ test(`pad - export (md)`, async ({ page, context }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.md' }).click();
@@ -392,8 +393,8 @@ test(`pad - share at a moment in history`, async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    if ( await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' History', exact: true }).click();
+    if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByText('History').click();
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
