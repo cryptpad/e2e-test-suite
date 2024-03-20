@@ -112,8 +112,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
      //make repeating
-     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' }).click();
-    //  await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' }).click();
+     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'One time ' }).click();
      await page.frameLocator('#sbox-iframe').getByRole('link', { name: `Weekly on ${weekday}` }).click();
      await page.waitForTimeout(3000)
 

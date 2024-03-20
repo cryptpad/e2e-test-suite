@@ -206,21 +206,6 @@ test('change team avatar', async ({ page }) => {
     test.skip(browserstackMobile, 'browserstack mobile download incompatibility')
 
     try {
-
-      cleanUp = new Cleanup(page);
-      const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
-      for (const i in docNames) {
-        let titleName
-        const name = docNames[i]
-        if (name === 'pad') {
-          titleName = 'Rich text -'
-        } else if (name === 'slide') {
-          titleName = 'Markdown slides -'
-        } else {
-          titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -'
-        }
-        await cleanUp.cleanTeamDrive(titleName);
-      }
       
       //access administration panel
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
@@ -240,25 +225,38 @@ test('change team avatar', async ({ page }) => {
       await expect(page.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
   
       //verify contents
-      const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test-diagram.drawio"]
-      let actualFiles = [];
-  
-      var compareFiles = function () {
-        fs.createReadStream('/tmp/mydrivecontents.zip')
-        .pipe(unzipper.Parse())
-        .on('entry', function (entry) {
-          var fileName = entry.path;
-          actualFiles.push(fileName)
+      const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form.json", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test diagram.drawio"]
+
+      const actualFiles = []
+
+      async function unzipDownload() {
+        return new Promise((resolve) => {
+          fs.createReadStream('/tmp/myteamdrivecontents.zip')
+          .pipe(unzipper.Parse())
+          .on('entry', function (entry) {
+            var fileName = entry.path;
+            actualFiles.push(fileName)
+            // console.log(fileName)
+          })
+          .on('finish', resolve)
         });
-  
-        if (expectedFiles == actualFiles) {
+      }
+
+      async function compareFiles() {
+        const result = await unzipDownload();
+        let checker = (arr, target) => target.every(v => arr.includes(v));
+        let check = checker(actualFiles, expectedFiles)
+
+        if (check) {
+        
           return true
         } else {
-          return false
-        }
+        return false}
       }
+
+
   
-      if (compareFiles) {
+      if (compareFiles()) {
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive', status: 'passed',reason: 'Can download team drive contents'}})}`);
       } else {
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download team drive ', status: 'failed',reason: 'Can\'t download team drive contents'}})}`);

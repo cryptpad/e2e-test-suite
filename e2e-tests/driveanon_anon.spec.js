@@ -96,12 +96,12 @@ userMenuItems.forEach(function(item) {
 
 //     var title = `Rich text - ${titleDate}`;
 //     await page1.waitForTimeout(10000)
-//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
-//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
+//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 //     await page1.close()
 //     await page.reload()
 //     await page.waitForTimeout(10000)
-//     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({timeout: 2000})
+//     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).click({timeout: 2000})
 
 //     //erase
 //     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();

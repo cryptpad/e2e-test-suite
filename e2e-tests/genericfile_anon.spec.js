@@ -49,7 +49,7 @@ docNames.forEach(function(name) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       }
 
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New', exact: true }).click();
+      await page.frameLocator('#sbox-iframe').getByText('New').click();
       const page2Promise = page.waitForEvent('popup');
       if (name === 'pad') {
         await page.frameLocator('#sbox-iframe').getByText('Rich text', {exact: true}).click();
@@ -61,7 +61,7 @@ docNames.forEach(function(name) {
       const page2 = await page2Promise;
       await page2.waitForTimeout(5000)
 
-      await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
+      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - create new file from file menu`, status: 'passed',reason: `Can create new ${name} document from file menu`}})}`);
     } catch (e) {
@@ -98,8 +98,8 @@ docNames.forEach(function(name) {
         
         await page1.goto(`${clipboardText}`)
         await page.waitForTimeout(10000)
-        await page1.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
-        await expect(page1.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
+        await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
   
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
     
@@ -137,8 +137,8 @@ docNames.forEach(function(name) {
         
         await page1.goto(`${clipboardText}`)
         await page1.waitForTimeout(10000)
-        await page1.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
-        await expect(page1.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
+        await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible()
         
@@ -215,20 +215,20 @@ docNames.forEach(function(name) {
       
       await expect(page2).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 60000 })
       await page2.waitForTimeout(10000)
-      await page2.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
-      await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
+      await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
       await page2.waitForTimeout(10000)
       await page2.goto(`${url}/drive`);
       await page2.waitForTimeout(10000)
       await page2.frameLocator('#sbox-iframe').getByText(`${title}`).waitFor();
-      await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toBeVisible();
+      await expect(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toBeVisible();
 
       if (isMobile) {
         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').waitFor()
         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').click();
 
       } else {
-        await page2.frameLocator('#sbox-iframe').getByText(`${title}`).click({ button: 'right' })
+        await page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' })
 
       }  
 
@@ -241,7 +241,7 @@ docNames.forEach(function(name) {
 
       await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
       await page2.waitForTimeout(10000)
-      await expect(page2.frameLocator('#sbox-iframe').getByText(`${title}`)).toHaveCount(0)
+      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toHaveCount(0)
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - drive - move to trash`, status: 'passed',reason: `Can anonymously create ${name} in Drive and move to trash`}})}`);
     } catch (e) {
@@ -263,8 +263,8 @@ docNames.forEach(function(name) {
         await page.waitForTimeout(15000)
       }
 
-      await page.frameLocator('#sbox-iframe').getByText(`${title}`).first().waitFor()
-      await expect(page.frameLocator('#sbox-iframe').getByText(`${title}`).first()).toBeVisible()
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
       await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
       await page.frameLocator('#sbox-iframe').getByPlaceholder(`${title}`).fill('new doc title');
@@ -301,7 +301,7 @@ docNames.forEach(function(name) {
       } else {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       }
-      await page.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
+      await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
       

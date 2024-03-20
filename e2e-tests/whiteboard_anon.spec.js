@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 });
 
-test('anon - can draw on whiteboard (default settings)', async ({ }) => {
+test('anon - can draw on whiteboard (default settings)', async ({ page }) => {
 
   try {
 

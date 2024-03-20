@@ -136,7 +136,7 @@ if (!isMobile) {
       if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
          await page.frameLocator('#sbox-iframe').getByText('History').click();
       } else {
-        await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
       }
   
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();

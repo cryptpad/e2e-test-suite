@@ -159,10 +159,10 @@ test('kanban - view history', async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByText('History').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
@@ -295,7 +295,7 @@ test(`kanban - share at a moment in history`, async ({ page }) => {
     if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();

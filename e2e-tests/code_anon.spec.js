@@ -53,7 +53,7 @@ test(`code - file menu - history #1367`, async ({ page }) => {
     if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
@@ -245,7 +245,7 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();

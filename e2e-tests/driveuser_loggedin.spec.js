@@ -32,7 +32,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     await page.waitForTimeout(10000)
   }
 
-    
+  await page.goto(`${url}/drive`)
   
 });
 
@@ -107,7 +107,7 @@ test('drive -  upload file', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     }
     
-    await page.waitForTimeout(5000)
+    // await page.waitForTimeout(5000)
     await page.frameLocator('#sbox-iframe').getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor()
 
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('myfile.doc').click({ button: 'right' });
@@ -152,7 +152,7 @@ test('drive -  recent files', async ({ page }) => {
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Recent' }).first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(title)).toBeVisible()
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' })
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).click({ button: 'right' })
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' }).click()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
@@ -385,7 +385,7 @@ test('can download drive contents', async ({ page }) => {
 
     await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').getByText('CryptDrive').click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('mydrivecontents.zip');
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('/tmp/mydrivecontents.zip');
     const download1Promise = page1.waitForEvent('download');
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     const download1 = await download1Promise;
@@ -394,23 +394,35 @@ test('can download drive contents', async ({ page }) => {
 
     await expect(page1.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
 
-    const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test diagram.drawio"]
-    let actualFiles = [];
 
-    var compareFiles = function () {
-      fs.createReadStream('/tmp/mydrivecontents.zip')
-      .pipe(unzipper.Parse())
-      .on('entry', function (entry) {
-        var fileName = entry.path;
-        actualFiles.push(fileName)
+    const expectedFiles = ["Drive/", "Drive/test code.md", "Drive/test form.json", "Drive/test kanban.json", "Drive/test pad.html", "Drive/test markdown.md", "Drive/test sheet.xlsx", "Drive/test whiteboard.png", "Drive/test diagram.drawio"]
+
+    const actualFiles = []
+
+    async function unzipDownload() {
+      return new Promise((resolve) => {
+        fs.createReadStream('/tmp/mydrivecontents.zip')
+        .pipe(unzipper.Parse())
+        .on('entry', function (entry) {
+          var fileName = entry.path;
+          actualFiles.push(fileName)
+        })
+        .on('finish', resolve)
       });
+    }
 
-      if (expectedFiles == actualFiles) {
+    async function compareFiles() {
+      const result = await unzipDownload();
+      let checker = (arr, target) => target.every(v => arr.includes(v));
+      let check = checker(actualFiles, expectedFiles)
+
+      if (check) {
+      
         return true
       } else {
-        return false
-      }
+      return false}
     }
+
 
     if (compareFiles()) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'can download drive contents', status: 'passed',reason: 'Can download drive contents'}})}`);

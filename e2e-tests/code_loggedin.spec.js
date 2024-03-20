@@ -118,7 +118,7 @@ test(`code - history (previous author)`, async ({ page, browser }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click({force: true, timeout: 3000});
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And yet more test text by test-user!')).toHaveCount(0)

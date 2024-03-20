@@ -61,8 +61,8 @@ test('pad - create and open snapshot', async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Snapshots', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Snapshots', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').waitFor()
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').fill('snap1');
@@ -79,8 +79,8 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Snapshots', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Snapshots', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
     await page.frameLocator('#sbox-iframe').getByText('snap1').waitFor()
     await page.frameLocator('#sbox-iframe').getByText('snap1').click();
     await page.waitForTimeout(10000)
@@ -110,11 +110,11 @@ test(`pad - history (previous version)`, async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    if (await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
-      await page.frameLocator('#sbox-iframe').getByText('History').click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
 
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
@@ -288,7 +288,7 @@ test(`pad - export (.doc)`, async ({ page }) => {
     }
     await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.doc' }).click();
     
     const downloadPromise = page.waitForEvent('download');
@@ -336,7 +336,7 @@ test(`pad - export (md)`, async ({ page, context }) => {
     }
     await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.md' }).click();
     
     const downloadPromise = page.waitForEvent('download');
@@ -393,10 +393,10 @@ test(`pad - share at a moment in history`, async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    if ( await page.frameLocator('#sbox-iframe').getByText('History').isVisible()) {
-       await page.frameLocator('#sbox-iframe').getByText('History').click();
+    if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
+       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();

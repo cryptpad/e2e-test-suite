@@ -56,126 +56,127 @@ test('test-user account setup', async ({ page }) => {
 })
 
 
-test('testuser account setup', async ({ page }) => {
+// test('testuser account setup', async ({ page }) => {
   
-  try {
+//   try {
 
-        ///registering the account
-        await page.goto(`${url}/register`)
-        
-        await page.waitForTimeout(5000)
-        await page.getByPlaceholder('Username').fill('testuser');
-        await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
-        await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUserPassword);
-        const register = page.locator("[id='register']")
-        await register.waitFor()
-
-        if (await page.locator('#userForm span').nth(2).isVisible()) {
-          await page.locator('#userForm span').nth(2).click()
-        }
-        await register.click()
-
-        const modal = page.getByText('Warning');
-        await expect(modal).toBeVisible({ timeout: 180000 });
-        if (await modal.isVisible({ timeout: 180000 })) {
-        await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-        }
-        const hashing = page.getByText('Hashing your password')
-        await expect(hashing).toBeVisible({ timeout: 200000 })
-
-        await page.waitForTimeout(20000)
-        await page.waitForURL(`${url}/drive/#`)
+//     ///registering the account
+//     await page.goto(`${url}/register`)
     
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'passed',reason: 'Can register testuser'}})}`);
+//     await page.waitForTimeout(5000)
+//     await page.getByPlaceholder('Username').fill('testuser');
+//     await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
+//     await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUserPassword);
+//     const register = page.locator("[id='register']")
+//     await register.waitFor()
 
-    } catch (e) {
-        console.log(e);
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'failed',reason: 'Can\'t register testuser'}})}`);
-    }  
-  
-})
+//     if (await page.locator('#userForm span').nth(2).isVisible()) {
+//       await page.locator('#userForm span').nth(2).click()
+//     }
+//     await register.click()
 
-test('test-user2 account setup', async ({ page }) => {
-  
-    try {
-  
-      ///registering the account
-      await page.goto(`${url}/register`)
-      
-      await page.waitForTimeout(5000)
-      await page.getByPlaceholder('Username').fill('test-user2');
-      await page.getByPlaceholder('Password', {exact: true}).fill(testUser2Password);
-      await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser2Password);
-      const register = page.locator("[id='register']")
-      await register.waitFor()
-  
-      if (await page.locator('#userForm span').nth(2).isVisible()) {
-        await page.locator('#userForm span').nth(2).click()
-      }
-      await register.click()
-   
-      const modal = page.getByText('Warning');
-      await expect(modal).toBeVisible({ timeout: 180000 });
-      if (await modal.isVisible({ timeout: 180000 })) {
-        await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-      }
-      const hashing = page.getByText('Hashing your password')
-      await expect(hashing).toBeVisible({ timeout: 200000 })
-  
-      await page.waitForTimeout(20000)
-      await page.waitForURL(`${url}/drive/#`)
-      
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'passed',reason: 'Can register test-user2'}})}`);
-  
-    } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'failed',reason: 'Can\'t register test-user2'}})}`);
-    }  
-  
-})
+//     const modal = page.getByText('Warning');
+//     await expect(modal).toBeVisible({ timeout: 180000 });
+//     if (await modal.isVisible({ timeout: 180000 })) {
+//     await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+//     }
+//     const hashing = page.getByText('Hashing your password')
+//     await expect(hashing).toBeVisible({ timeout: 200000 })
 
-test('test-user3 account setup', async ({ page }) => {
+//     await page.waitForTimeout(20000)
+//     await page.waitForURL(`${url}/drive/#`)
+
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'passed',reason: 'Can register testuser'}})}`);
+
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'failed',reason: 'Can\'t register testuser'}})}`);
+//   }  
   
-    try {
+// })
+
+// test('test-user2 account setup', async ({ page }) => {
   
-      ///registering the account
-      await page.goto(`${url}/register`)
-      
-      await page.waitForTimeout(5000)
-      await page.getByPlaceholder('Username').fill('test-user3');
-      await page.getByPlaceholder('Password', {exact: true}).fill(testUser3Password);
-      await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser3Password);
-      const register = page.locator("[id='register']")
-      await register.waitFor()
+//   try {
+
+//     ///registering the account
+//     await page.goto(`${url}/register`)
+    
+//     await page.waitForTimeout(5000)
+//     await page.getByPlaceholder('Username').fill('test-user2');
+//     await page.getByPlaceholder('Password', {exact: true}).fill(testUser2Password);
+//     await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser2Password);
+//     const register = page.locator("[id='register']")
+//     await register.waitFor()
+
+//     if (await page.locator('#userForm span').nth(2).isVisible()) {
+//       await page.locator('#userForm span').nth(2).click()
+//     }
+//     await register.click()
   
-      if (await page.locator('#userForm span').nth(2).isVisible()) {
-        await page.locator('#userForm span').nth(2).click()
-      }
-      await register.click()
-   
-      const modal = page.getByText('Warning');
-      await expect(modal).toBeVisible({ timeout: 180000 });
-      if (await modal.isVisible({ timeout: 180000 })) {
-        await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-      }
-      const hashing = page.getByText('Hashing your password')
-      await expect(hashing).toBeVisible({ timeout: 200000 })
+//     const modal = page.getByText('Warning');
+//     await expect(modal).toBeVisible({ timeout: 180000 });
+//     if (await modal.isVisible({ timeout: 180000 })) {
+//       await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+//     }
+//     const hashing = page.getByText('Hashing your password')
+//     await expect(hashing).toBeVisible({ timeout: 200000 })
+
+//     await page.waitForTimeout(20000)
+//     await page.waitForURL(`${url}/drive/#`)
+    
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'passed',reason: 'Can register test-user2'}})}`);
+
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'failed',reason: 'Can\'t register test-user2'}})}`);
+//   }  
   
-      await page.waitForTimeout(20000)
-      await page.waitForURL(`${url}/drive/#`)
-      
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'passed',reason: 'Can register test-user3'}})}`);
+// })
+
+// test('test-user3 account setup', async ({ page }) => {
   
-    } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'failed',reason: 'Can\'t register test-user3'}})}`);
-    }  
+//   try {
+
+//     ///registering the account
+//     await page.goto(`${url}/register`)
+    
+//     await page.waitForTimeout(5000)
+//     await page.getByPlaceholder('Username').fill('test-user3');
+//     await page.getByPlaceholder('Password', {exact: true}).fill(testUser3Password);
+//     await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser3Password);
+//     const register = page.locator("[id='register']")
+//     await register.waitFor()
+
+//     if (await page.locator('#userForm span').nth(2).isVisible()) {
+//       await page.locator('#userForm span').nth(2).click()
+//     }
+//     await register.click()
   
-})
+//     const modal = page.getByText('Warning');
+//     await expect(modal).toBeVisible({ timeout: 180000 });
+//     if (await modal.isVisible({ timeout: 180000 })) {
+//       await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+//     }
+//     const hashing = page.getByText('Hashing your password')
+//     await expect(hashing).toBeVisible({ timeout: 200000 })
+
+//     await page.waitForTimeout(20000)
+//     await page.waitForURL(`${url}/drive/#`)
+    
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'passed',reason: 'Can register test-user3'}})}`);
+
+//   } catch (e) {
+//     console.log(e);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'failed',reason: 'Can\'t register test-user3'}})}`);
+//   }  
+  
+// })
 
 test('create test team', async ({ page }) => {
   
   try {
+
     await page.goto(`${url}/login`);
     await page.getByPlaceholder('Username').fill('test-user');
     await page.waitForTimeout(10000)
@@ -214,9 +215,6 @@ test('create test team', async ({ page }) => {
 test('link test-user and testuser as contacts', async ({ page, browser }, testInfo) => {
 
   try {
-
-        console.log(mainAccountPassword)
-
 
     await page.goto(`${url}/login`);
     await page.getByPlaceholder('Username').fill('testuser');
@@ -264,16 +262,14 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
     await page.waitForTimeout(5000)
-    // await page.close()
-    ////
 
     await pageOne.waitForTimeout(7000)
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts')).toBeVisible()
         
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'passed',reason: 'Can link test-user and testuser as contacts'}})}`);
   } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'failed',reason: 'Can\'t link test-user and testuser as contacts'}})}`);
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'link test-user and testuser as contacts', status: 'failed',reason: 'Can\'t link test-user and testuser as contacts'}})}`);
   } 
 
 });
@@ -329,8 +325,6 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
     await page.waitForTimeout(5000)
-    // await page.close()
-    ////
 
     await pageOne.waitForTimeout(7000)
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts')).toBeVisible()
@@ -513,6 +507,19 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible()
 
+    await page.goto(`${url}/kanban/`);
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await page.waitForTimeout(5000)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+    await page.waitForTimeout(5000)
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible({timeout: 5000})
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
+    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).fill('test kanban');
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
+    await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
+
     await page.goto(`${url}/drive`)
     await page.waitForTimeout(5000)
     await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible()
@@ -522,6 +529,8 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test markdown')).toBeVisible()
+    await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
+
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'create test files in test-user drive', status: 'passed',reason: 'Can create test files in test-user drive'}})}`);
   } catch (e) {
@@ -677,6 +686,23 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(page8.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible()
     await page8.close()
 
+    await page.frameLocator('#sbox-iframe').locator('button').filter({ hasText: /^New$/ }).click()
+    const page9Promise = page.waitForEvent('popup');
+    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Kanban' }).click();
+    const page9 = await page9Promise;
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await page.waitForTimeout(5000)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+    await page.waitForTimeout(5000)
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible({timeout: 5000})
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
+    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).fill('test kanban');
+    await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
+
+    await expect(page8.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
+
     await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible()
@@ -684,6 +710,8 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test markdown')).toBeVisible()
+        await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
+
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()

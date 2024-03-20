@@ -274,10 +274,12 @@ test('form - view history and share at a specific moment in history', async ({ p
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
+
+    await page.waitForTimeout(3000)
     if ( await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
     }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new option')).toHaveCount(0)

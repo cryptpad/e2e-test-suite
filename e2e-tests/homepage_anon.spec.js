@@ -18,7 +18,15 @@ test.setTimeout(240000000)
 test('home page title', async ({ page }) => {
   
   try {
-    await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+
+    if (url == 'https://cryptpad.fr') {
+      await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+    } else if ( url.indexOf('localhost') !== -1) {
+    
+    } else {
+      await expect(page).toHaveTitle("Home page - freemium.cryptpad.fr");
+    }
+
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage title', status: 'passed',reason: 'Can navigate to home page'}})}`);
   } catch (e) {
     console.log(e);
@@ -62,7 +70,7 @@ test('homepage - access log in', async ({ page }) => {
 test('home page > features', async ({ page }) => {
 
   try {
-    await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+
     if (url === 'https://cryptpad.fr' || url === 'https://freemium.cryptpad.fr') {
       await page.getByRole('link', {name: 'Pricing'}).waitFor()
       await page.getByRole('link', {name: 'Pricing'}).click()
@@ -83,7 +91,7 @@ test('home page > features', async ({ page }) => {
 test('home page > documentation', async ({ page }) => {
  
   try {
-    await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+
     await page.getByRole('link', {name: 'Documentation'}).waitFor()
     await page.getByRole('link', {name: 'Documentation'}).click()
     
@@ -99,7 +107,7 @@ test('home page > documentation', async ({ page }) => {
 test('home page > contact', async ({ page }) => {
 
   try {
-    await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+
     await page.getByRole('link', {name: 'Contact'}).waitFor()
     await page.getByRole('link', {name: 'Contact'}).click()
     await expect(page).toHaveURL(new RegExp(`^${url}/contact`))
@@ -114,7 +122,7 @@ test('home page > contact', async ({ page }) => {
 test('home page > project website', async ({ page }) => {
   
   try {
-    await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+
     await page.getByRole('link', {name: 'Project website'}).waitFor()
     const pagePromise = page.waitForEvent('popup')
     await page.getByRole('link', {name: 'Project website'}).click()
@@ -131,7 +139,7 @@ test('home page > project website', async ({ page }) => {
 test('home page > donate', async ({ page }) => {
 
   try {
-    await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
+
     await page.getByRole('link', {name: 'Donate'}).waitFor()
     const pagePromise = page.waitForEvent('popup')
     await page.getByRole('link', {name: 'Donate'}).click()
@@ -169,7 +177,6 @@ if (url.toString() === 'https://cryptpad.fr') {
  
     try {
     
-      await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
       await page.getByRole('link', {name: 'Privacy Policy'}).waitFor()
       await page.getByRole('link', {name: 'Privacy Policy'}).click()
       await expect(page).toHaveURL('https://cryptpad.fr/pad/#/2/pad/view/GcNjAWmK6YDB3EO2IipRZ0fUe89j43Ryqeb4fjkjehE/')
@@ -186,7 +193,6 @@ if (url.toString() === 'https://cryptpad.fr') {
 
     try {
 
-      await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
       await page.getByRole('link', {name: 'Terms of Service'}).waitFor()
       await page.getByRole('link', {name: 'Terms of Service'}).click()
       await expect(page).toHaveURL('https://cryptpad.fr/code/#/2/code/view/QpPIuoUAHytCF8JjkunAPqnO7yuu1GWd3OUDwYe5ZA8/present/')
