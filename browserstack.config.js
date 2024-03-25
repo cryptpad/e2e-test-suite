@@ -20,15 +20,12 @@ const caps = {
   browserName: "chrome",
   // realMobile: "true",
   name: "My android playwright test",
-  build: "playwright-build-1",
-  "browserstack.username": process.env.BROWSERSTACK_USERNAME || "<USERNAME>",
-  "browserstack.accessKey":
-    process.env.BROWSERSTACK_ACCESS_KEY || "<ACCESS_KEY>",
-        'browserstack.local': 'true',
-
+  build: "playwright-build-2",
+  "browserstack.username": process.env.BROWSERSTACK_USERNAME,
+  "browserstack.accessKey": process.env.BROWSERSTACK_ACCESS_KEY,
   // "browserstack.local": process.env.BROWSERSTACK_LOCAL || false,
   // "browserstack.idleTimeout" : "300",
-  "browserstack.playwrightVersion" : '1.41.2'
+  "browserstack.playwrightVersion" : clientPlaywrightVersion
 
 };
 

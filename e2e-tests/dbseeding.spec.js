@@ -554,7 +554,10 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     if (await login.isVisible()) {
         await login.click()
     }
+
+    await page.waitForTimeout(10000)
     await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })  
+
     await page.goto(`${url}/teams`)
       
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
@@ -690,18 +693,15 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page9Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Kanban' }).click();
     const page9 = await page9Promise;
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    await page.waitForTimeout(5000)
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible({timeout: 5000})
-    await page.waitForTimeout(3000)
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).fill('test kanban');
-    await page.waitForTimeout(3000)
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-
-    await expect(page8.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
+    await page9.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await page9.waitForTimeout(5000)
+    await expect(page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible({timeout: 5000})
+    await page9.waitForTimeout(3000)
+    await page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
+    await page9.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).fill('test kanban');
+    await page9.waitForTimeout(3000)
+    await page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
+    await expect(page9.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
 
     await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible()
@@ -710,7 +710,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test markdown')).toBeVisible()
-        await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
+    await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
 
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
