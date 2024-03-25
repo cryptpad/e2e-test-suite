@@ -11,6 +11,8 @@ let browserstackMobile;
 
 test.beforeEach(async ({ page }, testInfo) => {
 
+  test.setTimeout(210000)
+
   isMobile = testInfo.project.use['isMobile']
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/form`)

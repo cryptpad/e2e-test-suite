@@ -70,23 +70,10 @@ export class Cleanup {
 	*/
 	async cleanTeamDrive(file) {
 
-		// await this.page.goto(`${url}/teams`)
-		// await this.page.waitForTimeout(5000)
-		// await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-		// await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
-		// await this.page.waitForTimeout(5000)
 		let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
-		console.log('1', file, elementCount)
 		if (elementCount > 0) {
-				console.log('2', elementCount)
-
 			while (elementCount > 0) {
-					console.log('3', file, elementCount)
-
-					
 				if (elementCount > 0) {
-						console.log('4', file, elementCount)
-
 					await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount-1).click({ button: 'right' })
 				} else {
 					await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' })
@@ -102,29 +89,6 @@ export class Cleanup {
 				elementCount = elementCount-1
 			}
 		}
-
-
-		// let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
-		// if (elementCount > 0) {
-		// 	while (elementCount > 0) {
-		// 		if (elementCount > 1) {
-		// 			await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount-1).click({ button: 'right' })
-		// 		} else {
-		// 			await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' })
-		// 		}
-		// 		await this.page.waitForTimeout(3000)
-		// 		if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {
-		// 			await this.page.frameLocator('#sbox-iframe').getByText('Destroy').click()
-		// 			await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-		// 		} else {
-		// 			await this.page.frameLocator('#sbox-iframe').getByText('Move to trash').click()
-		// 		}
-		// 		await this.page.waitForTimeout(3000)
-		// 		await this.page.waitForTimeout(10000)
-		// 		elementCount = elementCount-1
-		// 	}
-		// }
-
 
 	}
 

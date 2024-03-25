@@ -13,6 +13,8 @@ let os
 
 test.beforeEach(async ({ page, browser }, testInfo) => {
 
+  test.setTimeout(210000)
+
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0];
 

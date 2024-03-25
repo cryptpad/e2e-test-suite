@@ -10,7 +10,7 @@ let browserName;
 
 test.beforeEach(async ({ page, context }, testInfo) => {
 
-  test.setTimeout(240000000)
+  test.setTimeout(210000)
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0]
   await page.goto(`${url}/drive`)

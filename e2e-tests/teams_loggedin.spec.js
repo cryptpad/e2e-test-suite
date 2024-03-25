@@ -13,6 +13,8 @@ let browserstackMobile;
 
 test.beforeEach(async ({ page }, testInfo) => {
 
+  test.setTimeout(210000)
+
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0]
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
