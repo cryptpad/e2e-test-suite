@@ -237,7 +237,7 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
     await page1.getByPlaceholder('Password').fill('password7');
     await page1.getByRole('button', { name: 'Continue' }).click();
 
-    await expect(page1.getByText('Forgot recovery code')).toBeVisible();
+    await page1.getByText('Forgot recovery code').waitFor();
     await page1.getByText('Forgot recovery code').click();
     await page1.waitForTimeout(5000)
     await page1.getByRole('button', { name: 'Copy to clipboard' }).click();

@@ -838,10 +838,10 @@ test('form - add and respond to date question',  async ({ page, context }) => {
     await page.waitForTimeout(50000)
     await expect(page.frameLocator('#sbox-iframe').getByText(`${dateTodayDashFormat}`)).toBeVisible()
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - add and respond to date question', status: 'passed',reason: 'Can create and answer choice grid question in a Form'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - add and respond to date question', status: 'passed',reason: 'Can create and answer date question in a Form'}})}`);
 
   } catch(e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - add and respond to date question', status: 'failed',reason: 'Can\'t create and answer choice grid question in a Form'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - add and respond to date question', status: 'failed',reason: 'Can\'t create and answer date question in a Form'}})}`);
 
     console.log(e);
   }
