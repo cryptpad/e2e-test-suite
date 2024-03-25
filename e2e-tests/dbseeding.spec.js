@@ -56,122 +56,122 @@ test('test-user account setup', async ({ page }) => {
 })
 
 
-// test('testuser account setup', async ({ page }) => {
+test('testuser account setup', async ({ page }) => {
   
-//   try {
+  try {
 
-//     ///registering the account
-//     await page.goto(`${url}/register`)
+    ///registering the account
+    await page.goto(`${url}/register`)
     
-//     await page.waitForTimeout(5000)
-//     await page.getByPlaceholder('Username').fill('testuser');
-//     await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
-//     await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUserPassword);
-//     const register = page.locator("[id='register']")
-//     await register.waitFor()
+    await page.waitForTimeout(5000)
+    await page.getByPlaceholder('Username').fill('testuser');
+    await page.getByPlaceholder('Password', {exact: true}).fill(testUserPassword);
+    await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUserPassword);
+    const register = page.locator("[id='register']")
+    await register.waitFor()
 
-//     if (await page.locator('#userForm span').nth(2).isVisible()) {
-//       await page.locator('#userForm span').nth(2).click()
-//     }
-//     await register.click()
+    if (await page.locator('#userForm span').nth(2).isVisible()) {
+      await page.locator('#userForm span').nth(2).click()
+    }
+    await register.click()
 
-//     const modal = page.getByText('Warning');
-//     await expect(modal).toBeVisible({ timeout: 180000 });
-//     if (await modal.isVisible({ timeout: 180000 })) {
-//     await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-//     }
-//     const hashing = page.getByText('Hashing your password')
-//     await expect(hashing).toBeVisible({ timeout: 200000 })
+    const modal = page.getByText('Warning');
+    await expect(modal).toBeVisible({ timeout: 180000 });
+    if (await modal.isVisible({ timeout: 180000 })) {
+    await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+    }
+    const hashing = page.getByText('Hashing your password')
+    await expect(hashing).toBeVisible({ timeout: 200000 })
 
-//     await page.waitForTimeout(20000)
-//     await page.waitForURL(`${url}/drive/#`)
+    await page.waitForTimeout(20000)
+    await page.waitForURL(`${url}/drive/#`)
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'passed',reason: 'Can register testuser'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'passed',reason: 'Can register testuser'}})}`);
 
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'failed',reason: 'Can\'t register testuser'}})}`);
-//   }  
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'testuser account setup', status: 'failed',reason: 'Can\'t register testuser'}})}`);
+  }  
   
-// })
+})
 
-// test('test-user2 account setup', async ({ page }) => {
+test('test-user2 account setup', async ({ page }) => {
   
-//   try {
+  try {
 
-//     ///registering the account
-//     await page.goto(`${url}/register`)
+    ///registering the account
+    await page.goto(`${url}/register`)
     
-//     await page.waitForTimeout(5000)
-//     await page.getByPlaceholder('Username').fill('test-user2');
-//     await page.getByPlaceholder('Password', {exact: true}).fill(testUser2Password);
-//     await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser2Password);
-//     const register = page.locator("[id='register']")
-//     await register.waitFor()
+    await page.waitForTimeout(5000)
+    await page.getByPlaceholder('Username').fill('test-user2');
+    await page.getByPlaceholder('Password', {exact: true}).fill(testUser2Password);
+    await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser2Password);
+    const register = page.locator("[id='register']")
+    await register.waitFor()
 
-//     if (await page.locator('#userForm span').nth(2).isVisible()) {
-//       await page.locator('#userForm span').nth(2).click()
-//     }
-//     await register.click()
+    if (await page.locator('#userForm span').nth(2).isVisible()) {
+      await page.locator('#userForm span').nth(2).click()
+    }
+    await register.click()
   
-//     const modal = page.getByText('Warning');
-//     await expect(modal).toBeVisible({ timeout: 180000 });
-//     if (await modal.isVisible({ timeout: 180000 })) {
-//       await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-//     }
-//     const hashing = page.getByText('Hashing your password')
-//     await expect(hashing).toBeVisible({ timeout: 200000 })
+    const modal = page.getByText('Warning');
+    await expect(modal).toBeVisible({ timeout: 180000 });
+    if (await modal.isVisible({ timeout: 180000 })) {
+      await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+    }
+    const hashing = page.getByText('Hashing your password')
+    await expect(hashing).toBeVisible({ timeout: 200000 })
 
-//     await page.waitForTimeout(20000)
-//     await page.waitForURL(`${url}/drive/#`)
+    await page.waitForTimeout(20000)
+    await page.waitForURL(`${url}/drive/#`)
     
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'passed',reason: 'Can register test-user2'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'passed',reason: 'Can register test-user2'}})}`);
 
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'failed',reason: 'Can\'t register test-user2'}})}`);
-//   }  
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user2 account setup', status: 'failed',reason: 'Can\'t register test-user2'}})}`);
+  }  
   
-// })
+})
 
-// test('test-user3 account setup', async ({ page }) => {
+test('test-user3 account setup', async ({ page }) => {
   
-//   try {
+  try {
 
-//     ///registering the account
-//     await page.goto(`${url}/register`)
+    ///registering the account
+    await page.goto(`${url}/register`)
     
-//     await page.waitForTimeout(5000)
-//     await page.getByPlaceholder('Username').fill('test-user3');
-//     await page.getByPlaceholder('Password', {exact: true}).fill(testUser3Password);
-//     await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser3Password);
-//     const register = page.locator("[id='register']")
-//     await register.waitFor()
+    await page.waitForTimeout(5000)
+    await page.getByPlaceholder('Username').fill('test-user3');
+    await page.getByPlaceholder('Password', {exact: true}).fill(testUser3Password);
+    await page.getByPlaceholder('Confirm your password', {exact: true}).fill(testUser3Password);
+    const register = page.locator("[id='register']")
+    await register.waitFor()
 
-//     if (await page.locator('#userForm span').nth(2).isVisible()) {
-//       await page.locator('#userForm span').nth(2).click()
-//     }
-//     await register.click()
+    if (await page.locator('#userForm span').nth(2).isVisible()) {
+      await page.locator('#userForm span').nth(2).click()
+    }
+    await register.click()
   
-//     const modal = page.getByText('Warning');
-//     await expect(modal).toBeVisible({ timeout: 180000 });
-//     if (await modal.isVisible({ timeout: 180000 })) {
-//       await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
-//     }
-//     const hashing = page.getByText('Hashing your password')
-//     await expect(hashing).toBeVisible({ timeout: 200000 })
+    const modal = page.getByText('Warning');
+    await expect(modal).toBeVisible({ timeout: 180000 });
+    if (await modal.isVisible({ timeout: 180000 })) {
+      await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click()
+    }
+    const hashing = page.getByText('Hashing your password')
+    await expect(hashing).toBeVisible({ timeout: 200000 })
 
-//     await page.waitForTimeout(20000)
-//     await page.waitForURL(`${url}/drive/#`)
+    await page.waitForTimeout(20000)
+    await page.waitForURL(`${url}/drive/#`)
     
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'passed',reason: 'Can register test-user3'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'passed',reason: 'Can register test-user3'}})}`);
 
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'failed',reason: 'Can\'t register test-user3'}})}`);
-//   }  
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'test-user3 account setup', status: 'failed',reason: 'Can\'t register test-user3'}})}`);
+  }  
   
-// })
+})
 
 test('create test team', async ({ page }) => {
   
