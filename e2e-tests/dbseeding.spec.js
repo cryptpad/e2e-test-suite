@@ -1,8 +1,10 @@
 const { expect } = require('@playwright/test');
 const { test, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js')
+const { Cleanup } = require('./test-pages.spec.js');
 
 
 let pageOne;
+let cleanUp;
 let browser;
 let page;
 let browserName;
@@ -559,11 +561,16 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 })  
 
     await page.goto(`${url}/teams`)
-      
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000)
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
-    await page.waitForTimeout(10000)
+		await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+		await page.waitForTimeout(5000)
+
+    cleanUp = new Cleanup(page);
+    const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
+    for (const i in docNames) {
+      const name = `test ${docNames[i]}`
+      await cleanUp.cleanTeamDrive(name);
+    }
 
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
     const page2Promise = page.waitForEvent('popup');
@@ -620,10 +627,10 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`)).toBeVisible({timeout: 5000})
     await page5.waitForTimeout(3000)
     await page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page5.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDate}`).fill('test markdown');
+    await page5.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDate}`).fill('test slide');
     await page5.waitForTimeout(3000)
     await page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page5.frameLocator('#sbox-iframe').getByText('test markdown')).toBeVisible()
+    await expect(page5.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible()
     await page5.close()
 
     await page.reload()
@@ -709,7 +716,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible()
-    await expect(page.frameLocator('#sbox-iframe').getByText('test markdown')).toBeVisible()
+    await expect(page.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible()
 
 

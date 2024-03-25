@@ -25,6 +25,8 @@ npx playwright install
 
 The tests can be run on a local development instance of CryptPad, or against the [flagship CryptPad instance](https://cryptpad.fr/). To change, set the `PW_URL` variable in your `.env` file to your desired url. To test against a development instance, make sure it is up and running locally when testing.
 
+> :exclamation:
+> The `PW_URL` url string should **not** contain a forward slash at the end. If testing a local development instance, make sure to include `http://` at the beginning of the string, e.g. `http://localhost:3000`.
 
 ### Required environment for authenticated tests
 

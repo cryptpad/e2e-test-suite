@@ -1200,7 +1200,8 @@ test('form - export responses as .csv',  async ({ page, context }) => {
 
     const csv = fs.readFileSync("/tmp/form responses", "utf8");
     const data = d3.csvParse(csv);
-    const responseJSON = JSON.stringify(data)
+    const responseJSON = `${JSON.stringify(data)}`
+    console.log('csv', responseJSON)
     const regexString = new RegExp(`\\[{"Time":"${dateTodayDashFormat}T${UTChours}:${UTCminutes}:[0-9]{2}.[0-9]{3}Z","Participant":"Guest","Your question here\\?":"Option 1"}]`)
 
     if (regexString.test(responseJSON)) {
@@ -1253,6 +1254,8 @@ test('form - export responses as .json',  async ({ page, context }) => {
 
     const responseJSONObject = JSON.parse(fs.readFileSync('/tmp/form responses'))
     const responseJSONString = JSON.stringify(responseJSONObject)
+    console.log('json', responseJSONString)
+
     const regexString = new RegExp(`{"questions":{"q1":"Your question here\\?"},"responses":\\[{"_time":"${dateTodayDashFormat}T${UTChours}:${UTCminutes}:[0-9]{2}.[0-9]{3}Z","_name":"Guest","q1":\\["Option 1"]}]}`)
     
     if (regexString.test(responseJSONString)) {
