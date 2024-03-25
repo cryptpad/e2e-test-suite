@@ -11,13 +11,13 @@ module.exports = async () => {
   // Starts the Local instance with the required arguments
   let localResponseReceived = false;
   bsLocal.start(BS_LOCAL_ARGS, (err) => {
-    if (err) {
-      console.error(
-        `${redColour}Error starting BrowserStackLocal${whiteColour}`
-      );
-    } else {
-      console.log('BrowserStackLocal Started');
-    }
+    // if (err) {
+    //   console.error(
+    //     `${redColour}Error starting BrowserStackLocal${whiteColour}`
+    //   );
+    // } else {
+    //   console.log('BrowserStackLocal Started');
+    // }
     localResponseReceived = true;
   });
   while (!localResponseReceived) {

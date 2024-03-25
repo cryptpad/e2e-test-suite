@@ -18,7 +18,12 @@ To download this repository and install dependencies, run:
 git clone https://git.xwikisas.com/cryptpad/playwright-tests.git
 cd playwright-tests
 npm install
+npx playwright install
 ```
+
+### Development vs. live testing
+
+The tests can be run on a local development instance of CryptPad, or against the [flagship CryptPad instance](https://cryptpad.fr/). To change, set the `PW_URL` variable in your `.env` file to your desired url. To test against a development instance, make sure it is up and running locally when testing.
 
 
 ### Required environment for authenticated tests
@@ -90,10 +95,6 @@ BrowserStack_ACCESS_KEY=""
 ```
 
 ## Running tests
-
-### Development vs. live testing
-
-The tests run on the [CryptPad staging instance](https://freemium.cryptpad.fr/) by default. They can also be run against the [flagship CryptPad instance](https://cryptpad.fr/) or a development instance running locally. To change, set the `exports.url` variable under `GLOBAL VARIABLES` in `fixture.js`. To test against a development instance, make sure it is running locally when running the tests.
 
 ### Choose browser and OS/device
 

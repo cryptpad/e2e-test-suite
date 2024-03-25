@@ -129,11 +129,11 @@ exports.test = base.test.extend({
 
 ///GLOBAL VARIABLES///
 
-exports.url = 'https://freemium.cryptpad.fr'
-exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD || 'PASSWORD_HERE' 
-exports.testUserPassword = process.env.TESTUSERPASSWORD || 'PASSWORD_HERE' 
-exports.testUser2Password = process.env.TESTUSER2PASSWORD || 'PASSWORD_HERE' 
-exports.testUser3Password = process.env.TESTUSER3PASSWORD || 'PASSWORD_HERE' 
+exports.url = process.env.PW_URL
+exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD 
+exports.testUserPassword = process.env.TESTUSERPASSWORD 
+exports.testUser2Password = process.env.TESTUSER2PASSWORD 
+exports.testUser3Password = process.env.TESTUSER3PASSWORD 
 
 
 
