@@ -2,6 +2,9 @@ const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 
 var fs = require('fs');
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let isMobile;
 let browserName;
@@ -110,12 +113,11 @@ test(`pad - history (previous version)`, async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    await page.waitForTimeout(2000)
-    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    }   
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0)
@@ -203,7 +205,11 @@ test('pad - make a copy', async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Make a copy').click();
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByText('Make a copy').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    }  
     const page1 = await page1Promise;
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 })
@@ -393,12 +399,11 @@ test(`pad - share at a moment in history`, async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    await page.waitForTimeout(2000)
-    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    }   
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 

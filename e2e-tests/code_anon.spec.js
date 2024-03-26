@@ -3,6 +3,8 @@ const { expect } = require('@playwright/test');
 
 var fs = require('fs');
 const d3 = require('d3')
+require('dotenv').config();
+
 
 // let page;
 let pageOne;
@@ -10,6 +12,7 @@ let isMobile;
 let browserName;
 let browserstackMobile;
 let os
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 
 test.beforeEach(async ({ page }, testInfo) => {
@@ -56,13 +59,11 @@ test(`code - file menu - history #1367`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    
-    await page.waitForTimeout(2000)
-    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
+    if (!local) {
       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    }   
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toHaveCount(0)
@@ -138,7 +139,11 @@ test(`code -  make a copy #1367`, async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a').click();
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByText('Make a copy').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    }  
     const page1 = await page1Promise;
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/code`), { timeout: 100000 })
@@ -245,10 +250,12 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     }
     await page.keyboard.press(`${key}+a`);
     await page.keyboard.press("Backspace");
+    await page.waitForTimeout(3000)
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Another moment in history');
     await page.waitForTimeout(7000)
     await page.keyboard.press(`${key}+a`);
     await page.keyboard.press("Backspace");
+    await page.waitForTimeout(3000)
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Yet another moment in history');
     await page.waitForTimeout(7000)
     if (isMobile) {
@@ -258,12 +265,15 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     }
 
     await page.waitForTimeout(2000)
-
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }   
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
-    // await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Another moment in history')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
 
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();

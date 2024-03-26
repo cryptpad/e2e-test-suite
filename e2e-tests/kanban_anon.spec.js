@@ -2,6 +2,9 @@ const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 
 var fs = require('fs');
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let isMobile;
 let browserName;
@@ -237,7 +240,11 @@ test('kanban - make a copy', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Make a copy').click();
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByText('Make a copy').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    }  
     const page1 = await page1Promise;
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/kanban`), { timeout: 100000 })
@@ -254,7 +261,7 @@ test('kanban - make a copy', async ({ page }) => {
 });
 
 
-test(`kanban - share at a moment in history`, async ({ page }) => {
+test(`kanban - share at a moment in history`, async ({ page, context }) => {
 
   try {
 
@@ -291,16 +298,15 @@ test(`kanban - share at a moment in history`, async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     
-    await page.waitForTimeout(2000)
-    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    }   
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
-    // await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
@@ -308,12 +314,12 @@ test(`kanban - share at a moment in history`, async ({ page }) => {
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
 
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
-    const page1 = await browser.newPage();
+    const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`)
 
     await page.waitForTimeout(5000)
     await page1.frameLocator('#sbox-iframe').getByText('Another moment in history').waitFor()
-    // await expect(page1.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
 
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - share at a moment in history', status: 'passed',reason: 'Can share Kanban at a specific moment in history'}})}`);
@@ -336,7 +342,7 @@ test(`kanban - can drag boards #1372`, async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).hover();
     await page.mouse.up(); 
 
-    await expect(page).toMatchSnapshot({ maxDiffPixels: 3500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3500 });
 
     
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - can drag boards', status: 'passed',reason: 'Can drag Kanban boards'}})}`);
@@ -357,8 +363,7 @@ test(`kanban - can drag items`, async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
     await page.mouse.down();
     await page.mouse.move(0, 200);
-    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
-    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
 
     await page.mouse.up(); 
 

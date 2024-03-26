@@ -1,6 +1,9 @@
 const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./test-pages.spec.js');
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let page;
 let pageOne;
@@ -126,12 +129,11 @@ test(`slide - history (previous author)`, async ({ page, browser}) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.waitForTimeout(2000)
-    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    }   
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And yet more test text by test-user!')).toHaveCount(0)

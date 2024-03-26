@@ -10,20 +10,15 @@ const clientPlaywrightVersion = cp
 const BrowserStackLocal = require('browserstack-local');
 const util = require('util');
 
-// BrowserStack Specific Capabilities.
-// Set 'browserstack.local:true For Local testing
+// BrowserStack Specific Capabilities
 
 const dateToday = new Date()
 const caps = {
-  // osVersion: "13.0",
-  // deviceName: "Samsung Galaxy S23", // "Samsung Galaxy S22 Ultra", "Google Pixel 7 Pro", "OnePlus 9", etc.
-  browserName: "chrome",
-  // realMobile: "true",
-  name: "My android playwright test",
-  build: "freemium",
+  name: "my playwright test",
+  build: "freemium-log",
   "browserstack.username": process.env.BROWSERSTACK_USERNAME,
   "browserstack.accessKey": process.env.BROWSERSTACK_ACCESS_KEY,
-  // "browserstack.local": true,
+  "browserstack.local": process.env.PW_URL.includes('localhost') ? true : false,
   // "browserstack.idleTimeout" : "300",
   "browserstack.playwrightVersion" : clientPlaywrightVersion
 
@@ -47,9 +42,8 @@ exports.patchMobileCaps = (name, title) => {
 exports.caps = caps;
 exports.bsLocal = new BrowserStackLocal.Local();
 
-// replace YOUR_ACCESS_KEY with your key. You can also set an environment variable - "BROWSERSTACK_ACCESS_KEY".
 exports.BS_LOCAL_ARGS = {
-  key: process.env.BROWSERSTACK_ACCESS_KEY || 'ACCESSKEY',
+  key: process.env.BROWSERSTACK_ACCESS_KEY,
 };
 
 // Patching the capabilities dynamically according to the project name.

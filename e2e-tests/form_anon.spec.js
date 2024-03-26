@@ -3,6 +3,9 @@ const { expect } = require('@playwright/test');
 
 var fs = require('fs');
 const d3 = require('d3')
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let pageOne;
 let isMobile;
@@ -358,7 +361,11 @@ test('form - make a copy', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const pageOnePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a').click();
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByText('Make a copy').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    }  
     await page.waitForTimeout(5000)
     pageOne = await pageOnePromise;
     await pageOne.waitForTimeout(10000)
@@ -535,7 +542,7 @@ test('form - anon (guest) access - allowed',  async ({ page, context }) => {
 });
 
 
-test('form - anon (guest) access - blocked',  async ({ page, context }) => {
+test('form - anon (guest) access - blocked',  async ({ page, browser }) => {
  
   try {
 
@@ -555,13 +562,14 @@ test('form - anon (guest) access - blocked',  async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click({force: true});
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
-    await page.waitForTimeout(3000)
+    // await page.waitForTimeout(3000)
 
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+    const context = await browser.newContext();
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`)
     await pageOne.waitForTimeout(1000)
-    await pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/).waitFor()
+    await pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/).waitFor({timeout: 60000})
 
     await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/)).toBeVisible()
     await page.waitForTimeout(1000)
@@ -572,7 +580,7 @@ test('form - anon (guest) access - blocked',  async ({ page, context }) => {
 
     await pageOne.getByPlaceholder('Username').fill('test-user');
     await pageOne.waitForTimeout(10000)
-    await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    await pageOne.getByPlaceholder('Password', {exact: true}).fill('password7');
     const login = pageOne.locator(".login")
     await login.waitFor({ timeout: 18000 })
     await expect(login).toBeVisible({ timeout: 1800 })

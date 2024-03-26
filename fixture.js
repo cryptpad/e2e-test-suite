@@ -1,6 +1,8 @@
 const base = require("@playwright/test");
 const { firefox, chromium, webkit, expect, test } = require('@playwright/test');
 const { patchCaps, patchMobileCaps, caps } = require('./browserstack.config.js')
+require('dotenv').config();
+
 
 const cp = require("child_process");
 const { _android: android } = require("playwright");
@@ -29,6 +31,7 @@ let context
 exports.test = base.test.extend({
   page: async ({ page, playwright }, use, testInfo) => {
   test.setTimeout(210000)
+  console.log('CAPS', process.env.PW_URL)
     browserName = testInfo.project.name.split(/@/)[0];
     loggedin = testInfo.titlePath[0].match(/loggedin/) 
     if (testInfo.project.name.match(/browserstack/)) {
@@ -129,8 +132,8 @@ exports.test = base.test.extend({
 
 ///GLOBAL VARIABLES///
 
-exports.url = process.env.PW_URL
-// exports.url = 'https://localhost:3000'
+// exports.url = process.env.PW_URL
+exports.url = 'https://freemium.cryptpad.fr'
 
 exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD 
 exports.testUserPassword = process.env.TESTUSERPASSWORD 
