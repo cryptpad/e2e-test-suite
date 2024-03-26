@@ -241,7 +241,7 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
     await page1.getByPlaceholder('Username').click()
     await page1.getByPlaceholder('Username').fill('test-user');
     await page1.getByPlaceholder('Password').click()
-    await page1.getByPlaceholder('Password').fill('password7');
+    await page1.getByPlaceholder('Password').fill(mainAccountPassword);
     await page1.getByRole('button', { name: 'Continue' }).click();
 
     await page1.getByText('Forgot recovery code').waitFor();

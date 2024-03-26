@@ -336,7 +336,7 @@ test(`kanban - can drag boards #1372`, async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).hover();
     await page.mouse.up(); 
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3500 });
+    await expect(page).toMatchSnapshot({ maxDiffPixels: 3500 });
 
     
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'kanban - can drag boards', status: 'passed',reason: 'Can drag Kanban boards'}})}`);

@@ -130,6 +130,8 @@ exports.test = base.test.extend({
 ///GLOBAL VARIABLES///
 
 exports.url = process.env.PW_URL
+// exports.url = 'https://localhost:3000'
+
 exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD 
 exports.testUserPassword = process.env.TESTUSERPASSWORD 
 exports.testUser2Password = process.env.TESTUSER2PASSWORD 
