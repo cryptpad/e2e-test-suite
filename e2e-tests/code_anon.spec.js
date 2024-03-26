@@ -9,10 +9,16 @@ let pageOne;
 let isMobile;
 let browserName;
 let browserstackMobile;
+let os
+
 
 test.beforeEach(async ({ page }, testInfo) => {
 
   test.setTimeout(210000)
+
+  if (!isMobile) {
+    os = 'mac' ? testInfo.project.name.match(/osx/) : 'windows'
+  }
   isMobile = testInfo.project.use['isMobile']
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/code`)
@@ -52,8 +58,8 @@ test(`code - file menu - history #1367`, async ({ page }) => {
     }
     
     await page.waitForTimeout(2000)
-    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
     } else {
       await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
     }
@@ -230,11 +236,18 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('One moment in history')
     await page.waitForTimeout(7000)
-    await page.keyboard.press("Meta+A");
+
+    let key;
+    if (os==='mac') {
+      key = 'Meta'
+    } else {
+      key = 'Control'
+    }
+    await page.keyboard.press(`${key}+a`);
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Another moment in history');
     await page.waitForTimeout(7000)
-    await page.keyboard.press("Meta+A");
+    await page.keyboard.press(`${key}+a`);
     await page.keyboard.press("Backspace");
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Yet another moment in history');
     await page.waitForTimeout(7000)
