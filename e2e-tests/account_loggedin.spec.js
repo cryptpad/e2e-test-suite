@@ -52,6 +52,7 @@ test('enable 2FA login', async ({ page, context }) => {
     const pagePromise = page.waitForEvent('popup')
     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
     const page1 = await pagePromise
+    await page.waitForTimeout(50000)
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
     //begin 2FA setup
@@ -187,7 +188,13 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
 
     //copy recovery key
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').click();
-    await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').press('Meta+c');
+    let key;
+    if (os==='mac') {
+      key = 'Meta'
+    } else {
+      key = 'Control'
+    }
+    await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').press(`${key}+c`);
     await page1.waitForTimeout(5000)
     const recoveryCode = await page1.evaluate("navigator.clipboard.readText()");
     console.log('code', recoveryCode)
