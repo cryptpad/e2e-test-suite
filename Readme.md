@@ -26,7 +26,7 @@ npx playwright install
 The tests can be run on a local development instance of CryptPad, or against the [flagship CryptPad instance](https://cryptpad.fr/). To change, set the `PW_URL` variable in your `.env` file to your desired url. To test against a development instance, make sure it is up and running locally when testing.
 
 > :exclamation:
-> The `PW_URL` url string should **not** contain a forward slash at the end. If testing a local development instance, make sure to include `http://` at the beginning of the string, e.g. `http://localhost:3000`.
+> The `PW_URL` url string should **not** contain a forward slash at the end. If testing a local development instance, make sure to include `http://` at the beginning of the string, e.g. `http://localhost:3000`. If running on a live website, the string should begin with `https://` instead.
 
 ### Required environment for authenticated tests
 
@@ -104,7 +104,7 @@ The tests can be run on different browser and OS/device combinations, set under 
 
 `[browser name]@[os/device name]`, for example `chrome@latest:OSX Ventura`. 
 
-The project uses Chrome, Edge, Firefox and Webkit on the latest available versions of OSX and Chrome on Android. 
+The project uses Chrome, Edge, Firefox and Webkit on the latest available versions of OSX, as well as Chrome on Android. 
 
 You can choose a browser and OS/device combination from those available in `playwright.config.js`, or you can add your own. Please see the [full list of supported browsers and OS/devices](https://playwright.dev/docs/browsers) and see how they compare to [what is supported by integration with BrowserStack](https://www.BrowserStack.com/docs/automate/playwright/browsers-and-os). 
 
