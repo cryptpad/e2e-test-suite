@@ -546,7 +546,6 @@ test('form - anon (guest) access - blocked',  async ({ page, browser }) => {
  
   try {
      
-     console.log(mainAccountPassword)
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});

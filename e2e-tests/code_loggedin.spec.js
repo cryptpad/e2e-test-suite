@@ -33,7 +33,6 @@ test.beforeEach(async ({ page }, testInfo) => {
 
   const template = testInfo.title.match(/import template/)
   if (template) {
-  console.log('HELLO')
     cleanUp = new Cleanup(page);
     await cleanUp.cleanTemplates();
   }

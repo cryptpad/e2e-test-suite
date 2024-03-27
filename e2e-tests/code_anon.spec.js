@@ -24,7 +24,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   isMobile = testInfo.project.use['isMobile']
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/code`)
-  await page.waitForTimeout(10000)
+  await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
+  // await page.waitForTimeout(10000)
 
 });
 
@@ -104,7 +105,6 @@ test(`code - toggle preview #1367`, async ({ page }) => {
 
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
@@ -288,10 +288,9 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     pageOne = await context.newPage()
     
     await pageOne.goto(`${clipboardText}`)
-    await pageOne.waitForTimeout(20000)
 
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
-    // await expect(pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Another moment in history')).toBeVisible();
+    await expect(pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'code - share at a moment in history', status: 'passed',reason: 'Can share code document at a specific moment in history'}})}`);
 

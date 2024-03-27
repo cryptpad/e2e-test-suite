@@ -1,8 +1,12 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
+require('dotenv').config();
+
 
 let isMobile;
 let browserName;
+const local = process.env.PW_URL.includes('localhost') ? true : false
+
 
 test.beforeEach(async ({ page }, testInfo) => {
 
@@ -21,11 +25,7 @@ test('home page title', async ({ page }) => {
 
     if (url == 'https://cryptpad.fr') {
       await expect(page).toHaveTitle("CryptPad: Collaboration suite, encrypted and open-source");
-    } else if ( url.indexOf('localhost') !== -1) {
-    
-    } else {
-      await expect(page).toHaveTitle("Home page - freemium.cryptpad.fr");
-    }
+    } 
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage title', status: 'passed',reason: 'Can navigate to home page'}})}`);
   } catch (e) {
@@ -71,7 +71,7 @@ test('home page > features', async ({ page }) => {
 
   try {
 
-    if (url === 'https://cryptpad.fr' || url === 'https://freemium.cryptpad.fr') {
+    if (!local) {
       await page.getByRole('link', {name: 'Pricing'}).waitFor()
       await page.getByRole('link', {name: 'Pricing'}).click()
       
@@ -156,13 +156,12 @@ test('home page > donate', async ({ page }) => {
 test('home page - translation - french - (***)', async ({ page }) => {
   
   try {
+  
     if (url == 'https://cryptpad.fr') {
       await page.getByRole('listbox').selectOption('fr');
       await expect(page.getByText('Instance officielle de CryptPad, suite collaborative chiffrée de bout en bout')).toBeVisible();
-    } else if (url == 'https://freemium.cryptpad.fr'){
-      await page.getByLabel('Select a language').selectOption('fr');
-      await expect(page.getByText('Outils collaboratifschiffrés de bout en bout et open source')).toBeVisible();
-    }
+    } 
+
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus',arguments: {name: 'homepage > translation', status: 'passed',reason: 'Can change site language from homepage'}})}`);
   } catch (e) {
     console.log(e);

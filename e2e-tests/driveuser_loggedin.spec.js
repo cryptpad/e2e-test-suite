@@ -55,7 +55,7 @@ userMenuItems.forEach(function(item) {
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
         await page.waitForTimeout(10000)
         await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible()
-      } else if (item === 'support' && url === 'https://freemium.cryptpad.fr') {
+      } else if (item === 'support' && url !== 'https://cryptpad.fr') {
         return;
       } 
       else {

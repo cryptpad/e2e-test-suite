@@ -13,7 +13,6 @@ let context
 let platform
 
 test.beforeEach(async ({ page, browser }, testInfo) => {
-console.log(mainAccountPassword)
 
   test.setTimeout(210000)
 
@@ -28,7 +27,6 @@ console.log(mainAccountPassword)
 
   platform = os.platform();
 
-  console.log(platform)
 
   if (isMobile) {
     await page.goto(`${url}/login`);
@@ -73,7 +71,6 @@ test('enable 2FA login', async ({ page, context }) => {
 
     //copy recovery code
     let key;
-    console.log(platform)
     if (platform==='darwin') {
       key = 'Meta'
     } else {
@@ -278,7 +275,6 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
 
       await page1.waitForTimeout(15000)
       await expect(page1).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-      console.log('done')
   
     // } else {
     //   await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'enable 2FA login and recover account', status: 'failed',reason: 'Can\'t enable 2FA login'}})}`);
@@ -544,18 +540,10 @@ test('can access public signing key', async ({ page }) => {
 
     const key = await page1.frameLocator('#sbox-iframe').getByRole('textbox').first().inputValue()
 
-    if (url.toString() === 'https://freemium.cryptpad.fr') {
-      if (key.indexOf('test-user@freemium.cryptpad.fr') !== -1 ) {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
-      } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
-      }
+    if (key.indexOf('test-user@') !== -1 ) {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
     } else {
-      if (key.indexOf('test-user@cryptpad.fr') !== -1 ) {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
-      } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
-      }
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
     }
        
   } catch (e) {

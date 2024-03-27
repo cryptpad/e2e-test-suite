@@ -13,7 +13,6 @@ let device;
 let isMobile
 
 test.beforeEach(async ({ page, browser }, testInfo) => {
-  console.log('url', url)
   await page.goto(`${url}`)
   await page.waitForTimeout(15000)
 
@@ -57,16 +56,7 @@ test('test-user account setup', async ({ page }) => {
 
     await expect(modal).toBeVisible()
 
-
-          // await  page.getByRole('button', { name: 'I have written down my' }).nth(1).click();
-
-
-        // if (url === 'http://localhost:3000') {
-      
-      await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).nth(1).click();
-    // } else {
-    //   await  page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).click();
-    // }
+    await page.getByRole('button', { name: 'I have written down my username and password, proceed' } ).nth(1).click();
     
     const hashing = page.getByText('Hashing your password')
     await expect(hashing).toBeVisible({ timeout: 200000 })
@@ -430,8 +420,6 @@ test('add test-user3 to test team', async ({ page, browser }) => {
 test('create test files in test-user drive', async ({ page }) => {
   
   try {
-
-  console.log(mainAccountPassword)
 
     test.setTimeout(510000)
 
