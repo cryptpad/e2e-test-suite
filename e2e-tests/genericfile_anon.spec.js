@@ -196,7 +196,7 @@ docNames.forEach(function(name) {
 
       await page.goto(`${url}/drive`);
       if (name == 'sheet' | name == 'diagram') {
-          await page.waitForTimeout(40000)
+        await page.waitForTimeout(40000)
       } else {
         await page.waitForTimeout(15000)
       }

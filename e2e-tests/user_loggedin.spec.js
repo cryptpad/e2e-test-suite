@@ -2,6 +2,7 @@ const { url, test, mainAccountPassword } = require('../fixture.js');
 import * as OTPAuth from "otpauth"
 
 const { expect } = require('@playwright/test');
+const os = require('os');
 
 let isMobile;
 let contextOne;
@@ -9,7 +10,7 @@ let browserName;
 let pageOne;
 let page;
 let context
-let os
+let platform
 
 test.beforeEach(async ({ page, browser }, testInfo) => {
 
@@ -17,10 +18,7 @@ test.beforeEach(async ({ page, browser }, testInfo) => {
 
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0];
-
-  if (!isMobile) {
-    os = 'mac' ? testInfo.project.name.match(/osx/) : 'windows'
-  }
+  platform = os.platform();
 
   if (isMobile) {
     await page.goto(`${url}/login`);
@@ -52,19 +50,20 @@ test('enable 2FA login', async ({ page, context }) => {
     const pagePromise = page.waitForEvent('popup')
     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
     const page1 = await pagePromise
-    await page.waitForTimeout(50000)
+    await page.waitForTimeout(30000)
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
     //begin 2FA setup
+    await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').waitFor()
     await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
     await page1.frameLocator('#sbox-iframe').getByPlaceholder('Password', { exact: true }).click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
+    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Password', { exact: true }).fill('password9');
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Begin 2FA setup' }).click();
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').click();
 
     //copy recovery code
     let key;
-    if (os==='mac') {
+    if (platform==='darwin') {
       key = 'Meta'
     } else {
       key = 'Control'
@@ -189,7 +188,7 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
     //copy recovery key
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').click();
     let key;
-    if (os==='mac') {
+    if (platform==='darwin') {
       key = 'Meta'
     } else {
       key = 'Control'
@@ -268,7 +267,6 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
 
       await page1.waitForTimeout(15000)
       await expect(page1).toHaveURL(`${url}/drive/#`, { timeout: 100000 })
-      console.log('done')
   
     // } else {
     //   await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'enable 2FA login and recover account', status: 'failed',reason: 'Can\'t enable 2FA login'}})}`);
@@ -534,18 +532,10 @@ test('can access public signing key', async ({ page }) => {
 
     const key = await page1.frameLocator('#sbox-iframe').getByRole('textbox').first().inputValue()
 
-    if (url.toString() === 'https://freemium.cryptpad.fr') {
-      if (key.indexOf('test-user@freemium.cryptpad.fr') !== -1 ) {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
-      } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
-      }
+    if (key.indexOf('test-user@') !== -1 ) {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
     } else {
-      if (key.indexOf('test-user@cryptpad.fr') !== -1 ) {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'passed',reason: 'Can access public signing key'}})}`);
-      } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
-      }
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ' can access public signing key', status: 'failed',reason: 'Can\'t access public signing key'}})}`);
     }
        
   } catch (e) {

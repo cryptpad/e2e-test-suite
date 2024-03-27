@@ -56,6 +56,8 @@ test.beforeEach(async ({ page }, testInfo) => {
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
+// const docNames = ['kanban'] 
+
 
 docNames.forEach(function(name) {
 
@@ -63,7 +65,7 @@ docNames.forEach(function(name) {
 
     try {
 
-
+      await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().waitFor()
       await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().click();
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 })
@@ -99,7 +101,7 @@ docNames.forEach(function(name) {
         } else {
           await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
         }
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
+        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Tags' }).locator('a').click();
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
@@ -111,7 +113,7 @@ docNames.forEach(function(name) {
       } else {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       }
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Tags' }).locator('a').click();
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click()
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
       await page.waitForTimeout(3000)
@@ -127,12 +129,13 @@ docNames.forEach(function(name) {
         await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
       }
 
-      await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).nth(0)).toBeVisible();
+      await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).waitFor()
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`)).toBeVisible();
 
-      await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).nth(0).click({ button: 'right' })
+      await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).click({ button: 'right' })
       await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' }).click()
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
-      await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`)).toHaveCount(0)
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`)).toHaveCount(0)
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${name} - tag`, status: 'passed',reason: `Can tag ${name} document`}})}`);
     } catch (e) {
@@ -151,7 +154,7 @@ docNames.forEach(function(name) {
 
       //add test-user3 as owner
       await page.waitForTimeout(5000)
-      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       await page.waitForTimeout(5000)
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
@@ -185,14 +188,14 @@ docNames.forEach(function(name) {
       const pageTwo = await pagePromise
       await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
       await pageTwo.bringToFront()
-      await pageTwo.waitForTimeout(5000)
-
-      await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
+      await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+      await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
       await page.bringToFront()
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click()
       }
+      await page.frameLocator('#sbox-iframe').getByText('tetest-user3', { exact: true }).waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText('tetest-user3', { exact: true })).toBeVisible()
 
       if (isMobile) {
@@ -229,6 +232,7 @@ docNames.forEach(function(name) {
 
     try {
 
+            await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
 
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await page.waitForTimeout(10000)
@@ -246,10 +250,10 @@ docNames.forEach(function(name) {
       await page.goto(`${url}/teams/`);
       await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
       
-      if (await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).count() > 1) {
-        await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).first().click({ button: 'right' })
+      if (await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).count() > 1) {
+        await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).first().click({ button: 'right' })
       } else {
-        await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).click({ button: 'right' })
+        await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' })
       }
 
       await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).click()
@@ -267,6 +271,7 @@ docNames.forEach(function(name) {
 
     try {
 
+      await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 })
 
@@ -282,7 +287,7 @@ docNames.forEach(function(name) {
       } else {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       }
-      await page.frameLocator('#sbox-iframe').getByRole('button', {name: ' Move to trash', exact: true}).click();
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Move to trash' }).click();
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
       if (name === 'diagram') {
@@ -320,24 +325,15 @@ docNames.forEach(function(name) {
 
     test(`${name} - protect with and edit password`, async ({ page, browser }) => {
 
-      var testName; 
-      var testStatus;
-      if (name == 'sheet') {
-        testName = `${name} - protect with and edit password - THIS TEST WILL FAIL`
-        testStatus = `protect ${name} document with and edit password - THIS TEST WILL FAIL`
-      } else {
-        testName = `${name} - protect with and edit password`
-        testStatus = `protect ${name} document with and edit password`
-      }
-
       try {
         
+        await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Add a password' }).locator('span').first().waitFor()
         await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Add a password' }).locator('span').first().click();
         await page.frameLocator('#sbox-iframe').locator('#cp-creation-password-val').fill('password');
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
   
         await page.waitForTimeout(5000)
-        await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+        await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
   
         if (isMobile) {
           await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
@@ -364,64 +360,61 @@ docNames.forEach(function(name) {
         const page1 = await contextOne.newPage();
         
         await page1.goto(`${clipboardText}`)
+
+        await page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/).waitFor()
         
         await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible({timeout: 30000})
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click();
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('password');
         await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
         await page1.waitForTimeout(5000)
-        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
-        // await contextOne.close()
-        // await page1.close()
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
 
-        // if (!isMobile) {
-          await page.bringToFront();
-          if (isMobile) {
-            await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
-          } else {
-            await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
-          }
+        await page.bringToFront();
+        if (isMobile) {
+          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+        } else {
+          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+        }
 
-          await page.frameLocator('#sbox-secure-iframe').locator('#cp-app-prop-change-password').fill('newpassword')
-          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' }).click({timeout: 3000});
-          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 3000});
-          if (name === 'sheet') {
-            await page.waitForTimeout(30000)
-          } else {
-            await page.waitForTimeout(5000)
-          }
-          
-          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 30000});
-    
+        await page.frameLocator('#sbox-secure-iframe').locator('#cp-app-prop-change-password').fill('newpassword')
+        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' }).click({timeout: 3000});
+        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 3000});
+        if (name === 'sheet') {
+          await page.waitForTimeout(30000)
+        } else {
           await page.waitForTimeout(5000)
-          if (isMobile) {
-            await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-          } else {
-            await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-          }
-          await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
-
-          await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({timeout: 3000});
-          await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
-    
-          const clipboardText1 = await page.evaluate("navigator.clipboard.readText()");
-    
-          await page1.bringToFront()
-          await page1.goto(`${clipboardText1}`)
-    
-          await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible({timeout:5000})
-          await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click({timeout:5000});
-          await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('newpassword');
-          await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-          await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
-
-        // }
-  
+        }
         
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${testName}`, status: 'passed',reason: `Can ${testStatus}`}})}`);
+        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' }).click({timeout: 30000});
+  
+        await page.waitForTimeout(5000)
+        if (isMobile) {
+          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+        } else {
+          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+        }
+        await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+
+        await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({timeout: 3000});
+        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+  
+        const clipboardText1 = await page.evaluate("navigator.clipboard.readText()");
+  
+        await page1.bringToFront()
+        await page1.goto(`${clipboardText1}`)
+
+        await page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/).waitFor()
+        await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document is protected with a new password/)).toBeVisible()
+        await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click({timeout:5000});
+        await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('newpassword');
+        await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `protect ${name} document with and edit password`, status: 'passed',reason: `Can protect ${name} document with and edit password`}})}`);
       } catch (e) {
         console.log(e);
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `${testName}`, status: 'failed',reason: `Can\'t ${testStatus}`}})}`);
+        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `protect ${name} document with and edit password`, status: 'failed',reason: `Can\'t protect ${name} document with and edit password`}})}`);
   
       }
   
@@ -430,6 +423,8 @@ docNames.forEach(function(name) {
     test(`${name} - share with contact (to view)`, async ({ page, browser }) => {
 
       try {
+
+              await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
 
         await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
 
@@ -457,8 +452,8 @@ docNames.forEach(function(name) {
         }
         const pageTwo = await page2Promise
 
-        
-        await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+        await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()        
+        await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
         await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible({timeout: 5000})
 
         ////
@@ -479,27 +474,16 @@ docNames.forEach(function(name) {
 
   test(`${name} - share with contact - edit #1264`, async ({ page, browser }) => {
 
-    var testName; 
-    var testStatus;
-    if (name == 'whiteboard' || name == 'diagram') {
-      testName = `${name} - share with contact - edit - THIS TEST WILL FAIL`
-      testStatus = `share ${name} with contact (to edit) - THIS TEST WILL FAIL`
-    } else {
-      testName = `${name} - share with contact - edit`
-      testStatus = `share ${name} with contact (to edit)`
-    }
-
     try {
 
-      // await page.goto(`${url}/${name}`);
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
       await page.waitForTimeout(3000)
 
       if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+      } else {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      }
       await page.waitForTimeout(3000)
       await page.frameLocator('#sbox-secure-iframe').getByText('Edit').click();
       await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
@@ -509,7 +493,7 @@ docNames.forEach(function(name) {
       const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
       pageOne = await context.newPage();
       await pageOne.goto(`${url}/drive`)
-      await pageOne.waitForTimeout(10000)
+      await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').waitFor()
       await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
       const page1Promise = pageOne.waitForEvent('popup');
       if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
@@ -520,7 +504,8 @@ docNames.forEach(function(name) {
       const page1 = await page1Promise;
 
       await page1.waitForTimeout(10000)
-      await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+      await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+      await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden()
 
       await page.waitForTimeout(3000)
@@ -557,6 +542,9 @@ docNames.forEach(function(name) {
 
     try {
 
+          await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
+
+
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
 
       if (isMobile) {
@@ -586,13 +574,14 @@ docNames.forEach(function(name) {
       
       await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
       await page1.waitForTimeout(20000)
-      await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+      await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible()
       await page1.reload()
+      await page1.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner').waitFor()
       await expect(page1.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
 
       ////
-
+      await page.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner').waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible()
       
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - share with contact - view once and delete`, status: 'passed',reason: `Can share ${name} with contact (to view once and delete)`}})}`);
@@ -607,7 +596,9 @@ docNames.forEach(function(name) {
 
     try {
 
-      // await page.goto(`${url}/${name}`);
+                await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
+
+
       await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
 
       if (isMobile) {
@@ -635,7 +626,7 @@ docNames.forEach(function(name) {
     
       await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
       await pageOne.waitForTimeout(20000)
-      await expect(pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+      await expect(pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
 
       await pageOne.reload()
       await pageOne.waitForTimeout(20000)
@@ -662,12 +653,13 @@ docNames.forEach(function(name) {
 
     try {
     
-      // await page.goto(`${url}/${name}/`);
+                      await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
+
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
 
       //enable access list and add test-user3 to it
       await page.waitForTimeout(5000)
-      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
       } else {
@@ -703,7 +695,8 @@ docNames.forEach(function(name) {
       await pageOne.goto(`${clipboardText}`)
       await pageOne.waitForTimeout(30000)
       await pageOne.bringToFront()
-      await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible({timeout: 30000})
+      await pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/).waitFor()
+      await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible()
 
       //access document as test-user3
       await pageOne.goto(`${url}/login`)
@@ -720,7 +713,7 @@ docNames.forEach(function(name) {
       await pageOne.goto(`${clipboardText}`)
       await page.waitForTimeout(10000)
 
-      await expect(pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
+      await expect(pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 
       //remove test-user3 from access list
       await page.waitForTimeout(30000)

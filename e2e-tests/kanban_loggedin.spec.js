@@ -1,6 +1,9 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
 const { Cleanup } = require('./test-pages.spec.js');
 const { expect } = require('@playwright/test');
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let pageOne;
 let isMobile;
@@ -56,7 +59,7 @@ test(`kanban - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example kanban template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000)
@@ -67,7 +70,7 @@ test(`kanban - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
     await page.frameLocator('#sbox-secure-iframe').getByText('example kanban template').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
 
@@ -136,12 +139,11 @@ if (!isMobile) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       }
 
-      await page.waitForTimeout(2000)
-      if (await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').isVisible()) {
-         await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
-      } else {
-        await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-      }
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }   
   
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
       // await expect(page.frameLocator('#sbox-iframe').getByText('and some more test text by test user')).toHaveCount(0)

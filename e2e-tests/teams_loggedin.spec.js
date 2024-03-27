@@ -127,22 +127,14 @@ test(' can access team public signing key', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
 
     const key = await page.frameLocator('#sbox-iframe').getByRole('textbox').first().inputValue()
-    console.log(url)
-    if (url === 'https://freemium.cryptpad.fr') {
-      if (key.indexOf('test team@freemium.cryptpad.fr/') !== -1) {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'passed',reason: 'Can access team public signing key'}})}`);
+    if (key.indexOf('test team@/') !== -1) {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'passed',reason: 'Can access team public signing key'}})}`);
 
-      } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
 
-      }
-    } else  {
-      if (key.indexOf('test team@cryptpad.fr/') !== -1) {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'passed',reason: 'Can access team public signing key'}})}`);
-      } else {
-        await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'access team public signing key', status: 'failed',reason: 'Can\'t access team public signing key'}})}`);
     }
-  }
+
 
 
   } catch (e) {
@@ -238,7 +230,6 @@ test('change team avatar', async ({ page }) => {
           .on('entry', function (entry) {
             var fileName = entry.path;
             actualFiles.push(fileName)
-            // console.log(fileName)
           })
           .on('finish', resolve)
         });

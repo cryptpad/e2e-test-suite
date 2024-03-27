@@ -3,6 +3,9 @@ const { expect } = require('@playwright/test');
 
 var fs = require('fs');
 const d3 = require('d3')
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let pageOne;
 let isMobile;
@@ -358,7 +361,11 @@ test('form - make a copy', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
     const pageOnePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a').click();
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByText('Make a copy').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
+    }  
     await page.waitForTimeout(5000)
     pageOne = await pageOnePromise;
     await pageOne.waitForTimeout(10000)
@@ -535,10 +542,10 @@ test('form - anon (guest) access - allowed',  async ({ page, context }) => {
 });
 
 
-test('form - anon (guest) access - blocked',  async ({ page, context }) => {
+test('form - anon (guest) access - blocked',  async ({ page, browser }) => {
  
   try {
-
+     
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
@@ -555,13 +562,14 @@ test('form - anon (guest) access - blocked',  async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click({force: true});
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
-    await page.waitForTimeout(3000)
+    // await page.waitForTimeout(3000)
 
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+    const context = await browser.newContext();
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`)
     await pageOne.waitForTimeout(1000)
-    await pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/).waitFor()
+    await pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/).waitFor({timeout: 60000})
 
     await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/)).toBeVisible()
     await page.waitForTimeout(1000)
@@ -836,6 +844,7 @@ test('form - add and respond to date question',  async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button').filter({hasText: 'Responses'}).click();
     await page.waitForTimeout(50000)
+    await page.frameLocator('#sbox-iframe').getByText(`${dateTodayDashFormat}`).waitFor()
     await expect(page.frameLocator('#sbox-iframe').getByText(`${dateTodayDashFormat}`)).toBeVisible()
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - add and respond to date question', status: 'passed',reason: 'Can create and answer date question in a Form'}})}`);
@@ -1202,7 +1211,7 @@ test('form - export responses as .csv',  async ({ page, context }) => {
 
     const csv = fs.readFileSync("/tmp/form responses", "utf8");
     const data = d3.csvParse(csv);
-    const responseJSON = `${JSON.stringify(data)}`
+    const responseJSON = `'${JSON.stringify(data)}'`
     console.log('csv', responseJSON)
     const regexString = new RegExp(`\\[{"Time":"${dateTodayDashFormat}T${UTChours}:${UTCminutes}:[0-9]{2}.[0-9]{3}Z","Participant":"Guest","Your question here\\?":"Option 1"}]`)
 
@@ -1255,7 +1264,7 @@ test('form - export responses as .json',  async ({ page, context }) => {
     await download.saveAs('/tmp/form responses');
 
     const responseJSONObject = JSON.parse(fs.readFileSync('/tmp/form responses'))
-    const responseJSONString = JSON.stringify(responseJSONObject)
+    const responseJSONString = `'${JSON.stringify(responseJSONObject)}'`
     console.log('json', responseJSONString)
 
     const regexString = new RegExp(`{"questions":{"q1":"Your question here\\?"},"responses":\\[{"_time":"${dateTodayDashFormat}T${UTChours}:${UTCminutes}:[0-9]{2}.[0-9]{3}Z","_name":"Guest","q1":\\["Option 1"]}]}`)
