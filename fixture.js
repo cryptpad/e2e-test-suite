@@ -1,6 +1,8 @@
 const base = require("@playwright/test");
 const { firefox, chromium, webkit, expect, test } = require('@playwright/test');
 const { patchCaps, patchMobileCaps, caps } = require('./browserstack.config.js')
+require('dotenv').config();
+
 
 const cp = require("child_process");
 const { _android: android } = require("playwright");
@@ -130,7 +132,6 @@ exports.test = base.test.extend({
 ///GLOBAL VARIABLES///
 
 exports.url = process.env.PW_URL
-// exports.url = 'https://localhost:3000'
 
 exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD 
 exports.testUserPassword = process.env.TESTUSERPASSWORD 

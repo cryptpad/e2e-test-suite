@@ -16,10 +16,11 @@ export class Cleanup {
 		await this.page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first().click();
 
 		await this.page.waitForTimeout(5000)
-		let elementCount = await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').filter({hasText: 'template'}).count()
-		if (elementCount > 0) {
+		let elementCount = await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').filter({hasText: 'template'}).count() + 1
+
+		if (elementCount > 1) {
 			while (elementCount > 0) {
-				if (elementCount > 1) {
+				if (elementCount > 0) {
 					await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: 'template'}).nth(elementCount-1).click({ button: 'right' })
 				} else {
 					await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: 'template'}).click({ button: 'right' })
@@ -32,6 +33,8 @@ export class Cleanup {
 				elementCount = elementCount-1
 			}
 		}
+				console.log(elementCount)
+
   }
 
   /**
@@ -71,6 +74,7 @@ export class Cleanup {
 	async cleanTeamDrive(file) {
 
 		let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
+		console.log(file, elementCount)
 		if (elementCount > 0) {
 			while (elementCount > 0) {
 				if (elementCount > 0) {
@@ -89,6 +93,8 @@ export class Cleanup {
 				elementCount = elementCount-1
 			}
 		}
+				console.log(file, elementCount)
+
 
 	}
 

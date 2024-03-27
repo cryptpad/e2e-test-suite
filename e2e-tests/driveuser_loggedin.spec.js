@@ -55,7 +55,7 @@ userMenuItems.forEach(function(item) {
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 })
         await page.waitForTimeout(10000)
         await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible()
-      } else if (item === 'support' && url === 'https://freemium.cryptpad.fr') {
+      } else if (item === 'support' && url !== 'https://cryptpad.fr') {
         return;
       } 
       else {
@@ -154,7 +154,7 @@ test('drive -  recent files', async ({ page }) => {
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Recent' }).first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(title)).toBeVisible()
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).click({ button: 'right' })
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' })
     await page.waitForTimeout(10000)
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' }).click()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();

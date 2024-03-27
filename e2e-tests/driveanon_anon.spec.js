@@ -14,7 +14,7 @@ test.beforeEach(async ({ page, context }, testInfo) => {
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0]
   await page.goto(`${url}/drive`)
-  await page.waitForTimeout(1000)
+  // await page.waitForTimeout(1000)
 
 });
 
@@ -26,6 +26,7 @@ userMenuItems.forEach(function(item) {
   test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {   
   
     try {
+
 
       const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container')
       await menu.waitFor()
@@ -96,8 +97,8 @@ userMenuItems.forEach(function(item) {
 
 //     var title = `Rich text - ${titleDate}`;
 //     await page1.waitForTimeout(10000)
-//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
-//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
+//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
+//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 //     await page1.close()
 //     await page.reload()
 //     await page.waitForTimeout(10000)
@@ -124,6 +125,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
@@ -171,6 +173,7 @@ test('drive - anon - history', async ({ page, context }) => {
     
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
@@ -202,6 +205,7 @@ test('drive - anon - notifications', async ({ page, context }) => {
    
   try {
 
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').waitFor()
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
 
     await expect(page.frameLocator('#sbox-iframe').getByText('No notifications')).toBeVisible()
