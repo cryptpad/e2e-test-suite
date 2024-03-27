@@ -116,7 +116,7 @@ The tests can be run locally using Playwright only. This is usually slightly qui
 npx playwright show-report
 ```
 
-To run the tests using BrowserStack, add `@BrowserStack` (for desktop) or `@BrowserStack-mobile` (for mobile) to the project name, for example `chrome@latest:OSX Ventura@BrowserStack`. Once connected, the test results can be viewed at https://automate.BrowserStack.com/dashboard/.
+To run the tests using BrowserStack, add `@BrowserStack` (for desktop) or `@BrowserStack-mobile` (for mobile) to the project name, for example `chrome@latest:OSX Ventura@BrowserStack`. Once connected, the test results can be viewed at the [BrowserStack Automate Dashboard](https://automate.BrowserStack.com/dashboard/).
 
 ### Running tests
 
