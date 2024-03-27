@@ -31,7 +31,6 @@ let context
 exports.test = base.test.extend({
   page: async ({ page, playwright }, use, testInfo) => {
   test.setTimeout(210000)
-  console.log('CAPS', process.env.PW_URL)
     browserName = testInfo.project.name.split(/@/)[0];
     loggedin = testInfo.titlePath[0].match(/loggedin/) 
     if (testInfo.project.name.match(/browserstack/)) {

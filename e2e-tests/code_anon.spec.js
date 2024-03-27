@@ -4,6 +4,8 @@ const { expect } = require('@playwright/test');
 var fs = require('fs');
 const d3 = require('d3')
 require('dotenv').config();
+const os = require('os');
+
 
 
 // let page;
@@ -11,7 +13,7 @@ let pageOne;
 let isMobile;
 let browserName;
 let browserstackMobile;
-let os
+let platform
 const local = process.env.PW_URL.includes('localhost') ? true : false
 
 
@@ -19,9 +21,6 @@ test.beforeEach(async ({ page }, testInfo) => {
 
   test.setTimeout(210000)
 
-  if (!isMobile) {
-    os = 'mac' ? testInfo.project.name.match(/osx/) : 'windows'
-  }
   isMobile = testInfo.project.use['isMobile']
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/)
   await page.goto(`${url}/code`)
@@ -243,7 +242,7 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     await page.waitForTimeout(7000)
 
     let key;
-    if (os==='mac') {
+    if (platform==='darwin') {
       key = 'Meta'
     } else {
       key = 'Control'

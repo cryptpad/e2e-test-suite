@@ -335,6 +335,13 @@ test(`kanban - share at a moment in history`, async ({ page, context }) => {
 test(`kanban - can drag boards #1372`, async ({ page }) => {
 
   try {
+
+    await page.waitForTimeout(5000)
+
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
+      await page.waitForTimeout(10000)
+    } 
     
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'To Do' }).hover();
     await page.mouse.down();
@@ -358,14 +365,14 @@ test(`kanban - can drag items`, async ({ page }) => {
 
   try {
 
-    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().dragTo(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first())
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().dragTo(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first())
 
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
-    await page.mouse.down();
-    await page.mouse.move(0, 200);
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
+    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
+    // await page.mouse.down();
+    // await page.mouse.move(0, 200);
+    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
 
-    await page.mouse.up(); 
+    // await page.mouse.up(); 
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 1800 });
 

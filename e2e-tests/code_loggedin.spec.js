@@ -1,11 +1,12 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-
+const { Cleanup } = require('./test-pages.spec.js');
 var fs = require('fs');
 
 let isMobile;
 let browserName;
 let pageOne
+let cleanUp
 
 test.beforeEach(async ({ page }, testInfo) => {
 
@@ -29,6 +30,14 @@ test.beforeEach(async ({ page }, testInfo) => {
     }
     await page.waitForTimeout(10000)
   }
+
+  const template = testInfo.title.match(/import template/)
+  if (template) {
+  console.log('HELLO')
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanTemplates();
+  }
+
   await page.goto(`${url}/code`)
   await page.waitForTimeout(10000)
 
@@ -48,7 +57,7 @@ test(`code - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example code template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000)
@@ -59,12 +68,12 @@ test(`code - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example code template' }).nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('example template content')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
-    await page.frameLocator('#sbox-iframe').getByText('Templates').click();
+    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('example code template').click({button: 'right'});
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();

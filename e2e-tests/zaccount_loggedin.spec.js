@@ -2,6 +2,7 @@ const { url, test, mainAccountPassword } = require('../fixture.js');
 import * as OTPAuth from "otpauth"
 
 const { expect } = require('@playwright/test');
+const os = require('os');
 
 let isMobile;
 let contextOne;
@@ -9,18 +10,25 @@ let browserName;
 let pageOne;
 let page;
 let context
-let os
+let platform
 
 test.beforeEach(async ({ page, browser }, testInfo) => {
+console.log(mainAccountPassword)
 
   test.setTimeout(210000)
 
   isMobile = testInfo.project.use['isMobile']  
   browserName = testInfo.project.name.split(/@/)[0];
 
-  if (!isMobile) {
-    os = 'mac' ? testInfo.project.name.match(/osx/) : 'windows'
-  }
+  // if (!isMobile) {
+  //   os = 'mac' ? testInfo.project.name.match(/osx/) : 'windows'
+  // }
+
+  
+
+  platform = os.platform();
+
+  console.log(platform)
 
   if (isMobile) {
     await page.goto(`${url}/login`);
@@ -52,19 +60,21 @@ test('enable 2FA login', async ({ page, context }) => {
     const pagePromise = page.waitForEvent('popup')
     await page.frameLocator('#sbox-iframe').getByText('Settings').click()
     const page1 = await pagePromise
-    await page.waitForTimeout(50000)
+    await page.waitForTimeout(30000)
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 })
 
     //begin 2FA setup
+    await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').waitFor()
     await page1.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
     await page1.frameLocator('#sbox-iframe').getByPlaceholder('Password', { exact: true }).click();
-    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
+    await page1.frameLocator('#sbox-iframe').getByPlaceholder('Password', { exact: true }).fill('password9');
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Begin 2FA setup' }).click();
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').click();
 
     //copy recovery code
     let key;
-    if (os==='mac') {
+    console.log(platform)
+    if (platform==='darwin') {
       key = 'Meta'
     } else {
       key = 'Control'
@@ -189,7 +199,7 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
     //copy recovery key
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox').click();
     let key;
-    if (os==='mac') {
+    if (platform==='darwin') {
       key = 'Meta'
     } else {
       key = 'Control'
