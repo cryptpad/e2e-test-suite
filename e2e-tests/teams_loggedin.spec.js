@@ -102,8 +102,10 @@ test('can change team name', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('test team');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(5000)
-    await page.frameLocator('#sbox-iframe').getByText('test team').toBeVisible()
-       
+    await page.reload()
+    await page.frameLocator('#sbox-iframe').getByText('test team').waitFor()
+    await expect(page.frameLocator('#sbox-iframe').getByText('test team')).toBeVisible()
+
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'change team name', status: 'passed',reason: 'Can change team name'}})}`);
   } catch (e) {
     console.log(e);
@@ -153,7 +155,6 @@ test('change team avatar', async ({ page }) => {
 
     //access team administration panel
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000)
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click()
@@ -200,6 +201,9 @@ test('change team avatar', async ({ page }) => {
     test.skip(browserstackMobile, 'browserstack mobile download incompatibility')
 
     try {
+
+      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+      await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({timeout:3000});
       
       //access administration panel
       await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor()
@@ -238,6 +242,7 @@ test('change team avatar', async ({ page }) => {
       async function compareFiles() {
         const result = await unzipDownload();
         let checker = (arr, target) => target.every(v => arr.includes(v));
+        console.log(actualFiles)
         let check = checker(actualFiles, expectedFiles)
 
         if (check) {

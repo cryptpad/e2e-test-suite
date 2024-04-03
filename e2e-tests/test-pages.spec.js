@@ -74,7 +74,6 @@ export class Cleanup {
 	async cleanTeamDrive(file) {
 
 		let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({hasText: file}).count()
-		console.log(file, elementCount)
 		if (elementCount > 0) {
 			while (elementCount > 0) {
 				if (elementCount > 0) {
@@ -93,8 +92,6 @@ export class Cleanup {
 				elementCount = elementCount-1
 			}
 		}
-				console.log(file, elementCount)
-
 
 	}
 
@@ -112,10 +109,18 @@ export class Cleanup {
 			await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'testuser'}).locator('.fa.fa-times').click();
 		}
 
+		const member = this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down')
 		if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').isVisible()) {
-			while (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').isVisible()) {
+			await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').click();
+			await this.page.waitForTimeout(2000)
+			if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').isVisible()) {
 				await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').click();
-			}
+				await this.page.waitForTimeout(2000)
+				if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').isVisible()){
+					await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({hasText: 'test-user3'}).locator('.fa.fa-angle-double-down').click();				
+				}
+				await this.page.waitForTimeout(2000)
+				}
 		}
 
 	}

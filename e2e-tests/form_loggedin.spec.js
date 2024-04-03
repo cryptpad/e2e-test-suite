@@ -1,10 +1,14 @@
 const { test, url, mainAccountPassword, nextMondaySlashFormat, nextMondayUSSlashFormat } = require('../fixture.js');
 const { Cleanup } = require('./test-pages.spec.js');
 const { expect } = require('@playwright/test');
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let isMobile;
 let browserName;
 let cleanUp
+let pageOne
 
 test.beforeEach(async ({ page}, testInfo) => {
 
@@ -39,28 +43,93 @@ test.beforeEach(async ({ page}, testInfo) => {
 
 });
 
+test('form - (guest) access - blocked',  async ({ page, browser }) => {
+ 
+  try {
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).waitFor();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
+    // await page.waitForTimeout(5000)
+    const visible = await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().isVisible();
+    
+    if (visible === false) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
+    }
+    await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().waitFor()
+    await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().click({timeout: 5000});
+    await page.waitForTimeout(1000)
+    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click({force: true});
+    await page.waitForTimeout(1000)
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
+    await page.waitForTimeout(3000)
+
+    const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+    const context = await browser.newContext();
+    pageOne = await context.newPage();
+    await pageOne.goto(`${clipboardText}`)
+    await pageOne.waitForTimeout(1000)
+    await pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/).waitFor({timeout: 60000})
+
+    await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/)).toBeVisible()
+    await page.waitForTimeout(1000)
+    await pageOne.frameLocator('#sbox-iframe').getByRole('link', { name: 'log in' }).click();
+    await page.waitForTimeout(1000)
+
+    await page.waitForTimeout(3000)
+
+    await pageOne.getByPlaceholder('Username').fill('test-user');
+    await pageOne.waitForTimeout(10000)
+    await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
+    const login = pageOne.locator(".login")
+    await login.waitFor({ timeout: 18000 })
+    await expect(login).toBeVisible({ timeout: 1800 })
+    await pageOne.waitForTimeout(5000)
+    if (await login.isVisible()) {
+      await login.click()
+    }
+
+    await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click()
+
+    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('test-user').click()
+    
+    await expect(pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' })).toBeVisible();
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'passed',reason: 'Can create and answer question with blocked guest access in a Form'}})}`);
+  
+  } catch(e) {
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'failed',reason: 'Can\'t create and answer question with blocked guest access in a Form'}})}`);
+    console.log(e);
+  }
+});
 
 
-test('form - create quick scheduling poll', async ({ page, context }) => {
+test('form - create quick scheduling poll', async ({ page, browser }) => {
   
   try {
 
     await page.frameLocator('#sbox-iframe').getByText('Quick Scheduling Poll').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page.waitForTimeout(10000)
-
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Poll$/ }).locator('span').waitFor()
     await expect(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Poll$/ }).locator('span')).toBeVisible()
     await page.waitForTimeout(10000)
     await expect(page.frameLocator('#sbox-iframe').getByText(`${nextMondaySlashFormat}`)).toBeVisible()
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
+    await page.waitForTimeout(1000)
     const clipboardText = await page.evaluate("navigator.clipboard.readText()");
-    const page1 = await context.newPage();
-    await page1.goto(`${clipboardText}`)
+    await page.waitForTimeout(1000)
+    const page1 = await browser.newPage();
     await page1.waitForTimeout(1000)
-    await page1.waitForTimeout(5000)
+    await page1.goto(`${clipboardText}`)
 
     await page1.waitForTimeout(5000)
+    await page1.frameLocator('#sbox-iframe').locator('.cp-poll-cell > i').first().waitFor()
     await page1.frameLocator('#sbox-iframe').locator('.cp-poll-cell > i').first().click();
     await page1.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
@@ -109,7 +178,11 @@ test(`form - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+    }
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example form template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000)
@@ -120,7 +193,11 @@ test(`form - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
+    }
     await page.frameLocator('#sbox-secure-iframe').getByText('example form template').click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('example text')).toBeVisible()

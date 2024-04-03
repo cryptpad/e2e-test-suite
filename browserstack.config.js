@@ -15,7 +15,7 @@ const util = require('util');
 const dateToday = new Date()
 const caps = {
   name: "my playwright test",
-  build: "staging",
+  build: "localhost-2",
   "browserstack.username": process.env.BROWSERSTACK_USERNAME,
   "browserstack.accessKey": process.env.BROWSERSTACK_ACCESS_KEY,
   "browserstack.local": process.env.PW_URL.includes('localhost') ? true : false,

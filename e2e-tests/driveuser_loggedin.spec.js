@@ -2,9 +2,11 @@ const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./test-pages.spec.js');
 
-
 var fs = require('fs');
 var unzipper = require('unzipper')
+require('dotenv').config();
+
+const local = process.env.PW_URL.includes('localhost') ? true : false
 
 let page;
 let isMobile;
@@ -76,6 +78,9 @@ userMenuItems.forEach(function(item) {
 })
 
 test('drive -  upgrade account', async ({ page }) => {   
+
+  test.skip(local, 'no option to upgrade on local dev instance')
+
     
   try {
 

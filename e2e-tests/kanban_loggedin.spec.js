@@ -59,7 +59,11 @@ test(`kanban - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example kanban template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000)
@@ -70,7 +74,11 @@ test(`kanban - save as and import template`, async ({ page }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
     }
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
+    }
     await page.frameLocator('#sbox-secure-iframe').getByText('example kanban template').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
 

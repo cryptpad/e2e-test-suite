@@ -163,13 +163,15 @@ test('anon - slide - make a copy', async ({ page, context }) => {
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/slide`), { timeout: 100000 })
     await page1.waitForTimeout(5000)
-
+    await page1.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
-    
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - slide > make a copy', status: 'passed',reason: 'Can\'t create a copy of a Markdown document'}})}`);
+
 
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - slide > comment', status: 'failed',reason: 'Can\'t create comment in Markdown document'}})}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'anon - slide > make a copy', status: 'failed',reason: 'Can\'t create a copy of a Markdown document'}})}`);
 
   }  
 });

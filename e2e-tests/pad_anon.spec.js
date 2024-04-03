@@ -214,7 +214,7 @@ test('pad - make a copy', async ({ page, context }) => {
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 })
     await page1.waitForTimeout(5000)
-
+    await page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT')).toBeVisible()
     
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'pad - make a copy', status: 'passed',reason: 'Can\'t make copy of Rich Text document'}})}`);
@@ -294,7 +294,11 @@ test(`pad - export (.doc)`, async ({ page }) => {
     }
     await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.doc' }).click();
     
     const downloadPromise = page.waitForEvent('download');
@@ -342,7 +346,11 @@ test(`pad - export (md)`, async ({ page, context }) => {
     }
     await page.frameLocator('#sbox-iframe').getByText('Export').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.md' }).click();
     
     const downloadPromise = page.waitForEvent('download');

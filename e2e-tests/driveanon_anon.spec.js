@@ -3,7 +3,9 @@ const { expect } = require('@playwright/test');
 
 var fs = require('fs');
 const d3 = require('d3')
+require('dotenv').config();
 
+const local = process.env.PW_URL.includes('localhost') ? true : false
 let page;
 let isMobile;
 let browserName;
@@ -22,6 +24,12 @@ const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'prici
 
 
 userMenuItems.forEach(function(item) {
+
+  if (item === 'pricing')  {
+  
+    test.skip(local, 'pricing not available on dev instance')
+
+  }
 
   test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {   
   
@@ -57,7 +65,9 @@ userMenuItems.forEach(function(item) {
         if (item === 'home page') {
           await expect(page1).toHaveURL(`${url}/index.html`, { timeout: 100000 })
         } else if (item === 'pricing') {
-          await expect(page1).toHaveURL(`${url}/features.html`, { timeout: 100000 })
+
+            await expect(page1).toHaveURL(`${url}/features.html`, { timeout: 100000 })
+
         } else if (item === 'donate') {
           page.once('dialog', dialog => {
             console.log(`Dialog message: ${dialog.message()}`);

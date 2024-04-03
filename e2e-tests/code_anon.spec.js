@@ -233,7 +233,7 @@ test(`code - import file #1367`, async ({ page }) => {
 });
 
   
-test(`code - share at a moment in history`, async ({ page, context }) => {
+test(`code - share at a moment in history`, async ({ page, browser }) => {
 
   try {
 
@@ -285,11 +285,11 @@ test(`code - share at a moment in history`, async ({ page, context }) => {
     await page.waitForTimeout(5000)
 
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    pageOne = await context.newPage()
+    pageOne = await browser.newPage()
     
     await pageOne.goto(`${clipboardText}`)
 
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
+    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor()
     await expect(pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'code - share at a moment in history', status: 'passed',reason: 'Can share code document at a specific moment in history'}})}`);

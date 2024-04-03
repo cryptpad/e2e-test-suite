@@ -14,8 +14,6 @@ test.setTimeout(210000)
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'] 
-// const docNames = ['pad'] 
-
 
 
 docNames.forEach(function(name) {
@@ -61,6 +59,7 @@ docNames.forEach(function(name) {
       const page2 = await page2Promise;
       await page2.waitForTimeout(5000)
 
+      await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
       await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: ` ${name} - create new file from file menu`, status: 'passed',reason: `Can create new ${name} document from file menu`}})}`);
@@ -90,6 +89,7 @@ docNames.forEach(function(name) {
           await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
         }
         
+        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor()
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({timeout: 5000});
   
         const clipboardText = await page.evaluate("navigator.clipboard.readText()");
@@ -128,7 +128,7 @@ docNames.forEach(function(name) {
         } else {
           await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
         }
-        await page.frameLocator('#sbox-secure-iframe').getByText('View').click();
+        await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click();
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
 
         const clipboardText = await page.evaluate("navigator.clipboard.readText()");
@@ -159,10 +159,10 @@ docNames.forEach(function(name) {
 
       await page.goto(`${url}/${name}`);
       if (name == 'sheet' | name == 'diagram') {
-          await page.waitForTimeout(40000)
-        } else {
-          await page.waitForTimeout(15000)
-        }
+        await page.waitForTimeout(40000)
+      } else {
+        await page.waitForTimeout(15000)
+      }
 
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('#cp-toolbar-chat-drawer-open').click();
@@ -177,7 +177,16 @@ docNames.forEach(function(name) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').waitFor({timeout: 5000})
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').click();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').fill('test message');
+      await page.waitForTimeout(2000)
+
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').press('Enter');
+      if (name == 'sheet' | name == 'diagram') {
+        await page.waitForTimeout(5000)
+      } 
+      if (page.frameLocator('#sbox-iframe').getByText('We need your help').isVisible()) {
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Not now' }).click();
+
+      }
       await expect(page.frameLocator('#sbox-iframe').getByText('test message')).toBeVisible();
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `anon - ${name} - chat`, status: 'passed',reason: `Can use chat in ${name} document`}})}`);
@@ -280,7 +289,7 @@ docNames.forEach(function(name) {
     }  
   });
 
-  test(`anon - ${name} - move to trash`, async ({ page, context }) => {
+  test(`anon - ${name} - move to trash #1263`, async ({ page, context }) => {
 
     try {
 

@@ -165,7 +165,11 @@ test('kanban - view history', async ({ page }) => {
     }
 
     await page.waitForTimeout(2000)
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }   
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new item title')).toHaveCount(0)
@@ -337,17 +341,13 @@ test(`kanban - can drag boards #1372`, async ({ page }) => {
   try {
 
     await page.waitForTimeout(5000)
-
-    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click()
-      await page.waitForTimeout(10000)
-    } 
     
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'To Do' }).hover();
     await page.mouse.down();
     await page.mouse.move(100, 0);
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).hover();
     await page.mouse.up(); 
+
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 3500 });
 

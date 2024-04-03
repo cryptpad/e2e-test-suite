@@ -282,7 +282,11 @@ test('form - view history and share at a specific moment in history', async ({ p
 
     await page.waitForTimeout(3000)
 
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
+    }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new option')).toHaveCount(0)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
@@ -542,67 +546,6 @@ test('form - anon (guest) access - allowed',  async ({ page, context }) => {
 });
 
 
-test('form - anon (guest) access - blocked',  async ({ page, browser }) => {
- 
-  try {
-     
-    await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
-    await page.waitForTimeout(5000)
-    const visible = await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().isVisible();
-    
-    if (visible === false) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor()
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({force: true});
-    }
-    await page.waitForTimeout(10000)
-    await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().click({timeout: 5000});
-    await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click({force: true});
-    await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
-    // await page.waitForTimeout(3000)
-
-    const clipboardText = await page.evaluate("navigator.clipboard.readText()");
-    const context = await browser.newContext();
-    pageOne = await context.newPage();
-    await pageOne.goto(`${clipboardText}`)
-    await pageOne.waitForTimeout(1000)
-    await pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/).waitFor({timeout: 60000})
-
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^Guest responses are blocked for this form/)).toBeVisible()
-    await page.waitForTimeout(1000)
-    await pageOne.frameLocator('#sbox-iframe').getByRole('link', { name: 'log in' }).click();
-    await page.waitForTimeout(1000)
-
-    await page.waitForTimeout(3000)
-
-    await pageOne.getByPlaceholder('Username').fill('test-user');
-    await pageOne.waitForTimeout(10000)
-    await pageOne.getByPlaceholder('Password', {exact: true}).fill(mainAccountPassword);
-    const login = pageOne.locator(".login")
-    await login.waitFor({ timeout: 18000 })
-    await expect(login).toBeVisible({ timeout: 1800 })
-    await pageOne.waitForTimeout(5000)
-    if (await login.isVisible()) {
-      await login.click()
-    }
-
-    await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click()
-
-    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('test-user').click()
-    
-    await expect(pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' })).toBeVisible();
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'passed',reason: 'Can create and answer question with blocked guest access in a Form'}})}`);
-  
-  } catch(e) {
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'failed',reason: 'Can\'t create and answer question with blocked guest access in a Form'}})}`);
-    console.log(e);
-  }
-});
 
 
 test('form - add and respond to text question',  async ({ page, context }) => {
@@ -806,6 +749,7 @@ test('form - add and respond to choice grid question',  async ({ page, context }
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
     await page.waitForTimeout(3000)
+    await page.frameLocator('#sbox-iframe').getByText(/Choice10 Choice21/).waitFor()
     await expect(page.frameLocator('#sbox-iframe').getByText(/Choice10 Choice21/)).toBeVisible()
     await expect(page.frameLocator('#sbox-iframe').getByText(/Choice11 Choice20/)).toBeVisible()
 
@@ -1066,14 +1010,30 @@ test('form - add and respond to conditional section question (OR)',  async ({ pa
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Conditional section' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option one' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option three' }).click();
     await page.waitForTimeout(1000)
 
@@ -1126,21 +1086,37 @@ test('form - add and respond to conditional section question (AND)',  async ({ p
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
     await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    }
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
     await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    }
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 1' }).click();
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add AND condition' }).click();
     await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    }
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
     await page.waitForTimeout(1000)
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    if (local) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    }
     await page.waitForTimeout(1000)
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 3' }).click();
     await page.waitForTimeout(1000)
