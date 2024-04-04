@@ -147,18 +147,18 @@ if (!isMobile) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
       }
 
-    if (!local) {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
-    } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }   
+      if (!local) {
+        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+      } else {
+        await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+      }   
   
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
-      // await expect(page.frameLocator('#sbox-iframe').getByText('and some more test text by test user')).toHaveCount(0)
-      // await expect(page.frameLocator('#sbox-iframe').getByText('and some more text by test user here')).toHaveCount(0)
+      await expect(page.frameLocator('#sbox-iframe').getByText('and some more test text by test user')).toHaveCount(0)
+      await expect(page.frameLocator('#sbox-iframe').getByText('and some more text by test user here')).toHaveCount(0)
   
-      // await expect(page.frameLocator('#sbox-iframe').getByText('some test text by anon')).toBeVisible()
-      // await expect(page.frameLocator('#sbox-iframe').getByText('some more test text by anon!')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').getByText('some test text by anon')).toBeVisible()
+      await expect(page.frameLocator('#sbox-iframe').getByText('some more test text by anon!')).toBeVisible()
   
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `kanban - history (previous author)`, status: 'passed',reason: 'Can create Kanban document and view history (previous author)'}})}`);
     } catch (e) {

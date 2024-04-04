@@ -1,4 +1,4 @@
-const { test, url, mainAccountPassword, nextMondaySlashFormat, nextMondayUSSlashFormat } = require('../fixture.js');
+const { test, url, mainAccountPassword, nextMondaySlashFormat, nextMondayUSSlashFormat, titleDate } = require('../fixture.js');
 const { Cleanup } = require('./test-pages.spec.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
@@ -41,6 +41,166 @@ test.beforeEach(async ({ page}, testInfo) => {
   await page.goto(`${url}/form`)
   await page.waitForTimeout(10000)
 
+});
+
+test(`form - share with contact (author)`, async ({ page, browser }) => {
+
+  try {
+
+    const title = `Form - ${titleDate}`
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    }
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
+    await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
+    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
+
+    ///
+    const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
+    pageOne = await context.newPage();
+    await pageOne.goto(`${url}/drive`)
+    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+    
+    const page2Promise = pageOne.waitForEvent('popup')
+    if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
+
+      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).first().click();
+    } else {
+      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click()
+    }
+    const pageTwo = await page2Promise
+
+    await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()        
+    await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({timeout: 5000})
+
+    ////
+
+    await page.bringToFront()
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click()
+    }
+    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({timeout: 5000})
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `form - share with contact (author)`, status: 'passed',reason: `Can share form with contact (author)`}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `form - share with contact (author)`, status: 'failed',reason: `Can\'t share form with contact (author)`}})}`);
+
+  }  
+});
+
+test(`form - share with contact (auditor)`, async ({ page, browser }) => {
+
+  try {
+
+    const title = `Form - ${titleDate}`
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    }
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
+    await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
+    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
+
+    ///
+    const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
+    pageOne = await context.newPage();
+    await pageOne.goto(`${url}/drive`)
+    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+    
+    const page2Promise = pageOne.waitForEvent('popup')
+    if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
+
+      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).first().click();
+    } else {
+      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click()
+    }
+    const pageTwo = await page2Promise
+
+    await pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).waitFor()        
+    await expect(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title })).toBeVisible({timeout: 5000})
+    await pageTwo.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor()
+    await expect(pageTwo.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible()
+
+    ////
+
+    await page.bringToFront()
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click()
+    }
+    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({timeout: 5000})
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `form - share with contact (auditor)`, status: 'passed',reason: `Can share form with contact (auditor)`}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `form - share with contact (auditor)`, status: 'failed',reason: `Can\'t share form with contact (auditor)`}})}`);
+
+  }  
+});
+
+test(`form - share with contact (participant)`, async ({ page, browser }) => {
+
+  try {
+
+    const title = `Form - ${titleDate}`
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('button', {name: 'Create', exact: true}).click()
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    }
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Participant$/ }).locator('span').first().click();
+    await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
+    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
+
+    ///
+    const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
+    pageOne = await context.newPage();
+    await pageOne.goto(`${url}/drive`)
+    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click()
+    
+    const page2Promise = pageOne.waitForEvent('popup')
+    if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
+
+      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).first().click();
+    } else {
+      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click()
+    }
+    const pageTwo = await page2Promise
+
+    await pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).waitFor()        
+    await expect(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title })).toBeVisible({timeout: 5000})
+    await pageTwo.frameLocator('#sbox-iframe').getByText('Please choose how you would').waitFor()
+    await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Please choose how you would')).toBeVisible()
+
+    ////
+
+    await page.bringToFront()
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click()
+    }
+    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({timeout: 5000})
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `form - share with contact (to view)`, status: 'passed',reason: `Can share form with contact (to view)`}})}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: `form - share with contact (to view)`, status: 'failed',reason: `Can\'t share form with contact (to view)`}})}`);
+
+  }  
 });
 
 test('form - (guest) access - blocked',  async ({ page, browser }) => {
@@ -93,12 +253,89 @@ test('form - (guest) access - blocked',  async ({ page, browser }) => {
     }
 
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click()
-
     await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('test-user').click()
-    
     await expect(pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' })).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'passed',reason: 'Can create and answer question with blocked guest access in a Form'}})}`);
+  
+  } catch(e) {
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'failed',reason: 'Can\'t create and answer question with blocked guest access in a Form'}})}`);
+    console.log(e);
+  }
+});
+
+test('form - view history (different authors)',  async ({ page, browser }) => {
+ 
+  try {
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).waitFor();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').click();
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').dblclick();
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('text by test-user');
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').press('Enter');
+    await page.waitForTimeout(5000)
+
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    }
+
+    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+    
+    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor()
+    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({timeout: 5000});
+    await page.waitForTimeout(3000)
+
+    const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+    const context = await browser.newContext();
+    pageOne = await context.newPage();
+    await pageOne.goto(`${clipboardText}`)
+    await pageOne.waitForTimeout(1000)
+
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Text' }).click();
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).click();
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).dblclick();
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).fill('some text by anon');
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).press('Enter');
+    await page.waitForTimeout(7000)
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Text' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3).click({
+      clickCount: 3
+    });
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3).fill('some more text by test user');
+    await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3).press('Enter');
+    await page.waitForTimeout(5000)
+
+
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
+    if (!local) {
+      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click()
+    } else {
+      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
+    }
+
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+
+    await expect(page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3)).toBeHidden()
+    const question = await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(2).textContent()
+
+    if (question == 'some text by anon') {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'passed',reason: 'Can create and answer question with blocked guest access in a Form'}})}`);
+
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'form - anon (guest) access - blocked', status: 'failed',reason: 'Can\'t create and answer question with blocked guest access in a Form'}})}`);
+    }
+
   
   } catch(e) {
 
