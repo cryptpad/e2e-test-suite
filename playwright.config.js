@@ -1,11 +1,9 @@
-const path  = require('node:path'); 
-const { defineConfig, devices } = require('@playwright/test');
-const { getCdpEndpoint } = require('./browserstack.config.js')
+// const path = require('node:path')
+const { defineConfig } = require('@playwright/test');
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
-
 
 module.exports = defineConfig({
   testDir: './e2e-tests',
@@ -39,7 +37,7 @@ module.exports = defineConfig({
   // },
   /* Run tests in files in parallel */
   fullyParallel: true,
-  
+
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -53,84 +51,82 @@ module.exports = defineConfig({
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
     locale: 'en-GB',
-        // Emulates the user timezone.
+    // Emulates the user timezone.
     timezoneId: 'Europe/London',
-    permissions: ["clipboard-read", "clipboard-write", "notifications"],
-    
+    permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',},
-    
+    trace: 'on-first-retry'
+  },
 
-
-  projects: 
+  projects:
   [
     {
-      name: "chrome@latest:OSX Ventura@browserstack",
+      name: 'chrome@latest:OSX Ventura@browserstack',
       use: {
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-        locale: 'en-GB',
-      },
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+        locale: 'en-GB'
+      }
     }, {
-      name: "chrome@latest:OSX Ventura",
+      name: 'chrome@latest:OSX Ventura',
       use: {
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-        locale: 'en-GB',
-      },
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+        locale: 'en-GB'
+      }
     }, {
-    name: "playwright-firefox@latest:OSX Ventura@browserstack",
-    use: {
-      locale: 'en-GB',
-      },
-  },  {
-    name: "playwright-firefox@latest:OSX Ventura",
+      name: 'playwright-firefox@latest:OSX Ventura@browserstack',
       use: {
-        locale: 'en-GB',
-      },
-  }, {
-    name: "edge@latest:OSX Ventura@browserstack",
+        locale: 'en-GB'
+      }
+    }, {
+      name: 'playwright-firefox@latest:OSX Ventura',
+      use: {
+        locale: 'en-GB'
+      }
+    }, {
+      name: 'edge@latest:OSX Ventura@browserstack',
       use: {
         channel: 'msedge',
         locale: 'en-GB',
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-      },
-  }, {
-    name: "edge@latest:OSX Ventura",
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications']
+      }
+    }, {
+      name: 'edge@latest:OSX Ventura',
       use: {
         channel: 'msedge',
         locale: 'en-GB',
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
-      },
-  }, {
-    name: "playwright-webkit@latest:OSX Ventura",
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications']
+      }
+    }, {
+      name: 'playwright-webkit@latest:OSX Ventura',
       use: {
-        locale: 'en-GB',
-      },
-  }, {
-    name: "chrome@Samsung Galaxy S22:13",
-    use: {
-      hasTouch: true,
-      browserName: "chromium",
-      channel: "chrome",
-      locale: 'en-GB',
-      permissions: ["clipboard-read", "clipboard-write", "notifications"],
-      isMobile: true,
-    },    
-  }, {
-      name: "chrome@Samsung Galaxy S22:13@browserstack-mobile",
+        locale: 'en-GB'
+      }
+    }, {
+      name: 'chrome@Samsung Galaxy S22:13',
       use: {
         hasTouch: true,
-        browserName: "chromium",
-        channel: "chrome",
+        browserName: 'chromium',
+        channel: 'chrome',
         locale: 'en-GB',
-        permissions: ["clipboard-read", "clipboard-write", "notifications"],
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+        isMobile: true
+      }
+    }, {
+      name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
+      use: {
+        hasTouch: true,
+        browserName: 'chromium',
+        channel: 'chrome',
+        locale: 'en-GB',
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         isMobile: true,
-        acceptDownloads: true,
+        acceptDownloads: true
 
-     },    
+      }
     }
-  ],
+  ]
 });
-

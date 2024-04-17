@@ -34,7 +34,7 @@ Some of the suite is focused on "anonymous" or guest user interaction with Crypt
 
 For tests that rely on being logged in to user accounts (drive, sharing, collaboration, etc), and/or on opening of specific test documents and drives, the instance database must be seeded with [the required initial data](https://cryptpad.fr/code/#/2/code/view/umjXf-hxeI6r1ymuOIbHWmsgJoc-UuxTR4Q-b-ZAXB4/) before testing can begin. These tests have `_loggedin` in the file name, and can be run collectively using the `loggedin` command line variable (see [Running tests](## Running tests))
 
-This environment is kept constant and replicable between tests, i.e. if as part of a test a document is created and added to the user's drive, it must be deleted before the test is run again. To ensure this in case of code malfunction or test failure, there are several cleanup scripts in `test-pages.spec.js` integrated into the test files, which run in order to return the test environment to its base state. However, there may be situations in which these do not work as expected, and one may be required to manually intervene in the test environment.
+This environment is kept constant and replicable between tests, i.e. if as part of a test a document is created and added to the user's drive, it must be deleted before the test is run again. To ensure this in case of code malfunction or test failure, there are several cleanup scripts in `beep.js` integrated into the test files, which run in order to return the test environment to its base state. However, there may be situations in which these do not work as expected, and one may be required to manually intervene in the test environment.
 
 #### Seeding the database
 
@@ -87,6 +87,14 @@ cd ..
 npx playwright test auth --workers=1 --project='chrome@latest:OSX Ventura'
 ```
 
+A database teardown script is not included because CryptPad does not allow the re-creation of accounts (i.e. deleting an account and creating a new one with the same username and password). If running on a local instance, stop and run: 
+
+```bash
+npm run clear
+```
+in the same tab to unseed the database. 
+
+
 ### Browsertack authentication and integration
 
 To run the test suite using BrowserStack, add username and access key to the `.env` file.
@@ -122,6 +130,13 @@ To run the tests using BrowserStack, add `@BrowserStack` (for desktop) or `@Brow
 
 > :exclamation:
 > It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using BrowserStack. Tests run over slow connections will often time out and fail or hang indefinitely. 
+
+0. If running tests for the first time on your chosen browser/OS combination, run:
+
+```bash
+npx playwright test -g "screenshot" --project='chrome@latest:OSX Ventura'
+```
+This will return some errors beginning with `Error: A snapshot doesn't exist at...`. This is expected and allows for calibrating visual comparison tests (labelled with `screenshot` in the test name) by taking screenshots against which test results are later compared. 
 
 1. If running tests for anonymous guest users (not logged in), run: 
 
@@ -214,4 +229,18 @@ When writing tests, the Playwright [code generator](https://playwright.dev/docs/
 npx playwright codegen [url]
 ```
 
+### Linting
 
+To lint, run:
+
+```bash
+npm run lint 
+
+```
+
+To lint and fix, run:
+
+```bash
+npm run lint:fix 
+
+```

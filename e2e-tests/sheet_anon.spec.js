@@ -1,21 +1,17 @@
-const { test, url } = require('../fixture.js');
-const { expect } = require('@playwright/test');
+// const { test, url } = require('../fixture.js');
+// const { expect } = require('@playwright/test');
 
-var fs = require('fs');
+// let isMobile;
+// let browserName;
 
-let isMobile;
-let browserName;
+// test.beforeEach(async ({ page }) => {
+//   test.setTimeout(210000);
+//   isMobile = testInfo.project.use.isMobile;
+//   browserName = testInfo.project.name.split(/@/)[0];
 
-test.beforeEach(async ({ page }) => {
-
-test.setTimeout(210000)
-  isMobile = testInfo.project.use['isMobile']  
-  browserName = testInfo.project.name.split(/@/)[0]
-
-  await page.goto(`${url}/sheet`)
-  await page.waitForTimeout(10000)
-
-});
+//   await page.goto(`${url}/sheet`);
+//   await page.waitForTimeout(10000);
+// });
 
 // test('sheet doc - anon', async ({ page }) => {
 
@@ -48,11 +44,11 @@ test.setTimeout(210000)
 //     //     y: 47
 //     //   }
 //     // });
-   
+
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'sheet', status: 'passed',reason: 'Can anonymously create Sheet'}})}`);
 //   } catch (e) {
 //     console.log(e);
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'sheet', status: 'failed',reason: 'Can\'t anonymously create Sheet'}})}`);
 
-//   }  
+//   }
 // });

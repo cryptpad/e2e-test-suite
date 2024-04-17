@@ -15,4 +15,4 @@ module.exports = async () => {
       await sleep(180000);
     }
   }
-}
+};

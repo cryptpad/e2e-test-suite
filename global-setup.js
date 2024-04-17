@@ -5,7 +5,6 @@ const sleep = promisify(setTimeout);
 const redColour = '\x1b[31m';
 const whiteColour = '\x1b[0m';
 
-
 module.exports = async () => {
   console.log('Starting BrowserStackLocal ...');
   // Starts the Local instance with the required arguments

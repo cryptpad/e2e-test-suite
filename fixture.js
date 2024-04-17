@@ -1,24 +1,12 @@
-const base = require("@playwright/test");
-const { firefox, chromium, webkit, expect, test } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps } = require('./browserstack.config.js')
+const base = require('@playwright/test');
+const { firefox, chromium, test } = require('@playwright/test');
+const { patchCaps, patchMobileCaps, caps } = require('./browserstack.config.js');
 require('dotenv').config();
-
-
-const cp = require("child_process");
-const { _android: android } = require("playwright");
-const clientPlaywrightVersion = cp
-  .execSync("npx playwright --version")
-  .toString()
-  .trim()
-  .split(" ")[1];
-const BrowserStackLocal = require("browserstack-local");
-const util = require("util");
-
-const bsLocal = new BrowserStackLocal.Local();
+const { _android: android } = require('playwright');
 
 // replace YOUR_ACCESS_KEY with your key. You can also set an environment variable - "BROWSERSTACK_ACCESS_KEY".
 exports.BS_LOCAL_ARGS = {
-  key: process.env.BROWSERSTACK_ACCESS_KEY || "ACCESSKEY",
+  key: process.env.BROWSERSTACK_ACCESS_KEY || 'ACCESSKEY'
 };
 
 let browser;
@@ -26,15 +14,15 @@ let loggedin;
 let browserName;
 let device;
 let isMobile;
-let context
+let context;
 
 exports.test = base.test.extend({
   page: async ({ page, playwright }, use, testInfo) => {
-  test.setTimeout(210000)
+    test.setTimeout(210000);
     browserName = testInfo.project.name.split(/@/)[0];
-    loggedin = testInfo.titlePath[0].match(/loggedin/) 
+    loggedin = testInfo.titlePath[0].match(/loggedin/);
     if (testInfo.project.name.match(/browserstack/)) {
-      const isMobile = testInfo.project.use['isMobile']      
+      const isMobile = testInfo.project.use.isMobile;
       if (isMobile) {
         patchMobileCaps(
           testInfo.project.name,
@@ -45,9 +33,9 @@ exports.test = base.test.extend({
             JSON.stringify(caps)
           )}`
         );
-        await device.shell("am force-stop com.android.chrome");
-        browser = await device.launchBrowser({storageState: 'auth/mainuser.json', permissions: ["clipboard-read", "clipboard-write"], locale: 'en-GB'});
-        context = browser
+        await device.shell('am force-stop com.android.chrome');
+        browser = await device.launchBrowser({ storageState: 'auth/mainuser.json', permissions: ['clipboard-read', 'clipboard-write'], locale: 'en-GB' });
+        context = browser;
       } else {
         patchCaps(testInfo.project.name, `${testInfo.title}`);
         delete caps.osVersion;
@@ -55,127 +43,130 @@ exports.test = base.test.extend({
         delete caps.realMobile;
         browser = await playwright.chromium.connect({
           wsEndpoint:
-            `wss://cdp.browserstack.com/playwright?caps=` +
-            `${encodeURIComponent(JSON.stringify(caps))}`,
+            'wss://cdp.browserstack.com/playwright?caps=' +
+            `${encodeURIComponent(JSON.stringify(caps))}`
         });
-        if (browserName == 'chrome' || browserName == 'edge') {
+        if (browserName === 'chrome' || browserName === 'edge') {
           if (loggedin) {
-            context = await browser.newContext({ storageState: 'auth/mainuser.json', permissions: ["clipboard-read", "clipboard-write"], locale: 'en-GB'})        
+            context = await browser.newContext({ storageState: 'auth/mainuser.json', permissions: ['clipboard-read', 'clipboard-write'], locale: 'en-GB' });
           } else {
-            context = await browser.newContext({ permissions: ["clipboard-read", "clipboard-write"], locale: 'en-GB'})        
+            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'], locale: 'en-GB' });
           }
         } else {
           if (loggedin) {
-            context = await browser.newContext({ storageState: 'auth/mainuser.json', permissions: [], locale: 'en-GB'})
+            context = await browser.newContext({ storageState: 'auth/mainuser.json', permissions: [], locale: 'en-GB' });
           } else {
-            context = await browser.newContext({ permissions: [], locale: 'en-GB'})
+            context = await browser.newContext({ permissions: [], locale: 'en-GB' });
           }
         }
       }
-      page = await context.newPage()
+      page = await context.newPage();
       await use(page);
       if (isMobile) {
-        await device.close()
+        await device.close();
       } else {
-        await browser.close()
+        await browser.close();
       }
-      
     } else {
       if (isMobile) {
         const [device] = await android.devices();
-        await device.shell("am force-stop com.android.chrome");
+        await device.shell('am force-stop com.android.chrome');
         if (loggedin) {
-          context = await device.launchBrowser({permissions: ["clipboard-read", "clipboard-write", "notifications"], storageState: 'auth/mainuser.json'});
+          context = await device.launchBrowser({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'], storageState: 'auth/mainuser.json' });
         } else {
-          context = await device.launchBrowser({permissions: ["clipboard-read", "clipboard-write", "notifications"]});
+          context = await device.launchBrowser({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'] });
         }
       } else {
-        if (browserName == 'chrome' || browserName == 'edge') {
-          browser = await chromium.launch()
+        if (browserName === 'chrome' || browserName === 'edge') {
+          browser = await chromium.launch();
           if (loggedin) {
-            context = await browser.newContext({ permissions: ["clipboard-read", "clipboard-write", "notifications"], storageState: 'auth/mainuser.json'})
+            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'], storageState: 'auth/mainuser.json' });
           } else {
-            context = await browser.newContext({permissions: ["clipboard-read", "clipboard-write", "notifications"]})
+            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'] });
           }
         } else {
           browser = await firefox.launch({
             firefoxUserPrefs: {
-            'dom.events.asyncClipboard.readText': true,
-            'dom.events.testing.asyncClipboard': true,
-            },
-          })
+              'dom.events.asyncClipboard.readText': true,
+              'dom.events.testing.asyncClipboard': true
+            }
+          });
           if (loggedin) {
-            context = await browser.newContext({ storageState: 'auth/mainuser.json', permissions: [] })
+            context = await browser.newContext({ storageState: 'auth/mainuser.json', permissions: [] });
           } else {
-            context = await browser.newContext({ permissions: [] })
+            context = await browser.newContext({ permissions: [] });
           }
         }
       }
-      page = await context.newPage()
+      page = await context.newPage();
       await use(page);
-      await browser.close()
+      await browser.close();
     }
   },
 
-
   beforeEach: [
     test.setTimeout(2400000)
-  ],   
+  ],
   afterEach: [
     async ({ page }, use) => {
-      await use()
-      page.close()
+      await use();
+      page.close();
     }
-  ],
+  ]
 });
 
-///GLOBAL VARIABLES///
+/// GLOBAL VARIABLES///
 
-exports.url = process.env.PW_URL
-// exports.url = 'https://freemium.cryptpad.fr'
+exports.url = process.env.PW_URL;
 
-exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD 
-exports.testUserPassword = process.env.TESTUSERPASSWORD 
-exports.testUser2Password = process.env.TESTUSER2PASSWORD 
-exports.testUser3Password = process.env.TESTUSER3PASSWORD 
+exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD;
+exports.testUserPassword = process.env.TESTUSERPASSWORD;
+exports.testUser2Password = process.env.TESTUSER2PASSWORD;
+exports.testUser3Password = process.env.TESTUSER3PASSWORD;
 
+const date = new Date();
+const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const weekday = days[date.getDay()];
+exports.weekday = weekDays[date.getDay()];
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const month = months[date.getMonth()];
+exports.titleDate = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
 
+const setTimeZone = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' });
+const now = new Date(setTimeZone);
 
-const date = new Date()      
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const weekday = days[date.getDay()]
-exports.weekday = weekDays[date.getDay()]
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-const month = months[date.getMonth()]
-exports.titleDate = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
-
-const setTimeZone = new Date().toLocaleString("en-US", {timeZone: "Europe/London"})
-const now = new Date(setTimeZone)
-
-const monthNumeric = now.getMonth() + 1
+const monthNumeric = now.getMonth() + 1;
 const monthFormatted = monthNumeric.toString().length > 1 ? monthNumeric : '0' + monthNumeric;
 
 const today = now.getDate();
 const todayFormatted = today.toString().length > 1 ? today : '0' + today;
 
-exports.dateTodayDashFormat = now.getFullYear() + '-' + monthFormatted + '-' + todayFormatted
-exports.dateTodaySlashFormat = todayFormatted + '/' + monthFormatted + '/' + now.getFullYear()
+exports.dateTodayDashFormat = now.getFullYear() + '-' + monthFormatted + '-' + todayFormatted;
+exports.dateTodaySlashFormat = todayFormatted + '/' + monthFormatted + '/' + now.getFullYear();
 
-const nextMonday = new Date()
-nextMonday.getDay() !== 0 ? nextMonday.setDate(nextMonday.getDate()  + ( ((1 + 7 - nextMonday.getDay()) % 7) || 7 )) : nextMonday.setDate(nextMonday.getDate() + 8 )
+const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+const nextWeekDate = nextWeek.getDate();
+const nextWeekMonthNumeric = nextWeek.getMonth() + 1;
+const nextWeekMonthFormatted = nextWeekMonthNumeric.toString().length > 1 ? nextWeekMonthNumeric : '0' + nextWeekMonthNumeric;
+
+const nextWeekFormatted = nextWeekDate.toString().length > 1 ? nextWeekDate : '0' + nextWeekDate;
+exports.nextWeekSlashFormat = nextWeekFormatted + '/' + nextWeekMonthFormatted + '/' + nextWeek.getFullYear();
+
+const nextMonday = new Date();
+nextMonday.getDay() !== 0 ? nextMonday.setDate(nextMonday.getDate() + (((1 + 7 - nextMonday.getDay()) % 7) || 7)) : nextMonday.setDate(nextMonday.getDate() + 8);
 const nextMondayFormatted = nextMonday.getDate().toString().length > 1 ? nextMonday.getDate() : '0' + nextMonday.getDate();
-const nextMondayMonth = nextMonday.getMonth() + 1
+const nextMondayMonth = nextMonday.getMonth() + 1;
 
 const nextMondayMonthFormatted = nextMondayMonth.toString().length > 1 ? nextMondayMonth : '0' + nextMondayMonth;
-exports.nextMondayDashFormat = nextMonday.getFullYear() + '-' + nextMondayMonthFormatted + '-' + nextMondayFormatted
-exports.nextMondaySlashFormat =  nextMondayFormatted + '/' + nextMondayMonthFormatted + '/' +  nextMonday.getFullYear()
+exports.nextMondayDashFormat = nextMonday.getFullYear() + '-' + nextMondayMonthFormatted + '-' + nextMondayFormatted;
+exports.nextMondaySlashFormat = nextMondayFormatted + '/' + nextMondayMonthFormatted + '/' + nextMonday.getFullYear();
 
-const nextMondayMonthString = months[nextMonday.getMonth()]
-exports.nextMondayStringFormat = `${nextMondayMonthString} ${nextMonday.getDate()}, ${nextMonday.getFullYear()}`
+const nextMondayMonthString = months[nextMonday.getMonth()];
+exports.nextMondayStringFormat = `${nextMondayMonthString} ${nextMonday.getDate()}, ${nextMonday.getFullYear()}`;
 
-exports.year = now.getFullYear()
-exports.minutes = now.getMinutes().toString().length > 1 ? now.getMinutes() : '0' + now.getMinutes()
-exports.hours = now.getHours()
-const monthString = months[now.getMonth()]
-exports.todayStringFormat = `${monthString} ${now.getDate()}, ${now.getFullYear()}`
+exports.year = now.getFullYear();
+exports.minutes = now.getMinutes().toString().length > 1 ? now.getMinutes() : '0' + now.getMinutes();
+exports.hours = now.getHours();
+const monthString = months[now.getMonth()];
+exports.todayStringFormat = `${monthString} ${now.getDate()}, ${now.getFullYear()}`;
