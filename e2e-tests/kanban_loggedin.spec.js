@@ -1,5 +1,5 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
-const { Cleanup } = require('./beep.js');
+const { Cleanup } = require('./cleanup.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 

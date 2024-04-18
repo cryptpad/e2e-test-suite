@@ -1,6 +1,6 @@
 const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-const { Cleanup } = require('./beep.js');
+const { Cleanup } = require('./cleanup.js');
 const fs = require('fs');
 const unzipper = require('unzipper');
 require('dotenv').config();
@@ -377,11 +377,8 @@ test('can download drive contents', async ({ page }) => {
     }
 
     if (compareFiles()) {
-      console.log('success');
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents', status: 'passed', reason: 'Can download drive contents' } })}`);
     } else {
-      console.log('no success');
-
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents ', status: 'failed', reason: 'Can\'t download drive contents' } })}`);
     }
   } catch (e) {

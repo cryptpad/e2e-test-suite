@@ -1,6 +1,6 @@
 const { expect } = require('@playwright/test');
 const { test, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
-const { Cleanup } = require('./beep.js');
+const { Cleanup } = require('./cleanup.js');
 
 let pageOne;
 let cleanUp;

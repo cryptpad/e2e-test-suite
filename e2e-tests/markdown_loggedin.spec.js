@@ -1,6 +1,6 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-const { Cleanup } = require('./beep.js');
+const { Cleanup } = require('./cleanup.js');
 require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
