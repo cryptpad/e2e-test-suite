@@ -5,5 +5,5 @@ local.log
 test-results
 index.html
 auth/*.json
-**/e2e-tests/*.png
+**/e2e-tests/**/*.png
 **/.DS_STORE
