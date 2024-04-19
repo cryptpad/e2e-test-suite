@@ -13,7 +13,7 @@ We maintain a [list of functionality currently covered by the test suite](https:
 To download this repository and install dependencies, run:
 
 ```bash
-git clone https://git.xwikisas.com/cryptpad/playwright-tests.git
+git clone https://github.com/cryptpad/e2e-test-suite.git
 cd playwright-tests
 npm install
 npx playwright install
