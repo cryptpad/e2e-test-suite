@@ -1,5 +1,3 @@
-[TOC]
-
 ## Introduction and setup
 
 ### Introduction 
