@@ -167,6 +167,18 @@ npx playwright test code_loggedin --workers=1 --project='chrome@latest:OSX Ventu
 
 ```
 
+4. Accessibility tests must be run separately from all other tests.
+Some security measures must be disabled in order to inject the accessibility test script into nested frames used by CryptPad. This means accessibility tests can be only performed locally.
+
+To run accessibility tests:
+- make sure they are being run against a local development instance (reauthenticate users if necessary)
+- in your local CryptPad repository, in `lib/defaults.js`, replace line `48` with 
+
+```
+return (Default.commonCSP(Env).join('; ') + "script-src 'self' 'unsafe-eval' 'unsafe-inline' resource: " + Env.httpUnsafeOrigin).replace(/\s+/g, ' ');
+```
+- in your local CryptPad repository, in `www/common/sframe-boot.js`, comment out the lines `46` to `58` 
+
 > :information_source:
 > The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
 
