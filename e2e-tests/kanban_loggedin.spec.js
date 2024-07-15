@@ -151,7 +151,7 @@ if (!isMobile) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - history (previous author)', status: 'passed', reason: 'Can create Kanban document and view history (previous author)' } })}`);
     } catch (e) {
       console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - history (previous author) - THIS TEST WILL FAIL', status: 'failed', reason: 'Can\'t create Kanban document and view history (previous author) - THIS TEST WILL FAIL' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - history (previous author)', status: 'failed', reason: 'Can\'t create Kanban document and view history (previous author)' } })}`);
     }
   });
 }

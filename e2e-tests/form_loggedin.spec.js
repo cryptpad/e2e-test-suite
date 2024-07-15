@@ -52,7 +52,7 @@ test('form - share with contact (author)', async ({ page, browser }) => {
     } else {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     }
-    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
 
@@ -264,6 +264,7 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     }
 
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
 
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({ timeout: 5000 });
@@ -302,17 +303,18 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click()
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3)).toBeHidden();
     const question = await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(2).textContent();
 
     if (question === 'some text by anon') {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'passed', reason: 'Can create and answer question with blocked guest access in a Form' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'passed', reason: 'Can view history of different authors\' contributions in a Form' } })}`);
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'failed', reason: 'Can\'t create and answer question with blocked guest access in a Form' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'failed', reason: 'Can\'t view history of different authors\' contributions in a Form' } })}`);
     }
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'failed', reason: 'Can\'t create and answer question with blocked guest access in a Form' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'failed', reason: 'Can\'t view history of different authors\' contributions in a Form' } })}`);
     console.log(e);
   }
 });

@@ -19,15 +19,23 @@ test.beforeEach(async ({ page }, testInfo) => {
   platform = os.platform();
 
   await page.goto(`${url}/code`);
-  await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor();
+  await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
 });
 
 test('anon - code - input text #1367', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
+    await page.keyboard.press('T');
+    await page.keyboard.press('e');
+    await page.keyboard.press('s');
+    await page.keyboard.press('t');
+    await page.keyboard.press(' ');
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('x');
+    await page.keyboard.press('t');
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('test text')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
   } catch (e) {
@@ -38,10 +46,18 @@ test('anon - code - input text #1367', async ({ page }) => {
 
 test('code - file menu - history #1367', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
+    await page.keyboard.press('T');
+    await page.keyboard.press('e');
+    await page.keyboard.press('s');
+    await page.keyboard.press('t');
+    await page.keyboard.press(' ');
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('x');
+    await page.keyboard.press('t');
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('test text')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeVisible();
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
     } else {
@@ -54,8 +70,8 @@ test('code - file menu - history #1367', async ({ page }) => {
     }
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toHaveCount(0);
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeHidden();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('test text')).toHaveCount(0);
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - file menu - history', status: 'passed', reason: 'Can view Code document history' } })}`);
   } catch (e) {
@@ -87,9 +103,17 @@ test('code - toggle toolbar #1367', async ({ page }) => {
 
 test('code - toggle preview #1367', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
+    await page.keyboard.press('T');
+    await page.keyboard.press('e');
+    await page.keyboard.press('s');
+    await page.keyboard.press('t');
+    await page.keyboard.press(' ');
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('x');
+    await page.keyboard.press('t');
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeVisible();
 
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
@@ -97,7 +121,7 @@ test('code - toggle preview #1367', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Preview' }).click();
     }
 
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeHidden();
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - code - toggle preview', status: 'passed', reason: 'Can toggle preview in Code document' } })}`);
   } catch (e) {
@@ -108,9 +132,17 @@ test('code - toggle preview #1367', async ({ page }) => {
 
 test('code -  make a copy #1367', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
+    await page.keyboard.press('T');
+    await page.keyboard.press('e');
+    await page.keyboard.press('s');
+    await page.keyboard.press('t');
+    await page.keyboard.press(' ');
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('x');
+    await page.keyboard.press('t');
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeVisible();
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
     } else {
@@ -128,7 +160,7 @@ test('code -  make a copy #1367', async ({ page }) => {
 
     await page1.waitForTimeout(4000);
     await page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text').waitFor();
-    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text')).toBeVisible();
+    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code -  make a copy', status: 'passed', reason: 'Can make a copy' } })}`);
   } catch (e) {
@@ -141,7 +173,7 @@ test('code - import file #1367', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
     const fileChooserPromise = page.waitForEvent('filechooser');
 
     if (isMobile) {
@@ -156,7 +188,7 @@ test('code - import file #1367', async ({ page }) => {
 
     await page.waitForTimeout(3000);
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text here')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text here')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text here')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - import file', status: 'passed', reason: 'Can import file into Code document' } })}`);
@@ -166,13 +198,21 @@ test('code - import file #1367', async ({ page }) => {
   }
 });
 
-test('code - export (md) - ', async ({ page }) => {
+test('code - export (md)', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
+    await page.keyboard.press('T');
+    await page.keyboard.press('e');
+    await page.keyboard.press('s');
+    await page.keyboard.press('t');
+    await page.keyboard.press(' ');
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('x');
+    await page.keyboard.press('t');
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('test text')).toBeVisible();
 
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
@@ -202,8 +242,10 @@ test('code - export (md) - ', async ({ page }) => {
 
 test('code - share at a moment in history', async ({ page, browser }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('One moment in history');
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
+    await page.keyboard.press('o');
+    await page.keyboard.press('n');
+    await page.keyboard.press('e');
     await page.waitForTimeout(7000);
 
     let key;
@@ -215,12 +257,14 @@ test('code - share at a moment in history', async ({ page, browser }) => {
     await page.keyboard.press(`${key}+a`);
     await page.keyboard.press('Backspace');
     await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Another moment in history');
+    await page.keyboard.press('t');
+    await page.keyboard.press('w');
+    await page.keyboard.press('o');
     await page.waitForTimeout(7000);
     await page.keyboard.press(`${key}+a`);
     await page.keyboard.press('Backspace');
     await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').fill('Yet another moment in history');
+    
     await page.waitForTimeout(7000);
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
@@ -237,7 +281,7 @@ test('code - share at a moment in history', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click();
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('One moment in history')).toBeVisible();
 
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
@@ -254,8 +298,8 @@ test('code - share at a moment in history', async ({ page, browser }) => {
 
     await pageOne.goto(`${clipboardText}`);
 
-    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').waitFor();
-    await expect(pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('One moment in history')).toBeVisible();
+    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    await expect(pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('t')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'passed', reason: 'Can share code document at a specific moment in history' } })}`);
   } catch (e) {

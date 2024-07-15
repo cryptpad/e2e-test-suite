@@ -367,6 +367,7 @@ test('can download drive contents', async ({ page }) => {
     }
 
     async function compareFiles () {
+      unzipDownload()
       const checker = (arr, target) => target.every(v => arr.includes(v));
       const check = checker(actualFiles, expectedFiles);
       if (check) {

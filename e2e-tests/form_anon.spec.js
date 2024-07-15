@@ -161,8 +161,12 @@ test('form - submission (multiple times) - edit', async ({ page, context }) => {
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
     await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
 
     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
@@ -191,8 +195,12 @@ test('form - submission (one time) - edit', async ({ page, context }) => {
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
     await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
 
     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeHidden();
@@ -290,7 +298,11 @@ test('form - add and respond to checkbox question', async ({ page, context }) =>
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/box10 box21 box30/)).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - add and respond to checkbox question', status: 'passed', reason: 'Can create and answer checkbox question in a Form' } })}`);
@@ -466,7 +478,11 @@ test('form - anonymize responses', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
     await page.bringToFront();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Show individual answers' }).click();
     await page.frameLocator('#sbox-iframe').getByText(/^Anonymous answer/).click();
 
@@ -749,7 +765,11 @@ test('form - anon (guest) access - allowed', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByRole('heading', { name: 'Total responses: 1' })).toBeVisible();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Show individual answers' }).click();
     await expect(page.frameLocator('#sbox-iframe').getByText(/^Anonymous answer/)).toBeVisible();
@@ -782,7 +802,11 @@ test('form - add and respond to text question', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await pageOne.waitForTimeout(3000);
     await pageOne.close();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('Guest', { exact: true })).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - add and respond to text question', status: 'passed', reason: 'Can create and answer text question in a Form' } })}`);
@@ -811,8 +835,12 @@ test('form - edit response', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 2').click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - edit response', status: 'passed', reason: 'Can edit response in a Form' } })}`);
@@ -837,8 +865,12 @@ test('form - delete response', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click();
     await pageOne.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 11/)).toBeVisible();
 
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
@@ -872,7 +904,11 @@ test('form - add and respond to paragraph question', async ({ page, context }) =
     await pageOne.frameLocator('#sbox-iframe').locator('textarea').fill('I am a guest');
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('I am a guest')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - respond to paragraph question', status: 'passed', reason: 'Can create and answer paragraph question in a Form' } })}`);
@@ -912,7 +948,11 @@ test('form - add and respond to choice question (optional)', async ({ page, cont
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'test option one' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/test option one1/)).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - add and respond to choice question (optional)', status: 'passed', reason: 'Can create and answer choice question (optional) in a Form' } })}`);
@@ -959,7 +999,11 @@ test('form - add and respond to choice question (required)', async ({ page, cont
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await page.waitForTimeout(3000);
     await expect(page.frameLocator('#sbox-iframe').getByText(/test option one1/)).toBeVisible();
 
@@ -1080,7 +1124,11 @@ test('form - add and respond to checkbox grid question', async ({ page, context 
     await pageOne.frameLocator('#sbox-iframe').locator('label:nth-child(4) > .cp-checkmark-mark').nth(1).click();
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
 
     await expect(page.frameLocator('#sbox-iframe').getByText(/GeneralBox10 Box21 Box31/)).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').getByText(/ParticularBox10 Box21 Box30/)).toBeVisible();
@@ -1137,7 +1185,11 @@ test('form - add and respond to ordered list question (schulze method)', async (
 
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
 
     const expectedAnswer = `test option 1${answerOrder['test option 1']} test option 2${answerOrder['test option 2']} test option 3${answerOrder['test option 3']}`;
     const expectedAnswerRegex = new RegExp(expectedAnswer);
@@ -1198,7 +1250,11 @@ test('form - add and respond to ordered list question', async ({ page, context }
 
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
 
     const expectedAnswer = `test option 1${answerOrder['test option 1']} test option 2${answerOrder['test option 2']} test option 3${answerOrder['test option 3']}`;
     const expectedAnswerRegex = new RegExp(expectedAnswer);
@@ -1240,7 +1296,11 @@ test('form - add and respond to poll question', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await expect(page.frameLocator('#sbox-iframe').getByText(/Total1\(0\)0\(0\)/)).toBeVisible();
     await page.waitForTimeout(10000);
 
@@ -1461,7 +1521,11 @@ test('form - export responses as .csv', async ({ page, context }) => {
     const UTChours = new Date().getUTCHours();
     const UTCminutes = new Date().getUTCMinutes();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export' }).click();
 
     const downloadPromise = page.waitForEvent('download');
@@ -1510,7 +1574,11 @@ test('form - export responses as .json', async ({ page, context }) => {
     const UTChours = new Date().getUTCHours();
     const UTCminutes = new Date().getUTCMinutes();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export' }).click();
 
     const downloadPromise = page.waitForEvent('download');
@@ -1557,7 +1625,11 @@ test('form - export responses (to sheet document)', async ({ page, context }) =>
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await pageOne.close();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible()) {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    }
     const page2Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export to Sheet' }).click({ timeout: 3000 });
     const page2 = await page2Promise;

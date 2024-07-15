@@ -183,7 +183,6 @@ test('can download team drive', async ({ page }) => {
     // access administration panel
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-iframe').getByText('Administration').click();
 
     // download drive
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download' }).click();
@@ -215,6 +214,7 @@ test('can download team drive', async ({ page }) => {
     }
 
     async function compareFiles () {
+      unzipDownload()
       const checker = (arr, target) => target.every(v => arr.includes(v));
       console.log(actualFiles);
       const check = checker(actualFiles, expectedFiles);
@@ -422,7 +422,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'promote team viewer to member', status: 'passed', reason: 'Can promote team viewer to member and demote them' } })}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'promote team viewer to member', status: 'failed', reason: 'Can\'t promote team viewer to member and demote them- (EDGE) THIS TEST WILL FAIL' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'promote team viewer to member', status: 'failed', reason: 'Can\'t promote team viewer to member and demote them' } })}`);
   }
 });
 

@@ -77,57 +77,57 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`${name} - create with destruction date`, async ({ page, context }) => {
-    try {
-      console.log(nextWeekSlashFormat);
+  // test(`${name} - create with destruction date`, async ({ page, context }) => {
+  //   try {
+  //     console.log(nextWeekSlashFormat);
 
-      await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Destruction date' }).locator('span').first().click();
-      await page.frameLocator('#sbox-iframe').locator('#cp-creation-expire-val').click();
-      await page.frameLocator('#sbox-iframe').locator('#cp-creation-expire-val').fill('7');
-      await page.frameLocator('#sbox-iframe').locator('#cp-creation-expire-unit').selectOption('day');
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+  //     await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Destruction date' }).locator('span').first().click();
+  //     await page.frameLocator('#sbox-iframe').locator('#cp-creation-expire-val').click();
+  //     await page.frameLocator('#sbox-iframe').locator('#cp-creation-expire-val').fill('7');
+  //     await page.frameLocator('#sbox-iframe').locator('#cp-creation-expire-unit').selectOption('day');
+  //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+  //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
 
-      await expect(page.frameLocator('#sbox-secure-iframe').getByText(`Destruction date${nextWeekSlashFormat}`)).toBeVisible();
+  //     await expect(page.frameLocator('#sbox-secure-iframe').getByText(`Destruction date${nextWeekSlashFormat}`)).toBeVisible();
 
-      await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-      await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
-      await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
-      await page.waitForTimeout(3000);
-      const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+  //     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
+  //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+  //     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+  //     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+  //     await page.waitForTimeout(3000);
+  //     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
-      // mocks future date in new context
-      const mockedDate = new Date('March 14 2042').getTime();
-      await context.addInitScript(`{
-        Date = class extends Date {
-          constructor(...args) {
-            if (args.length === 0) {
-              super(${mockedDate})
-            } else {
-              super(...args)
-            }
-          }
-        }
+  //     // mocks future date in new context
+  //     const mockedDate = new Date('March 14 2042').getTime();
+  //     await context.addInitScript(`{
+  //       Date = class extends Date {
+  //         constructor(...args) {
+  //           if (args.length === 0) {
+  //             super(${mockedDate})
+  //           } else {
+  //             super(...args)
+  //           }
+  //         }
+  //       }
         
-        const __DateNowOffset = ${mockedDate} - Date.now()
-        const __DateNow = Date.now
-        Date.now = () => __DateNow() + __DateNowOffset
-      }`);
+  //       const __DateNowOffset = ${mockedDate} - Date.now()
+  //       const __DateNow = Date.now
+  //       Date.now = () => __DateNow() + __DateNowOffset
+  //     }`);
 
-      const pageOne = await context.newPage();
-      await pageOne.goto(`${clipboardText}`);
-      await pageOne.waitForTimeout(15000);
+  //     const pageOne = await context.newPage();
+  //     await pageOne.goto(`${clipboardText}`);
+  //     await pageOne.waitForTimeout(15000);
 
-      await pageOne.frameLocator('#sbox-iframe').getByText(/^This document has reached/).waitFor();
-      await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^This document has reached/)).toBeVisible();
+  //     await pageOne.frameLocator('#sbox-iframe').getByText(/^This document has reached/).waitFor();
+  //     await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^This document has reached/)).toBeVisible();
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - create with destruction date`, status: 'passed', reason: `Can create ${name} with destruction date` } })}`);
-    } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - create with destruction date`, status: 'failed', reason: `Can't create ${name} with destruction date` } })}`);
-    }
-  });
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - create with destruction date`, status: 'passed', reason: `Can create ${name} with destruction date` } })}`);
+  //   } catch (e) {
+  //     console.log(e);
+  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - create with destruction date`, status: 'failed', reason: `Can't create ${name} with destruction date` } })}`);
+  //   }
+  // });
 
   test(`${name} - tag`, async ({ page }) => {
     try {

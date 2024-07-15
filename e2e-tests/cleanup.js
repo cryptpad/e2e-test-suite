@@ -14,11 +14,11 @@ export class Cleanup {
     await this.page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first().click();
 
     await this.page.waitForTimeout(5000);
-    let elementCount = await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').filter({ hasText: 'template' }).count() + 1;
-
-    if (elementCount > 1) {
-      while (elementCount > 0) {
-        if (elementCount > 0) {
+    let elementCount = await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').filter({ hasText: 'template' }).count()
+    console.log(elementCount)
+    if (elementCount > 0) {
+       while (elementCount > 0) {
+        if (elementCount > 1) {
           await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: 'template' }).nth(elementCount - 1).click({ button: 'right' });
         } else {
           await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: 'template' }).click({ button: 'right' });

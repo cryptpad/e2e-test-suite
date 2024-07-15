@@ -158,9 +158,9 @@ docNames.forEach(function (name) {
       if (name === 'sheet' | name === 'diagram') {
         await page.waitForTimeout(5000);
       }
-      if (page.frameLocator('#sbox-iframe').getByText('We need your help').isVisible()) {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Not now' }).click();
-      }
+      // if (page.frameLocator('#sbox-iframe').getByText('We need your help').isVisible()) {
+      //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Not now' }).click();
+      // }
       await expect(page.frameLocator('#sbox-iframe').getByText('test message')).toBeVisible();
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon - ${name} - chat`, status: 'passed', reason: `Can use chat in ${name} document` } })}`);
