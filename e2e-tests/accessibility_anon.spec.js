@@ -22,74 +22,28 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 let results ='';
 
-test('documentation - accessibility', async ({ page }, testInfo) => {
+test('contact - accessibility', async ({ page }) => {
   try {
-    await page.goto(`https://docs.cryptpad.org/en/`);
-    await page.waitForTimeout(10000);
-    let accessibilityScanResultsString;
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-
-    if (accessibilityScanResults.violations.length) {
-    results = results + '\n| Documentation  |     |    |     |'
-      accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Documentation \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
-        results = results +  `\n|     | ${index}     | ${violation.description}  | ${violation.help}  |`
-      })
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - accessibility', status: 'failed', reason: 'Documentation is not accessible' } })}`);
-    } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - accessibility', status: 'passed', reason: 'Documentation is accessible' } })}`);
-    }
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - input text', status: 'failed', reason: 'Documentation is not accessible' } })}`);
-  }
-});
-
-test('project website - accessibility', async ({ page }, testInfo) => {
-  try {
-    await page.goto(`https://cryptpad.org/`);
-    await page.waitForTimeout(10000);
-    let accessibilityScanResultsString;
+    await page.goto(`${url}/contact.html`);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
-     results = results + '\n| Project website  |     |    |     |'
+      results = results + '\n # CryptPad \n ## Contact \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Project website \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
-        results = results +  `\n|     | ${index}     | ${violation.description}  | ${violation.help}  |`
+        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
       })
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'failed', reason: 'Project website is not accessible' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'passed', reason: 'Project website is accessible' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
     }
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'failed', reason: 'Project website is not accessible' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
   }
 });
-
-// test('contact - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/contact`);
-//     let accessibilityScanResultsString ='';
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Contact \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
-//   }
-// });
 
 // test('homepage - accessibility', async ({ page }, testInfo) => {
 //   try {
@@ -390,52 +344,113 @@ test('project website - accessibility', async ({ page }, testInfo) => {
 //   }
 // });
 
-// test('diagram - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/diagram`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Diagram \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'failed', reason: 'Diagram is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'passed', reason: 'Diagram is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'failed', reason: 'Diagram is not accessible' } })}`);
-//   }
-// });
+test('diagram - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/diagram`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
 
-// test('whiteboard - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/whiteboard`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    if (accessibilityScanResults.violations.length) {
+      results = results + '\n # Documentation \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'failed', reason: 'Diagram is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'passed', reason: 'Diagram is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'failed', reason: 'Diagram is not accessible' } })}`);
+  }
+});
+
+test('whiteboard - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/whiteboard`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Whiteboard \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - accessibility', status: 'failed', reason: 'Whiteboard is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - accessibility', status: 'passed', reason: 'Whiteboard is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - input text', status: 'failed', reason: 'Whiteboard is not accessible' } })}`);
-//   }
-// });
+    if (accessibilityScanResults.violations.length) {
+      results = results + '\n # Documentation \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - accessibility', status: 'failed', reason: 'Whiteboard is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - accessibility', status: 'passed', reason: 'Whiteboard is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - input text', status: 'failed', reason: 'Whiteboard is not accessible' } })}`);
+  }
+});
+
+
+test('documentation - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`https://docs.cryptpad.org/en/`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+
+    if (accessibilityScanResults.violations.length) {
+      results = results + '\n # Documentation \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - accessibility', status: 'failed', reason: 'Documentation is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - accessibility', status: 'passed', reason: 'Documentation is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - input text', status: 'failed', reason: 'Documentation is not accessible' } })}`);
+  }
+});
+
+test('project website - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`https://cryptpad.org/`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    
+    if (accessibilityScanResults.violations.length) {
+      results = results + '\n # Project Website \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'failed', reason: 'Project website is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'passed', reason: 'Project website is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'failed', reason: 'Project website is not accessible' } })}`);
+  }
+});
 
 test.afterAll(async ({ }) => {
-  var resultsString = "| App / page  | Issue     | Info  | Help  | \n|---|----|---|---|" + results
+  var resultsString = "" + results
+  fs.writeFile("/Users/Andreas/Desktop/NODE/myproject/files/test.txt", JSON.stringify(obj), function(err) {
+    console.log('write')
+    if(err) {
+        return console.log(err);
+    }
+
+    console.log("The file was saved!");
+}); 
   
   console.log(resultsString)
 });

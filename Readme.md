@@ -167,17 +167,72 @@ npx playwright test code_loggedin --workers=1 --project='chrome@latest:OSX Ventu
 
 ```
 
-4. Accessibility tests must be run separately from all other tests.
+#### Running accessibility tests
+
+Accessibility tests must be run separately from all other tests.
 Some security measures must be disabled in order to inject the accessibility test script into nested frames used by CryptPad. This means accessibility tests can be only performed locally.
 
-To run accessibility tests:
-- make sure they are being run against a local development instance (reauthenticate users if necessary)
-- in your local CryptPad repository, in `lib/defaults.js`, replace line `48` with 
+1. To run accessibility tests, make sure they are being run against a local development instance (reauthenticate users if necessary)
+
+2. In your local CryptPad repository, in `lib/defaults.js`, make the following change: 
+
+```diff
+Default.contentSecurity = function (Env) {
+-   return (Default.commonCSP(Env).join('; ') + "script-src 'self' resource: " + Env.httpUnsafeOrigin).replace(/\s+/g, ' ');
++   return (Default.commonCSP(Env).join('; ') + "script-src 'self' 'unsafe-eval' 'unsafe-inline' resource: " + Env.httpUnsafeOrigin).replace(/\s+/g, ' ');
+};
+
+Default.padContentSecurity = function (Env) {
+    return (Default.commonCSP(Env).join('; ') + "script-src 'self' 'unsafe-eval' 'unsafe-inline' resource: " + Env.httpUnsafeOrigin).replace(/\s+/g, ' ');
+};
+```
+3. In your local CryptPad repository, in `www/common/sframe-boot.js`, make the following change: 
+
+```diff
+
+var caughtEval;
+- console.log("Testing if CSP correctly blocks an 'eval' call");
+- try {
+-    eval('true');
+- } catch (err) { caughtEval = true; }
+
+- if (!/^\/(sheet|doc|presentation|unsafeiframe)/.test(window.location.pathname) && !caughtEval) {
+-    console.error('eval panic location:', window.location.pathname, caughtEval);
+-    return void _alert(function (UI, h, Msg) {
+-        UI.alert(h('p', {
+-            style: 'white-space: break-spaces',
+-        }, Msg.error_evalPermitted));
+-    });
+- }
+
++ //console.log("Testing if CSP correctly blocks an 'eval' call");
++ //try {
++ //   eval('true');
++ //} catch (err) { caughtEval = true; }
+
++ //if (!/^\/(sheet|doc|presentation|unsafeiframe)/.test(window.location.pathname) && !caughtEval) {
++ //   console.error('eval panic location:', window.location.pathname, caughtEval);
++ //   return void _alert(function (UI, h, Msg) {
++ //      UI.alert(h('p', {
++ //           style: 'white-space: break-spaces',
++ //       }, Msg.error_evalPermitted));
++ //   });
++ //}
 
 ```
-return (Default.commonCSP(Env).join('; ') + "script-src 'self' 'unsafe-eval' 'unsafe-inline' resource: " + Env.httpUnsafeOrigin).replace(/\s+/g, ' ');
+4. To run accessibility tests for anonymous users, run:
+
+```bash
+npx playwright test accessibility_anon --workers=1 --project='chrome@latest:OSX Ventura'
+
 ```
-- in your local CryptPad repository, in `www/common/sframe-boot.js`, comment out the lines `46` to `58` 
+
+5. To run accessibility tests for logged in users, run:
+
+```bash
+npx playwright test accessibility_loggedin --workers=1 --project='chrome@latest:OSX Ventura'
+
+```
 
 > :information_source:
 > The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
