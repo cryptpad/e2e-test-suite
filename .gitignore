@@ -7,3 +7,4 @@ index.html
 auth/*.json
 **/e2e-tests/**/*.png
 **/.DS_STORE
+accessibilityresults_anon.md

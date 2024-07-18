@@ -31,19 +31,22 @@ test('settings - accessibility', async ({ page }, testInfo) => {
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
-    let accessibilityScanResultsString;
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
+      results += '\n ## Settings \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Settings \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
       })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
     }
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Contact page is not accessible' } })}`);
   }
 });
 
@@ -51,19 +54,22 @@ test('calendar - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/calendar`);
     await page.waitForTimeout(10000);
-    let accessibilityScanResultsString;
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
+      results += '\n ## Calendar \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Calendar \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
       })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Code is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
     }
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Code is not accessible' } })}`);
   }
 });
 
@@ -71,13 +77,15 @@ test('drive (user) - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/drive`);
     await page.waitForTimeout(10000);
-    let accessibilityScanResultsString;
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
+      results += '\n ## Drive (user) \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Drive (user) \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
       })
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (user) - accessibility', status: 'failed', reason: 'Drive (user) is not accessible' } })}`);
     } else {
@@ -93,21 +101,23 @@ test('teams - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/teams`);
     await page.waitForTimeout(10000);
-    let accessibilityScanResultsString;
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-    if (accessibilityScanResults.violations.length) {
+   if (accessibilityScanResults.violations.length) {
+      results += '\n ## Teams \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Teams \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
       })
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'failed', reason: 'Drive is not accessible' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'failed', reason: 'Teams is not accessible' } })}`);
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'passed', reason: 'Drive is accessible' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'passed', reason: 'Teams is accessible' } })}`);
     }
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'failed', reason: 'Teams is not accessible' } })}`);
   }
 });
 
@@ -122,22 +132,34 @@ test('teams (admin) - accessibility', async ({ page }, testInfo) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
     await page.waitForTimeout(2000);
-
-    let accessibilityScanResultsString;
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
+      results += '\n ## Teams (admin) \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        accessibilityScanResultsString = `Teams \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-        console.log(accessibilityScanResultsString)
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
       })
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'failed', reason: 'Drive is not accessible' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams (admin) - accessibility', status: 'failed', reason: 'Teams (admin) is not accessible' } })}`);
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'passed', reason: 'Drive is accessible' } })}`);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams (admin) - accessibility', status: 'passed', reason: 'Teams (admin) is accessible' } })}`);
     }
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams (admin) - accessibility', status: 'failed', reason: 'Teams (admin) is not accessible' } })}`);
   }
 });
 
+test.afterAll(async ({ }) => {
+  var resultsString = "" + results
+  fs.writeFile("accessibilityresults_loggedin.md", resultsString, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+
+}); 
+  
+  console.log(resultsString)
+});

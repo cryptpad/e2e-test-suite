@@ -234,6 +234,8 @@ npx playwright test accessibility_loggedin --workers=1 --project='chrome@latest:
 
 ```
 
+6. At the end of each complete test run, the results will be exported to an .md file in the root directory (either `accessibilityresults_anon.md` or `accessibilityresults_anon.md`)
+
 > :information_source:
 > The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
 

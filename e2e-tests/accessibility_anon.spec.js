@@ -22,17 +22,18 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 let results ='';
 
-test('contact - accessibility', async ({ page }) => {
+test('404 page - accessibility', async ({ page }) => {
   try {
-    await page.goto(`${url}/contact.html`);
+    await page.goto(`${url}/randommadeuppage`);
+    await page.waitForTimeout(10000)
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
-      results = results + '\n # CryptPad \n ## Contact \n'
+      results += '\n # CryptPad \n ## 404 \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
         violation.nodes.forEach(function(node, index) {
-          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
         })
       })
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
@@ -45,304 +46,356 @@ test('contact - accessibility', async ({ page }) => {
   }
 });
 
-// test('homepage - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}`);
-//     let accessibilityScanResultsString ='';
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+test('contact - accessibility', async ({ page }) => {
+  try {
+    await page.goto(`${url}/contact.html`);
+    await page.waitForTimeout(10000)
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Homepage \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - accessibility', status: 'failed', reason: 'Homepage is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - accessibility', status: 'passed', reason: 'Homepage is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - accessibility', status: 'failed', reason: 'Homepage is not accessible' } })}`);
-//   }
-// });
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Contact \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
+  }
+});
 
-// test('sign up - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/register`);
-//     await page.waitForTimeout(5000);
-//     let accessibilityScanResultsString ='';
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+test('homepage - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}`);
+    await page.waitForTimeout(10000)
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Sign up \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up - accessibility', status: 'failed', reason: 'Sign up is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up - accessibility', status: 'passed', reason: 'Sign up is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up - accessibility', status: 'failed', reason: 'Sign up is not accessible' } })}`);
-//   }
-// });
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Homepage \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - accessibility', status: 'failed', reason: 'Homepage is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - accessibility', status: 'passed', reason: 'Homepage is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - accessibility', status: 'failed', reason: 'Homepage is not accessible' } })}`);
+  }
+});
 
-// test('login - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/login`);
-//     let accessibilityScanResultsString ='';
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+test('sign up - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/register`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Log in \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'login - accessibility', status: 'failed', reason: 'Log in is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'login - accessibility', status: 'passed', reason: 'Log in is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'login - accessibility', status: 'failed', reason: 'Log in is not accessible' } })}`);
-//   }
-// });
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Sign up \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up - accessibility', status: 'failed', reason: 'Sign up is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up - accessibility', status: 'passed', reason: 'Sign up is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up - accessibility', status: 'failed', reason: 'Sign up is not accessible' } })}`);
+  }
+});
 
-// test('code - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/code`);
-//     await page.waitForTimeout(30000)
-//     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Code \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - accessibility', status: 'failed', reason: 'Code is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - accessibility', status: 'passed', reason: 'Code is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - accessibility', status: 'failed', reason: 'Code is not accessible' } })}`);
-//   }
-// });
-
-// test('file menu - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/code`);
-//     await page.waitForTimeout(30000)
-//     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-//     if (isMobile) {
-//       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-//     } else {
-//       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-//     }
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `File menu \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'file menu - accessibility', status: 'failed', reason: 'Document file menu is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'file menu - accessibility', status: 'passed', reason: 'Document file menu  is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'file menu - accessibility', status: 'failed', reason: 'Document file menu  is not accessible' } })}`);
-//   }
-// });
-
-// test('share modal - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/code`);
-//     await page.waitForTimeout(30000)
-//     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-//     if (isMobile) {
-//       await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-//     } else {
-//       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-//     }
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Share modal \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share modal - accessibility', status: 'failed', reason: 'Share modal is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share modal - accessibility', status: 'passed', reason: 'Share modal is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share modal - accessibility', status: 'failed', reason: 'Share modal is not accessible' } })}`);
-//   }
-// });
-
-// test('access modal - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/code`);
-//     await page.waitForTimeout(30000)
-//     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-//     if (isMobile) {
-//       await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
-//     } else {
-//       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
-//     }
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Access modal \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'access modal - accessibility', status: 'failed', reason: 'Access modal is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'access modal - accessibility', status: 'passed', reason: 'Access modal is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'access modal - accessibility', status: 'failed', reason: 'Access modal is not accessible' } })}`);
-//   }
-// });
-
-// test('drive (anon) - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/drive`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+test('login - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/login`);
+    await page.waitForTimeout(10000)
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Drive (anon) \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'failed', reason: 'Drive is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'passed', reason: 'Drive is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'failed', reason: 'Drive is not accessible' } })}`);
-//   }
-// });
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Log in \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'login - accessibility', status: 'failed', reason: 'Log in is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'login - accessibility', status: 'passed', reason: 'Log in is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'login - accessibility', status: 'failed', reason: 'Log in is not accessible' } })}`);
+  }
+});
 
-// test('form - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/form`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Form \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - accessibility', status: 'failed', reason: 'Form is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - accessibility', status: 'passed', reason: 'Form is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - input text', status: 'failed', reason: 'Form is not accessible' } })}`);
-//   }
-// });
+test('code - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/code`);
+    await page.waitForTimeout(30000)
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Code \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - accessibility', status: 'failed', reason: 'Code is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - accessibility', status: 'passed', reason: 'Code is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - accessibility', status: 'failed', reason: 'Code is not accessible' } })}`);
+  }
+});
 
-// test('kanban - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/kanban`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Kanban \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - accessibility', status: 'failed', reason: 'Kanban is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - accessibility', status: 'passed', reason: 'Kanban is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - accessibility', status: 'failed', reason: 'Kanban is not accessible' } })}`);
-//   }
-// });
+test('file menu - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/code`);
+    await page.waitForTimeout(30000)
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+    }
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## File menu \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'file menu - accessibility', status: 'failed', reason: 'Document file menu is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'file menu - accessibility', status: 'passed', reason: 'Document file menu  is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'file menu - accessibility', status: 'failed', reason: 'Document file menu  is not accessible' } })}`);
+  }
+});
 
-// test('markdown - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/slide`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Markdown \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - accessibility', status: 'failed', reason: 'Markdown is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - accessibility', status: 'passed', reason: 'Markdown is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - accessibility', status: 'failed', reason: 'Markdown is not accessible' } })}`);
-//   }
-// });
+test('share modal - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/code`);
+    await page.waitForTimeout(30000)
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    }
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Share modal \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share modal - accessibility', status: 'failed', reason: 'Share modal is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share modal - accessibility', status: 'passed', reason: 'Share modal is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share modal - accessibility', status: 'failed', reason: 'Share modal is not accessible' } })}`);
+  }
+});
 
-// test('pad - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/pad`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Pad \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - accessibility', status: 'failed', reason: 'Pad is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - accessibility', status: 'passed', reason: 'Pad is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - accessibility', status: 'failed', reason: 'Pad is not accessible' } })}`);
-//   }
-// });
+test('access modal - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/code`);
+    await page.waitForTimeout(30000)
+    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    if (isMobile) {
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
+    } else {
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
+    }
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Access modal \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'access modal - accessibility', status: 'failed', reason: 'Access modal is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'access modal - accessibility', status: 'passed', reason: 'Access modal is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'access modal - accessibility', status: 'failed', reason: 'Access modal is not accessible' } })}`);
+  }
+});
 
-// test('sheet - accessibility', async ({ page }, testInfo) => {
-//   try {
-//     await page.goto(`${url}/sheet`);
-//     await page.waitForTimeout(10000);
-//     let accessibilityScanResultsString;
-//     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+test('drive (anon) - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/drive`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
-//     if (accessibilityScanResults.violations.length) {
-//       accessibilityScanResults.violations.forEach(function(violation, index) {
-//         accessibilityScanResultsString = `Sheet \n Issue ${index} \n Info: ${violation.description} \n Help: ${violation.help}`
-//         console.log(accessibilityScanResultsString)
-//       })
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sheet - accessibility', status: 'failed', reason: 'Sheet is not accessible' } })}`);
-//     } else {
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sheet - accessibility', status: 'passed', reason: 'Sheet is accessible' } })}`);
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sheet - accessibility', status: 'failed', reason: 'Sheet is not accessible' } })}`);
-//   }
-// });
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Drive anon \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'failed', reason: 'Drive is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'passed', reason: 'Drive is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (anon) - accessibility', status: 'failed', reason: 'Drive is not accessible' } })}`);
+  }
+});
+
+test('form - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/form`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    
+    if (accessibilityScanResults.violations.length) {
+      results += '\n # CryptPad \n ## Contact \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - accessibility', status: 'failed', reason: 'Form is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - accessibility', status: 'passed', reason: 'Form is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - input text', status: 'failed', reason: 'Form is not accessible' } })}`);
+  }
+});
+
+test('kanban - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/kanban`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Kanban \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - accessibility', status: 'failed', reason: 'Kanban is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - accessibility', status: 'passed', reason: 'Kanban is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - accessibility', status: 'failed', reason: 'Kanban is not accessible' } })}`);
+  }
+});
+
+test('markdown - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/slide`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Markdown \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - accessibility', status: 'failed', reason: 'Markdown is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - accessibility', status: 'passed', reason: 'Markdown is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - accessibility', status: 'failed', reason: 'Markdown is not accessible' } })}`);
+  }
+});
+
+test('pad - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/pad`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Pad \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - accessibility', status: 'failed', reason: 'Pad is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - accessibility', status: 'passed', reason: 'Pad is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - accessibility', status: 'failed', reason: 'Pad is not accessible' } })}`);
+  }
+});
+
+test('sheet - accessibility', async ({ page }, testInfo) => {
+  try {
+    await page.goto(`${url}/sheet`);
+    await page.waitForTimeout(10000);
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Sheet \n'
+      accessibilityScanResults.violations.forEach(function(violation, index) {
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        violation.nodes.forEach(function(node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+        })
+      })
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sheet - accessibility', status: 'failed', reason: 'Sheet is not accessible' } })}`);
+    } else {
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sheet - accessibility', status: 'passed', reason: 'Sheet is accessible' } })}`);
+    }
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sheet - accessibility', status: 'failed', reason: 'Sheet is not accessible' } })}`);
+  }
+});
 
 test('diagram - accessibility', async ({ page }, testInfo) => {
   try {
@@ -351,11 +404,11 @@ test('diagram - accessibility', async ({ page }, testInfo) => {
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
 
     if (accessibilityScanResults.violations.length) {
-      results = results + '\n # Documentation \n'
+      results += '\n ## Diagram \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
         violation.nodes.forEach(function(node, index) {
-          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
         })
       })
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'diagram - accessibility', status: 'failed', reason: 'Diagram is not accessible' } })}`);
@@ -375,11 +428,11 @@ test('whiteboard - accessibility', async ({ page }, testInfo) => {
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
-      results = results + '\n # Documentation \n'
+      results += '\n ## Whiteboard \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
         violation.nodes.forEach(function(node, index) {
-          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
         })
       })
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - accessibility', status: 'failed', reason: 'Whiteboard is not accessible' } })}`);
@@ -400,11 +453,11 @@ test('documentation - accessibility', async ({ page }, testInfo) => {
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
 
     if (accessibilityScanResults.violations.length) {
-      results = results + '\n # Documentation \n'
+      results += '\n # Documentation \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
         violation.nodes.forEach(function(node, index) {
-          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
         })
       })
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'documentation - accessibility', status: 'failed', reason: 'Documentation is not accessible' } })}`);
@@ -424,11 +477,11 @@ test('project website - accessibility', async ({ page }, testInfo) => {
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
-      results = results + '\n # Project Website \n'
+      results += '\n # Project Website \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        results = results + `\n - ### Issue ${index} \n - Description: ${violation.description} \n - Help:  ${violation.help} \n - Affected nodes: \n`
+        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
         violation.nodes.forEach(function(node, index) {
-          results = results + `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
         })
       })
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'project website - accessibility', status: 'failed', reason: 'Project website is not accessible' } })}`);
@@ -443,13 +496,11 @@ test('project website - accessibility', async ({ page }, testInfo) => {
 
 test.afterAll(async ({ }) => {
   var resultsString = "" + results
-  fs.writeFile("/Users/Andreas/Desktop/NODE/myproject/files/test.txt", JSON.stringify(obj), function(err) {
-    console.log('write')
+  fs.writeFile("accessibilityresults_anon.md", resultsString, function(err) {
     if(err) {
         return console.log(err);
     }
 
-    console.log("The file was saved!");
 }); 
   
   console.log(resultsString)
