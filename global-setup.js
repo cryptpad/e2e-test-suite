@@ -6,7 +6,7 @@ const redColour = '\x1b[31m';
 const whiteColour = '\x1b[0m';
 
 module.exports = async () => {
-  console.log('Starting BrowserStackLocal ...');
+  console.log('Starting test run...');
   // Starts the Local instance with the required arguments
   let localResponseReceived = false;
   bsLocal.start(BS_LOCAL_ARGS, (err) => {
