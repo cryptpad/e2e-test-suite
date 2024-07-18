@@ -85,7 +85,7 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
   }
 });
 
-test('form - save as and import template', async ({ page }) => {
+test('whiteboard - save as and import template', async ({ page }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
 
@@ -140,9 +140,9 @@ test('form - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example whiteboard template')).toHaveCount(0);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - save as template', status: 'passed', reason: 'Can save and use Form document as template ' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - save as template', status: 'passed', reason: 'Can save and use Whiteboard document as template ' } })}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - save as template', status: 'failed', reason: 'Can\'t save and use Form document as template' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard -save as template', status: 'failed', reason: 'Can\'t save and use Whiteboard document as template' } })}`);
   }
 });

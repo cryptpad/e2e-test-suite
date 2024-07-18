@@ -17,6 +17,7 @@ test('test-user account setup', async ({ page }) => {
     await page.getByPlaceholder('Username').fill('test-user');
     await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
     await page.getByPlaceholder('Confirm your password', { exact: true }).fill(mainAccountPassword);
+    await page.waitForTimeout(3000);
     const register = page.locator("[id='register']");
     await register.waitFor();
 
@@ -58,6 +59,7 @@ test('testuser account setup', async ({ page }) => {
     await page.getByPlaceholder('Username').fill('testuser');
     await page.getByPlaceholder('Password', { exact: true }).fill(testUserPassword);
     await page.getByPlaceholder('Confirm your password', { exact: true }).fill(testUserPassword);
+    await page.waitForTimeout(3000);
     const register = page.locator("[id='register']");
     await register.waitFor();
 
@@ -93,6 +95,7 @@ test('test-user2 account setup', async ({ page }) => {
     await page.getByPlaceholder('Username').fill('test-user2');
     await page.getByPlaceholder('Password', { exact: true }).fill(testUser2Password);
     await page.getByPlaceholder('Confirm your password', { exact: true }).fill(testUser2Password);
+    await page.waitForTimeout(3000);
     const register = page.locator("[id='register']");
     await register.waitFor();
 
@@ -128,6 +131,7 @@ test('test-user3 account setup', async ({ page }) => {
     await page.getByPlaceholder('Username').fill('test-user3');
     await page.getByPlaceholder('Password', { exact: true }).fill(testUser3Password);
     await page.getByPlaceholder('Confirm your password', { exact: true }).fill(testUser3Password);
+    await page.waitForTimeout(3000);
     const register = page.locator("[id='register']");
     await register.waitFor();
 
@@ -410,6 +414,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
+     await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
     await page.waitForTimeout(3000);
@@ -462,6 +467,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
+     await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).fill('test whiteboard');
     await page.waitForTimeout(3000);
@@ -566,6 +572,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await page3.waitForTimeout(5000);
     await expect(page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible();
     await page3.waitForTimeout(3000);
+    await page3.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
     await page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page3.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
     await page3.waitForTimeout(5000);
@@ -698,9 +705,9 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(5000);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in test-user drive', status: 'passed', reason: 'Can create test files in test-user drive' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in team drive', status: 'passed', reason: 'Can create test files in team drive' } })}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in test-user drive', status: 'failed', reason: 'Can\'t create test files in test-user drive' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in team drive', status: 'failed', reason: 'Can\'t create test files in team drive' } })}`);
   }
 });

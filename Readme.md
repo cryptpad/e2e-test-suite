@@ -129,6 +129,9 @@ To run the tests using BrowserStack, add `@BrowserStack` (for desktop) or `@Brow
 > :exclamation:
 > It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using BrowserStack. Tests run over slow connections will often time out and fail or hang indefinitely. 
 
+> :information_source:
+> If running tests against a local instance, it is recommended that you run it from a repository specifically dedicated for tests to enable wiping test data using `npm run clear` in the CryptPad repo. 
+
 0. If running tests for the first time on your chosen browser/OS combination, run:
 
 ```bash
@@ -166,6 +169,9 @@ npx playwright test [filename] --project='chrome@latest:OSX Ventura'
 npx playwright test code_loggedin --workers=1 --project='chrome@latest:OSX Ventura'
 
 ```
+
+> :information_source:
+> The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
 
 #### Running accessibility tests
 
@@ -235,9 +241,6 @@ npx playwright test accessibility_loggedin --workers=1 --project='chrome@latest:
 ```
 
 6. At the end of each complete test run, the results will be exported to an .md file in the root directory (either `accessibilityresults_anon.md` or `accessibilityresults_anon.md`)
-
-> :information_source:
-> The `--headed` flag can be added to run the tests in headed browsers and be able to see the progression of the test in real time.
 
 
 ## Troubleshooting
