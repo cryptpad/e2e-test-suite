@@ -395,7 +395,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Rich text - ${titleDate}`).fill('test pad');
@@ -408,7 +408,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
@@ -421,7 +421,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Code - ${titleDate}`).fill('test code');
@@ -434,7 +434,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDate}`).fill('test slide');
@@ -447,7 +447,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Form - ${titleDate}`).fill('test form');
@@ -460,7 +460,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).fill('test whiteboard');
@@ -473,7 +473,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Diagram - ${titleDate}`).fill('test diagram');
@@ -486,7 +486,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).fill('test kanban');
@@ -548,7 +548,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page2 = await page2Promise;
     await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page2.waitForTimeout(5000);
-    await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`)).toBeVisible();
     await page2.waitForTimeout(3000);
     await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page2.frameLocator('#sbox-iframe').getByPlaceholder(`Rich text - ${titleDate}`).fill('test pad');
@@ -564,7 +564,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page3 = await page3Promise;
     await page3.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page3.waitForTimeout(5000);
-    await expect(page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible();
     await page3.waitForTimeout(3000);
     await page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page3.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
@@ -579,7 +579,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page4 = await page4Promise;
     await page4.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page4.waitForTimeout(5000);
-    await expect(page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDate}`)).toBeVisible();
     await page4.waitForTimeout(3000);
     await page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page4.frameLocator('#sbox-iframe').getByPlaceholder(`Code - ${titleDate}`).fill('test code');
@@ -594,7 +594,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page5 = await page5Promise;
     await page5.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page5.waitForTimeout(5000);
-    await expect(page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`)).toBeVisible();
     await page5.waitForTimeout(3000);
     await page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page5.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDate}`).fill('test slide');
@@ -615,7 +615,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page6 = await page6Promise;
     await page6.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page6.waitForTimeout(5000);
-    await expect(page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDate}`)).toBeVisible();
     await page6.waitForTimeout(3000);
     await page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page6.frameLocator('#sbox-iframe').getByPlaceholder(`Form - ${titleDate}`).fill('test form');
@@ -636,7 +636,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page7 = await page7Promise;
     await page7.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page7.waitForTimeout(10000);
-    await expect(page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible();
     await page7.waitForTimeout(3000);
     await page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page7.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).fill('test whiteboard');
@@ -657,7 +657,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page8 = await page8Promise;
     await page8.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page8.waitForTimeout(5000);
-    await expect(page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDate}`)).toBeVisible();
     await page8.waitForTimeout(3000);
     await page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page8.frameLocator('#sbox-iframe').getByPlaceholder(`Diagram - ${titleDate}`).fill('test diagram');
@@ -672,7 +672,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page9 = await page9Promise;
     await page9.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await page9.waitForTimeout(5000);
-    await expect(page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible({ timeout: 5000 });
+    await expect(page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`)).toBeVisible();
     await page9.waitForTimeout(3000);
     await page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page9.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).fill('test kanban');
