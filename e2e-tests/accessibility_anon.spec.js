@@ -27,7 +27,7 @@ test('404 page - accessibility', async ({ page }) => {
     await page.goto(`${url}/randommadeuppage`);
     await page.waitForTimeout(10000)
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n# CryptPad Accessibilty tests\n\n## Error page 404 \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -51,7 +51,7 @@ test('contact - accessibility', async ({ page }) => {
     await page.goto(`${url}/contact.html`);
     await page.waitForTimeout(10000)
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Contact \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -75,7 +75,7 @@ test('homepage - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}`);
     await page.waitForTimeout(10000)
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Homepage \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -99,7 +99,7 @@ test('sign up - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/register`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Sign up \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -123,7 +123,7 @@ test('login - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/login`);
     await page.waitForTimeout(10000)
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Log in \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -258,7 +258,7 @@ test('drive (anon) - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/drive`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Drive anon \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -282,7 +282,7 @@ test('form - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/form`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n # CryptPad \n ## Contact \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -306,7 +306,7 @@ test('kanban - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/kanban`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Kanban \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -330,7 +330,7 @@ test('markdown - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/slide`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Markdown \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -354,7 +354,7 @@ test('pad - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/pad`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Pad \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -378,7 +378,7 @@ test('sheet - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/sheet`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Sheet \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -426,7 +426,7 @@ test('whiteboard - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/whiteboard`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Whiteboard \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -475,7 +475,7 @@ test('project website - accessibility', async ({ page }, testInfo) => {
     await page.goto(`https://cryptpad.org/`);
     await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+
     if (accessibilityScanResults.violations.length) {
       results += '\n # Project Website \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
@@ -501,8 +501,8 @@ test.afterAll(async ({ }) => {
         return console.log(err);
     }
 
-}); 
-  
+});
+
   console.log(resultsString)
 });
 
