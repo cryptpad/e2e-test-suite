@@ -11,6 +11,8 @@ let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 
+let results ='';
+
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
 
