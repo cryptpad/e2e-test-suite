@@ -8,4 +8,5 @@ auth/*.json
 **/e2e-tests/**/*.png
 **/.DS_STORE
 accessibilityresults_anon.md
+accessibilityresults_loggedin.md
 .vscode/
