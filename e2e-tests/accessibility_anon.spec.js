@@ -29,9 +29,9 @@ test('404 page - accessibility', async ({ page }) => {
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     
     if (accessibilityScanResults.violations.length) {
-      results += '\n # CryptPad \n ## 404 \n'
+      results += '\n# CryptPad Accessibilty tests\n\n## Error page 404 \n'
       accessibilityScanResults.violations.forEach(function(violation, index) {
-        results += `\n - ### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
+        results += `\n### Issue ${index} ${violation.help}\n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
         violation.nodes.forEach(function(node, index) {
           results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
         })
