@@ -1,6 +1,7 @@
 const { expect } = require('@playwright/test');
 const { test, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
+const { UserActions } = require('./useractions.js');
 
 let pageOne;
 let cleanUp;
@@ -160,17 +161,8 @@ test('test-user3 account setup', async ({ page }) => {
 
 test('create test team', async ({ page }) => {
   try {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
 
     await page.goto(`${url}/teams`);
     await page.waitForTimeout(10000);
@@ -195,17 +187,8 @@ test('create test team', async ({ page }) => {
 
 test('link test-user and testuser as contacts', async ({ page, browser }, testInfo) => {
   try {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('testuser');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(testUserPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    let userActions = new UserActions(page);
+    await userActions.login('test-user2', testUser2Password);
     await page.goto(`${url}/profile`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
@@ -213,18 +196,8 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     // login test-user
     const context = await browser.newContext();
     pageOne = await context.newPage();
-    await pageOne.goto(`${url}/login`);
-    await pageOne.getByPlaceholder('Username').fill('test-user');
-    await pageOne.waitForTimeout(2000);
-    await pageOne.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login1 = pageOne.locator('.login');
-    await login1.waitFor({ timeout: 18000 });
-    await expect(login1).toBeVisible({ timeout: 1800 });
-    if (await login1.isVisible()) {
-      await login1.click();
-    }
-    await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
-    await pageOne.waitForTimeout(10000);
+    let userActions2 = new UserActions(pageOne);
+    await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
     await pageOne.goto(`${testuserProfileLink}`);
@@ -254,17 +227,8 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
 
 test('link test-user and test-user3 as contacts', async ({ page, browser }, testInfo) => {
   try {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user3');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(testUser3Password);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    let userActions = new UserActions(page);
+    await userActions.login('test-user3', testUser3Password);
     await page.goto(`${url}/profile`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
@@ -272,18 +236,8 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     // login test-user
     const context = await browser.newContext();
     pageOne = await context.newPage();
-    await pageOne.goto(`${url}/login`);
-    await pageOne.getByPlaceholder('Username').fill('test-user');
-    await pageOne.waitForTimeout(2000);
-    await pageOne.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login1 = pageOne.locator('.login');
-    await login1.waitFor({ timeout: 18000 });
-    await expect(login1).toBeVisible({ timeout: 1800 });
-    if (await login1.isVisible()) {
-      await login1.click();
-    }
-    await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
-    await pageOne.waitForTimeout(10000);
+    let userActions2 = new UserActions(pageOne);
+    await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
     await pageOne.goto(`${testuserProfileLink}`);
@@ -313,15 +267,8 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
 
 test('add test-user3 to test team', async ({ page, browser }) => {
   try {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    await page.locator('.login').waitFor({ timeout: 18000 });
-    await expect(page.locator('.login')).toBeVisible({ timeout: 1800 });
-    await page.locator('.login').click();
-
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
     await page.goto(`${url}/teams`);
 
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
@@ -338,15 +285,8 @@ test('add test-user3 to test team', async ({ page, browser }) => {
     ///
 
     pageOne = await browser.newPage();
-    await pageOne.goto(`${url}/login`);
-    await pageOne.getByPlaceholder('Username').fill('test-user3');
-    await pageOne.waitForTimeout(2000);
-    await pageOne.getByPlaceholder('Password', { exact: true }).fill(testUser3Password);
-    await pageOne.locator('.login').waitFor({ timeout: 18000 });
-    await pageOne.locator('.login').waitFor({ timeout: 18000 });
-    await expect(pageOne.locator('.login')).toBeVisible({ timeout: 1800 });
-    await pageOne.locator('.login').click();
-    await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    let userActions2 = new UserActions(pageOne);
+    await userActions2.login('test-user3', testUser3Password);
     await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
 
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').click({ timeout: 3000 });
@@ -373,19 +313,8 @@ test('create test files in test-user drive', async ({ page }) => {
   try {
     test.setTimeout(510000);
 
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
-
-    await page.waitForTimeout(30000);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
 
     cleanUp = new Cleanup(page);
     const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -522,19 +451,8 @@ test('create test files in team drive and add avatar', async ({ page }) => {
   try {
     test.setTimeout(2100000);
 
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    if (await login.isVisible()) {
-      await login.click();
-    }
-
-    await page.waitForTimeout(10000);
-    await expect(page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
 
     await page.goto(`${url}/teams`);
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();

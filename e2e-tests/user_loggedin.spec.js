@@ -2,6 +2,7 @@ import * as OTPAuth from 'otpauth';
 const { url, test, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const os = require('os');
+const { UserActions } = require('./useractions.js');
 
 let isMobile;
 let contextOne;
@@ -15,18 +16,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   platform = os.platform();
 
   if (isMobile) {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    await page.waitForTimeout(5000);
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await page.waitForTimeout(10000);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
   }
 
   await page.goto(`${url}/drive`);
@@ -621,18 +612,8 @@ test('can change password', async ({ page, browser }) => {
     await expect(page1).toHaveURL(`${url}`, { timeout: 100000 });
 
     // login using new password
-    await page1.getByRole('link', { name: 'Log in' }).click();
-    await page1.getByPlaceholder('Username').fill('test-user');
-    await page1.waitForTimeout(10000);
-    await page1.getByPlaceholder('Password', { exact: true }).fill('password');
-    const login = page1.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    await page1.waitForTimeout(5000);
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await page1.waitForTimeout(60000);
+    let userActions = new UserActions(page1);
+    await userActions.login('test-user', mainAccountPassword);
 
     // access settings
     if (!await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').isVisible()) {
@@ -673,18 +654,8 @@ test('can change password', async ({ page, browser }) => {
     await pageOne.waitForTimeout(10000);
 
     if (await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'The password for this account' }).nth(1).isVisible()) {
-      await pageOne.goto(`${url}/login`);
-      await pageOne.getByPlaceholder('Username').fill('test-user');
-      await pageOne.waitForTimeout(10000);
-      await pageOne.getByPlaceholder('Password', { exact: true }).fill('password');
-      const login = pageOne.locator('.login');
-      await login.waitFor({ timeout: 18000 });
-      await expect(login).toBeVisible({ timeout: 1800 });
-      await pageOne.waitForTimeout(5000);
-      if (await login.isVisible()) {
-        await login.click();
-      }
-      await pageOne.waitForTimeout(10000);
+      let userActions = new UserActions(pageOne);
+      await userActions.login('test-user', mainAccountPassword);
 
       await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
       await expect(pageOne.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();

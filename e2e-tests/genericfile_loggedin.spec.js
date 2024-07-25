@@ -1,5 +1,7 @@
 const { test, url, mainAccountPassword, titleDate, testUser3Password, nextWeekSlashFormat } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
+const { UserActions } = require('./useractions.js');
+
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 
@@ -20,18 +22,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   browserName = testInfo.project.name.split(/@/)[0];
 
   if (isMobile) {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    await page.waitForTimeout(5000);
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await page.waitForTimeout(30000);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
   }
   const name = testInfo.title.split(' ')[0];
 
@@ -714,17 +706,8 @@ docNames.forEach(function (name) {
         await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
 
         // access document as test-user3
-        await pageOne.goto(`${url}/login`);
-        await pageOne.getByPlaceholder('Username').fill('test-user3');
-        await pageOne.waitForTimeout(2000);
-        await pageOne.getByPlaceholder('Password', { exact: true }).fill(testUser3Password);
-        const login = pageOne.locator('.login');
-        await login.waitFor({ timeout: 18000 });
-        await expect(login).toBeVisible({ timeout: 1800 });
-        if (await login.isVisible()) {
-          await login.click();
-        }
-        await expect(pageOne).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+        let userActions = new UserActions(pageOne);
+        await userActions.login('test-user3', testUser3Password);
         await pageOne.goto(`${clipboardText}`);
         await page.waitForTimeout(10000);
         await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();

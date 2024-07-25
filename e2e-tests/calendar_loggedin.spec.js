@@ -1,5 +1,6 @@
 const { test, url, mainAccountPassword, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
+const { UserActions } = require('./useractions.js');
 
 require('dotenv').config();
 
@@ -12,18 +13,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   isMobile = testInfo.project.use.isMobile;
 
   if (isMobile) {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    await page.waitForTimeout(5000);
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await page.waitForTimeout(10000);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
   }
 
   await page.goto(`${url}/calendar`);

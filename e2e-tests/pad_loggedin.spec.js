@@ -1,6 +1,7 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
+const { UserActions } = require('./useractions.js');
 
 require('dotenv').config();
 
@@ -17,18 +18,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   isMobile = testInfo.project.use.isMobile;
 
   if (isMobile) {
-    await page.goto(`${url}/login`);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    const login = page.locator('.login');
-    await login.waitFor({ timeout: 18000 });
-    await expect(login).toBeVisible({ timeout: 1800 });
-    await page.waitForTimeout(5000);
-    if (await login.isVisible()) {
-      await login.click();
-    }
-    await page.waitForTimeout(10000);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
   }
 
   const template = testInfo.title.match(/import template/);
