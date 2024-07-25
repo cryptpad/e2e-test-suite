@@ -565,13 +565,8 @@ test('form - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.frameLocator('#sbox-iframe').getByText('Import').click();
+    let fileActions = new FileActions(page);
+    await fileActions.import(isMobile);
 
     const fileChooser = await fileChooserPromise;
     await page.waitForTimeout(5000);
@@ -652,12 +647,8 @@ test('form - export file', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option three');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     const downloadPromise = page.waitForEvent('download');
     const download = await downloadPromise;

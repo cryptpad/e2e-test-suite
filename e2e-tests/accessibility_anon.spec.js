@@ -227,11 +227,8 @@ test('access modal - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.access(isMobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Access modal \n'

@@ -369,11 +369,8 @@ test('form - protect with password', async ({ page, browser }) => {
     await expect(page1.frameLocator('#sbox-iframe').getByText('Your question here?')).toBeVisible({ timeout: 5000 });
 
     await page.bringToFront();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.access(isMobile);
 
     await expect(page.frameLocator('#sbox-secure-iframe').locator('#cp-app-prop-change-password')).toBeHidden();
     await expect(page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' })).toBeHidden();
@@ -405,31 +402,15 @@ test('form - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option three');
     await page.waitForTimeout(3000);
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.saveTemplate(isMobile);
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example form template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/form/`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
-    }
+    await fileActions.importTemplate(isMobile);
+
     await page.frameLocator('#sbox-secure-iframe').getByText('example form template').click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('example text')).toBeVisible();

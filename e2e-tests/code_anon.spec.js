@@ -176,12 +176,8 @@ test('code - import file #1367', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').click();
     const fileChooserPromise = page.waitForEvent('filechooser');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Import').click();
+    let fileActions = new FileActions(page);
+    await fileActions.import(isMobile);
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/myfile.html');
@@ -214,12 +210,8 @@ test('code - export (md)', async ({ page }) => {
     await page.keyboard.press('t');
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('test text')).toBeVisible();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
 
     const downloadPromise = page.waitForEvent('download', { timeout: 60000 });

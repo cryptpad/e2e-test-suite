@@ -6,7 +6,9 @@ export class UserActions {
 	* @param {import('@playwright/test').Page} page
 	*/
 	constructor (page) {
-			this.page = page;
+		this.page = page;
+		this.page.login = page.locator('.login');
+		this.page.register = page.locator("[id='register']");
 	}
 
 	async login(username, password) {
@@ -14,41 +16,39 @@ export class UserActions {
 		await this.page.getByPlaceholder('Username').fill(username);
 		await this.page.waitForTimeout(10000);
 		await this.page.getByPlaceholder('Password', { exact: true }).fill(password);
-		const login = this.page.locator('.login');
-		await login.waitFor({ timeout: 18000 });
-		await expect(login).toBeVisible({ timeout: 1800 });
-		if (await login.isVisible()) {
-			await login.click();
+		
+		await this.page.login.waitFor({ timeout: 18000 });
+		await expect(this.page.login).toBeVisible({ timeout: 1800 });
+		if (await this.page.login.isVisible()) {
+			await this.page.login.click();
 		}
 		await expect(this.page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
 	}
 
 	async register(username, password) {
-		await page.goto(`${url}/register`);
+		await this.page.goto(`${url}/register`);
+		await this.page.register.waitForTimeout(5000);
+		await this.page.register.getByPlaceholder('Username').fill(username);
+		await this.page.register.getByPlaceholder('Password', { exact: true }).fill(password);
+		await this.page.register.getByPlaceholder('Confirm your password', { exact: true }).fill(password);
+		await this.page.register.waitForTimeout(3000);
+		await this.page.register.waitFor();
 
-		await page.waitForTimeout(5000);
-		await page.getByPlaceholder('Username').fill(username);
-		await page.getByPlaceholder('Password', { exact: true }).fill(password);
-		await page.getByPlaceholder('Confirm your password', { exact: true }).fill(password);
-		await page.waitForTimeout(3000);
-		const register = page.locator("[id='register']");
-		await register.waitFor();
-
-		if (await page.locator('#userForm span').nth(2).isVisible()) {
-			await page.locator('#userForm span').nth(2).click();
+		if (await this.page.locator('#userForm span').nth(2).isVisible()) {
+			await this.page.locator('#userForm span').nth(2).click();
 		}
-		await register.click();
+		await this.page.register.click();
 
-		const modal = page.getByText('Warning');
+		const modal = this.page.getByText('Warning');
 		await expect(modal).toBeVisible({ timeout: 180000 });
 		if (await modal.isVisible({ timeout: 180000 })) {
-			await page.getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
+			await this.page.getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
 		}
-		const hashing = page.getByText('Hashing your password');
+		const hashing = this.page.getByText('Hashing your password');
 		await expect(hashing).toBeVisible({ timeout: 200000 });
 
-		await page.waitForTimeout(20000);
-			await page.waitForURL(`${url}/drive/#`);
-		}
+		await this.page.waitForTimeout(20000);
+		await this.page.waitForURL(`${url}/drive/#`);
+	}
 
 }

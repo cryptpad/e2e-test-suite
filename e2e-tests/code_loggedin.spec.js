@@ -38,32 +38,14 @@ test('code - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('example template content');
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('example template content')).toBeVisible();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.saveTemplate(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example code template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/code/`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
-    }
+    await fileActions.importTemplate(isMobile);
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example code template' }).nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('example template content')).toBeVisible();
 

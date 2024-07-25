@@ -106,31 +106,15 @@ test('whiteboard - save as and import template', async ({ page }) => {
     });
     await page.mouse.up();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Save as template', exact: true }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.saveTemplate(isMobile);
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example whiteboard template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/whiteboard/`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
-    }
+    await fileActions.importTemplate(isMobile);
+
     await page.frameLocator('#sbox-secure-iframe').getByText('example whiteboard template').click();
 
     await expect(page).toHaveScreenshot();

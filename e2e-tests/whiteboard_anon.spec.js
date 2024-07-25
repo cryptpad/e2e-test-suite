@@ -284,12 +284,8 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
     });
     await page.mouse.up();
     await page.waitForTimeout(3000)
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test whiteboard');
 
     const downloadPromise = page.waitForEvent('download', { timeout: 60000 });

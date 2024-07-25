@@ -152,12 +152,8 @@ test('slide - export (md)', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
     await page.waitForTimeout(5000);
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test markdown');
 
     const downloadPromise = page.waitForEvent('download');
@@ -258,12 +254,8 @@ test('markdown - import file', async ({ page }) => {
   try {
     const fileChooserPromise = page.waitForEvent('filechooser');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Import').click();
+    let fileActions = new FileActions(page);
+    await fileActions.import(isMobile);
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/testslide.md');

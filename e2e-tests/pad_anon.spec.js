@@ -209,12 +209,8 @@ test('pad - export (html)', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
 
     const downloadPromise = page.waitForEvent('download');
@@ -252,12 +248,8 @@ test('pad - export (.doc)', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     if (local) {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
@@ -299,12 +291,8 @@ test('pad - export (md)', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').fill('TEST TEXT');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     if (local) {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();

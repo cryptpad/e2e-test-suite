@@ -335,12 +335,8 @@ test('(screenshot) kanban - can drag items', async ({ page }) => {
 
 test('kanban - export as .json', async ({ page }) => {
   try {
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByText('Export').click();
+    let fileActions = new FileActions(page);
+    await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test kanban');
 
     const downloadPromise = page.waitForEvent('download');
