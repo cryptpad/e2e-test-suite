@@ -63,7 +63,7 @@ They will be used by the script that creates accounts in the next step.
 * run the `dbseeding.spec.js` file on its own, before any other file, using:
 
 ```bash
-npx playwright test dbseeding --workers=1 --project='chrome@latest:OSX Ventura'
+npx playwright test dbseeding --workers=1 --project='chrome'
 ```
 
 You can specify another OS name or run the file using BrowserStack as desired (see [Running tests](## Running Tests)).
@@ -82,7 +82,7 @@ touch mainuser.json testuser.json testuser2.json testuser3.json
 
 ```bash
 cd ..
-npx playwright test auth --workers=1 --project='chrome@latest:OSX Ventura'
+npx playwright test auth --workers=1 --project='chrome'
 ```
 
 A database teardown script is not included because CryptPad does not allow the re-creation of accounts (i.e. deleting an account and creating a new one with the same username and password). If running on a local instance, stop and run: 
@@ -106,13 +106,11 @@ BrowserStack_ACCESS_KEY=""
 
 ### Choose browser and OS/device
 
-The tests can be run on different browser and OS/device combinations, set under `projects` in `playwright.config.js`. The format is as follows:
-
-`[browser name]@[os/device name]`, for example `chrome@latest:OSX Ventura`. 
+The tests can be run on different browser and OS/device combinations, set under `projects` in `playwright.config.js`. 
 
 The project uses Chrome, Edge, Firefox and Webkit on the latest available versions of OSX, as well as Chrome on Android. 
 
-You can choose a browser and OS/device combination from those available in `playwright.config.js`, or you can add your own. Please see the [full list of supported browsers and OS/devices](https://playwright.dev/docs/browsers) and see how they compare to [what is supported by integration with BrowserStack](https://www.BrowserStack.com/docs/automate/playwright/browsers-and-os). 
+You can choose one of the above browsers (if using only Playwright) or a browser and OS/device combination (if using Browserstack) from those available in `playwright.config.js`, or you can add your own. Please see the [full list of supported browsers and OS/devices](https://playwright.dev/docs/browsers) and see how they compare to [what is supported by integration with BrowserStack](https://www.BrowserStack.com/docs/automate/playwright/browsers-and-os). 
 
 ### Choose Playwright only or Playwright + BrowserStack
 
@@ -122,7 +120,7 @@ The tests can be run locally using Playwright only. This is usually slightly qui
 npx playwright show-report
 ```
 
-To run the tests using BrowserStack, add `@BrowserStack` (for desktop) or `@BrowserStack-mobile` (for mobile) to the project name, for example `chrome@latest:OSX Ventura@BrowserStack`. Once connected, the test results can be viewed at the [BrowserStack Automate Dashboard](https://automate.BrowserStack.com/dashboard/).
+To run the tests using BrowserStack, add the desired OS and `@BrowserStack` (for desktop) or `@BrowserStack-mobile` (for mobile) to the project name, for example `chrome@latest:OSX Ventura@BrowserStack`. Once connected, the test results can be viewed at the [BrowserStack Automate Dashboard](https://automate.BrowserStack.com/dashboard/).
 
 ### Running tests
 
@@ -135,14 +133,14 @@ To run the tests using BrowserStack, add `@BrowserStack` (for desktop) or `@Brow
 0. If running tests for the first time on your chosen browser/OS combination, run:
 
 ```bash
-npx playwright test -g "screenshot" --project='chrome@latest:OSX Ventura'
+npx playwright test -g "screenshot" --project='chrome'
 ```
 This will return some errors beginning with `Error: A snapshot doesn't exist at...`. This is expected and allows for calibrating visual comparison tests (labelled with `screenshot` in the test name) by taking screenshots against which test results are later compared. 
 
 1. If running tests for anonymous guest users (not logged in), run: 
 
 ```bash
-npx playwright test anon --project='chrome@latest:OSX Ventura'
+npx playwright test anon --project='chrome'
 ```
 
 These tests will run in parallel mode using two workers (default).
@@ -155,18 +153,18 @@ You can set another browser/OS combination of your choosing using the `projects`
 2. If running tests for logged-in users (see [Required environment for authenticated tests](## Required environment for authenticated tests)) run: 
 
 ```bash
-npx playwright test loggedin --workers=1 --project='chrome@latest:OSX Ventura'
+npx playwright test loggedin --workers=1 --project='chrome'
 ```
 
 3. Alternately, tests in individual files can be run using: 
 
 ```bash
-npx playwright test [filename] --project='chrome@latest:OSX Ventura'
+npx playwright test [filename] --project='chrome'
 ```
 **If running a test file with `loggedin` in the name, a `--workers=1` flag must be added**, for example:
 
 ```bash
-npx playwright test code_loggedin --workers=1 --project='chrome@latest:OSX Ventura'
+npx playwright test code_loggedin --workers=1 --project='chrome'
 
 ```
 
@@ -229,14 +227,14 @@ var caughtEval;
 4. To run accessibility tests for anonymous users, run:
 
 ```bash
-npx playwright test accessibility_anon --workers=1 --project='chrome@latest:OSX Ventura'
+npx playwright test accessibility_anon --workers=1 --project='chrome'
 
 ```
 
 5. To run accessibility tests for logged in users, run:
 
 ```bash
-npx playwright test accessibility_loggedin --workers=1 --project='chrome@latest:OSX Ventura'
+npx playwright test accessibility_loggedin --workers=1 --project='chrome'
 
 ```
 

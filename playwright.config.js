@@ -70,7 +70,7 @@ module.exports = defineConfig({
         locale: 'en-GB'
       }
     }, {
-      name: 'chrome@latest:OSX Ventura',
+      name: 'chrome',
       use: {
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         locale: 'en-GB'
@@ -81,7 +81,7 @@ module.exports = defineConfig({
         locale: 'en-GB'
       }
     }, {
-      name: 'playwright-firefox@latest:OSX Ventura',
+      name: 'playwright-firefox',
       use: {
         locale: 'en-GB'
       }
@@ -93,14 +93,14 @@ module.exports = defineConfig({
         permissions: ['clipboard-read', 'clipboard-write', 'notifications']
       }
     }, {
-      name: 'edge@latest:OSX Ventura',
+      name: 'edge',
       use: {
         channel: 'msedge',
         locale: 'en-GB',
         permissions: ['clipboard-read', 'clipboard-write', 'notifications']
       }
     }, {
-      name: 'playwright-webkit@latest:OSX Ventura',
+      name: 'playwright-webkit',
       use: {
         locale: 'en-GB'
       }
