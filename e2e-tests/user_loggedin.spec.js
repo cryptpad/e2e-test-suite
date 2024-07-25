@@ -535,28 +535,8 @@ test('sign up and delete account', async ({ page }) => {
     // register new user
     const username = (Math.random() + 1).toString(36);
     const password = (Math.random() + 1).toString(36);
-    await page.getByRole('link', { name: 'Sign up' }).click();
-    await page.waitForTimeout(10000);
-    await page.getByPlaceholder('Username').fill(username);
-    await page.getByPlaceholder('Password', { exact: true }).fill(password);
-    await page.getByPlaceholder('Confirm your password', { exact: true }).fill(password);
-    const register = page.locator("[id='register']");
-    await register.waitFor();
-
-    if (await page.locator('#userForm span').nth(2).isVisible()) {
-      await page.locator('#userForm span').nth(2).click();
-    }
-    await register.click();
-    const modal = page.getByText('Warning');
-    await expect(modal).toBeVisible({ timeout: 180000 });
-    if (await modal.isVisible({ timeout: 180000 })) {
-      await page.getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
-    }
-    const hashing = page.getByText('Hashing your password');
-    await expect(hashing).toBeVisible({ timeout: 200000 });
-
-    await page.waitForTimeout(20000);
-    await expect(page).toHaveURL(`${url}/drive/#`);
+    let userActions = new UserActions(page);
+    await userActions.login(username, password);
 
     // access settings
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();

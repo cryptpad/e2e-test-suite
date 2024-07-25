@@ -13,36 +13,8 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 test('test-user account setup', async ({ page }) => {
   try {
-    await page.goto(`${url}/register`);
-    await page.waitForTimeout(5000);
-    await page.getByPlaceholder('Username').fill('test-user');
-    await page.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
-    await page.getByPlaceholder('Confirm your password', { exact: true }).fill(mainAccountPassword);
-    await page.waitForTimeout(3000);
-    const register = page.locator("[id='register']");
-    await register.waitFor();
-
-    if (await page.locator('#userForm span').nth(2).isVisible()) {
-      await page.locator('#userForm span').nth(2).click();
-    }
-
-    await page.waitForTimeout(3000);
-    await register.dblclick();
-    await page.waitForTimeout(3000);
-
-    const modal = page.getByText('Warning').first();
-    if (!await modal.isVisible()) {
-      await register.dblclick();
-    }
-    await expect(modal).toBeVisible();
-
-    await page.getByRole('button', { name: 'I have written down my username and password, proceed' }).nth(1).click();
-
-    const hashing = page.getByText('Hashing your password');
-    await expect(hashing).toBeVisible({ timeout: 200000 });
-
-    await page.waitForTimeout(20000);
-    await page.waitForURL(`${url}/drive/#`);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user', mainAccountPassword);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user account setup', status: 'passed', reason: 'Can register test-user' } })}`);
   } catch (e) {
@@ -54,31 +26,8 @@ test('test-user account setup', async ({ page }) => {
 test('testuser account setup', async ({ page }) => {
   try {
     /// registering the account
-    await page.goto(`${url}/register`);
-
-    await page.waitForTimeout(5000);
-    await page.getByPlaceholder('Username').fill('testuser');
-    await page.getByPlaceholder('Password', { exact: true }).fill(testUserPassword);
-    await page.getByPlaceholder('Confirm your password', { exact: true }).fill(testUserPassword);
-    await page.waitForTimeout(3000);
-    const register = page.locator("[id='register']");
-    await register.waitFor();
-
-    if (await page.locator('#userForm span').nth(2).isVisible()) {
-      await page.locator('#userForm span').nth(2).click();
-    }
-    await register.click();
-
-    const modal = page.getByText('Warning');
-    await expect(modal).toBeVisible({ timeout: 180000 });
-    if (await modal.isVisible({ timeout: 180000 })) {
-      await page.getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
-    }
-    const hashing = page.getByText('Hashing your password');
-    await expect(hashing).toBeVisible({ timeout: 200000 });
-
-    await page.waitForTimeout(20000);
-    await page.waitForURL(`${url}/drive/#`);
+    let userActions = new UserActions(page);
+    await userActions.login('testuser', testUserPassword);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'testuser account setup', status: 'passed', reason: 'Can register testuser' } })}`);
   } catch (e) {
@@ -90,31 +39,8 @@ test('testuser account setup', async ({ page }) => {
 test('test-user2 account setup', async ({ page }) => {
   try {
     /// registering the account
-    await page.goto(`${url}/register`);
-
-    await page.waitForTimeout(5000);
-    await page.getByPlaceholder('Username').fill('test-user2');
-    await page.getByPlaceholder('Password', { exact: true }).fill(testUser2Password);
-    await page.getByPlaceholder('Confirm your password', { exact: true }).fill(testUser2Password);
-    await page.waitForTimeout(3000);
-    const register = page.locator("[id='register']");
-    await register.waitFor();
-
-    if (await page.locator('#userForm span').nth(2).isVisible()) {
-      await page.locator('#userForm span').nth(2).click();
-    }
-    await register.click();
-
-    const modal = page.getByText('Warning');
-    await expect(modal).toBeVisible({ timeout: 180000 });
-    if (await modal.isVisible({ timeout: 180000 })) {
-      await page.getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
-    }
-    const hashing = page.getByText('Hashing your password');
-    await expect(hashing).toBeVisible({ timeout: 200000 });
-
-    await page.waitForTimeout(20000);
-    await page.waitForURL(`${url}/drive/#`);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user2', testUser2Password);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user2 account setup', status: 'passed', reason: 'Can register test-user2' } })}`);
   } catch (e) {
@@ -126,31 +52,8 @@ test('test-user2 account setup', async ({ page }) => {
 test('test-user3 account setup', async ({ page }) => {
   try {
     /// registering the account
-    await page.goto(`${url}/register`);
-
-    await page.waitForTimeout(5000);
-    await page.getByPlaceholder('Username').fill('test-user3');
-    await page.getByPlaceholder('Password', { exact: true }).fill(testUser3Password);
-    await page.getByPlaceholder('Confirm your password', { exact: true }).fill(testUser3Password);
-    await page.waitForTimeout(3000);
-    const register = page.locator("[id='register']");
-    await register.waitFor();
-
-    if (await page.locator('#userForm span').nth(2).isVisible()) {
-      await page.locator('#userForm span').nth(2).click();
-    }
-    await register.click();
-
-    const modal = page.getByText('Warning');
-    await expect(modal).toBeVisible({ timeout: 180000 });
-    if (await modal.isVisible({ timeout: 180000 })) {
-      await page.getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
-    }
-    const hashing = page.getByText('Hashing your password');
-    await expect(hashing).toBeVisible({ timeout: 200000 });
-
-    await page.waitForTimeout(20000);
-    await page.waitForURL(`${url}/drive/#`);
+    let userActions = new UserActions(page);
+    await userActions.login('test-user3', testUser3Password);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user3 account setup', status: 'passed', reason: 'Can register test-user3' } })}`);
   } catch (e) {
