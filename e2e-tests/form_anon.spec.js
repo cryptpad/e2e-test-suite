@@ -3,6 +3,7 @@ const { expect } = require('@playwright/test');
 const fs = require('fs');
 const d3 = require('d3');
 require('dotenv').config();
+const { FileActions } = require('./fileactions.js');
 
 const local = !!process.env.PW_URL.includes('localhost');
 
@@ -216,11 +217,8 @@ test('form - share (link) - auditor', async ({ page, context }) => {
   try {
     const title = `Form - ${titleDate}`;
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
@@ -247,11 +245,8 @@ test('form - share (link) - author', async ({ page, context }) => {
   try {
     const title = `Form - ${titleDate}`;
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
 
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({ timeout: 5000 });
@@ -547,7 +542,8 @@ test('form - view history and share at a specific moment in history', async ({ p
     }
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new option')).toHaveCount(0);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();

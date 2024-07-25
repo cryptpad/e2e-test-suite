@@ -1,6 +1,7 @@
 const { test, url, mainAccountPassword, titleDate, testUser3Password, nextWeekSlashFormat } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 const { expect } = require('@playwright/test');
 require('dotenv').config();
@@ -268,11 +269,8 @@ docNames.forEach(function (name) {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
       await page.waitForTimeout(10000);
 
-      if (isMobile) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-      } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-      }
+      let fileActions = new FileActions(page);
+      await fileActions.share(isMobile);
 
       await page.frameLocator('#sbox-secure-iframe').getByText('test team').click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
@@ -364,11 +362,8 @@ docNames.forEach(function (name) {
         await page.waitForTimeout(5000);
         await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({ timeout: 5000 });
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        let fileActions = new FileActions(page);
+        await fileActions.share(isMobile);
 
         if (isMobile) {
           await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
@@ -452,11 +447,8 @@ docNames.forEach(function (name) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        let fileActions = new FileActions(page);
+        await fileActions.share(isMobile);
         await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^View$/ }).locator('span').first().click();
         await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
@@ -499,11 +491,8 @@ docNames.forEach(function (name) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
         await page.waitForTimeout(3000);
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        let fileActions = new FileActions(page);
+        await fileActions.share(isMobile);
         await page.waitForTimeout(3000);
         await page.frameLocator('#sbox-secure-iframe').getByText('Edit').click();
         await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
@@ -562,11 +551,8 @@ docNames.forEach(function (name) {
 
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        let fileActions = new FileActions(page);
+        await fileActions.share(isMobile);
         await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^View$/ }).locator('span').first().click();
         await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: 'View once and self-destruct' }).locator('span').first().click();
         await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
@@ -612,11 +598,8 @@ docNames.forEach(function (name) {
 
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        let fileActions = new FileActions(page);
+        await fileActions.share(isMobile);
 
         if (isMobile) {
           await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();

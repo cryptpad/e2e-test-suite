@@ -2,6 +2,7 @@ const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 const { Cleanup } = require('./cleanup.js');
+const { FileActions } = require('./fileactions.js');
 
 let pageOne; 
 const local = !!process.env.PW_URL.includes('localhost');

@@ -1,6 +1,6 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-
+const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
@@ -283,11 +283,8 @@ test('code - share at a moment in history', async ({ page, browser }) => {
 
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('One moment in history')).toBeVisible();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();

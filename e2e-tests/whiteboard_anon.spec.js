@@ -1,6 +1,7 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
+const { FileActions } = require('./fileactions.js');
 
 let pageOne; 
 const local = !!process.env.PW_URL.includes('localhost');
@@ -392,11 +393,8 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();

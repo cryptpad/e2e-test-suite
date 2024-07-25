@@ -2,6 +2,7 @@ const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
 

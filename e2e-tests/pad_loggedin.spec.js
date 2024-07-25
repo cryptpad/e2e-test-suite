@@ -2,6 +2,7 @@ const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
 
@@ -87,11 +88,8 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('html').click();
     await page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').locator('body').type('Test text by test-user');
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     if (isMobile) {
       await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
     } else {

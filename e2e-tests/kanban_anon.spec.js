@@ -1,5 +1,6 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
+const { FileActions } = require('./fileactions.js');
 
 const fs = require('fs');
 require('dotenv').config();
@@ -272,7 +273,8 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
 
     await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();

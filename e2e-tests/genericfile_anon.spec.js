@@ -1,5 +1,6 @@
 const { test, url, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
+const { FileActions } = require('./fileactions.js');
 
 let isMobile;
 
@@ -69,11 +70,8 @@ docNames.forEach(function (name) {
           await page.waitForTimeout(15000);
         }
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        let fileActions = new FileActions(page);
+        await fileActions.share(isMobile);
 
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({ timeout: 5000 });

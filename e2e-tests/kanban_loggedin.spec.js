@@ -1,6 +1,7 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 const { expect } = require('@playwright/test');
 require('dotenv').config();
@@ -92,7 +93,8 @@ if (!isMobile) {
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
       await page.waitForTimeout(5000);
 
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+      let fileActions = new FileActions(page);
+      await fileActions.share(isMobile);
       await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
       await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();

@@ -4,6 +4,7 @@ const AxeBuilder = require('@axe-core/playwright')
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
+const { FileActions } = require('./fileactions.js');
 
 let pageOne;
 let isMobile;
@@ -200,11 +201,8 @@ test('share modal - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Share modal \n'

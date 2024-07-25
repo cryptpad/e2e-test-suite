@@ -3,6 +3,7 @@ const { url, test, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const os = require('os');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 let isMobile;
 let contextOne;
@@ -536,7 +537,7 @@ test('sign up and delete account', async ({ page }) => {
     const username = (Math.random() + 1).toString(36);
     const password = (Math.random() + 1).toString(36);
     let userActions = new UserActions(page);
-    await userActions.login(username, password);
+    await userActions.login(username, testUser2Password);
 
     // access settings
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();

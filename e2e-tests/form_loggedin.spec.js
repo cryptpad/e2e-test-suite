@@ -1,6 +1,7 @@
 const { test, url, mainAccountPassword, nextMondaySlashFormat, titleDate } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 const { expect } = require('@playwright/test');
 require('dotenv').config();
@@ -39,11 +40,8 @@ test('form - share with contact (author)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
@@ -87,11 +85,8 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
@@ -137,11 +132,8 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Participant$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
@@ -239,11 +231,8 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').press('Enter');
     await page.waitForTimeout(5000);
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
 
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();

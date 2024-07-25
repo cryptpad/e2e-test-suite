@@ -2,6 +2,7 @@ const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
 
@@ -86,7 +87,8 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text by test-user');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();

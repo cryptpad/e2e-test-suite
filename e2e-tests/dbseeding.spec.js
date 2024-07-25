@@ -2,6 +2,8 @@ const { expect } = require('@playwright/test');
 const { test, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
+
 
 let pageOne;
 let cleanUp;
@@ -93,7 +95,8 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     let userActions = new UserActions(page);
     await userActions.login('test-user2', testUser2Password);
     await page.goto(`${url}/profile`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    let fileActions = new FileActions(page);
+    await fileActions.share(isMobile);
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
 
     // login test-user
