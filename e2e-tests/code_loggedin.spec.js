@@ -10,6 +10,7 @@ const local = !!process.env.PW_URL.includes('localhost');
 let isMobile;
 let pageOne;
 let cleanUp;
+let fileActions
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
@@ -28,18 +29,17 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 
   await page.goto(`${url}/code`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
 
 test('code - save as and import template', async ({ page }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('example template content');
+    await fileActions.codeeditor.click();
+    await fileActions.codeeditor.type('example template content');
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('example template content')).toBeVisible();
-
-    let fileActions = new FileActions(page);
-    await fileActions.saveTemplate(isMobile);
+    await fileActions.saveTemplate(isMobile, local);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example code template');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000);
@@ -47,12 +47,15 @@ test('code - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
     await fileActions.importTemplate(isMobile);
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example code template' }).nth(1).click();
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('example template content')).toBeVisible();
+    await expect(fileActions.codeeditor.getByText('example template content')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('example code template').click({ button: 'right' });
+    await page.waitForTimeout(1000);
+    await fileActions.driveContentFolder.getByText('example code template').click({ button: 'right' });
+    await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
+    await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example template')).toHaveCount(0);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - save as template', status: 'passed', reason: 'Can save and use Code document as template' } })}`);
@@ -65,11 +68,11 @@ test('code - save as and import template', async ({ page }) => {
 test('code - history (previous author)', async ({ page, browser }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.filesaved.waitFor()
+    await fileActions.codeeditor.waitFor()
+    await fileActions.codeeditor.click();
+    await fileActions.codeeditor.type('Test text by test-user');
 
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text by test-user');
-
-    let fileActions = new FileActions(page);
     await fileActions.share(isMobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
@@ -91,25 +94,16 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await pageOne.close();
 
     await page.keyboard.press('Enter');
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('And yet more test text by test-user too!');
+    await fileActions.codeeditor.type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
     await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Here is even more test text by test-user!');
+    await fileActions.codeeditor.type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
     await page.waitForTimeout(5000);
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (!local) {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    await fileActions.history(isMobile)
 
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+    await fileActions.historyPrev.click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And yet more test text by test-user!')).toHaveCount(0);
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And more test text by test-user too!')).toHaveCount(0);
 

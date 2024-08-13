@@ -6,6 +6,7 @@ export class Cleanup {
    */
   constructor (page) {
     this.page = page;
+    this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder')
   }
 
   async cleanTemplates () {
@@ -14,7 +15,7 @@ export class Cleanup {
     await this.page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first().click();
 
     await this.page.waitForTimeout(5000);
-    let elementCount = await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').filter({ hasText: 'template' }).count()
+    let elementCount = await this.driveContentFolder.filter({ hasText: 'template' }).count()
     console.log(elementCount)
     if (elementCount > 0) {
        while (elementCount > 0) {
@@ -43,9 +44,9 @@ export class Cleanup {
     if (elementCount > 0) {
       while (elementCount > 0) {
         if (elementCount > 1) {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).click({ button: 'right' });
         }
         await this.page.waitForTimeout(3000);
         if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {
@@ -69,9 +70,9 @@ export class Cleanup {
     if (elementCount > 0) {
       while (elementCount > 0) {
         if (elementCount > 0) {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).click({ button: 'right' });
         }
         await this.page.waitForTimeout(3000);
         if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {

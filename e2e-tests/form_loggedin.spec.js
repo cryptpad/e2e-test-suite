@@ -234,7 +234,7 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     let fileActions = new FileActions(page);
     await fileActions.share(isMobile);
 
-    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+    await fileActions.shareLink.click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
 
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
@@ -265,7 +265,7 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      await fileActions.filemenu.click();
     }
     if (!local) {
       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
@@ -421,7 +421,7 @@ test('form - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('example form template').click({ button: 'right' });
+    await fileActions.driveContentFolder.getByText('example form template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example form template')).toHaveCount(0);

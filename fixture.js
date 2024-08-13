@@ -131,6 +131,7 @@ const weekday = days[date.getDay()];
 exports.weekday = weekDays[date.getDay()];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const month = months[date.getMonth()];
+exports.titleDateComma = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
 exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}`;
 
 const setTimeZone = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' });

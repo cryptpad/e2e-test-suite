@@ -4,7 +4,6 @@ const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
-
 let pageOne;
 let cleanUp;
 
@@ -113,7 +112,7 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
 
     await page.waitForTimeout(7000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions.notifications.click();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
@@ -153,7 +152,7 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
 
     await page.waitForTimeout(7000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions.notifications.click();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
@@ -302,7 +301,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
-     await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).fill('test whiteboard');
     await page.waitForTimeout(3000);
@@ -372,7 +371,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
       await cleanUp.cleanTeamDrive(name);
     }
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('New').click();
+    await fileActions.driveContentFolder.getByText('New').click();
     const page2Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Rich text').click({ timeout: 3000 });
     const page2 = await page2Promise;

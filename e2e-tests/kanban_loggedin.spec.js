@@ -79,7 +79,7 @@ if (!isMobile) {
 
       let fileActions = new FileActions(page);
       await fileActions.share(isMobile);
-      await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+      await fileActions.shareLink.click();
       await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
       await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
       const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -110,7 +110,7 @@ if (!isMobile) {
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
       } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+        await fileActions.filemenu.click();
       }
 
       if (!local) {

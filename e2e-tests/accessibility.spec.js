@@ -11,6 +11,7 @@ let isMobile;
 let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
+let fileActions;
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
@@ -147,7 +148,9 @@ test('code - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    fileActions = new FileActions(page);
+
+    await fileActions.codeeditor.waitFor();
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Code \n'
@@ -171,12 +174,11 @@ test('file menu - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
+    fileActions = new FileActions(page);
+
+    await fileActions.codeeditor.waitFor();
+    
+    await fileActions.filemenu.click();
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## File menu \n'
@@ -200,8 +202,9 @@ test('share modal - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    let fileActions = new FileActions(page);
+    
+    fileActions = new FileActions(page);
+    await fileActions.codeeditor.waitFor();
     await fileActions.share(isMobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
@@ -226,8 +229,8 @@ test('access modal - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    let fileActions = new FileActions(page);
+    fileActions = new FileActions(page);
+    await fileActions.codeeditor.waitFor();
     await fileActions.access(isMobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {

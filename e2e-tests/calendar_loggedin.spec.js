@@ -1,11 +1,13 @@
 const { test, url, mainAccountPassword, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 let isMobile;
+let fileActions
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
@@ -18,6 +20,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 
   await page.goto(`${url}/calendar`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 
   if (await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count() > 0) {

@@ -18,9 +18,9 @@ test('settings - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/drive`);
     await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 

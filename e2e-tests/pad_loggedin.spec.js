@@ -52,7 +52,7 @@ test('pad - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('example pad template').click({ button: 'right' });
+    await fileActions.driveContentFolder.getByText('example pad template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     await page.waitForTimeout(3000);
@@ -112,7 +112,7 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     if (isMobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
     } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+      await fileActions.filemenu.click();
     }
     if (!local) {
       await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();

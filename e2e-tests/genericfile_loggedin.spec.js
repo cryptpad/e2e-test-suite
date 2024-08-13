@@ -1,4 +1,4 @@
-const { test, url, mainAccountPassword, titleDate, testUser3Password, nextWeekSlashFormat } = require('../fixture.js');
+const { test, url, mainAccountPassword, testUser3Password, nextWeekSlashFormat } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
@@ -15,19 +15,24 @@ let cleanUp;
 let title;
 let titleName;
 let contextOne;
+let fileActions
+let isBrowserstack;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
   isMobile = testInfo.project.use.isMobile;
+  console.log('isMobile', isMobile)
   browserName = testInfo.project.name.split(/@/)[0];
+  isBrowserstack = testInfo.project.name.match(/browserstack/) ? true : false
 
   if (isMobile) {
     let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
+  fileActions = new FileActions(page);
   const name = testInfo.title.split(' ')[0];
-
+  const titleDate = await fileActions.titleDate(isMobile, isBrowserstack)
   if (name === 'pad') {
     titleName = 'Rich text -';
     title = `${titleName} ${titleDate}`;
@@ -50,13 +55,14 @@ test.beforeEach(async ({ page }, testInfo) => {
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
 
 docNames.forEach(function (name) {
-  test(`${name} - create without owner`, async ({ page }) => {
+  test(`${name} - create without owner`, async ({ page, isMobile }) => {
     try {
+        console.log('isMobile1', isMobile)
+
       await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().waitFor();
       await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().click();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 });
-      let fileActions = new FileActions(page);
       await fileActions.access(isMobile);
       await expect(page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user.cp-share-column.cp-access').getByLabel('Owners')).toBeHidden();
 
@@ -82,7 +88,7 @@ docNames.forEach(function (name) {
 
   //     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' }).click();
   //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-  //     await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+  //     await fileActions.shareLink.click();
   //     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
   //     await page.waitForTimeout(3000);
   //     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -129,7 +135,7 @@ docNames.forEach(function (name) {
         if (isMobile) {
           await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
         } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+          await fileActions.filemenu.click();
         }
         if (local) {
           await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
@@ -144,7 +150,7 @@ docNames.forEach(function (name) {
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
       } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+        await fileActions.filemenu.click();
       }
       if (local) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tags', exact: true }).click();
@@ -170,7 +176,7 @@ docNames.forEach(function (name) {
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`)).toBeVisible();
 
       await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).click({ button: 'right' });
-      await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' }).click();
+      await fileActions.destroy.click();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)', exact: true }).click();
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`)).toHaveCount(0);
 
@@ -264,13 +270,13 @@ docNames.forEach(function (name) {
       await page.goto(`${url}/teams/`);
       await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
 
-      if (await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).count() > 1) {
-        await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).first().click({ button: 'right' });
+      if (await fileActions.driveContentFolder.getByText(`${title}`).count() > 1) {
+        await fileActions.driveContentFolder.getByText(`${title}`).first().click({ button: 'right' });
       } else {
-        await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' });
+        await fileActions.driveContentFolder.getByText(`${title}`).click({ button: 'right' });
       }
 
-      await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).click();
+      await fileActions.moveToTrash.click();
       await page.waitForTimeout(5000);
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ` ${name} - add to team drive`, status: 'passed', reason: 'Can create document and add to team drive' } })}`);
@@ -296,7 +302,7 @@ docNames.forEach(function (name) {
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
       } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+        await fileActions.filemenu.click();
       }
 
       if (local) {
@@ -327,7 +333,7 @@ docNames.forEach(function (name) {
       }
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Remove' }).click();
 
-      await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(title)).toBeHidden();
+      await expect(fileActions.driveContentFolder.getByText(title)).toBeHidden();
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - move to trash`, status: 'passed', reason: `Can create ${name} and move to trash` } })}`);
     } catch (e) {

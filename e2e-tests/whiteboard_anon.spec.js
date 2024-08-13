@@ -6,9 +6,11 @@ const { FileActions } = require('./fileactions.js');
 let pageOne; 
 const local = !!process.env.PW_URL.includes('localhost');
 let isMobile;
+let fileActions;
 
 test.beforeEach(async ({ page }) => {
   await page.goto(`${url}/whiteboard`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
 
@@ -243,19 +245,11 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
     });
     await page.mouse.up();
     await page.waitForTimeout(3000)
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Make a copy').click();
-    // if (!local) {
-    //   await page.frameLocator('#sbox-iframe').getByText('Make a copy').click();
-    // } else {
-    //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Make a copy', exact: true }).click();
-    // }
-    const page1 = await page1Promise;
+    await fileActions.filemenuClick();
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      await fileActions.filecopy.click()
+    ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/whiteboard`), { timeout: 100000 });
 
@@ -284,13 +278,13 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
     });
     await page.mouse.up();
     await page.waitForTimeout(3000)
-    let fileActions = new FileActions(page);
     await fileActions.export(isMobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test whiteboard');
 
-    const downloadPromise = page.waitForEvent('download', { timeout: 60000 });
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-    const download = await downloadPromise;
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+    ]);
 
     await download.saveAs('/tmp/test whiteboard');
     await page.waitForTimeout(3000)
@@ -320,19 +314,10 @@ test('screenshot whiteboard - display history', async ({ page }) => {
     });
     await page.mouse.up();
     await page.waitForTimeout(3000)
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    // if (!local) {
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    // await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    // } else {
-    //   await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    // }
 
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
+    await fileActions.history(isMobile);
+    await fileActions.historyPrev.click();
+    await fileActions.historyPrev.click();
     await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - display history', status: 'passed', reason: 'Can display Whiteboard history' } })}`);
@@ -374,26 +359,11 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
       }
     });
     await page.mouse.up();
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-
-    // if (!local) {
-    //   await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    // } else {
-    //   await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    // }
-
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
-
-    let fileActions = new FileActions(page);
+    await fileActions.history(isMobile);
+    await fileActions.historyPrev.click();
     await fileActions.share(isMobile);
-    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
     await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     await page.waitForTimeout(5000);
 
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());

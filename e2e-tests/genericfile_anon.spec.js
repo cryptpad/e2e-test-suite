@@ -3,10 +3,13 @@ const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 
 let isMobile;
+let fileActions;
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
   isMobile = testInfo.project.use.isMobile;
+  console.log(isMobile)
+  fileActions = new FileActions(page);
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -32,11 +35,7 @@ docNames.forEach(function (name) {
         await page.waitForTimeout(15000);
       }
 
-      if (isMobile) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-      } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-      }
+      await fileActions.filemenu.click();
 
       await page.frameLocator('#sbox-iframe').getByText('New').click();
       const page2Promise = page.waitForEvent('popup');
@@ -70,11 +69,10 @@ docNames.forEach(function (name) {
           await page.waitForTimeout(15000);
         }
 
-        let fileActions = new FileActions(page);
         await fileActions.share(isMobile);
 
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({ timeout: 5000 });
+        await fileActions.shareCopyLink.waitFor();
+        await fileActions.shareCopyLink.click({ timeout: 5000 });
 
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
@@ -103,13 +101,9 @@ docNames.forEach(function (name) {
           await page.waitForTimeout(15000);
         }
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        await fileActions.share(isMobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click();
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+        await fileActions.shareCopyLink.click();
 
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
@@ -266,7 +260,7 @@ docNames.forEach(function (name) {
       if (isMobile) {
         await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
       } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
+        await fileActions.filemenu.click();
       }
       await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
 

@@ -7,8 +7,11 @@ export class UserActions {
 	*/
 	constructor (page) {
 		this.page = page;
-		this.page.login = page.locator('.login');
-		this.page.register = page.locator("[id='register']");
+
+		// this.login = page.locator('.login');
+		// this.register = page.locator("[id='register']");
+		// this.loginLink = page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Log in' })
+		// this.registerLink = page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Sign up' })
 	}
 
 	async login(username, password) {

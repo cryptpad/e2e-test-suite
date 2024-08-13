@@ -30,14 +30,13 @@ const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'l
 userMenuItems.forEach(function (item) {
   test(`drive -  user menu - ${item}`, async ({ page }) => {
     try {
-      const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container');
-      await menu.waitFor();
-      await menu.click();
+      await fileActions.drivemenu.waitFor();
+      await fileActions.drivemenu.click();
       if (item === 'log out') {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
         await page.waitForTimeout(10000);
-        await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible();
+        await fileActions.loginLink.toBeVisible();
       } else if (item === 'support' && url !== 'https://cryptpad.fr') {
         return;
       } else {
@@ -75,7 +74,7 @@ test('drive -  upload file', async ({ page }) => {
   try {
     const fileChooserPromise = page.waitForEvent('filechooser');
 
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).locator('span').first().click();
+    await fileActions.newFile.locator('span').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Upload files' }).click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/myfile.doc');
@@ -88,16 +87,16 @@ test('drive -  upload file', async ({ page }) => {
 
     await page.frameLocator('#sbox-iframe').getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor();
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('myfile.doc').click({ button: 'right' });
+    await fileActions.driveContentFolder.getByText('myfile.doc').click({ button: 'right' });
     await page.waitForTimeout(10000);
-    if (await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).isVisible()) {
+    if (await fileActions.moveToTrash.isVisible()) {
       await page.waitForTimeout(10000);
-      await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).click();
+      await fileActions.moveToTrash.click();
     } else {
       await page.waitForTimeout(10000);
       await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Remove' }).last().click();
     }
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('myfile.doc')).toHaveCount(0);
+    await expect(fileActions.driveContentFolder.getByText('myfile.doc')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - upload file', status: 'passed', reason: 'Can upload a file in Drive' } })}`);
   } catch (e) {
@@ -112,7 +111,7 @@ test('drive -  recent files', async ({ page }) => {
     await cleanUp.cleanUserDrive('Rich text - ');
 
     const page1Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).locator('span').first().click();
+    await fileActions.newFile.locator('span').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Rich text$/ }).locator('span').first().click();
 
     const page1 = await page1Promise;
@@ -124,10 +123,10 @@ test('drive -  recent files', async ({ page }) => {
     await page.reload();
     await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Recent' }).first().click();
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(title)).toBeVisible();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' });
+    await expect(fileActions.driveContentFolder.getByText(title)).toBeVisible();
+    await fileActions.driveContentFolder.getByText(`${title}`).click({ button: 'right' });
     await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' }).click();
+    await fileActions.destroy.click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - recent files', status: 'passed', reason: 'Can access recent files in Drive' } })}`);
@@ -139,7 +138,7 @@ test('drive -  recent files', async ({ page }) => {
 
 test('drive -  notifications panel', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions.notifications.click();
     await page.frameLocator('#sbox-iframe').getByText('Open notifications panel').waitFor();
     const pagePromise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByText('Open notifications panel').click();
@@ -189,7 +188,7 @@ test('drive - create link', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
     await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').click({ button: 'right' });
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).click();
+    await fileActions.moveToTrash.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('My link')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - link', status: 'passed', reason: 'Can create link in Drive' } })}`);
@@ -204,15 +203,15 @@ test('drive - create folder', async ({ page }) => {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanUserDrive('My test folder');
 
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).click();
+    await fileActions.newFile.click();
     await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Folder$/ }).click({ timeout: 2000 });
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New folder').fill('My test folder');
     await page.keyboard.press('Enter');
     await page.waitForTimeout(10000);
-    await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('My test folder')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('My test folder').click({ button: 'right', timeout: 3000 });
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).click();
+    await expect(fileActions.driveContentFolder.getByText('My test folder')).toBeVisible();
+    await fileActions.driveContentFolder.getByText('My test folder').click({ button: 'right', timeout: 3000 });
+    await fileActions.moveToTrash.click();
     await page.waitForTimeout(3000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - folder', status: 'passed', reason: 'Can create folder in Drive' } })}`);
@@ -227,8 +226,8 @@ test('drive - create folder', async ({ page }) => {
 
 //   try {
 
-//     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).waitFor()
-//     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ }).click();
+//     await fileActions.newFile.waitFor()
+//     await fileActions.newFile.click();
 //     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Shared folder$/ }).waitFor()
 //     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Shared folder$/ }).click({force: true});
 //     await page.frameLocator('#sbox-iframe').getByPlaceholder('New folder').fill('My shared folder');
@@ -322,13 +321,13 @@ test('drive - search', async ({ page }) => {
 
 test('can download drive contents', async ({ page }) => {
   try {
-    const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container');
+    const menu = fileActions.drivemenu
     await menu.click();
     await page.waitForTimeout(6000);
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
 
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 

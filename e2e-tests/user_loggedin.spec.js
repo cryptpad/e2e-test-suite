@@ -32,9 +32,9 @@ test('can change display name', async ({ page }) => {
     await page.waitForTimeout(15000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
 
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
@@ -71,9 +71,9 @@ test('can access public signing key', async ({ page }) => {
     await page.waitForTimeout(15000);
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
@@ -130,10 +130,10 @@ test('add other user as contact and decline request', async ({ page, browser }) 
 
     // user 1: be notified of declined request
     await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions.notifications.click();
     await page.waitForTimeout(5000);
     if (await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').isHidden()) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+      await fileActions.notifications.click();
       await page.waitForTimeout(5000);
     }
     await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').waitFor();
@@ -186,10 +186,10 @@ test('add and remove other user as contact', async ({ page, browser }) => {
     // user 1: remove contact
     await page.goto(`${url}/drive/`);
     await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions.notifications.click();
     await page.waitForTimeout(5000);
     if (await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden()) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+      await fileActions.notifications.click();
       await page.waitForTimeout(5000);
     }
     await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').waitFor();
@@ -296,9 +296,9 @@ test('enable 2FA login', async ({ page, context }) => {
   try {
     // access settings
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await page.waitForTimeout(30000);
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
@@ -418,9 +418,9 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
   try {
     // access settings
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
@@ -541,9 +541,9 @@ test('sign up and delete account', async ({ page }) => {
 
     // access settings
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
@@ -568,9 +568,9 @@ test('can change password', async ({ page, browser }) => {
   try {
     // access settings
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Settings')).toBeVisible();
+    await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Settings').click();
+    await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 

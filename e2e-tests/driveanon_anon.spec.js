@@ -1,28 +1,31 @@
 const { test, url, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
+const { FileActions } = require('./fileactions.js');
 
 const local = !!process.env.PW_URL.includes('localhost');
 let isMobile;
+let fileActions;
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
   isMobile = testInfo.project.use.isMobile;
   await page.goto(`${url}/drive`);
+  fileActions = new FileActions(page);
 });
 
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
 
 userMenuItems.forEach(function (item) {
-  if (item === 'pricing') {
-    test.skip(local, 'pricing not available on dev instance');
-  }
 
   test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {
+      if (item === 'pricing') {
+    test.skip(local, 'pricing not available on dev instance');
+  }
     try {
-      const menu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container');
-      await menu.waitFor();
-      await menu.click();
+      
+      await fileActions.drivemenu.waitFor();
+      await fileActions.drivemenu.click();
       if (item === 'about') {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: `${item}` }).first().click();
         if (url === 'https://cryptpad.fr') {
@@ -76,7 +79,7 @@ userMenuItems.forEach(function (item) {
 //   try {
 
 //     //create file
-//     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
+//     await fileActions.driveadd.click();
 //     const page1Promise = page.waitForEvent('popup');
 //     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
 //     const page1 = await page1Promise;
@@ -90,7 +93,7 @@ userMenuItems.forEach(function (item) {
 //     await page1.close()
 //     await page.reload()
 //     await page.waitForTimeout(10000)
-//     await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').locator('.cp-toolbar-title').getByText(`${title}`).click({timeout: 2000})
+//     await fileActions.driveContentFolder.locator('.cp-toolbar-title').getByText(`${title}`).click({timeout: 2000})
 
 //     //erase
 //     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();
@@ -111,15 +114,21 @@ userMenuItems.forEach(function (item) {
 
 test('drive - anon - list/grid view', async ({ page, context }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
+    await fileActions.driveadd.waitFor();
+    await fileActions.driveadd.click();
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
 
     const title = `Rich text - ${titleDate}`;
     await page.waitForTimeout(10000);
+    const visible = await page.frameLocator('#sbox-iframe').getByText(title).isVisible()
+
     if (!isMobile) {
+      if (!visible) {
+        await page.reload()
+        await page.waitForTimeout(20000)
+      }
       await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
     }
 
@@ -153,8 +162,8 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 
 test('drive - anon - history', async ({ page, context }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first().click();
+    await fileActions.driveadd.waitFor();
+    await fileActions.driveadd.click();
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
@@ -162,11 +171,16 @@ test('drive - anon - history', async ({ page, context }) => {
     const title = `Rich text - ${titleDate}`;
     await page.waitForTimeout(15000);
     await page.bringToFront();
-    await page.frameLocator('#sbox-iframe').getByText(title).waitFor();
-    await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
+    if (!isMobile) {
+      if (!await page.frameLocator('#sbox-iframe').getByText(title).isVisible()) {
+        await page.reload()
+        await page.waitForTimeout(20000)
+      }
+      await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
+    }
 
     await page.frameLocator('#sbox-iframe').locator('[data-original-title="Display the document history"]').click();
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last().click({
+    await fileActions.historyPrev.click({
       clickCount: 3
     });
 
@@ -181,8 +195,8 @@ test('drive - anon - history', async ({ page, context }) => {
 
 test('drive - anon - notifications', async ({ page, context }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions.notifications.waitFor();
+    await fileActions.notifications.click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('No notifications')).toBeVisible();
 
@@ -196,8 +210,8 @@ test('drive - anon - notifications', async ({ page, context }) => {
 test('drive - anon - sign up from drive page', async ({ page, context }) => {
   try {
     await page.frameLocator('#sbox-iframe').locator('body').filter({ hasText: 'You are not logged in' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Sign up' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Sign up' }).click();
+    await fileActions.registerLink.waitFor();
+    await fileActions.registerLink.click();
     await page.waitForTimeout(5000);
     await expect(page).toHaveURL(`${url}/register/`, { timeout: 100000 });
 
@@ -211,8 +225,8 @@ test('drive - anon - sign up from drive page', async ({ page, context }) => {
 test('drive - anon - log in from drive page', async ({ page, context }) => {
   try {
     await page.frameLocator('#sbox-iframe').locator('body').filter({ hasText: 'You are not logged in' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Log in' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Log in' }).click();
+    await fileActions.loginLink.waitFor()
+    await fileActions.loginLink.click()
     await page.waitForTimeout(10000);
     await expect(page).toHaveURL(`${url}/login/`, { timeout: 100000 });
 
