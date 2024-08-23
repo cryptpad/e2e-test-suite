@@ -11,7 +11,7 @@ const BrowserStackLocal = require('browserstack-local');
 
 const caps = {
   name: 'my playwright test',
-  build: 'localhost-3',
+  build: 'localhost-4',
   'browserstack.username': process.env.BROWSERSTACK_USERNAME,
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
   'browserstack.local': !!process.env.PW_URL.includes('localhost'),

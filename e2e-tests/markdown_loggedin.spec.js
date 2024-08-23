@@ -9,15 +9,16 @@ require('dotenv').config();
 const local = !!process.env.PW_URL.includes('localhost');
 
 let pageOne;
-let isMobile;
+let mobile;
 let cleanUp;
+let fileActions
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
 
-  isMobile = testInfo.project.use.isMobile;
+  mobile = testInfo.project.use.mobile;
 
-  if (isMobile) {
+  if (mobile) {
     let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
@@ -30,31 +31,31 @@ test.beforeEach(async ({ page }, testInfo) => {
 
   await page.goto(`${url}/slide`);
   await page.waitForTimeout(10000);
+  fileActions = new FileActions(page);
 });
 
 test('slide - save as and import template', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
+    await fileActions.createFile.click();
+    await fileActions.codeeditor.click();
+    await fileActions.codeeditor.type('Test text');
     await page.waitForTimeout(5000);
-    let fileActions = new FileActions(page);
-    await fileActions.saveTemplate(isMobile);
+    await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example markdown template');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/slide/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await fileActions.importTemplate(isMobile);
+    await fileActions.createFile.click();
+    await fileActions.importTemplate(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example markdown template' }).nth(1).click();
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
+    await expect(fileActions.codeeditor.getByText('Test text')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
+    await fileActions.driveSideMenu.getByText('Templates').click();
     await fileActions.driveContentFolder.getByText('example markdown template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example markdown template')).toHaveCount(0);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'slide > save as template', status: 'passed', reason: 'Can save and use Rich Text document as template' } })}`);
   } catch (e) {
@@ -65,13 +66,13 @@ test('slide - save as and import template', async ({ page }) => {
 
 test('slide - history (previous author)', async ({ page, browser }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
 
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Test text');
+    await fileActions.codeeditor.click();
+    await fileActions.codeeditor.type('Test text');
     await page.waitForTimeout(5000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    // await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await fileActions.shareLink.click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
@@ -91,30 +92,22 @@ test('slide - history (previous author)', async ({ page, browser }) => {
     await pageOne.close();
 
     await page.keyboard.press('Enter');
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('And yet more test text by test-user too!');
+    await fileActions.codeeditor.type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
     // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Here is even more test text by test-user!');
+    await fileActions.codeeditor.type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
     await page.waitForTimeout(5000);
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await fileActions.filemenu.click();
-    }
-    if (!local) {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
+    await fileActions.filemenuClick(mobile);
+    await fileActions.history(mobile);
+    await fileActions.historyPrev.click()
 
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And yet more test text by test-user!')).toHaveCount(0);
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And more test text by test-user too!')).toHaveCount(0);
+    await expect(fileActions.codeeditor.getByText('And yet more test text by test-user!')).toHaveCount(0);
+    await expect(fileActions.codeeditor.getByText('And more test text by test-user too!')).toHaveCount(0);
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And here is more text by anon')).toBeVisible();
+    await expect(fileActions.codeeditor.getByText('Some more test text by anon')).toBeVisible();
+    await expect(fileActions.codeeditor.getByText('And here is more text by anon')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'slide - file menu - history (previous author)', status: 'passed', reason: 'Can create Rich Text document and view history (previous author)' } })}`);
   } catch (e) {

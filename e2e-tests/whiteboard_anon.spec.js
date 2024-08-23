@@ -5,12 +5,13 @@ const { FileActions } = require('./fileactions.js');
 
 let pageOne; 
 const local = !!process.env.PW_URL.includes('localhost');
-let isMobile;
+let mobile;
 let fileActions;
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, isMobile }) => {
   await page.goto(`${url}/whiteboard`);
   fileActions = new FileActions(page);
+  mobile = isMobile
   await page.waitForTimeout(10000);
 });
 
@@ -245,7 +246,7 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
     });
     await page.mouse.up();
     await page.waitForTimeout(3000)
-    await fileActions.filemenuClick();
+    await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
@@ -278,12 +279,12 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
     });
     await page.mouse.up();
     await page.waitForTimeout(3000)
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test whiteboard');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test whiteboard');
@@ -315,7 +316,7 @@ test('screenshot whiteboard - display history', async ({ page }) => {
     await page.mouse.up();
     await page.waitForTimeout(3000)
 
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
     await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
@@ -359,9 +360,9 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
       }
     });
     await page.mouse.up();
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.waitForTimeout(5000);
     await fileActions.shareCopyLink.click();
     await page.waitForTimeout(5000);

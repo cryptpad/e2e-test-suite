@@ -7,18 +7,18 @@ const os = require('os');
 const { FileActions } = require('./fileactions.js');
 
 let pageOne;
-let isMobile;
+let mobile;
 let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, mobile }, testInfo) => {
   test.setTimeout(210000);
-
-  isMobile = testInfo.project.use.isMobile;
+  mobile = mobile
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
+  fileActions = new FileActions(page);
 
 });
 
@@ -148,7 +148,6 @@ test('code - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    fileActions = new FileActions(page);
 
     await fileActions.codeeditor.waitFor();
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
@@ -174,11 +173,9 @@ test('file menu - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    fileActions = new FileActions(page);
-
     await fileActions.codeeditor.waitFor();
     
-    await fileActions.filemenu.click();
+    await fileActions.filemenuClick(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## File menu \n'
@@ -203,9 +200,8 @@ test('share modal - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
     
-    fileActions = new FileActions(page);
     await fileActions.codeeditor.waitFor();
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Share modal \n'
@@ -229,9 +225,8 @@ test('access modal - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     await page.waitForTimeout(30000)
-    fileActions = new FileActions(page);
     await fileActions.codeeditor.waitFor();
-    await fileActions.access(isMobile);
+    await fileActions.access(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Access modal \n'

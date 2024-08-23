@@ -1,12 +1,12 @@
 // const { test, url } = require('../fixture.js');
 // const { expect } = require('@playwright/test');
 
-// let isMobile;
+// let mobile;
 // let browserName;
 
 // test.beforeEach(async ({ page }) => {
 //   test.setTimeout(210000);
-//   isMobile = testInfo.project.use.isMobile;
+//   mobile = testInfo.project.use.mobile;
 //   browserName = testInfo.project.name.split(/@/)[0];
 
 //   await page.goto(`${url}/sheet`);

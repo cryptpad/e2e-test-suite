@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let isMobile;
+let mobile;
 let browserName;
 let browserstackMobile;
 let fileActions;
@@ -16,7 +16,7 @@ let fileActions;
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
 
-  isMobile = testInfo.project.use.isMobile;
+  mobile = testInfo.project.use.mobile;
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/pad`);
@@ -55,7 +55,7 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
     await page.waitForTimeout(5000);
 
-    await fileActions.filemenu.click(isMobile);
+    await fileActions.filemenu.click(mobile);
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
@@ -66,11 +66,11 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).click();
     await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
+    await fileActions.closeButton.waitFor();
+    await fileActions.closeButton.click();
     await fileActions.padeditor.locator('body').fill('');
 
-    await fileActions.filemenu.click(isMobile);
+    await fileActions.filemenu.click(mobile);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
     await page.frameLocator('#sbox-iframe').getByText('snap1').waitFor();
@@ -93,7 +93,7 @@ test('pad - history (previous version)', async ({ page, context }) => {
     await fileActions.padeditor.locator('html').click();
     await fileActions.padeditor.locator('body').fill('Test text');
 
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
 
     await fileActions.historyPrev.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0);
@@ -107,7 +107,7 @@ test('pad - history (previous version)', async ({ page, context }) => {
 
 test('pad - toggle tools', async ({ page, context }) => {
   try {
-    if (isMobile) {
+    if (mobile) {
       await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
@@ -134,7 +134,7 @@ test('pad - import file', async ({ page }) => {
   try {
     await fileActions.padeditor.locator('html').waitFor();
     await page.waitForTimeout(10000)
-    await fileActions.filemenuClick()
+    await fileActions.filemenuClick(mobile)
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
@@ -161,7 +161,7 @@ test('pad - make a copy', async ({ page, context }) => {
     await page.waitForTimeout(5000);
     await expect(fileActions.padeditor.getByText('TEST TEXT')).toBeVisible();
 
-    await fileActions.filemenuClick(isMobile);
+    await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
@@ -186,12 +186,12 @@ test('pad - export (html)', async ({ page }) => {
     await fileActions.padeditor.locator('body').click();
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
 
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test pad');
@@ -225,14 +225,14 @@ test('pad - export (.doc)', async ({ page }) => {
     await fileActions.padeditor.locator('body').click();
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
 
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.doc' }).click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test pad');
@@ -264,14 +264,14 @@ test('pad - export (md)', async ({ page, context }) => {
     await fileActions.padeditor.locator('body').click();
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
 
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.md' }).click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test pad');
@@ -309,13 +309,13 @@ test('pad - share at a moment in history', async ({ page, context }) => {
     await page.waitForTimeout(7000);
     await fileActions.padeditor.getByText('Another moment in history').fill('Yet another moment in history');
     await page.waitForTimeout(7000);
-    await fileActions.history(isMobile)
+    await fileActions.history(mobile)
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
 
     await expect(fileActions.padeditor.getByText('One moment in history')).toBeVisible();
 
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
     await fileActions.shareCopyLink.click();
 

@@ -6,16 +6,15 @@ require('dotenv').config();
 const os = require('os');
 
 let pageOne;
-let isMobile;
+let mobile;
 let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-
-  isMobile = testInfo.project.use.isMobile;
+  mobile = isMobile
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
 
@@ -28,7 +27,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 test('anon - code - input text #1367', async ({ page }) => {
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(isMobile)
+    await fileActions.typeTestTextCode(mobile)
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
@@ -42,10 +41,10 @@ test('anon - code - input text #1367', async ({ page }) => {
 test('code - file menu - history #1367', async ({ page }) => {
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(isMobile)
+    await fileActions.typeTestTextCode(mobile)
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
-    await fileActions.history(isMobile)
+    await fileActions.history(mobile)
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
@@ -72,10 +71,10 @@ test('code - toggle toolbar #1367', async ({ page }) => {
 
 test('code - toggle preview #1367', async ({ page }) => {
   try {
-    await fileActions.typeTestTextCode(isMobile)
+    await fileActions.typeTestTextCode(mobile)
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-    await fileActions.togglePreview(isMobile)
+    await fileActions.togglePreview(mobile)
 
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
@@ -89,10 +88,10 @@ test('code - toggle preview #1367', async ({ page }) => {
 test('code -  make a copy #1367', async ({ page }) => {
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(isMobile)
+    await fileActions.typeTestTextCode(mobile)
 
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
-    await fileActions.filemenuClick();
+    await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
@@ -117,7 +116,7 @@ test('code - import file #1367', async ({ page, context }) => {
   try {
     await fileActions.codeeditor.waitFor();
     await page.waitForTimeout(10000)
-    await fileActions.filemenuClick()
+    await fileActions.filemenuClick(mobile)
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
@@ -144,12 +143,12 @@ test('code - export (md)', async ({ page }) => {
     await fileActions.codeeditor.click();
     await fileActions.typeTestTextCode()
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test code');
@@ -191,13 +190,13 @@ test('code - export (md)', async ({ page }) => {
 //     await page.keyboard.press('Backspace');
 //     await page.waitForTimeout(3000);
     
-//     await fileActions.history(isMobile)
+//     await fileActions.history(mobile)
 //     await fileActions.historyPrev.click();
 //     await fileActions.historyPrev.click();
 
 //     await expect(fileActions.codeeditor.getByText('One moment in history')).toBeVisible();
 
-//     await fileActions.share(isMobile);
+//     await fileActions.share(mobile);
 //     await fileActions.shareLink.click();
 //     await page.waitForTimeout(5000);
 //     await fileActions.shareCopyLink.click();

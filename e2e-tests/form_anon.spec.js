@@ -9,20 +9,20 @@ const { FileActions } = require('./fileactions.js');
 const local = !!process.env.PW_URL.includes('localhost');
 
 let pageOne;
-let isMobile;
+let mobile;
 let browserstackMobile;
 let fileActions
 let isBrowserstack;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
-  isMobile = testInfo.project.use.isMobile;
+  mobile = isMobile
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   isBrowserstack = testInfo.project.name.match(/browserstack/) ? true : false
   await page.goto(`${url}/form`);
   fileActions = new FileActions(page);
-  if (isMobile) {
+  if (mobile) {
     await page.waitForTimeout(30000);
   } else {
     await page.waitForTimeout(10000);
@@ -237,11 +237,11 @@ test('form - submission (one time) - edit', async ({ page, context }) => {
 test('form - share (link) - auditor', async ({ page, context }) => {
   try {
 
-    const title = `Form - ${await fileActions.titleDate(isMobile, isBrowserstack)}`;
+    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 
     await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(title).waitFor({timeout:60000});
 
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.waitFor();
@@ -266,11 +266,11 @@ test('form - share (link) - auditor', async ({ page, context }) => {
 
 test('form - share (link) - author', async ({ page, context }) => {
   try {
-    const title = `Form - ${await fileActions.titleDate(isMobile, isBrowserstack)}`;
+    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 
     await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(title).waitFor({timeout:60000});
 
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
 
     await fileActions.shareCopyLink.waitFor();
     await fileActions.shareCopyLink.click();
@@ -353,7 +353,7 @@ test('form - close and open', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill(`${minutes}`);
 
-    if (isMobile && parseInt(hours) < 12 && await page.frameLocator('#sbox-iframe').locator('.flatpickr-am-pm').isVisible()) {
+    if (mobile && parseInt(hours) < 12 && await page.frameLocator('#sbox-iframe').locator('.flatpickr-am-pm').isVisible()) {
       await page.frameLocator('#sbox-iframe').locator('.flatpickr-am-pm').click();
     }
     await page.waitForTimeout(1000);
@@ -497,7 +497,7 @@ test('form - anonymize responses', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
     await page.bringToFront();
-    await fileActions.responses(isMobile)
+    await fileActions.responses(mobile)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Show individual answers' }).click();
     await page.frameLocator('#sbox-iframe').getByText(/^Anonymous answer/).click();
 
@@ -529,7 +529,7 @@ test('form - publish responses', async ({ page, context }) => {
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Publish responses' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
 
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' View all responses (1)' }).click();
     await pageOne.frameLocator('#sbox-iframe').getByText(/Your question here\?Option 11 Option 20/).click();
@@ -550,7 +550,7 @@ test('form - view history and share at a specific moment in history', async ({ p
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).fill('new option');
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).press('Enter');
 
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new option')).toHaveCount(0);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
@@ -575,7 +575,7 @@ test('form - import file', async ({ page }) => {
 
   try {
     await fileActions.copyPublicLink.waitFor();
-    await fileActions.filemenuClick()
+    await fileActions.filemenuClick(mobile)
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
@@ -614,7 +614,7 @@ test('form - make a copy', async ({ page }) => {
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Preview form', exact: true }).click();
     await page.waitForTimeout(5000);
-    await fileActions.filemenuClick(isMobile);
+    await fileActions.filemenuClick(mobile);
     const [pageOne] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
@@ -652,11 +652,11 @@ test('form - export file', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option three');
 
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').locator('p').filter({ hasText: '.json.json' }).getByRole('textbox').fill('test form');
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
     await download.saveAs('/tmp/test form');
 
@@ -708,7 +708,7 @@ test('form - add description', async ({ page, context }) => {
 
 test('form - add submission message', async ({ page, context }) => {
   try {
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Add submit message' }).waitFor()
@@ -1474,12 +1474,12 @@ test('form - export responses as .csv', async ({ page, context }) => {
     const UTCminutes = new Date().getUTCMinutes();
 
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible())
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('form responses');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
     await download.saveAs('/tmp/form responses');
 
@@ -1534,12 +1534,12 @@ test('form - export responses as .json', async ({ page, context }) => {
     const UTCminutes = new Date().getUTCMinutes();
 
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible())
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('form responses');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
     await download.saveAs('/tmp/form responses');
 

@@ -1,4 +1,4 @@
-const { test, url, mainAccountPassword, nextMondaySlashFormat, titleDate } = require('../fixture.js');
+const { test, url, mainAccountPassword, nextMondaySlashFormat } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
@@ -8,17 +8,19 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let isMobile;
 let cleanUp;
 let pageOne;
 let contextOne;
+let fileActions;
+let isBrowserstack;
+let mobile
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(2400000);
+  mobile = isMobile
+  isBrowserstack = testInfo.project.name.match(/browserstack/) ? true : false
 
-  isMobile = testInfo.project.use.isMobile;
-
-  if (isMobile) {
+  if (mobile) {
     let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
@@ -30,27 +32,28 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 
   await page.goto(`${url}/form`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
 
 test('form - share with contact (author)', async ({ page, browser }) => {
   try {
-    const title = `Form - ${titleDate}`;
+    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
+    await fileActions.createFile.waitFor();
+    await fileActions.createFile.click();
 
-    let fileActions = new FileActions(page);
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
+    await fileActions.shareSecureLink.click();
 
     ///
     const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    fileActions = new FileActions(pageOne);
+    await fileActions.notifications.click();
 
     const page2Promise = pageOne.waitForEvent('popup');
     if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
@@ -66,7 +69,7 @@ test('form - share with contact (author)', async ({ page, browser }) => {
     /// /
 
     await page.bringToFront();
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
     }
     await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
@@ -80,22 +83,22 @@ test('form - share with contact (author)', async ({ page, browser }) => {
 
 test('form - share with contact (auditor)', async ({ page, browser }) => {
   try {
-    const title = `Form - ${titleDate}`;
+    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
+    await fileActions.createFile.waitFor();
+    await fileActions.createFile.click();
 
-    let fileActions = new FileActions(page);
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
+    await fileActions.shareSecureLink.click();
 
     ///
     const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    fileActions = new FileActions(pageOne);
+    await fileActions.notifications.click()
 
     const page2Promise = pageOne.waitForEvent('popup');
     if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
@@ -113,7 +116,7 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
     /// /
 
     await page.bringToFront();
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
     }
     await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
@@ -127,22 +130,22 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
 
 test('form - share with contact (participant)', async ({ page, browser }) => {
   try {
-    const title = `Form - ${titleDate}`;
+    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
+    await fileActions.createFile.waitFor();
+    await fileActions.createFile.click();
 
-    let fileActions = new FileActions(page);
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Participant$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' }).click();
+    await fileActions.shareSecureLink.click();
 
     ///
     const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    fileActions = new FileActions(pageOne);
+    await fileActions.notifications.click()
 
     const page2Promise = pageOne.waitForEvent('popup');
     if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
@@ -160,7 +163,7 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
     /// /
 
     await page.bringToFront();
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
     }
     await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
@@ -174,8 +177,8 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
 
 test('form - (guest) access - blocked', async ({ page, browser }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.waitFor();
+    await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({ force: true });
@@ -191,7 +194,7 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click({ force: true });
     await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
+    await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -222,8 +225,8 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
 
 test('form - view history (different authors)', async ({ page, browser }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.waitFor();
+    await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').dblclick();
@@ -232,13 +235,13 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await page.waitForTimeout(5000);
 
     let fileActions = new FileActions(page);
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
 
     await fileActions.shareLink.click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
 
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({ timeout: 5000 });
+    await fileActions.shareCopyLink.waitFor();
+    await fileActions.shareCopyLink.click({ timeout: 5000 });
     await page.waitForTimeout(3000);
 
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -262,19 +265,9 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3).press('Enter');
     await page.waitForTimeout(5000);
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await fileActions.filemenu.click();
-    }
-    if (!local) {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
-
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click()
+    await fileActions.history(mobile)
+    await fileActions.historyPrev.click()
+    await fileActions.historyPrev.click()
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3)).toBeHidden();
     const question = await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(2).textContent();
@@ -293,14 +286,14 @@ test('form - view history (different authors)', async ({ page, browser }) => {
 test('form - create quick scheduling poll', async ({ page, browser }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByText('Quick Scheduling Poll').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Poll$/ }).locator('span').waitFor();
     await expect(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Poll$/ }).locator('span')).toBeVisible();
     await page.waitForTimeout(10000);
     await expect(page.frameLocator('#sbox-iframe').getByText(`${nextMondaySlashFormat}`)).toBeVisible();
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' }).click();
+    await fileActions.copyPublicLink.click();
     await page.waitForTimeout(1000);
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     await page.waitForTimeout(1000);
@@ -331,25 +324,16 @@ test('form - protect with password', async ({ page, browser }) => {
   try {
     await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Add a password' }).locator('span').first().click();
     await page.frameLocator('#sbox-iframe').locator('#cp-creation-password-val').fill('password');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
 
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    }
-
-    if (isMobile) {
-      await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
-    } else {
-      await page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
-    }
+    await fileActions.shareLink(mobile)
+    await fileActions.clickLinkTab(mobile)
     await page.frameLocator('#sbox-secure-iframe').getByText('Participant').click({ timeout: 3000 });
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     await page.waitForTimeout(5000);
 
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-    if (isMobile) {
+    if (mobile) {
       contextOne = browser;
     } else {
       contextOne = await browser.newContext();
@@ -369,8 +353,7 @@ test('form - protect with password', async ({ page, browser }) => {
     await expect(page1.frameLocator('#sbox-iframe').getByText('Your question here?')).toBeVisible({ timeout: 5000 });
 
     await page.bringToFront();
-    let fileActions = new FileActions(page);
-    await fileActions.access(isMobile);
+    await fileActions.access(mobile);
 
     await expect(page.frameLocator('#sbox-secure-iframe').locator('#cp-app-prop-change-password')).toBeHidden();
     await expect(page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' })).toBeHidden();
@@ -384,7 +367,7 @@ test('form - protect with password', async ({ page, browser }) => {
 
 test('form - save as and import template', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).first().click();
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Your text here' }).click();
@@ -402,14 +385,13 @@ test('form - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option three');
     await page.waitForTimeout(3000);
 
-    let fileActions = new FileActions(page);
-    await fileActions.saveTemplate(isMobile);
+    await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example form template');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/form/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await fileActions.importTemplate(isMobile);
+    await fileActions.createFile.click();
+    await fileActions.importTemplate(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').getByText('example form template').click();
 
@@ -420,10 +402,10 @@ test('form - save as and import template', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test option three')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
+    await fileActions.driveSideMenu.getByText('Templates').click();
     await fileActions.driveContentFolder.getByText('example form template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example form template')).toHaveCount(0);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - save as template', status: 'passed', reason: 'Can save and use Form document as template ' } })}`);
   } catch (e) {

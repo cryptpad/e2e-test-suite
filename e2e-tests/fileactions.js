@@ -23,6 +23,7 @@ export class FileActions {
         this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder')
         this.newFile = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ })
         this.settings = page.frameLocator('#sbox-iframe').getByText('Settings')
+        this.driveSideMenu = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree')
 
         //file actions
         this.filemenu = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' })
@@ -32,11 +33,21 @@ export class FileActions {
         this.historyPrev = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last()
         this.toolbar = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' })
         this.shareLink = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' })
+        this.shareSecureLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' })
         this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' })
         this.filesaved = page.frameLocator('#sbox-iframe').getByText('Saved')
         this.deletebutton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' })
         this.moveToTrash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' })
         this.destroy = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' })
+        this.linkTab = page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link')
+        this.linkTabMobile = page.frameLocator('#sbox-secure-iframe').getByLabel('Link')
+        this.createFile = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' })
+
+        //buttons
+        this.closeButtonSecure = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' })
+        this.closeButton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' })
+        this.okButtonSecure = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' })
+        this.okButton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' })
         
         // this.preview = 
         
@@ -55,8 +66,13 @@ export class FileActions {
         
 	}
 
-    async titleDate(isMobile, isBrowserstack) {
-        if (isMobile && isBrowserstack || !isMobile && !isBrowserstack) {
+    async title(title) {
+     return this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)
+    
+    }
+
+    async titleDate(mobile, isBrowserstack) {
+        if (mobile && isBrowserstack || !mobile && !isBrowserstack) {
             return titleDateComma
         } else {
             return titleDate
@@ -64,8 +80,21 @@ export class FileActions {
     
     }
 
-    async responses(visible) {
+    async clickTags(local) {
+        await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Tags' }).locator('a').click();
     
+    }
+
+    async clickLinkTab(mobile) {
+        if (mobile) {
+            await this.page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+        } else {
+            await this.page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+        }
+    
+    }
+
+    async responses(visible) {
         if (visible) {
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
         } else {
@@ -73,67 +102,56 @@ export class FileActions {
             await this.page.waitForTimeout(20000)
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
         }
-    
     }
 
-    async filemenuClick(isMobile) {
-        if (isMobile) {
+    async filemenuClick(mobile) {
+        if (mobile) {
             await this.filemenuMobile.click()
         } else {
             await this.filemenu.click()
         }
 	}
 
-    async togglePreview(isMobile) {
-        if (isMobile) {
+    async togglePreview(mobile) {
+        if (mobile) {
             await this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
         } else {
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Preview' }).click();
         }
-    
     }
 
-    async toggleTools(isMobile) {
-
-        if (isMobile) {
+    async toggleTools(mobile) {
+        if (mobile) {
             await this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').waitFor();
             await this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
         } else {
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).waitFor();
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
         }
-    
     }
 
-    async importClick(isMobile) {
-    
+    async importClick(mobile) {
         await this.fileimport.click();
     }
 
-    async typeTestTextCode(isMobile) {
+    async typeTestTextCode(mobile, string) {
         await this.filesaved.waitFor()
-        await this.page.keyboard.press('T');
-        await this.page.keyboard.press('e');
-        await this.page.keyboard.press('s');
-        await this.page.keyboard.press('t');
-        await this.page.keyboard.press(' ');
-        await this.page.keyboard.press('t');
-        await this.page.keyboard.press('e');
-        await this.page.keyboard.press('x');
-        await this.page.keyboard.press('t');
-    
+        // let letterArray = string.split('')
+        for (var i = 0; i < string.length; i++) {
+            await this.page.keyboard.press(`${string.charAt(i)}`)
+        }
     }
 
-	async share(isMobile) {
-        if (isMobile) {
+	async share(mobile) {
+        if (mobile) {
             await this.page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
         } else {
             await this.shareLink.click();
         }
 	}
 
-	async access() {
-        if (isMobile) {
+	async access(mobile) {
+        if (mobile) {
             await this.page.frameLocator('#sbox-iframe').locator('.cp-toolar-access-button').click();
         } else {
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Access' }).click();
@@ -141,8 +159,8 @@ export class FileActions {
 		
     }
 
-    async history(isMobile) {
-        if (isMobile) {
+    async history(mobile) {
+        if (mobile) {
             await this.filemenuMobile.click()
         } else {
             await this.filemenu.click()
@@ -150,8 +168,8 @@ export class FileActions {
         await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click(); 
     }
 
-    async export(isMobile) {
-        if (isMobile) {
+    async export(mobile) {
+        if (mobile) {
             await this.filemenuMobile.click()
         } else {
             await this.filemenu.click()
@@ -159,8 +177,8 @@ export class FileActions {
         await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Export' }).locator('a').click();
     }
 
-    async importTemplate(isMobile, local) {
-        if (isMobile) {
+    async importTemplate(mobile, local) {
+        if (mobile) {
             await this.filemenuMobile.click()
         } else {
             await this.filemenu.click()
@@ -171,16 +189,14 @@ export class FileActions {
         } else {
             await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
         }
-		
     }
 
-    async saveTemplate(isMobile, local) {
-        if (isMobile) {
+    async saveTemplate(mobile, local) {
+        if (mobile) {
             await this.filemenuMobile.click()
         } else {
             await this.filemenu.click()
         }
-
         await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
     }
 

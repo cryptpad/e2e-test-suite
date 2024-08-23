@@ -112,7 +112,7 @@ module.exports = defineConfig({
         channel: 'chrome',
         locale: 'en-GB',
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        isMobile: true
+        mobile: true
       }
     }, {
       name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
@@ -122,7 +122,7 @@ module.exports = defineConfig({
         channel: 'chrome',
         locale: 'en-GB',
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        isMobile: true,
+        mobile: true,
         acceptDownloads: true
 
       }

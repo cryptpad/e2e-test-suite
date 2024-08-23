@@ -6,7 +6,7 @@ require('dotenv').config();
 const os = require('os');
 
 let pageOne;
-let isMobile;
+let mobile;
 let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');

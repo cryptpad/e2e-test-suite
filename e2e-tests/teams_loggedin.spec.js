@@ -2,28 +2,31 @@ const { test, url, mainAccountPassword } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 const fs = require('fs');
 const unzipper = require('unzipper');
 
 let pageOne;
-let isMobile;
+let mobile;
 let browserName;
 let cleanUp;
 let browserstackMobile;
+let fileActions
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
-  isMobile = testInfo.project.use.isMobile;
+  mobile = isMobile
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
 
-  if (isMobile) {
+  if (mobile) {
     let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
   await page.goto(`${url}/teams`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
 
@@ -34,7 +37,7 @@ test('user menu - make and delete team', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().click();
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example team');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(10000);
     await expect(page).toHaveURL(`${url}/teams/`, { timeout: 100000 });
 
@@ -43,7 +46,7 @@ test('user menu - make and delete team', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').hover();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').getByText('example team', { exact: true })).toHaveCount(0);
 
@@ -135,7 +138,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(10000);
     await page.goto(`${url}/teams`);
     await page.waitForTimeout(20000);
@@ -150,7 +153,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
     const fileChooser1 = await fileChooserPromise1;
     await fileChooser1.setFiles('testdocuments/teamavatar-empty.png');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(5000);
     await page.goto(`${url}/teams`);
     await page.waitForTimeout(20000);
@@ -245,20 +248,21 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
     await pageOne.waitForTimeout(10000);
-
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    
+    let fileActions1 = new FileActions(pageOne);
+    await fileActions1.notifications.click();
 
     if (!await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').isVisible({ timeout: 3000 })) {
       // notification about being added to team doesn't display - re-add contact
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
       await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await fileActions.okButton.click();
       await page.waitForTimeout(1800);
       await expect(page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('testuser').getByText('testuser', { exact: true })).toBeHidden({ timeout: 3000 });
 
       await pageOne.reload();
       await pageOne.waitForTimeout(10000);
-      await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+      await fileActions1.notifications.click();
       if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team').count() > 1) {
         await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team').first()).toBeVisible();
         await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').first().click();
@@ -313,15 +317,15 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
     await page.bringToFront();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(1800);
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('testuser')).toBeHidden({ timeout: 3000 });
     await page.close();
 
     await pageOne.reload();
     await pageOne.waitForTimeout(10000);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').waitFor();
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions1.notifications.waitFor();
+    await fileActions1.notifications.click();
 
     if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team').count() > 1) {
       await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team').first()).toBeVisible();
@@ -509,7 +513,7 @@ test('promote team viewer to owner', async ({ page, browser }) => {
     await page.waitForTimeout(4000);
     await expect(page.frameLocator('#sbox-iframe').getByText(/^Co-owners can modify or delete the team/)).toBeVisible({ timout: 3000 });
     await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(2000);
 
     ///
@@ -519,7 +523,8 @@ test('promote team viewer to owner', async ({ page, browser }) => {
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
     await pageOne.waitForTimeout(10000);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    let fileActions1 = new FileActions(pageOne);
+    await fileActions1.notifications.click();
 
     // user 2: team viewer accepts promotion to owner
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user wants you to be an owner of test team').first().waitFor();
@@ -576,8 +581,8 @@ test('promote team viewer to owner', async ({ page, browser }) => {
 
     await pageOne.reload();
     await pageOne.waitForTimeout(10000);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').waitFor();
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await fileActions1.notifications.waitFor();
+    await fileActions1.notifications.click();
 
     if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').count() > 1) {
       await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').first()).toBeVisible();
@@ -615,20 +620,20 @@ test('add contact to team and contact leaves team', async ({ page, browser }) =>
     pageOne = await newContext.newPage();
     await pageOne.goto(`${url}/drive`);
     await pageOne.waitForTimeout(10000);
-
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    let fileActions1 = new FileActions(pageOne);
+    await fileActions1.notifications.click();
 
     if (!await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').isVisible({ timeout: 3000 })) {
       // notification about being added to team doesn't display
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
       await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await fileActions.okButton.click();
       await page.waitForTimeout(1800);
       await expect(page.frameLocator('#sbox-iframe').getByText('testuser', { exact: true })).toBeHidden({ timeout: 3000 });
 
       await pageOne.reload();
       await pageOne.waitForTimeout(10000);
-      await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+      await fileActions1.notifications.click();
       if (await pageOne.frameLocator('#sbox-iframe').getByText('test-user has kicked you from the team: test team').count() > 1) {
         await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').first().click({ timeout: 3000 });
       } else {
@@ -682,7 +687,7 @@ test('invite contact to team and cancel', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('tetestuser', { exact: true })).toBeVisible();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(1800);
     const user = page.frameLocator('#sbox-iframe').getByText('testuser', { exact: true });
     await expect(user).toBeHidden({ timeout: 100000 });

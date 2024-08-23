@@ -2,6 +2,7 @@ const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
+const { FileActions } = require('./fileactions.js');
 
 const fs = require('fs');
 const unzipper = require('unzipper');
@@ -9,17 +10,19 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let isMobile;
+let mobile;
 let cleanUp;
+let fileActions
+let userActions
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
+  mobile = isMobile
 
-  isMobile = testInfo.project.use.isMobile;
-
-  if (isMobile) {
-    let userActions = new UserActions(page);
+  if (mobile) {
+    userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
+    fileActions = new FileActions(page);
   }
 
   await page.goto(`${url}/drive`);
@@ -78,11 +81,11 @@ test('drive -  upload file', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Upload files' }).click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/myfile.doc');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.waitFor();
+    await fileActions.okButton.click();
     if (await page.frameLocator('#sbox-iframe').getByText('You already have an upload in progress. Cancel it and upload your new file?').count() === 1) {
       console.log('upload in progress');
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await fileActions.okButton.click();
     }
 
     await page.frameLocator('#sbox-iframe').getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor();
@@ -127,7 +130,7 @@ test('drive -  recent files', async ({ page }) => {
     await fileActions.driveContentFolder.getByText(`${title}`).click({ button: 'right' });
     await page.waitForTimeout(10000);
     await fileActions.destroy.click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - recent files', status: 'passed', reason: 'Can access recent files in Drive' } })}`);
   } catch (e) {
@@ -233,8 +236,8 @@ test('drive - create folder', async ({ page }) => {
 //     await page.frameLocator('#sbox-iframe').getByPlaceholder('New folder').fill('My shared folder');
 //     await page.frameLocator('#sbox-iframe').getByLabel('Protect this folder with a password (optional)').fill('folderpassword');
 //     await page.waitForTimeout(5000);
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).waitFor()
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+//     await fileActions.okButton.waitFor()
+//     await fileActions.okButton.click();
 //     await page.waitForTimeout(5000);
 //     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element > .cptools-shared-folder').waitFor()
 //     await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element > .cptools-shared-folder')).toBeVisible(5000)
@@ -254,9 +257,9 @@ test('drive - create folder', async ({ page }) => {
 //     await page.waitForTimeout(5000);
 //     await page.frameLocator('#sbox-iframe').getByText('Destroy').click()
 //     await page.waitForTimeout(5000);
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).waitFor()
+//     await fileActions.okButton.waitFor()
 //     await page.waitForTimeout(5000);
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+//     await fileActions.okButton.click();
 //     await page.waitForTimeout(5000);
 
 //     // await page.reload()

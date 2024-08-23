@@ -4,12 +4,12 @@ require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
 const local = !!process.env.PW_URL.includes('localhost');
-let isMobile;
+let mobile;
 let fileActions;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  isMobile = testInfo.project.use.isMobile;
+  mobile = isMobile
   await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
 });
@@ -97,8 +97,8 @@ userMenuItems.forEach(function (item) {
 
 //     //erase
 //     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).waitFor()
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+//     await fileActions.okButton.waitFor()
+//     await fileActions.okButton.click();
 //     await page.waitForTimeout(20000)
 
 //     //check file is erased
@@ -124,7 +124,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await page.waitForTimeout(10000);
     const visible = await page.frameLocator('#sbox-iframe').getByText(title).isVisible()
 
-    if (!isMobile) {
+    if (!mobile) {
       if (!visible) {
         await page.reload()
         await page.waitForTimeout(20000)
@@ -135,7 +135,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await page.bringToFront();
     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-viewmode-button').click();
 
-    if (isMobile) {
+    if (mobile) {
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-content-list')).toBeVisible();
     } else {
       await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Type$/ })).toBeVisible();
@@ -145,7 +145,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 
     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-viewmode-button').click();
 
-    if (isMobile) {
+    if (mobile) {
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-content-grid')).toBeVisible();
     } else {
       await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: /^Type$/ })).toBeHidden();
@@ -171,7 +171,7 @@ test('drive - anon - history', async ({ page, context }) => {
     const title = `Rich text - ${titleDate}`;
     await page.waitForTimeout(15000);
     await page.bringToFront();
-    if (!isMobile) {
+    if (!mobile) {
       if (!await page.frameLocator('#sbox-iframe').getByText(title).isVisible()) {
         await page.reload()
         await page.waitForTimeout(20000)

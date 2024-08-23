@@ -13,7 +13,7 @@ let browser;
 let loggedin;
 let browserName;
 let device;
-let isMobile;
+let mobile;
 let context;
 
 exports.test = base.test.extend({
@@ -22,8 +22,8 @@ exports.test = base.test.extend({
     browserName = testInfo.project.name.split(/@/)[0];
     loggedin = testInfo.titlePath[0].match(/loggedin/);
     if (testInfo.project.name.match(/browserstack/)) {
-      const isMobile = testInfo.project.use.isMobile;
-      if (isMobile) {
+      const mobile = testInfo.project.use.mobile;
+      if (mobile) {
         patchMobileCaps(
           testInfo.project.name,
           `${testInfo.file} - ${testInfo.title}`
@@ -62,13 +62,13 @@ exports.test = base.test.extend({
       }
       page = await context.newPage();
       await use(page);
-      if (isMobile) {
+      if (mobile) {
         await device.close();
       } else {
         await browser.close();
       }
     } else {
-      if (isMobile) {
+      if (mobile) {
         const [device] = await android.devices();
         await device.shell('am force-stop com.android.chrome');
         if (loggedin) {

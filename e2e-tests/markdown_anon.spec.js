@@ -7,14 +7,14 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let isMobile;
+let mobile;
 let browserstackMobile;
 let fileActions;
 
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
-  isMobile = testInfo.project.use.isMobile;
+  mobile = testInfo.project.use.mobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/slide`);
   fileActions = new FileActions(page);
@@ -69,9 +69,9 @@ test('markdown - anon - create new slide', async ({ page }) => {
 test('markdown - toggle toolbar', async ({ page }) => {
   try { 
     await page.waitForTimeout(1000)
-    await fileActions.toggleTools(isMobile)
+    await fileActions.toggleTools(mobile)
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible();
-    await fileActions.toggleTools(isMobile)
+    await fileActions.toggleTools(mobile)
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - input text into editor', status: 'passed', reason: 'Can input ' } })}`);
@@ -87,11 +87,11 @@ test('markdown - toggle preview', async ({ page }) => {
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('Test text');
 
-    await fileActions.togglePreview(isMobile)
+    await fileActions.togglePreview(mobile)
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeHidden();
 
-    await fileActions.togglePreview(isMobile)
+    await fileActions.togglePreview(mobile)
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeVisible();
 
@@ -108,7 +108,7 @@ test('anon - slide - make a copy', async ({ page, context }) => {
     await fileActions.slideeditor.type('Test text');
     await page.waitForTimeout(5000);
 
-    await fileActions.filemenuClick(isMobile);
+    await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
@@ -132,12 +132,12 @@ test('slide - export (md)', async ({ page, context }) => {
     await fileActions.slideeditor.type('Test text');
     await page.waitForTimeout(5000);
 
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test markdown');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test markdown');
@@ -167,13 +167,13 @@ test('slide - share at a moment in history', async ({ page, context }) => {
     await fileActions.slideeditor.type('Yet another moment in history');
     await page.waitForTimeout(7000);
 
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
 
     // await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('One moment in history')).toBeVisible();
 
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
     await fileActions.shareCopyLink.click();
 
@@ -196,7 +196,7 @@ test('slide - history (previous version)', async ({ page, context }) => {
     await fileActions.slideeditor.type('Test text');
     await page.waitForTimeout(5000);
 
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0);
 
@@ -211,7 +211,7 @@ test('markdown - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.filemenuClick()
+    await fileActions.filemenuClick(mobile)
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()

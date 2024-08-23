@@ -75,7 +75,7 @@ test('create test team', async ({ page }) => {
     await page.waitForTimeout(5000);
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test team');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
 
     await page.waitForTimeout(10000);
     await expect(page).toHaveURL(`${url}/teams/`, { timeout: 100000 });
@@ -95,7 +95,7 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     await userActions.login('test-user2', testUser2Password);
     await page.goto(`${url}/profile`);
     let fileActions = new FileActions(page);
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
 
     // login test-user
@@ -229,7 +229,7 @@ test('create test files in test-user drive', async ({ page }) => {
     }
 
     await page.goto(`${url}/pad/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -242,7 +242,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible();
 
     await page.goto(`${url}/sheet/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -256,7 +256,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
 
     await page.goto(`${url}/code/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -269,7 +269,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible();
 
     await page.goto(`${url}/slide/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -282,7 +282,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible();
 
     await page.goto(`${url}/form/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -295,7 +295,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible();
 
     await page.goto(`${url}/whiteboard/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -309,7 +309,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible();
 
     await page.goto(`${url}/diagram/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -322,7 +322,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible();
 
     await page.goto(`${url}/kanban/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
     await page.waitForTimeout(5000);
@@ -525,7 +525,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar-empty.png');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(5000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in team drive', status: 'passed', reason: 'Can create test files in team drive' } })}`);

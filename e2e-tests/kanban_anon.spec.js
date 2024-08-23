@@ -7,13 +7,13 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let isMobile;
+let mobile;
 let browserstackMobile;
 let fileActions;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  isMobile = testInfo.project.use.isMobile;
+  mobile = isMobile
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
@@ -94,7 +94,7 @@ test('kanban board - anon - edit list item content', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').type('new item content');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
+    await fileActions.closeButton.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new item content')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit list item content', status: 'passed', reason: 'Can edit Kanban list item content' } })}`);
@@ -110,7 +110,7 @@ test('kanban board - anon - add and filter by tag', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-kanban-edit-tags').click();
     await page.frameLocator('#sbox-iframe').locator('#cp-kanban-edit-tags').type('newtag');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
+    await fileActions.closeButton.click();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-kanban-content').getByText('newtag')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').locator('#cp-kanban-controls').getByText('newtag').click();
@@ -152,7 +152,7 @@ test('kanban - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.filemenuClick()
+    await fileActions.filemenuClick(mobile)
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
@@ -186,10 +186,10 @@ test('kanban - make a copy', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').type('new item content');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Close' }).click();
+    await fileActions.closeButton.click();
     await page.waitForTimeout(3000);
 
-    await fileActions.filemenuClick(isMobile);
+    await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
@@ -236,13 +236,13 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('Yet another moment in history')).toBeVisible();
     await page.waitForTimeout(7000);
 
-    await fileActions.history(isMobile);
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
 
-    await fileActions.share(isMobile);
+    await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
     await fileActions.shareCopyLink.click();
 
@@ -302,12 +302,12 @@ test('(screenshot) kanban - can drag items', async ({ page }) => {
 
 test('kanban - export as .json', async ({ page }) => {
   try {
-    await fileActions.export(isMobile);
+    await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test kanban');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click()
+      await fileActions.okButton.click()
     ]);
 
     await download.saveAs('/tmp/test kanban');
