@@ -6,7 +6,7 @@ This is an end-to-end suite using Playwright and BrowserStack to test the functi
 
 Playwright is an automated testing framework for writing end-to-end tests, which are run using locally installed browsers. BrowserStack is a testing platform which can be integrated with Playwright to run tests in the cloud. It allows for recording videos and logging the results of each run.
 
-We maintain a [list of functionality currently covered by the test suite](https://cryptpad.fr/code/#/2/code/edit/JURoNH7f0zbWYBYsaPLgHqkp/), as well as areas to work on in future. 
+We maintain a [list of functionality currently covered by the test suite](https://cryptpad.fr/code/#/2/code/view/pYv4MxEBO9ukPhVze97dX3i1DHY8kIXczZbtfxybFnA/), as well as areas to work on in future. 
 
 ### Download and installation
 
@@ -312,3 +312,10 @@ To lint and fix, run:
 npm run lint:fix 
 
 ```
+
+## Funding
+
+This project is funded through [NGI Assure](https://nlnet.nl/assure), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program. Learn more at the [NLnet project page](https://nlnet.nl/project/CryptPad-QA).
+
+[<img src="https://nlnet.nl/logo/banner.png" alt="NLnet foundation logo" width="20%" />](https://nlnet.nl)
+[<img src="https://nlnet.nl/image/logos/NGIAssure_tag.svg" alt="NGI Assure Logo" width="20%" />](https://nlnet.nl/assure)
