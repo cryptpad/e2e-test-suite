@@ -9,7 +9,7 @@ module.exports = async () => {
   if (bsLocal && bsLocal.isRunning()) {
     bsLocal.stop(() => {
       localStopped = true;
-      console.log('Stopped BrowserStackLocal');
+      console.log('Stopped test run');
     });
     while (!localStopped) {
       await sleep(180000);

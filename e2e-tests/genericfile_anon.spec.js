@@ -2,11 +2,13 @@ const { test, url, titleDate } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 
-let isMobile;
+let mobile;
+let fileActions;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  isMobile = testInfo.project.use.isMobile;
+  mobile = isMobile
+  fileActions = new FileActions(page);
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -32,11 +34,7 @@ docNames.forEach(function (name) {
         await page.waitForTimeout(15000);
       }
 
-      if (isMobile) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-      } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-      }
+      await fileActions.filemenuClick(mobile);
 
       await page.frameLocator('#sbox-iframe').getByText('New').click();
       const page2Promise = page.waitForEvent('popup');
@@ -70,11 +68,10 @@ docNames.forEach(function (name) {
           await page.waitForTimeout(15000);
         }
 
-        let fileActions = new FileActions(page);
-        await fileActions.share(isMobile);
+        await fileActions.share(mobile);
 
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).waitFor();
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click({ timeout: 5000 });
+        await fileActions.shareCopyLink.waitFor();
+        await fileActions.shareCopyLink.click({ timeout: 5000 });
 
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
@@ -103,13 +100,9 @@ docNames.forEach(function (name) {
           await page.waitForTimeout(15000);
         }
 
-        if (isMobile) {
-          await page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
-        } else {
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-        }
+        await fileActions.share(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click();
-        await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' }).click();
+        await fileActions.shareCopyLink.click();
 
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
@@ -139,7 +132,7 @@ docNames.forEach(function (name) {
         await page.waitForTimeout(15000);
       }
 
-      if (isMobile) {
+      if (mobile) {
         await page.frameLocator('#sbox-iframe').locator('#cp-toolbar-chat-drawer-open').click();
       } else {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Chat' }).click();
@@ -169,6 +162,7 @@ docNames.forEach(function (name) {
   });
 
   test(`anon - ${name} - create from drive - move to trash #1263`, async ({ page, context }) => {
+    test.fixme(name === 'sheet', 'sheet doc status bug');
     try {
       await page.goto(`${url}/drive`);
       if (name === 'sheet' | name === 'diagram') {
@@ -199,7 +193,7 @@ docNames.forEach(function (name) {
       await page2.frameLocator('#sbox-iframe').getByText(`${title}`).waitFor();
       await expect(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toBeVisible();
 
-      if (isMobile) {
+      if (mobile) {
         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').waitFor();
         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').click();
       } else {
@@ -250,6 +244,7 @@ docNames.forEach(function (name) {
   });
 
   test(`anon - ${name} - move to trash #1263`, async ({ page, context }) => {
+    test.fixme(name === 'sheet', 'sheet doc status bug');
     try {
       await page.goto(`${url}/${name}/`);
       if (name === 'sheet' | name === 'diagram') {
@@ -263,16 +258,13 @@ docNames.forEach(function (name) {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
 
       await page.waitForTimeout(3000);
-      if (isMobile) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-      } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-      }
+
+      await fileActions.filemenuClick(mobile);
       await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
 
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+      await fileActions.okButton.click();
 
-      if (!isMobile) {
+      if (!mobile) {
         await page.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true }).waitFor();
         await expect(page.frameLocator('#sbox-iframe').getByText('Moved to the trash', { exact: true })).toBeVisible({ timeout: 10000 });
       } else {

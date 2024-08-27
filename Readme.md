@@ -227,14 +227,14 @@ var caughtEval;
 4. To run accessibility tests for anonymous users, run:
 
 ```bash
-npx playwright test accessibility_anon --workers=1 --project='chrome'
+npx playwright test accessibility --workers=1 --project='chrome'
 
 ```
 
 5. To run accessibility tests for logged in users, run:
 
 ```bash
-npx playwright test accessibility_loggedin --workers=1 --project='chrome'
+npx playwright test accessibility_signedin --workers=1 --project='chrome'
 
 ```
 

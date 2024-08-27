@@ -6,6 +6,52 @@ export class Cleanup {
    */
   constructor (page) {
     this.page = page;
+    this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder')
+  }
+
+  async cleanFiles(title) {
+    await this.page.goto(`${url}/drive`);
+    await this.page.waitForTimeout(10000);   
+    await fileActions.drivemenu.waitFor();
+    let fileCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).count()
+    console.log(fileCount)
+    if (fileCount > 0) {
+        console.log('fileCount')
+
+      while (fileCount > 0) {
+        if (fileCount > 1) {
+          await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).nth(eventCount - 1).click({ button: 'right' });
+        } else {
+          await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).click({ button: 'right' });
+        }
+        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
+        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+        await this.page.waitForTimeout(3000);
+        fileCount = fileCount - 1;
+      }
+    }
+  
+  }
+
+  async cleanCalendar() {
+    await this.page.goto(`${url}/calendar`);
+    await this.page.waitForTimeout(5000);
+    await this.page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor()
+    let eventCount = await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count()
+    console.log(eventCount)
+    if (eventCount > 0) {
+      while (eventCount > 0) {
+        if (eventCount > 1) {
+          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(eventCount - 1).click();
+        } else {
+          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').click();
+        }
+        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
+        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+        await this.page.waitForTimeout(3000);
+        eventCount = eventCount - 1;
+      }
+    }
   }
 
   async cleanTemplates () {
@@ -14,7 +60,7 @@ export class Cleanup {
     await this.page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first().click();
 
     await this.page.waitForTimeout(5000);
-    let elementCount = await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').filter({ hasText: 'template' }).count()
+    let elementCount = await this.driveContentFolder.filter({ hasText: 'template' }).count()
     console.log(elementCount)
     if (elementCount > 0) {
        while (elementCount > 0) {
@@ -39,13 +85,16 @@ export class Cleanup {
   async cleanUserDrive (file) {
     await this.page.goto(`${url}/drive`);
     await this.page.waitForTimeout(10000);
+    console.log('beep')
     let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: file }).count();
     if (elementCount > 0) {
+        console.log('boop')
+
       while (elementCount > 0) {
         if (elementCount > 1) {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).click({ button: 'right' });
         }
         await this.page.waitForTimeout(3000);
         if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {
@@ -69,9 +118,9 @@ export class Cleanup {
     if (elementCount > 0) {
       while (elementCount > 0) {
         if (elementCount > 0) {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).nth(elementCount - 1).click({ button: 'right' });
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${file}`).click({ button: 'right' });
+          await this.driveContentFolder.getByText(`${file}`).click({ button: 'right' });
         }
         await this.page.waitForTimeout(3000);
         if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {
@@ -97,6 +146,7 @@ export class Cleanup {
 
     if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).isVisible()) {
       await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
+      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     }
 
     if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {

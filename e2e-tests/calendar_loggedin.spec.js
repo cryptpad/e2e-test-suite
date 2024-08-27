@@ -1,36 +1,42 @@
 const { test, url, mainAccountPassword, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { UserActions } = require('./useractions.js');
+const { Cleanup } = require('./cleanup.js');
+const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
-let isMobile;
+let mobile;
+let fileActions
+let cleanUp
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-
-  isMobile = testInfo.project.use.isMobile;
-
-  if (isMobile) {
+  mobile = isMobile
+  if (mobile) {
     let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
   await page.goto(`${url}/calendar`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 
-  if (await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count() > 0) {
-    await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
-  }
+  cleanUp = new Cleanup(page);
+  await cleanUp.cleanCalendar();
+
+  // if (await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count() > 0) {
+  //   await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
+  //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
+  //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+  // }
 });
 
 test('create and delete event in calendar', async ({ page }) => {
   try {
     // create event
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({ force: true });
     } else {
@@ -44,7 +50,7 @@ test('create and delete event in calendar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     // set date
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
@@ -83,7 +89,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
   try {
     // create event
 
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({ force: true });
     } else {
@@ -96,17 +102,14 @@ test('create and delete repeating event in calendar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     // make repeating
-    if (local) {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' }).click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'One time ' }).click();
-    }
+
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'One time ' }).click();
 
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: `Weekly on ${weekday}` }).click();
     await page.waitForTimeout(3000);
 
     // set date and time
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
@@ -156,7 +159,7 @@ test('create event in calendar and edit location', async ({ page }) => {
   try {
     // create event
 
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({ force: true });
     } else {
@@ -169,7 +172,7 @@ test('create event in calendar and edit location', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     // set date
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
@@ -224,7 +227,7 @@ test('create event in calendar and edit location', async ({ page }) => {
 test('create event in calendar and edit time', async ({ page }) => {
   try {
     // create event
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({ force: true });
     } else {
@@ -237,7 +240,7 @@ test('create event in calendar and edit time', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     // set date
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
@@ -262,7 +265,7 @@ test('create event in calendar and edit time', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
 
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).waitFor();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).click();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:15`);
@@ -308,7 +311,7 @@ test('create event in calendar and edit date', async ({ page }) => {
   try {
     // create event
 
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({ force: true });
     } else {
@@ -321,7 +324,7 @@ test('create event in calendar and edit date', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('test location');
 
     // set time
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${dateTodayDashFormat}T20:00`);
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${dateTodayDashFormat}T20:30`);
@@ -345,7 +348,7 @@ test('create event in calendar and edit date', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click({ timeout: 10000 });
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
 
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').nth(1).fill(`${nextMondayDashFormat}T20:00`);
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').nth(1).fill(`${nextMondayDashFormat}T20:30`);
@@ -395,6 +398,22 @@ test('create event in calendar and edit date', async ({ page }) => {
 
 test('create new calendar and edit calendar in event', async ({ page }) => {
   try {
+
+    let calendarCount = await page.frameLocator('#sbox-iframe').getByLabel('Calendar Settings').count()
+    if (calendarCount > 0) {
+      while (calendarCount > 0) {
+        if (calendarCount > 1) {
+          await page.frameLocator('#sbox-iframe').getByLabel('Calendar Settings').nth(calendarCount - 1).click();
+        } else {
+          await page.frameLocator('#sbox-iframe').getByLabel('Calendar Settings').click();
+        }
+        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Remove' }).locator('a').click();
+        await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await page.waitForTimeout(3000);
+        calendarCount = calendarCount - 1;
+      }
+    }
+
     // create calendar
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' New calendar' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').click();
@@ -403,7 +422,7 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
     await page.waitForTimeout(5000);
 
     // create event as part of calendar
-    if (isMobile) {
+    if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
       await page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').click({ force: true });
     } else {
@@ -433,7 +452,7 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
     // delete calendar
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^test calendar/ }).locator('.btn.btn-default.fa.fa-gear.small.cp-calendar-actions').click();
     await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: 'Remove' }).nth(1).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test calendar').nth(0)).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create new calendar and edit calendar in event', status: 'passed', reason: 'Can create new calendar and edit calendar in event' } })}`);

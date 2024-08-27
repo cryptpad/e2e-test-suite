@@ -13,17 +13,17 @@ let browser;
 let loggedin;
 let browserName;
 let device;
-let isMobile;
+let mobile;
 let context;
 
 exports.test = base.test.extend({
   page: async ({ page, playwright }, use, testInfo) => {
     test.setTimeout(210000);
     browserName = testInfo.project.name.split(/@/)[0];
-    loggedin = testInfo.titlePath[0].match(/loggedin/);
+    loggedin = testInfo.titlePath[0].match(/loggedin/) | testInfo.titlePath[0].match(/signedin/) 
     if (testInfo.project.name.match(/browserstack/)) {
-      const isMobile = testInfo.project.use.isMobile;
-      if (isMobile) {
+      const mobile = testInfo.project.use.mobile;
+      if (mobile) {
         patchMobileCaps(
           testInfo.project.name,
           `${testInfo.file} - ${testInfo.title}`
@@ -62,13 +62,13 @@ exports.test = base.test.extend({
       }
       page = await context.newPage();
       await use(page);
-      if (isMobile) {
+      if (mobile) {
         await device.close();
       } else {
         await browser.close();
       }
     } else {
-      if (isMobile) {
+      if (mobile) {
         const [device] = await android.devices();
         await device.shell('am force-stop com.android.chrome');
         if (loggedin) {
@@ -131,6 +131,7 @@ const weekday = days[date.getDay()];
 exports.weekday = weekDays[date.getDay()];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const month = months[date.getMonth()];
+exports.titleDateComma = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
 exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}`;
 
 const setTimeZone = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' });

@@ -11,12 +11,15 @@ const BrowserStackLocal = require('browserstack-local');
 
 const caps = {
   name: 'my playwright test',
-  build: 'localhost-2',
+  build: 'localhost-5',
   'browserstack.username': process.env.BROWSERSTACK_USERNAME,
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
   'browserstack.local': !!process.env.PW_URL.includes('localhost'),
   // "browserstack.idleTimeout" : "300",
-  'browserstack.playwrightVersion': clientPlaywrightVersion
+  'browserstack.playwrightVersion': clientPlaywrightVersion,
+  'bstack:options' : {
+    "timezone" : "London",
+  },
 
 };
 
@@ -31,6 +34,9 @@ exports.patchMobileCaps = (name, title) => {
   caps.osVersion = osVersion || '12.0';
   caps.name = title;
   caps.realMobile = 'true';
+  // 'bstack:options' = {
+  //   "timezone" : "London",
+  // }
 };
 
 exports.caps = caps;

@@ -6,24 +6,27 @@ const { FileActions } = require('./fileactions.js');
 
 let pageOne; 
 const local = !!process.env.PW_URL.includes('localhost');
-let isMobile;
+let mobile;
 let cleanUp;
+let fileActions
 
-test.beforeEach(async ({ page }, testInfo) => {
-    const template = testInfo.title.match(/import template/);
-    if (template) {
-      cleanUp = new Cleanup(page);
-      await cleanUp.cleanTemplates();
-    }
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
+  mobile = isMobile
+  const template = testInfo.title.match(/import template/);
+  if (template) {
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanTemplates();
+  }
 
   await page.goto(`${url}/whiteboard`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
 
 
 test('screenshot whiteboard - display history (previous author)', async ({ page, browser }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
@@ -43,9 +46,9 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
     await page.waitForTimeout(3000)
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+    await fileActions.shareLink.click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
     pageOne = await browser.newPage();
@@ -65,19 +68,11 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
       }
     });
     await pageOne.mouse.up();
-   
-    if (isMobile) {
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-    }
-    if (!local) {
-      await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-    } else {
-      await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-    }
 
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+    await fileActions.filemenuClick(mobile);
+    await fileActions.history(mobile);
+    await fileActions.historyPrev.click()
+    await fileActions.historyPrev.click()
     await expect(pageOne).toHaveScreenshot();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'failed', reason: 'Can\'t clear whiteboard canvas' } })}`);
@@ -88,7 +83,7 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
 
 test('whiteboard - save as and import template', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
@@ -106,24 +101,23 @@ test('whiteboard - save as and import template', async ({ page }) => {
     });
     await page.mouse.up();
 
-    let fileActions = new FileActions(page);
-    await fileActions.saveTemplate(isMobile);
+    await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example whiteboard template');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/whiteboard/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await fileActions.importTemplate(isMobile);
+    await fileActions.createFile.click();
+    await fileActions.importTemplate(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').getByText('example whiteboard template').click();
 
     await expect(page).toHaveScreenshot();
 
     await page.goto(`${url}/drive/`);
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText('example whiteboard template').click({ button: 'right' });
+    await fileActions.driveSideMenu.getByText('Templates').click();
+    await fileActions.driveContentFolder.getByText('example whiteboard template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example whiteboard template')).toHaveCount(0);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - save as template', status: 'passed', reason: 'Can save and use Whiteboard document as template ' } })}`);
   } catch (e) {

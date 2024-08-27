@@ -9,15 +9,15 @@ require('dotenv').config();
 const local = !!process.env.PW_URL.includes('localhost');
 
 let pageOne;
-let isMobile;
+let mobile;
 let cleanUp;
+let fileActions;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
+  mobile = isMobile
 
-  isMobile = testInfo.project.use.isMobile;
-
-  if (isMobile) {
+  if (mobile) {
     let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
@@ -29,35 +29,38 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 
   await page.goto(`${url}/kanban`);
+  fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
 
 test('kanban - save as and import template', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+    await fileActions.createFile.waitFor()
+    await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('example item');
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
-    let fileActions = new FileActions(page);
-    await fileActions.saveTemplate(isMobile);
+    await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example kanban template');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/kanban/`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await fileActions.importTemplate(isMobile);
+    await fileActions.createFile.click();
+    await fileActions.importTemplate(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').getByText('example kanban template').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree').getByText('Templates').click();
+    await fileActions.driveSideMenu.getByText('Templates').click();
+    await page.waitForTimeout(3000);
+
     await page.frameLocator('#sbox-iframe').getByText('example kanban template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example kanban template')).toHaveCount(0);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - save as template', status: 'passed', reason: 'Can save and use Kanban document as template' } })}`);
   } catch (e) {
@@ -66,10 +69,11 @@ test('kanban - save as and import template', async ({ page }) => {
   }
 });
 
-if (!isMobile) {
+if (!mobile) {
   test('kanban - history (previous author)', async ({ page, browser }) => {
     try {
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
+      await fileActions.createFile.waitFor()
+      await fileActions.createFile.click();
 
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
@@ -77,11 +81,10 @@ if (!isMobile) {
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
       await page.waitForTimeout(5000);
 
-      let fileActions = new FileActions(page);
-      await fileActions.share(isMobile);
-      await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+      await fileActions.share(mobile);
+      await fileActions.clickLinkTab(mobile);
       await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-      await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+      await fileActions.shareCopyLink.click();
       const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
       pageOne = await browser.newPage();
@@ -107,19 +110,9 @@ if (!isMobile) {
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
       await page.waitForTimeout(5000);
 
-      if (isMobile) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-      } else {
-        await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' }).click();
-      }
-
-      if (!local) {
-        await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click();
-      } else {
-        await page.frameLocator('#sbox-iframe').getByLabel('Display the document history').click();
-      }
-
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').nth(1).click();
+      await fileActions.history(mobile);
+      await fileActions.historyPrev.click()
+      
       await expect(page.frameLocator('#sbox-iframe').getByText('and some more test text by test user')).toHaveCount(0);
       await expect(page.frameLocator('#sbox-iframe').getByText('and some more text by test user here')).toHaveCount(0);
 
