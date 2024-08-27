@@ -447,6 +447,7 @@ docNames.forEach(function (name) {
     });
 
     test(`${name} - share with contact - edit #1264`, async ({ page, browser }) => {
+      test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
       try {
         await fileActions.createFile.click();
         await page.waitForTimeout(3000);

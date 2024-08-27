@@ -136,7 +136,6 @@ export class FileActions {
 
     async typeTestTextCode(mobile, string) {
         await this.filesaved.waitFor()
-        // let letterArray = string.split('')
         for (var i = 0; i < string.length; i++) {
             await this.page.keyboard.press(`${string.charAt(i)}`)
         }
@@ -160,29 +159,17 @@ export class FileActions {
     }
 
     async history(mobile) {
-        if (mobile) {
-            await this.filemenuMobile.click()
-        } else {
-            await this.filemenu.click()
-        }
+        await this.filemenuClick(mobile)
         await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' History' }).locator('a').click(); 
     }
 
     async export(mobile) {
-        if (mobile) {
-            await this.filemenuMobile.click()
-        } else {
-            await this.filemenu.click()
-        }
+        await this.filemenuClick(mobile)
         await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Export' }).locator('a').click();
     }
 
     async importTemplate(mobile, local) {
-        if (mobile) {
-            await this.filemenuMobile.click()
-        } else {
-            await this.filemenu.click()
-        }
+        await this.filemenuClick(mobile)
 
         if (local) {
             await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
@@ -192,11 +179,7 @@ export class FileActions {
     }
 
     async saveTemplate(mobile, local) {
-        if (mobile) {
-            await this.filemenuMobile.click()
-        } else {
-            await this.filemenu.click()
-        }
+        await this.filemenuClick(mobile)
         await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
     }
 

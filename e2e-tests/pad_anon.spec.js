@@ -55,7 +55,7 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
     await page.waitForTimeout(5000);
 
-    await fileActions.filemenu.click(mobile);
+    await fileActions.filemenuClick(mobile);
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
@@ -70,7 +70,7 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await fileActions.closeButton.click();
     await fileActions.padeditor.locator('body').fill('');
 
-    await fileActions.filemenu.click(mobile);
+    await fileActions.filemenuClick(mobile);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
     await page.frameLocator('#sbox-iframe').getByText('snap1').waitFor();

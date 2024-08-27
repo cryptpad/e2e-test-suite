@@ -25,9 +25,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 test('anon - code - input text #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile)
+    await fileActions.typeTestTextCode(mobile, 'test text')
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
@@ -39,9 +40,10 @@ test('anon - code - input text #1367', async ({ page }) => {
 });
 
 test('code - file menu - history #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug'); 
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile)
+    await fileActions.typeTestTextCode(mobile, 'test text')
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
     await fileActions.history(mobile)
@@ -57,6 +59,7 @@ test('code - file menu - history #1367', async ({ page }) => {
 });
 
 test('code - toggle toolbar #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
   try {
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden();
     await fileActions.toolbar.click()
@@ -70,8 +73,9 @@ test('code - toggle toolbar #1367', async ({ page }) => {
 });
 
 test('code - toggle preview #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
   try {
-    await fileActions.typeTestTextCode(mobile)
+    await fileActions.typeTestTextCode(mobile,'test text')
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
     await fileActions.togglePreview(mobile)
@@ -86,9 +90,10 @@ test('code - toggle preview #1367', async ({ page }) => {
 });
 
 test('code -  make a copy #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile)
+    await fileActions.typeTestTextCode(mobile, 'test text')
 
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
     await fileActions.filemenuClick(mobile);
@@ -111,6 +116,7 @@ test('code -  make a copy #1367', async ({ page }) => {
 });
 
 test('code - import file #1367', async ({ page, context }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
@@ -141,7 +147,7 @@ test('code - export (md)', async ({ page }) => {
 
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode()
+    await fileActions.typeTestTextCode(mobile, 'test text')
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
@@ -154,7 +160,8 @@ test('code - export (md)', async ({ page }) => {
     await download.saveAs('/tmp/test code');
 
     const readData = fs.readFileSync('/tmp/test code', 'utf8');
-    if (readData.trim() === 'Test text') {
+    console.log(readData)
+    if (readData.trim() === 'test text') {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'passed', reason: 'Can export Code document as .md' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'failed', reason: 'Can\'t export Code document as .md' } })}`);

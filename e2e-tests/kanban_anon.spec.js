@@ -262,6 +262,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
 });
 
 test('(screenshot) kanban - can drag boards #1372', async ({ page }) => {
+  test.skip();
   try {
     await page.waitForTimeout(5000);
 

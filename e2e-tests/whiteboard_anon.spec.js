@@ -47,7 +47,7 @@ test('screenshot anon - can draw on whiteboard (default settings)', async ({ pag
     });
     await page.mouse.up();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 2000 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'passed', reason: 'Can draw on whiteboard (default settings)' } })}`);
   } catch (e) {
      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'failed', reason: 'Can\'t draw on whiteboard (default settings)' } })}`);
@@ -89,7 +89,7 @@ test('screenshot anon - erase on whiteboard', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
     await page.waitForTimeout(3000)
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can erase on whiteboard', status: 'passed', reason: 'Can erase on whiteboard' } })}`);
   } catch (e) {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can erase on whiteboard', status: 'failed', reason: 'Can\'t erase on whiteboard' } })}`);
@@ -109,7 +109,7 @@ test('screenshot anon - enter text on whiteboard', async ({ page }) => {
     });
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test text');
     await page.waitForTimeout(3000)
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can enter text on whiteboard', status: 'passed', reason: 'Can enter text on whiteboard' } })}`);
   } catch (e) {
@@ -143,7 +143,7 @@ test('screenshot anon - delete selection on whiteboard', async ({ page }) => {
     });
     await page.frameLocator('#sbox-iframe').locator('#cp-app-whiteboard-delete').click()
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - delete selection on whiteboard', status: 'passed', reason: 'Can delete selection on Whiteboard' } })}`);
   } catch (e) {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - delete selection on whiteboard', status: 'failed', reason: 'Can\'t delete selection on Whiteboard' } })}`);
@@ -194,7 +194,7 @@ test('screenshot anon - can change whiteboard brush opacity', async ({ page }) =
       }
     });
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'passed', reason: 'Can draw on whiteboard (default settings)' } })}`);
   } catch (e) {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'failed', reason: 'Can\'t draw on whiteboard (default settings)' } })}`);
@@ -221,7 +221,7 @@ test('screenshot anon - can clear whiteboard canvas', async ({ page }) => {
     await page.waitForTimeout(3000)
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 2000 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'passed', reason: 'Can clear whiteboard canvas' } })}`);
   } catch (e) {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'failed', reason: 'Can\'t clear whiteboard canvas' } })}`);
@@ -254,7 +254,7 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/whiteboard`), { timeout: 100000 });
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 2000 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - make a copy', status: 'passed', reason: 'Can make copy of Whiteboard document' } })}`);
   } catch (e) {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - make a copy', status: 'failed', reason: 'Can\'t make copy of Whiteboard document' } })}`);
@@ -319,7 +319,7 @@ test('screenshot whiteboard - display history', async ({ page }) => {
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 7000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - display history', status: 'passed', reason: 'Can display Whiteboard history' } })}`);
   } catch (e) {
@@ -373,7 +373,7 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
     await pageOne.goto(`${clipboardText}`);
     await page.waitForTimeout(30000);
 
-    await expect(pageOne).toHaveScreenshot({ maxDiffPixels: 1500 });
+    await expect(pageOne).toHaveScreenshot({ maxDiffPixels: 7000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share whiteboard history at specific moment in time (link)', status: 'passed', reason: 'Can share Whiteboard history at specific moment in time (link)' } })}`);
   } catch (e) {

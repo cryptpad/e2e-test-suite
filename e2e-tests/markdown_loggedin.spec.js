@@ -37,8 +37,10 @@ test.beforeEach(async ({ page }, testInfo) => {
 test('slide - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
+    await fileActions.filesaved.waitFor()
+    await fileActions.codeeditor.waitFor()
     await fileActions.codeeditor.click();
-    await fileActions.codeeditor.type('Test text');
+    await fileActions.typeTestTextCode(mobile, 'Test text')
     await page.waitForTimeout(5000);
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example markdown template');
@@ -53,6 +55,7 @@ test('slide - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
+    await page.waitForTimeout(3000);
     await fileActions.driveContentFolder.getByText('example markdown template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await fileActions.okButton.click();
@@ -72,10 +75,10 @@ test('slide - history (previous author)', async ({ page, browser }) => {
     await fileActions.codeeditor.type('Test text');
     await page.waitForTimeout(5000);
 
-    // await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await fileActions.shareLink.click();
+    await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
     pageOne = await browser.newPage();
@@ -99,7 +102,6 @@ test('slide - history (previous author)', async ({ page, browser }) => {
     await page.keyboard.press('Enter');
     await page.waitForTimeout(5000);
 
-    await fileActions.filemenuClick(mobile);
     await fileActions.history(mobile);
     await fileActions.historyPrev.click()
 

@@ -35,6 +35,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test('kanban - save as and import template', async ({ page }) => {
   try {
+    await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
@@ -55,6 +56,8 @@ test('kanban - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
+    await page.waitForTimeout(3000);
+
     await page.frameLocator('#sbox-iframe').getByText('example kanban template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await fileActions.okButton.click();
@@ -69,6 +72,7 @@ test('kanban - save as and import template', async ({ page }) => {
 if (!mobile) {
   test('kanban - history (previous author)', async ({ page, browser }) => {
     try {
+      await fileActions.createFile.waitFor()
       await fileActions.createFile.click();
 
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
@@ -78,9 +82,9 @@ if (!mobile) {
       await page.waitForTimeout(5000);
 
       await fileActions.share(mobile);
-      await fileActions.shareLink.click();
+      await fileActions.clickLinkTab(mobile);
       await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-      await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+      await fileActions.shareCopyLink.click();
       const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
       pageOne = await browser.newPage();
@@ -106,7 +110,6 @@ if (!mobile) {
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
       await page.waitForTimeout(5000);
 
-      await fileActions.filemenuClick(mobile);
       await fileActions.history(mobile);
       await fileActions.historyPrev.click()
       

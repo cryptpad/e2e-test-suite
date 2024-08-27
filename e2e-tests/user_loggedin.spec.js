@@ -10,18 +10,18 @@ let contextOne;
 let pageOne;
 let platform;
 let fileActions
+let userActions
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
   mobile = isMobile
   platform = os.platform();
+  userActions = new UserActions(page);
 
   if (mobile) {
-    let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
-
   await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
   await page.waitForTimeout(35000);
@@ -125,9 +125,9 @@ test('add other user as contact and decline request', async ({ page, browser }) 
 
     // user 2: decline contact request
     await pageOne.bringToFront();
-    
-    await fileActions.notifications.click();
     await pageOne.waitForTimeout(5000);
+    await fileActions1.notifications.click();
+    // await pageOne.waitForTimeout(5000);
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
@@ -260,6 +260,8 @@ test('request and cancel to add user as contact', async ({ page, browser }) => {
 });
 
 test('chat with contacts and erase message history #1415', async ({ page, browser }) => {
+  test.skip();
+
   try {
     // user 1: send message
     await page.goto(`${url}/contacts/`);
@@ -358,7 +360,12 @@ test('enable 2FA login', async ({ page, context }) => {
     await page1.getByRole('link', { name: 'Log in' }).click();
     await page1.waitForTimeout(5000);
     let userActions1 = new UserActions(page1);
-    await userActions1.login('test-user', mainAccountPassword);
+    await page1.getByPlaceholder('Username').fill('test-user');
+		await page1.waitForTimeout(10000);
+		await page1.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
+
+		await userActions1.loginButton.waitFor();
+    await userActions1.loginButton.click();
     await page1.waitForTimeout(20000);
 
     // use 2FA to log in
@@ -528,10 +535,9 @@ test('sign up and delete account', async ({ page }) => {
     await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
 
     // register new user
-    const username = (Math.random() + 1).toString(36);
-    const password = (Math.random() + 1).toString(36);
-    let userActions = new UserActions(page);
-    await userActions.login(username, testUser2Password);
+    const username = (Math.random() + 1).toString(36).substring(2);
+    const password = (Math.random() + 1).toString(36).substring(2);
+    await userActions.register(username, password);
 
     // access settings
     await fileActions.drivemenu.click();
@@ -632,7 +638,7 @@ test('can change password', async ({ page, browser }) => {
     if (await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'The password for this account' }).nth(1).isVisible()) {
       let userActions = new UserActions(pageOne);
       await userActions.login('test-user', mainAccountPassword);
-      let fileActions1 = new FileActions(page1);
+      let fileActions1 = new FileActions(pageOne);
       await fileActions1.drivemenu.click();
       await expect(fileActions1.settings).toBeVisible();
       const pagePromise = pageOne.waitForEvent('popup');

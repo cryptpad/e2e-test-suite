@@ -146,6 +146,7 @@ export class Cleanup {
 
     if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).isVisible()) {
       await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
+      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
     }
 
     if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {

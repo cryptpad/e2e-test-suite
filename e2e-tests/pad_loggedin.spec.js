@@ -77,7 +77,7 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     await fileActions.share(mobile);
     await fileActions.clickLinkTab(mobile)
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
     if (mobile) {
@@ -107,7 +107,6 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     await page.keyboard.press('Enter');
     await page.waitForTimeout(5000);
 
-    await fileActions.filemenuClick(mobile);
     await fileActions.history(mobile);
     await fileActions.historyPrev.click()
     await expect(fileActions.padeditor.getByText('And yet more test text by test-user!')).toHaveCount(0);

@@ -403,6 +403,7 @@ test('form - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
+    await page.waitForTimeout(3000);
     await fileActions.driveContentFolder.getByText('example form template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await fileActions.okButton.click();

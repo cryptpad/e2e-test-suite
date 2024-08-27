@@ -665,7 +665,7 @@ test('form - export file', async ({ page }) => {
     const actualFormJSONString = JSON.stringify(actualFormJSONObject);
 
     const testFormJSONString = /^{"form":{"1":{"type":"md","opts":{"text":"example text"}},"2":{"type":"radio","opts":{"values":\[{"uid":"([a-z0-9]{10,11})","v":"test option one"},{"uid":"([a-z0-9]{10,11})","v":"test option two"},{"uid":"([a-z0-9]{10,11})","v":"test option three"}]},"q":"example question\?"}},"order":\["1","2"],"version":1}$/;
-
+    console.log(actualFormJSONString)
     if (testFormJSONString.test(actualFormJSONString)) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - export file', status: 'passed', reason: 'Can create and export a Form into a .json' } })}`);
     } else {

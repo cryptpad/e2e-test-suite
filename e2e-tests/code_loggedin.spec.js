@@ -79,9 +79,9 @@ test('code - history (previous author)', async ({ page, browser }) => {
 
 
     await fileActions.share(mobile);
-    await page.frameLocator('#sbox-secure-iframe').getByText('Link', { exact: true }).click();
+    await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
     pageOne = await browser.newPage();

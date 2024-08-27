@@ -6,16 +6,20 @@ const { FileActions } = require('./fileactions.js');
 
 let pageOne;
 let cleanUp;
+let userActions
+// let fileActions
 
 test.beforeEach(async ({ page }, testInfo) => {
   await page.goto(`${url}`);
   await page.waitForTimeout(15000);
+  userActions = new UserActions(page);
+  // fileActions = new UserActions(page);
+
 });
 
 test('test-user account setup', async ({ page }) => {
   try {
-    let userActions = new UserActions(page);
-    await userActions.login('test-user', mainAccountPassword);
+    await userActions.register('test-user', mainAccountPassword);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user account setup', status: 'passed', reason: 'Can register test-user' } })}`);
   } catch (e) {
@@ -27,8 +31,7 @@ test('test-user account setup', async ({ page }) => {
 test('testuser account setup', async ({ page }) => {
   try {
     /// registering the account
-    let userActions = new UserActions(page);
-    await userActions.login('testuser', testUserPassword);
+    await userActions.register('testuser', testUserPassword);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'testuser account setup', status: 'passed', reason: 'Can register testuser' } })}`);
   } catch (e) {
@@ -40,8 +43,7 @@ test('testuser account setup', async ({ page }) => {
 test('test-user2 account setup', async ({ page }) => {
   try {
     /// registering the account
-    let userActions = new UserActions(page);
-    await userActions.login('test-user2', testUser2Password);
+    await userActions.register('test-user2', testUser2Password);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user2 account setup', status: 'passed', reason: 'Can register test-user2' } })}`);
   } catch (e) {
@@ -53,8 +55,7 @@ test('test-user2 account setup', async ({ page }) => {
 test('test-user3 account setup', async ({ page }) => {
   try {
     /// registering the account
-    let userActions = new UserActions(page);
-    await userActions.login('test-user3', testUser3Password);
+    await userActions.register('test-user3', testUser3Password);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user3 account setup', status: 'passed', reason: 'Can register test-user3' } })}`);
   } catch (e) {
@@ -65,7 +66,6 @@ test('test-user3 account setup', async ({ page }) => {
 
 test('create test team', async ({ page }) => {
   try {
-    let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
 
     await page.goto(`${url}/teams`);
@@ -75,6 +75,8 @@ test('create test team', async ({ page }) => {
     await page.waitForTimeout(5000);
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test team');
+    let   fileActions = new FileActions(page);
+
     await fileActions.createFile.click();
 
     await page.waitForTimeout(10000);
@@ -91,11 +93,11 @@ test('create test team', async ({ page }) => {
 
 test('link test-user and testuser as contacts', async ({ page, browser }, testInfo) => {
   try {
-    let userActions = new UserActions(page);
-    await userActions.login('test-user2', testUser2Password);
+    await userActions.login('testuser', testUserPassword);
     await page.goto(`${url}/profile`);
-    let fileActions = new FileActions(page);
-    await fileActions.share(mobile);
+    let   fileActions = new FileActions(page);
+
+    await fileActions.share(false);
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
 
     // login test-user
@@ -110,7 +112,6 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
-
     await page.waitForTimeout(7000);
     await fileActions.notifications.click();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
@@ -132,7 +133,6 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
 
 test('link test-user and test-user3 as contacts', async ({ page, browser }, testInfo) => {
   try {
-    let userActions = new UserActions(page);
     await userActions.login('test-user3', testUser3Password);
     await page.goto(`${url}/profile`);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
@@ -152,6 +152,8 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
 
     await page.waitForTimeout(7000);
+        let   fileActions = new FileActions(page);
+
     await fileActions.notifications.click();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
@@ -172,7 +174,6 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
 
 test('add test-user3 to test team', async ({ page, browser }) => {
   try {
-    let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
     await page.goto(`${url}/teams`);
 
@@ -218,7 +219,6 @@ test('create test files in test-user drive', async ({ page }) => {
   try {
     test.setTimeout(510000);
 
-    let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
 
     cleanUp = new Cleanup(page);
@@ -229,6 +229,8 @@ test('create test files in test-user drive', async ({ page }) => {
     }
 
     await page.goto(`${url}/pad/`);
+    let fileActions = new FileActions(page);
+
     await fileActions.createFile.click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
@@ -356,7 +358,6 @@ test('create test files in team drive and add avatar', async ({ page }) => {
   try {
     test.setTimeout(2100000);
 
-    let userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
 
     await page.goto(`${url}/teams`);
@@ -370,6 +371,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
       const name = `test ${docNames[i]}`;
       await cleanUp.cleanTeamDrive(name);
     }
+    let fileActions = new FileActions(page);
 
     await fileActions.driveContentFolder.getByText('New').click();
     const page2Promise = page.waitForEvent('popup');

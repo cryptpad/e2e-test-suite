@@ -355,14 +355,16 @@ test('can download drive contents', async ({ page }) => {
           .on('entry', function (entry) {
             const fileName = entry.path;
             actualFiles.push(fileName);
+            console.log(fileName)
           })
           .on('finish', resolve);
       });
     }
 
     async function compareFiles () {
-      unzipDownload()
+      await unzipDownload()
       const checker = (arr, target) => target.every(v => arr.includes(v));
+      console.log(actualFiles);
       const check = checker(actualFiles, expectedFiles);
       if (check) {
         return true;
@@ -370,8 +372,8 @@ test('can download drive contents', async ({ page }) => {
         return false;
       }
     }
-
-    if (compareFiles()) {
+    const files = await compareFiles()
+    if (files) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents', status: 'passed', reason: 'Can download drive contents' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents ', status: 'failed', reason: 'Can\'t download drive contents' } })}`);

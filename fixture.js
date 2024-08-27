@@ -20,7 +20,7 @@ exports.test = base.test.extend({
   page: async ({ page, playwright }, use, testInfo) => {
     test.setTimeout(210000);
     browserName = testInfo.project.name.split(/@/)[0];
-    loggedin = testInfo.titlePath[0].match(/loggedin/);
+    loggedin = testInfo.titlePath[0].match(/loggedin/) | testInfo.titlePath[0].match(/signedin/) 
     if (testInfo.project.name.match(/browserstack/)) {
       const mobile = testInfo.project.use.mobile;
       if (mobile) {

@@ -162,6 +162,7 @@ docNames.forEach(function (name) {
   });
 
   test(`anon - ${name} - create from drive - move to trash #1263`, async ({ page, context }) => {
+    test.fixme(name === 'sheet', 'sheet doc status bug');
     try {
       await page.goto(`${url}/drive`);
       if (name === 'sheet' | name === 'diagram') {
@@ -243,6 +244,7 @@ docNames.forEach(function (name) {
   });
 
   test(`anon - ${name} - move to trash #1263`, async ({ page, context }) => {
+    test.fixme(name === 'sheet', 'sheet doc status bug');
     try {
       await page.goto(`${url}/${name}/`);
       if (name === 'sheet' | name === 'diagram') {
@@ -256,11 +258,8 @@ docNames.forEach(function (name) {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
 
       await page.waitForTimeout(3000);
-      if (mobile) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file').click();
-      } else {
-        await fileActions.filemenuClick(mobile);
-      }
+
+      await fileActions.filemenuClick(mobile);
       await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
 
       await fileActions.okButton.click();

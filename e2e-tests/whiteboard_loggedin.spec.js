@@ -48,7 +48,7 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await fileActions.shareLink.click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' }).click();
+    await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
     pageOne = await browser.newPage();
