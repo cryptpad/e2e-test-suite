@@ -4,7 +4,7 @@
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.5.2",
     "dotenv": "^16.0.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "otpauth": "^9.2.2",
     "playwright-core": "1.33",
     "unzip": "^0.1.11",
