@@ -6,17 +6,17 @@ export class Cleanup {
    */
   constructor (page) {
     this.page = page;
-    this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder')
+    this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder');
   }
 
-  async cleanFiles(title) {
+  async cleanFiles (title) {
     await this.page.goto(`${url}/drive`);
-    await this.page.waitForTimeout(10000);   
+    await this.page.waitForTimeout(10000);
     await fileActions.drivemenu.waitFor();
-    let fileCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).count()
-    console.log(fileCount)
+    let fileCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).count();
+    console.log(fileCount);
     if (fileCount > 0) {
-        console.log('fileCount')
+      console.log('fileCount');
 
       while (fileCount > 0) {
         if (fileCount > 1) {
@@ -30,15 +30,14 @@ export class Cleanup {
         fileCount = fileCount - 1;
       }
     }
-  
   }
 
-  async cleanCalendar() {
+  async cleanCalendar () {
     await this.page.goto(`${url}/calendar`);
     await this.page.waitForTimeout(5000);
-    await this.page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor()
-    let eventCount = await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count()
-    console.log(eventCount)
+    await this.page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
+    let eventCount = await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count();
+    console.log(eventCount);
     if (eventCount > 0) {
       while (eventCount > 0) {
         if (eventCount > 1) {
@@ -60,10 +59,10 @@ export class Cleanup {
     await this.page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first().click();
 
     await this.page.waitForTimeout(5000);
-    let elementCount = await this.driveContentFolder.filter({ hasText: 'template' }).count()
-    console.log(elementCount)
+    let elementCount = await this.driveContentFolder.filter({ hasText: 'template' }).count();
+    console.log(elementCount);
     if (elementCount > 0) {
-       while (elementCount > 0) {
+      while (elementCount > 0) {
         if (elementCount > 1) {
           await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: 'template' }).nth(elementCount - 1).click({ button: 'right' });
         } else {
@@ -85,10 +84,10 @@ export class Cleanup {
   async cleanUserDrive (file) {
     await this.page.goto(`${url}/drive`);
     await this.page.waitForTimeout(10000);
-    console.log('beep')
+    console.log('beep');
     let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: file }).count();
     if (elementCount > 0) {
-        console.log('boop')
+      console.log('boop');
 
       while (elementCount > 0) {
         if (elementCount > 1) {

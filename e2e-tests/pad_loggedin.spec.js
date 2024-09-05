@@ -12,14 +12,14 @@ let pageOne;
 let mobile;
 let cleanUp;
 let contextOne;
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
@@ -36,7 +36,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test('pad - save as and import template', async ({ page }) => {
   try {
-    await fileActions.createFile.waitFor()
+    await fileActions.createFile.waitFor();
     await fileActions.createFile.click();
     await fileActions.padeditor.locator('html').click();
     await fileActions.padeditor.locator('body').fill('example template content');
@@ -75,7 +75,7 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     await fileActions.padeditor.locator('body').type('Test text by test-user');
 
     await fileActions.share(mobile);
-    await fileActions.clickLinkTab(mobile)
+    await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -87,7 +87,7 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     }
     pageOne = await contextOne.newPage();
     await pageOne.goto(`${clipboardText}`);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await pageOne.waitForTimeout(5000);
     await fileActions1.padeditor.locator('body').click();
     await pageOne.keyboard.press('Enter');
@@ -108,7 +108,7 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click()
+    await fileActions.historyPrev.click();
     await expect(fileActions.padeditor.getByText('And yet more test text by test-user!')).toHaveCount(0);
     await expect(fileActions.padeditor.getByText('And more test text by test-user too!')).toHaveCount(0);
 

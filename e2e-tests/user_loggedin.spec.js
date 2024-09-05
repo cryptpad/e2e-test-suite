@@ -9,13 +9,13 @@ let mobile;
 let contextOne;
 let pageOne;
 let platform;
-let fileActions
-let userActions
+let fileActions;
+let userActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
-  mobile = isMobile
+  mobile = isMobile;
   platform = os.platform();
   userActions = new UserActions(page);
 
@@ -38,7 +38,7 @@ test('can change display name', async ({ page }) => {
     const pagePromise = page.waitForEvent('popup');
     await fileActions.settings.click();
     const page1 = await pagePromise;
-    let fileActions1 = new FileActions(page1);
+    const fileActions1 = new FileActions(page1);
 
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
@@ -100,7 +100,7 @@ test('add other user as contact and decline request', async ({ page, browser }) 
     const contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
     pageOne = await contextOne.newPage();
     await pageOne.goto(`${url}/profile`);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await pageOne.waitForTimeout(15000);
     await fileActions1.shareLink.click();
     const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
@@ -158,7 +158,7 @@ test('add and remove other user as contact', async ({ page, browser }) => {
     contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
     pageOne = await contextOne.newPage();
     await pageOne.goto(`${url}/profile`);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await pageOne.waitForTimeout(15000);
     await fileActions1.shareLink.click();
     const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
@@ -223,7 +223,7 @@ test('request and cancel to add user as contact', async ({ page, browser }) => {
     const contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
     pageOne = await contextOne.newPage();
     await pageOne.goto(`${url}/profile`);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await pageOne.waitForTimeout(15000);
     await fileActions1.shareLink.click();
     const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
@@ -356,15 +356,15 @@ test('enable 2FA login', async ({ page, context }) => {
     // log out and log back in
     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
     await page1.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
-    
+
     await page1.getByRole('link', { name: 'Log in' }).click();
     await page1.waitForTimeout(5000);
-    let userActions1 = new UserActions(page1);
+    const userActions1 = new UserActions(page1);
     await page1.getByPlaceholder('Username').fill('test-user');
-		await page1.waitForTimeout(10000);
-		await page1.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
+    await page1.waitForTimeout(10000);
+    await page1.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
 
-		await userActions1.loginButton.waitFor();
+    await userActions1.loginButton.waitFor();
     await userActions1.loginButton.click();
     await page1.waitForTimeout(20000);
 
@@ -385,7 +385,7 @@ test('enable 2FA login', async ({ page, context }) => {
     await page1.waitForTimeout(20000);
     await page1.reload();
     await page1.waitForTimeout(20000);
-    let fileActions1 = new FileActions(page1);
+    const fileActions1 = new FileActions(page1);
 
     // disable 2FA
     await fileActions1.drivemenu.click();
@@ -477,7 +477,7 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
     await page1.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
     await page1.getByRole('link', { name: 'Log in' }).click();
     await page1.waitForTimeout(5000);
-    let userActions1 = new UserActions(page1);
+    const userActions1 = new UserActions(page1);
     await userActions1.login(username, testUser2Password);
     await page1.waitForTimeout(20000);
     await expect(page1.getByText('This account is protected')).toBeVisible();
@@ -588,13 +588,13 @@ test('can change password', async ({ page, browser }) => {
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).waitFor();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
     await page1.waitForTimeout(20000);
-    let fileActions1 = new FileActions(page1);
+    const fileActions1 = new FileActions(page1);
     await fileActions1.drivemenu.click();
     await page1.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
     await expect(page1).toHaveURL(`${url}`, { timeout: 100000 });
 
     // login using new password
-    let userActions1 = new UserActions(page1);
+    const userActions1 = new UserActions(page1);
     await userActions1.login('test-user', mainAccountPassword);
 
     // access settings
@@ -636,9 +636,9 @@ test('can change password', async ({ page, browser }) => {
     await pageOne.waitForTimeout(10000);
 
     if (await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'The password for this account' }).nth(1).isVisible()) {
-      let userActions = new UserActions(pageOne);
+      const userActions = new UserActions(pageOne);
       await userActions.login('test-user', mainAccountPassword);
-      let fileActions1 = new FileActions(pageOne);
+      const fileActions1 = new FileActions(pageOne);
       await fileActions1.drivemenu.click();
       await expect(fileActions1.settings).toBeVisible();
       const pagePromise = pageOne.waitForEvent('popup');

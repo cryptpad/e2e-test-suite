@@ -17,9 +17,9 @@ const caps = {
   'browserstack.local': !!process.env.PW_URL.includes('localhost'),
   // "browserstack.idleTimeout" : "300",
   'browserstack.playwrightVersion': clientPlaywrightVersion,
-  'bstack:options' : {
-    "timezone" : "London",
-  },
+  'bstack:options': {
+    timezone: 'London'
+  }
 
 };
 

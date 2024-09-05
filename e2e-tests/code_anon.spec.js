@@ -14,7 +14,7 @@ let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
 
@@ -28,7 +28,7 @@ test('anon - code - input text #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'test text')
+    await fileActions.typeTestTextCode(mobile, 'test text');
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
@@ -40,13 +40,13 @@ test('anon - code - input text #1367', async ({ page }) => {
 });
 
 test('code - file menu - history #1367', async ({ page }) => {
-  test.fixme(mobile, 'mobile editor preview bug'); 
+  test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'test text')
+    await fileActions.typeTestTextCode(mobile, 'test text');
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
-    await fileActions.history(mobile)
+    await fileActions.history(mobile);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
@@ -62,7 +62,7 @@ test('code - toggle toolbar #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden();
-    await fileActions.toolbar.click()
+    await fileActions.toolbar.click();
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - toggle toolbar', status: 'passed', reason: 'Can toggle toolbar in Code document' } })}`);
@@ -75,10 +75,10 @@ test('code - toggle toolbar #1367', async ({ page }) => {
 test('code - toggle preview #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
-    await fileActions.typeTestTextCode(mobile,'test text')
+    await fileActions.typeTestTextCode(mobile, 'test text');
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-    await fileActions.togglePreview(mobile)
+    await fileActions.togglePreview(mobile);
 
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
@@ -93,7 +93,7 @@ test('code -  make a copy #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'test text')
+    await fileActions.typeTestTextCode(mobile, 'test text');
 
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
     await fileActions.filemenuClick(mobile);
@@ -121,8 +121,8 @@ test('code - import file #1367', async ({ page, context }) => {
 
   try {
     await fileActions.codeeditor.waitFor();
-    await page.waitForTimeout(10000)
-    await fileActions.filemenuClick(mobile)
+    await page.waitForTimeout(10000);
+    await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
@@ -147,7 +147,7 @@ test('code - export (md)', async ({ page }) => {
 
   try {
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'test text')
+    await fileActions.typeTestTextCode(mobile, 'test text');
     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
@@ -160,7 +160,7 @@ test('code - export (md)', async ({ page }) => {
     await download.saveAs('/tmp/test code');
 
     const readData = fs.readFileSync('/tmp/test code', 'utf8');
-    console.log(readData)
+    console.log(readData);
     if (readData.trim() === 'test text') {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'passed', reason: 'Can export Code document as .md' } })}`);
     } else {
@@ -196,7 +196,7 @@ test('code - export (md)', async ({ page }) => {
 //     await page.keyboard.press(`${key}+a`);
 //     await page.keyboard.press('Backspace');
 //     await page.waitForTimeout(3000);
-    
+
 //     await fileActions.history(mobile)
 //     await fileActions.historyPrev.click();
 //     await fileActions.historyPrev.click();

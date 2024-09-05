@@ -7,7 +7,7 @@ let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
   fileActions = new FileActions(page);
 });
 

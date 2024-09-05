@@ -12,12 +12,12 @@ const local = !!process.env.PW_URL.includes('localhost');
 
 let mobile;
 let cleanUp;
-let fileActions
-let userActions
+let fileActions;
+let userActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
 
   if (mobile) {
     userActions = new UserActions(page);
@@ -324,7 +324,7 @@ test('drive - search', async ({ page }) => {
 
 test('can download drive contents', async ({ page }) => {
   try {
-    const menu = fileActions.drivemenu
+    const menu = fileActions.drivemenu;
     await menu.click();
     await page.waitForTimeout(6000);
     await expect(fileActions.settings).toBeVisible();
@@ -355,14 +355,14 @@ test('can download drive contents', async ({ page }) => {
           .on('entry', function (entry) {
             const fileName = entry.path;
             actualFiles.push(fileName);
-            console.log(fileName)
+            console.log(fileName);
           })
           .on('finish', resolve);
       });
     }
 
     async function compareFiles () {
-      await unzipDownload()
+      await unzipDownload();
       const checker = (arr, target) => target.every(v => arr.includes(v));
       console.log(actualFiles);
       const check = checker(actualFiles, expectedFiles);
@@ -372,7 +372,7 @@ test('can download drive contents', async ({ page }) => {
         return false;
       }
     }
-    const files = await compareFiles()
+    const files = await compareFiles();
     if (files) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents', status: 'passed', reason: 'Can download drive contents' } })}`);
     } else {

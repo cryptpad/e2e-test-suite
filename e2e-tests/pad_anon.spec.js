@@ -12,7 +12,6 @@ let browserName;
 let browserstackMobile;
 let fileActions;
 
-
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
 
@@ -133,8 +132,8 @@ test('pad - import file', async ({ page }) => {
 
   try {
     await fileActions.padeditor.locator('html').waitFor();
-    await page.waitForTimeout(10000)
-    await fileActions.filemenuClick(mobile)
+    await page.waitForTimeout(10000);
+    await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
@@ -309,7 +308,7 @@ test('pad - share at a moment in history', async ({ page, context }) => {
     await page.waitForTimeout(7000);
     await fileActions.padeditor.getByText('Another moment in history').fill('Yet another moment in history');
     await page.waitForTimeout(7000);
-    await fileActions.history(mobile)
+    await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
 

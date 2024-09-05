@@ -13,7 +13,7 @@ let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
@@ -27,7 +27,7 @@ test('kanban - new board', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('New board')).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByAltText('Edit this board').nth(3).click();
-    await fileActions.deletebutton.click()
+    await fileActions.deletebutton.click();
     await page.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('New board')).toHaveCount(0);
@@ -47,7 +47,7 @@ test('kanban - new list item', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'example item' }).getByAltText('Edit this card').first().click();
-    await fileActions.deletebutton.click()
+    await fileActions.deletebutton.click();
     await page.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
 
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toHaveCount(0);
@@ -133,7 +133,7 @@ test('kanban - view history', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByAltText('Edit this board').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new item title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
-    await fileActions.history()
+    await fileActions.history();
 
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('new item title')).toHaveCount(0);
@@ -152,7 +152,7 @@ test('kanban - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.filemenuClick(mobile)
+    await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()

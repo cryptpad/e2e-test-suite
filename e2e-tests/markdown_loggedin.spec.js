@@ -11,7 +11,7 @@ const local = !!process.env.PW_URL.includes('localhost');
 let pageOne;
 let mobile;
 let cleanUp;
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   mobile = testInfo.project.use.mobile;
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
@@ -37,10 +37,10 @@ test.beforeEach(async ({ page }, testInfo) => {
 test('slide - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
-    await fileActions.filesaved.waitFor()
-    await fileActions.codeeditor.waitFor()
+    await fileActions.filesaved.waitFor();
+    await fileActions.codeeditor.waitFor();
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'Test text')
+    await fileActions.typeTestTextCode(mobile, 'Test text');
     await page.waitForTimeout(5000);
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example markdown template');
@@ -103,7 +103,7 @@ test('slide - history (previous author)', async ({ page, browser }) => {
     await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click()
+    await fileActions.historyPrev.click();
 
     await expect(fileActions.codeeditor.getByText('And yet more test text by test-user!')).toHaveCount(0);
     await expect(fileActions.codeeditor.getByText('And more test text by test-user too!')).toHaveCount(0);

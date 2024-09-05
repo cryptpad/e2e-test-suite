@@ -15,10 +15,10 @@ let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
@@ -35,7 +35,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test('kanban - save as and import template', async ({ page }) => {
   try {
-    await fileActions.createFile.waitFor()
+    await fileActions.createFile.waitFor();
     await fileActions.createFile.click();
 
     await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
@@ -72,7 +72,7 @@ test('kanban - save as and import template', async ({ page }) => {
 if (!mobile) {
   test('kanban - history (previous author)', async ({ page, browser }) => {
     try {
-      await fileActions.createFile.waitFor()
+      await fileActions.createFile.waitFor();
       await fileActions.createFile.click();
 
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
@@ -111,8 +111,8 @@ if (!mobile) {
       await page.waitForTimeout(5000);
 
       await fileActions.history(mobile);
-      await fileActions.historyPrev.click()
-      
+      await fileActions.historyPrev.click();
+
       await expect(page.frameLocator('#sbox-iframe').getByText('and some more test text by test user')).toHaveCount(0);
       await expect(page.frameLocator('#sbox-iframe').getByText('and some more text by test user here')).toHaveCount(0);
 

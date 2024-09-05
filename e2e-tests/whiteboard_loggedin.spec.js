@@ -4,14 +4,14 @@ require('dotenv').config();
 const { Cleanup } = require('./cleanup.js');
 const { FileActions } = require('./fileactions.js');
 
-let pageOne; 
+let pageOne;
 const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let cleanUp;
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  mobile = isMobile
+  mobile = isMobile;
   const template = testInfo.title.match(/import template/);
   if (template) {
     cleanUp = new Cleanup(page);
@@ -22,7 +22,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   fileActions = new FileActions(page);
   await page.waitForTimeout(10000);
 });
-
 
 test('screenshot whiteboard - display history (previous author)', async ({ page, browser }) => {
   try {
@@ -43,7 +42,7 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(3000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
     await fileActions.shareLink.click();
@@ -71,8 +70,8 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
 
     await fileActions.filemenuClick(mobile);
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click()
-    await fileActions.historyPrev.click()
+    await fileActions.historyPrev.click();
+    await fileActions.historyPrev.click();
     await expect(pageOne).toHaveScreenshot();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'failed', reason: 'Can\'t clear whiteboard canvas' } })}`);

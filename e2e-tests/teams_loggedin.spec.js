@@ -12,17 +12,17 @@ let mobile;
 let browserName;
 let cleanUp;
 let browserstackMobile;
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
-  mobile = isMobile
+  mobile = isMobile;
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
   await page.goto(`${url}/teams`);
@@ -122,8 +122,6 @@ test(' can access team public signing key', async ({ page }) => {
   }
 });
 
-
-
 test('(screenshot) change team avatar', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
@@ -204,14 +202,14 @@ test('can download team drive', async ({ page }) => {
           .on('entry', function (entry) {
             const fileName = entry.path;
             actualFiles.push(fileName);
-            console.log(fileName)
+            console.log(fileName);
           })
           .on('finish', resolve);
       });
     }
 
     async function compareFiles () {
-      await unzipDownload()
+      await unzipDownload();
       const checker = (arr, target) => target.every(v => arr.includes(v));
       console.log(actualFiles);
       const check = checker(actualFiles, expectedFiles);
@@ -221,7 +219,7 @@ test('can download team drive', async ({ page }) => {
         return false;
       }
     }
-    const files = await compareFiles()
+    const files = await compareFiles();
     if (files) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download team drive', status: 'passed', reason: 'Can download team drive contents' } })}`);
     } else {
@@ -250,8 +248,8 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
     await pageOne.waitForTimeout(10000);
-    
-    let fileActions1 = new FileActions(pageOne);
+
+    const fileActions1 = new FileActions(pageOne);
     await fileActions1.notifications.click();
 
     if (!await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').isVisible({ timeout: 3000 })) {
@@ -276,10 +274,10 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
           await pageOne.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').click();
         }
       }
-       await pageOne.reload()
-          await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('testuser').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite', exact: true }).click();
+      await pageOne.reload();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite members' }).click();
+      await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('testuser').click();
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Invite', exact: true }).click();
     }
 
     // contact accepts team invitation
@@ -365,7 +363,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
     await page.waitForTimeout(5000);
     if (!await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {
-        await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
+      await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
     }
 
     /// log in other user
@@ -531,7 +529,7 @@ test('promote team viewer to owner', async ({ page, browser }) => {
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
     await pageOne.waitForTimeout(10000);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await fileActions1.notifications.click();
 
     // user 2: team viewer accepts promotion to owner
@@ -628,7 +626,7 @@ test('add contact to team and contact leaves team', async ({ page, browser }) =>
     pageOne = await newContext.newPage();
     await pageOne.goto(`${url}/drive`);
     await pageOne.waitForTimeout(10000);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await fileActions1.notifications.click();
 
     if (!await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').isVisible({ timeout: 3000 })) {

@@ -10,14 +10,14 @@ const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let pageOne;
 let cleanUp;
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
@@ -36,10 +36,10 @@ test('code - save as and import template', async ({ page }) => {
   try {
     await page.waitForTimeout(3000);
     await fileActions.createFile.click();
-    await fileActions.filesaved.waitFor()
-    await fileActions.codeeditor.waitFor()
+    await fileActions.filesaved.waitFor();
+    await fileActions.codeeditor.waitFor();
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'example template content')
+    await fileActions.typeTestTextCode(mobile, 'example template content');
 
     await expect(fileActions.codeeditor.getByText('example template content')).toBeVisible();
     await fileActions.saveTemplate(mobile, local);
@@ -71,12 +71,11 @@ test('code - save as and import template', async ({ page }) => {
 test('code - history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
-    await fileActions.filesaved.waitFor()
-    await fileActions.codeeditor.waitFor()
+    await fileActions.filesaved.waitFor();
+    await fileActions.codeeditor.waitFor();
     await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'Test text by test-user')
+    await fileActions.typeTestTextCode(mobile, 'Test text by test-user');
     await expect(fileActions.codeeditor.getByText('Test text by test-user')).toBeVisible();
-
 
     await fileActions.share(mobile);
     await fileActions.clickLinkTab(mobile);
@@ -86,12 +85,12 @@ test('code - history (previous author)', async ({ page, browser }) => {
 
     pageOne = await browser.newPage();
     await pageOne.goto(`${clipboardText}`);
-    let fileActions1 = new FileActions(pageOne);
+    const fileActions1 = new FileActions(pageOne);
     await pageOne.waitForTimeout(5000);
     await fileActions1.codeeditor.click();
     await pageOne.keyboard.press('Enter');
     await fileActions1.codeeditor.click();
-    await fileActions1.typeTestTextCode(mobile, 'Some more test text by anon')
+    await fileActions1.typeTestTextCode(mobile, 'Some more test text by anon');
     await pageOne.keyboard.press('Enter');
     await pageOne.waitForTimeout(5000);
     await expect(fileActions.codeeditor.getByText('Some more test text by anon')).toBeVisible();
@@ -104,7 +103,7 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await page.waitForTimeout(5000);
     await expect(fileActions.codeeditor.getByText('And yet more test text by test-user too!')).toBeVisible();
 
-    await fileActions.history(mobile)
+    await fileActions.history(mobile);
 
     await fileActions.historyPrev.click();
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And yet more test text by test-user!')).toHaveCount(0);

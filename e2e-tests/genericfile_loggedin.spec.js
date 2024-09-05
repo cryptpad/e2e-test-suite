@@ -15,23 +15,23 @@ let cleanUp;
 let title;
 let titleName;
 let contextOne;
-let fileActions
+let fileActions;
 let isBrowserstack;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
 
-  mobile = isMobile
+  mobile = isMobile;
   browserName = testInfo.project.name.split(/@/)[0];
-  isBrowserstack = testInfo.project.name.match(/browserstack/) ? true : false
+  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
   fileActions = new FileActions(page);
   const name = testInfo.title.split(' ')[0];
-  const titleDate = await fileActions.titleDate(mobile, isBrowserstack)
+  const titleDate = await fileActions.titleDate(mobile, isBrowserstack);
   if (name === 'pad') {
     titleName = 'Rich text -';
     title = `${titleName} ${titleDate}`;
@@ -58,7 +58,6 @@ const docNames = ['pad'];
 docNames.forEach(function (name) {
   test(`${name} - create without owner`, async ({ page }) => {
     try {
-
       await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().waitFor();
       await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Owned document' }).locator('span').first().click();
       await fileActions.createFile.click();
@@ -105,7 +104,7 @@ docNames.forEach(function (name) {
   //           }
   //         }
   //       }
-        
+
   //       const __DateNowOffset = ${mockedDate} - Date.now()
   //       const __DateNow = Date.now
   //       Date.now = () => __DateNow() + __DateNowOffset
@@ -127,23 +126,21 @@ docNames.forEach(function (name) {
 
   test(`${name} - tag`, async ({ page }) => {
     try {
-
       await fileActions.createFile.click();
       await page.waitForTimeout(5000);
       if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
       } else {
-
         await fileActions.filemenuClick(mobile);
-        await fileActions.clickTags(local)
-        
+        await fileActions.clickTags(local);
+
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
         await fileActions.okButton.click();
       }
 
       await page.waitForTimeout(5000);
       await fileActions.filemenuClick(mobile);
-      await fileActions.clickTags(local)
+      await fileActions.clickTags(local);
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click();
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
       await page.waitForTimeout(3000);
@@ -180,7 +177,7 @@ docNames.forEach(function (name) {
 
       // add test-user3 as owner
       await page.waitForTimeout(5000);
-      console.log(await fileActions.title(title))
+      console.log(await fileActions.title(title));
       await expect(await fileActions.title(title)).toBeVisible({ timeout: 5000 });
       await page.waitForTimeout(5000);
       await fileActions.access(mobile);
@@ -196,7 +193,7 @@ docNames.forEach(function (name) {
       pageOne = await context.newPage();
       await pageOne.goto(`${url}/drive`);
       await pageOne.waitForTimeout(10000);
-      let fileActions1 = new FileActions(pageOne);
+      const fileActions1 = new FileActions(pageOne);
       await fileActions1.notifications.click();
 
       // accept ownership invitation
@@ -212,8 +209,8 @@ docNames.forEach(function (name) {
       const pageTwo = await pagePromise;
       await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
       await pageTwo.bringToFront();
-      let fileActions2 = new FileActions(pageTwo);
-      await fileActions2.filesaved.waitFor()
+      const fileActions2 = new FileActions(pageTwo);
+      await fileActions2.filesaved.waitFor();
       await expect(await fileActions2.title(title)).toBeVisible();
       await page.bringToFront();
       await fileActions.closeButtonSecure.click();
@@ -288,7 +285,7 @@ docNames.forEach(function (name) {
 
       await fileActions.filemenuClick(mobile);
 
-      await fileActions.moveToTrash.click()
+      await fileActions.moveToTrash.click();
 
       await fileActions.okButton.click();
       if (name === 'diagram') {
@@ -334,7 +331,7 @@ docNames.forEach(function (name) {
 
         await fileActions.share(mobile);
 
-        await fileActions.clickLinkTab(mobile)
+        await fileActions.clickLinkTab(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({ timeout: 3000 });
         await fileActions.shareCopyLink.click();
         await page.waitForTimeout(5000);
@@ -390,7 +387,7 @@ docNames.forEach(function (name) {
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').click({ timeout: 5000 });
         await page1.frameLocator('#sbox-iframe').getByPlaceholder('Type the password here...').fill('newpassword');
         await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-        let fileActions1 = new FileActions(page1);
+        const fileActions1 = new FileActions(page1);
         await expect(await fileActions1.title(title)).toBeVisible({ timeout: 5000 });
 
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `protect ${name} document with and edit password`, status: 'passed', reason: `Can protect ${name} document with and edit password` } })}`);
@@ -414,7 +411,7 @@ docNames.forEach(function (name) {
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
         pageOne = await context.newPage();
         await pageOne.goto(`${url}/drive`);
-        let fileActions1 = new FileActions(pageOne);
+        const fileActions1 = new FileActions(pageOne);
 
         await fileActions1.notifications.click();
 
@@ -425,7 +422,7 @@ docNames.forEach(function (name) {
           await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
         }
         const pageTwo = await page2Promise;
-        let fileActions2 = new FileActions(pageTwo);
+        const fileActions2 = new FileActions(pageTwo);
 
         await fileActions2.filesaved.waitFor();
         await expect(await fileActions2.title(title)).toBeVisible({ timeout: 5000 });
@@ -462,7 +459,7 @@ docNames.forEach(function (name) {
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
         pageOne = await context.newPage();
         await pageOne.goto(`${url}/drive`);
-        let fileActions1 = new FileActions(pageOne);
+        const fileActions1 = new FileActions(pageOne);
         await fileActions1.notifications.waitFor();
         await fileActions1.notifications.click();
         const page1Promise = pageOne.waitForEvent('popup');
@@ -523,7 +520,7 @@ docNames.forEach(function (name) {
         pageOne = await context.newPage();
         await pageOne.goto(`${url}/drive`);
         await pageOne.waitForTimeout(10000);
-        let fileActions1 = new FileActions(pageOne);
+        const fileActions1 = new FileActions(pageOne);
 
         await fileActions1.notifications.click();
 
@@ -534,7 +531,7 @@ docNames.forEach(function (name) {
           await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
         }
         const page2 = await page2Promise;
-        let fileActions2 = new FileActions(page2);
+        const fileActions2 = new FileActions(page2);
 
         await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
         await page2.waitForTimeout(20000);
@@ -563,7 +560,7 @@ docNames.forEach(function (name) {
 
         await fileActions.share(mobile);
 
-        await fileActions.clickLinkTab(mobile)
+        await fileActions.clickLinkTab(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View once and self-destruct').click({ timeout: 3000 });
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Create link' }).click();
         await fileActions.shareCopyLink.click();
@@ -573,7 +570,7 @@ docNames.forEach(function (name) {
         ///
         const contextOne = await browser.newContext();
         const pageOne = await contextOne.newPage();
-        let fileActions1 = new FileActions(pageOne);
+        const fileActions1 = new FileActions(pageOne);
         await pageOne.goto(`${clipboardText}`);
         await pageOne.waitForTimeout(60000);
 
@@ -622,7 +619,7 @@ docNames.forEach(function (name) {
         // share link and attempt to access document anonymously
         await page.waitForTimeout(3000);
         await fileActions.share(mobile);
-        await fileActions.clickLinkTab(mobile)
+        await fileActions.clickLinkTab(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({ timeout: 3000 });
         await fileActions.shareCopyLink.click();
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -636,11 +633,11 @@ docNames.forEach(function (name) {
         await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
 
         // access document as test-user3
-        let userActions = new UserActions(pageOne);
+        const userActions = new UserActions(pageOne);
         await userActions.login('test-user3', testUser3Password);
         await pageOne.goto(`${clipboardText}`);
         await page.waitForTimeout(10000);
-        let fileActions1 = new FileActions(pageOne);
+        const fileActions1 = new FileActions(pageOne);
         await fileActions1.filesaved.waitFor();
 
         await expect(await fileActions1.title(title)).toBeVisible();

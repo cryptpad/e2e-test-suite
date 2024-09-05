@@ -13,15 +13,15 @@ let pageOne;
 let contextOne;
 let fileActions;
 let isBrowserstack;
-let mobile
+let mobile;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(2400000);
-  mobile = isMobile
-  isBrowserstack = testInfo.project.name.match(/browserstack/) ? true : false
+  mobile = isMobile;
+  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
 
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
@@ -98,7 +98,7 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
     fileActions = new FileActions(pageOne);
-    await fileActions.notifications.click()
+    await fileActions.notifications.click();
 
     const page2Promise = pageOne.waitForEvent('popup');
     if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
@@ -145,7 +145,7 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
     pageOne = await context.newPage();
     await pageOne.goto(`${url}/drive`);
     fileActions = new FileActions(pageOne);
-    await fileActions.notifications.click()
+    await fileActions.notifications.click();
 
     const page2Promise = pageOne.waitForEvent('popup');
     if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).count() > 1) {
@@ -209,7 +209,7 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
     await pageOne.frameLocator('#sbox-iframe').getByRole('link', { name: 'log in' }).click();
     await page.waitForTimeout(3000);
 
-    let userActions = new UserActions(pageOne);
+    const userActions = new UserActions(pageOne);
     await userActions.login('test-user', mainAccountPassword);
 
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click();
@@ -234,7 +234,7 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').press('Enter');
     await page.waitForTimeout(5000);
 
-    let fileActions = new FileActions(page);
+    const fileActions = new FileActions(page);
     await fileActions.share(mobile);
 
     await fileActions.shareLink.click();
@@ -265,9 +265,9 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3).press('Enter');
     await page.waitForTimeout(5000);
 
-    await fileActions.history(mobile)
-    await fileActions.historyPrev.click()
-    await fileActions.historyPrev.click()
+    await fileActions.history(mobile);
+    await fileActions.historyPrev.click();
+    await fileActions.historyPrev.click();
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3)).toBeHidden();
     const question = await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(2).textContent();
@@ -326,8 +326,8 @@ test('form - protect with password', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-creation-password-val').fill('password');
     await fileActions.createFile.click();
 
-    await fileActions.shareLink(mobile)
-    await fileActions.clickLinkTab(mobile)
+    await fileActions.shareLink(mobile);
+    await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Participant').click({ timeout: 3000 });
     await fileActions.shareCopyLink.click();
     await page.waitForTimeout(5000);

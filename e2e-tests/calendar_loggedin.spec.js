@@ -8,14 +8,14 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
-let fileActions
-let cleanUp
+let fileActions;
+let cleanUp;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
   if (mobile) {
-    let userActions = new UserActions(page);
+    const userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
   }
 
@@ -398,8 +398,7 @@ test('create event in calendar and edit date', async ({ page }) => {
 
 test('create new calendar and edit calendar in event', async ({ page }) => {
   try {
-
-    let calendarCount = await page.frameLocator('#sbox-iframe').getByLabel('Calendar Settings').count()
+    let calendarCount = await page.frameLocator('#sbox-iframe').getByLabel('Calendar Settings').count();
     if (calendarCount > 0) {
       while (calendarCount > 0) {
         if (calendarCount > 1) {

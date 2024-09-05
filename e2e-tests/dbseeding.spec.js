@@ -6,7 +6,7 @@ const { FileActions } = require('./fileactions.js');
 
 let pageOne;
 let cleanUp;
-let userActions
+let userActions;
 // let fileActions
 
 test.beforeEach(async ({ page }, testInfo) => {
@@ -14,7 +14,6 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.waitForTimeout(15000);
   userActions = new UserActions(page);
   // fileActions = new UserActions(page);
-
 });
 
 test('test-user account setup', async ({ page }) => {
@@ -75,7 +74,7 @@ test('create test team', async ({ page }) => {
     await page.waitForTimeout(5000);
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test team');
-    let   fileActions = new FileActions(page);
+    const fileActions = new FileActions(page);
 
     await fileActions.createFile.click();
 
@@ -95,7 +94,7 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
   try {
     await userActions.login('testuser', testUserPassword);
     await page.goto(`${url}/profile`);
-    let   fileActions = new FileActions(page);
+    const fileActions = new FileActions(page);
 
     await fileActions.share(false);
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
@@ -103,7 +102,7 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     // login test-user
     const context = await browser.newContext();
     pageOne = await context.newPage();
-    let userActions2 = new UserActions(pageOne);
+    const userActions2 = new UserActions(pageOne);
     await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
@@ -141,7 +140,7 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     // login test-user
     const context = await browser.newContext();
     pageOne = await context.newPage();
-    let userActions2 = new UserActions(pageOne);
+    const userActions2 = new UserActions(pageOne);
     await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
@@ -152,7 +151,7 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
 
     await page.waitForTimeout(7000);
-        let   fileActions = new FileActions(page);
+    const fileActions = new FileActions(page);
 
     await fileActions.notifications.click();
     await page.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
@@ -191,7 +190,7 @@ test('add test-user3 to test team', async ({ page, browser }) => {
     ///
 
     pageOne = await browser.newPage();
-    let userActions2 = new UserActions(pageOne);
+    const userActions2 = new UserActions(pageOne);
     await userActions2.login('test-user3', testUser3Password);
     await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
 
@@ -229,7 +228,7 @@ test('create test files in test-user drive', async ({ page }) => {
     }
 
     await page.goto(`${url}/pad/`);
-    let fileActions = new FileActions(page);
+    const fileActions = new FileActions(page);
 
     await fileActions.createFile.click();
     await page.waitForTimeout(5000);
@@ -250,7 +249,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
-     await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
     await page.waitForTimeout(3000);
@@ -303,7 +302,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`)).toBeVisible();
     await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
+    await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).fill('test whiteboard');
     await page.waitForTimeout(3000);
@@ -371,7 +370,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
       const name = `test ${docNames[i]}`;
       await cleanUp.cleanTeamDrive(name);
     }
-    let fileActions = new FileActions(page);
+    const fileActions = new FileActions(page);
 
     await fileActions.driveContentFolder.getByText('New').click();
     const page2Promise = page.waitForEvent('popup');
@@ -397,7 +396,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await page3.waitForTimeout(5000);
     await expect(page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`)).toBeVisible();
     await page3.waitForTimeout(3000);
-    await page3.frameLocator('#sbox-iframe').getByText('Saved').waitFor()
+    await page3.frameLocator('#sbox-iframe').getByText('Saved').waitFor();
     await page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
     await page3.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
     await page3.waitForTimeout(5000);

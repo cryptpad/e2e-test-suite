@@ -9,7 +9,7 @@ let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile
+  mobile = isMobile;
   await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
 });
@@ -17,13 +17,11 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
 
 userMenuItems.forEach(function (item) {
-
   test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {
-      if (item === 'pricing') {
-    test.skip(local, 'pricing not available on dev instance');
-  }
+    if (item === 'pricing') {
+      test.skip(local, 'pricing not available on dev instance');
+    }
     try {
-      
       await fileActions.drivemenu.waitFor();
       await fileActions.drivemenu.click();
       if (item === 'about') {
@@ -122,12 +120,12 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 
     const title = `Rich text - ${titleDate}`;
     await page.waitForTimeout(10000);
-    const visible = await page.frameLocator('#sbox-iframe').getByText(title).isVisible()
+    const visible = await page.frameLocator('#sbox-iframe').getByText(title).isVisible();
 
     if (!mobile) {
       if (!visible) {
-        await page.reload()
-        await page.waitForTimeout(20000)
+        await page.reload();
+        await page.waitForTimeout(20000);
       }
       await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
     }
@@ -173,8 +171,8 @@ test('drive - anon - history', async ({ page, context }) => {
     await page.bringToFront();
     if (!mobile) {
       if (!await page.frameLocator('#sbox-iframe').getByText(title).isVisible()) {
-        await page.reload()
-        await page.waitForTimeout(20000)
+        await page.reload();
+        await page.waitForTimeout(20000);
       }
       await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
     }
@@ -225,8 +223,8 @@ test('drive - anon - sign up from drive page', async ({ page, context }) => {
 test('drive - anon - log in from drive page', async ({ page, context }) => {
   try {
     await page.frameLocator('#sbox-iframe').locator('body').filter({ hasText: 'You are not logged in' }).waitFor();
-    await fileActions.loginLink.waitFor()
-    await fileActions.loginLink.click()
+    await fileActions.loginLink.waitFor();
+    await fileActions.loginLink.click();
     await page.waitForTimeout(10000);
     await expect(page).toHaveURL(`${url}/login/`, { timeout: 100000 });
 

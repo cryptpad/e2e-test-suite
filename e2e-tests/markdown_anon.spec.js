@@ -11,7 +11,6 @@ let mobile;
 let browserstackMobile;
 let fileActions;
 
-
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(210000);
   mobile = testInfo.project.use.mobile;
@@ -67,11 +66,11 @@ test('markdown - anon - create new slide', async ({ page }) => {
 });
 
 test('markdown - toggle toolbar', async ({ page }) => {
-  try { 
-    await page.waitForTimeout(1000)
-    await fileActions.toggleTools(mobile)
+  try {
+    await page.waitForTimeout(1000);
+    await fileActions.toggleTools(mobile);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible();
-    await fileActions.toggleTools(mobile)
+    await fileActions.toggleTools(mobile);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'markdown - input text into editor', status: 'passed', reason: 'Can input ' } })}`);
@@ -83,15 +82,15 @@ test('markdown - toggle toolbar', async ({ page }) => {
 
 test('markdown - toggle preview', async ({ page }) => {
   try {
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(1000);
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('Test text');
 
-    await fileActions.togglePreview(mobile)
+    await fileActions.togglePreview(mobile);
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeHidden();
 
-    await fileActions.togglePreview(mobile)
+    await fileActions.togglePreview(mobile);
     await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('Test text')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-slide-modal-content').getByText('Test text')).toBeVisible();
 
@@ -211,7 +210,7 @@ test('markdown - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.filemenuClick(mobile)
+    await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()

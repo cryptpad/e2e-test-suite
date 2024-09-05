@@ -1,6 +1,6 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-const AxeBuilder = require('@axe-core/playwright')
+const AxeBuilder = require('@axe-core/playwright');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
@@ -11,7 +11,7 @@ let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 
-let results ='';
+let results = '';
 
 test('settings - accessibility', async ({ page }, testInfo) => {
   try {
@@ -24,15 +24,15 @@ test('settings - accessibility', async ({ page }, testInfo) => {
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
 
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
     if (accessibilityScanResults.violations.length) {
-      results += '\n# CryptPad Accessibility tests\n\n## Settings \n'
-      accessibilityScanResults.violations.forEach(function(violation, index) {
-        results += `\n### Issue ${index}\n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
-        violation.nodes.forEach(function(node, index) {
-          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
-        })
-      })
+      results += '\n# CryptPad Accessibility tests\n\n## Settings \n';
+      accessibilityScanResults.violations.forEach(function (violation, index) {
+        results += `\n### Issue ${index}\n - Description: ${violation.description.replace(/<|>/g, '')} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`;
+        violation.nodes.forEach(function (node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, '')}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, '')} \n      - Severity: ${node.impact} \n`;
+        });
+      });
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Contact page is not accessible' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
@@ -47,15 +47,15 @@ test('calendar - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/calendar`);
     await page.waitForTimeout(10000);
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
     if (accessibilityScanResults.violations.length) {
-      results += '\n ## Calendar \n'
-      accessibilityScanResults.violations.forEach(function(violation, index) {
-        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
-        violation.nodes.forEach(function(node, index) {
-          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
-        })
-      })
+      results += '\n ## Calendar \n';
+      accessibilityScanResults.violations.forEach(function (violation, index) {
+        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g, '')} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`;
+        violation.nodes.forEach(function (node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, '')}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, '')} \n      - Severity: ${node.impact} \n`;
+        });
+      });
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'failed', reason: 'Code is not accessible' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'contact - accessibility', status: 'passed', reason: 'Contact page is accessible' } })}`);
@@ -70,16 +70,16 @@ test('drive (user) - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/drive`);
     await page.waitForTimeout(10000);
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+
     if (accessibilityScanResults.violations.length) {
-      results += '\n ## Drive (user) \n'
-      accessibilityScanResults.violations.forEach(function(violation, index) {
-        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
-        violation.nodes.forEach(function(node, index) {
-          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
-        })
-      })
+      results += '\n ## Drive (user) \n';
+      accessibilityScanResults.violations.forEach(function (violation, index) {
+        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g, '')} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`;
+        violation.nodes.forEach(function (node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, '')}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, '')} \n      - Severity: ${node.impact} \n`;
+        });
+      });
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (user) - accessibility', status: 'failed', reason: 'Drive (user) is not accessible' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive (user) - accessibility', status: 'passed', reason: 'Drive (user) is accessible' } })}`);
@@ -94,16 +94,16 @@ test('teams - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/teams`);
     await page.waitForTimeout(10000);
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
-   if (accessibilityScanResults.violations.length) {
-      results += '\n ## Teams \n'
-      accessibilityScanResults.violations.forEach(function(violation, index) {
-        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
-        violation.nodes.forEach(function(node, index) {
-          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
-        })
-      })
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+
+    if (accessibilityScanResults.violations.length) {
+      results += '\n ## Teams \n';
+      accessibilityScanResults.violations.forEach(function (violation, index) {
+        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g, '')} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`;
+        violation.nodes.forEach(function (node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, '')}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, '')} \n      - Severity: ${node.impact} \n`;
+        });
+      });
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'failed', reason: 'Teams is not accessible' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams - accessibility', status: 'passed', reason: 'Teams is accessible' } })}`);
@@ -125,16 +125,16 @@ test('teams (admin) - accessibility', async ({ page }, testInfo) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
     await page.waitForTimeout(2000);
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
-    
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+
     if (accessibilityScanResults.violations.length) {
-      results += '\n ## Teams (admin) \n'
-      accessibilityScanResults.violations.forEach(function(violation, index) {
-        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g,"")} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`
-        violation.nodes.forEach(function(node, index) {
-          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, "")}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, "")} \n      - Severity: ${node.impact} \n`
-        })
-      })
+      results += '\n ## Teams (admin) \n';
+      accessibilityScanResults.violations.forEach(function (violation, index) {
+        results += `\n### Issue ${index} \n - Description: ${violation.description.replace(/<|>/g, '')} \n - Help:  ${violation.help} \n - Help URL:  ${violation.helpUrl} \n - Affected nodes: \n`;
+        violation.nodes.forEach(function (node, index) {
+          results += `   - Node ${index} \n      - HTML: \`\`\` ${node.html.replace(/(\r\n|\n|\r)/gm, '')}\`\`\` \n       - ${node.failureSummary.replace(/(\r\n|\n|\r)/gm, '')} \n      - Severity: ${node.impact} \n`;
+        });
+      });
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams (admin) - accessibility', status: 'failed', reason: 'Teams (admin) is not accessible' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'teams (admin) - accessibility', status: 'passed', reason: 'Teams (admin) is accessible' } })}`);
@@ -146,13 +146,12 @@ test('teams (admin) - accessibility', async ({ page }, testInfo) => {
 });
 
 test.afterAll(async ({ }) => {
-  var resultsString = "" + results
-  fs.writeFile("accessibilityresults_loggedin.md", resultsString, function(err) {
-    if(err) {
-        return console.log(err);
+  const resultsString = '' + results;
+  fs.writeFile('accessibilityresults_loggedin.md', resultsString, function (err) {
+    if (err) {
+      return console.log(err);
     }
+  });
 
-}); 
-  
-  console.log(resultsString)
+  console.log(resultsString);
 });
