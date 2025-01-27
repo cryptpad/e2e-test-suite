@@ -1,30 +1,39 @@
-const { test, url, titleDate } = require('../fixture.js');
+const { test, url, titleDate, titleDateComma } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 
 let mobile;
 let fileActions;
+let documentTitleDate;
+let isBrowserstack;
+let title;
+let titleName
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
+  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   mobile = isMobile;
   fileActions = new FileActions(page);
+  const name = testInfo.title.split(' ')[0];
+  const titleDate = await fileActions.titleDate(mobile, isBrowserstack);
+  if (name === 'pad') {
+    titleName = 'Rich text -';
+    title = `${titleName} ${titleDate}`;
+  } else if (name === 'slide') {
+    titleName = 'Markdown slides -';
+    title = `${titleName} ${titleDate}`;
+  } else {
+    titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -';
+    title = `${titleName}` + ' ' + `${titleDate}`;
+  }
+
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
 
 docNames.forEach(function (name) {
-  let title;
-  if (name === 'pad') {
-    title = `Rich text - ${titleDate}`;
-  } else if (name === 'slide') {
-    title = `Markdown slides - ${titleDate}`;
-  } else {
-    const titleName = name.charAt(0).toUpperCase() + name.slice(1);
-    title = `${titleName} - ${titleDate}`;
-  }
 
-  test(`anon - ${name} - create new file from file menu`, async ({ page, context }) => {
+  test(`${name} - create new file from file menu`, async ({ page, context }) => {
     try {
       await page.goto(`${url}/${name}/`);
       await page.waitForTimeout(15000);
@@ -91,7 +100,7 @@ docNames.forEach(function (name) {
       }
     });
 
-    test(`anon - ${name} - share (link) - view`, async ({ page, context }) => {
+    test(`${name} - share (link) - view`, async ({ page, context }) => {
       try {
         await page.goto(`${url}/${name}/`);
         if (name === 'sheet' | name === 'diagram') {
@@ -123,7 +132,7 @@ docNames.forEach(function (name) {
     });
   }
 
-  test(`anon - ${name} - chat`, async ({ page }) => {
+  test(`${name} - chat`, async ({ page }) => {
     try {
       await page.goto(`${url}/${name}`);
       if (name === 'sheet' | name === 'diagram') {
@@ -161,7 +170,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`anon - ${name} - create from drive - move to trash #1263`, async ({ page, context }) => {
+  test(`${name} - create from drive - move to trash #1263`, async ({ page, context }) => {
     test.fixme(name === 'sheet', 'sheet doc status bug');
     try {
       await page.goto(`${url}/drive`);
@@ -217,7 +226,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`anon - ${name} - change title`, async ({ page, context }) => {
+  test(`${name} - change title`, async ({ page, context }) => {
     try {
       await page.goto(`${url}/${name}/`);
 
@@ -243,7 +252,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`anon - ${name} - move to trash #1263`, async ({ page, context }) => {
+  test(`${name} - move to trash #1263`, async ({ page, context }) => {
     test.fixme(name === 'sheet', 'sheet doc status bug');
     try {
       await page.goto(`${url}/${name}/`);

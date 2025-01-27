@@ -22,7 +22,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   if (mobile) {
     await userActions.login('test-user', mainAccountPassword);
   }
-  await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
   await page.waitForTimeout(35000);
 });
@@ -49,10 +48,12 @@ test('can change display name', async ({ page }) => {
     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
 
     await expect(page1.frameLocator('#sbox-iframe').getByText('Display name: test-user-new')).toBeVisible();
+    await page1.waitForTimeout(5000);
 
     await page1.frameLocator('#sbox-iframe').locator('#cp-settings-displayname').click();
     await page1.frameLocator('#sbox-iframe').locator('#cp-settings-displayname').fill('test-user');
     await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' }).click();
+    await page1.waitForTimeout(5000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'change display name', status: 'passed', reason: 'Can change display name' } })}`);
   } catch (e) {
@@ -302,9 +303,50 @@ test('chat with contacts and erase message history #1415', async ({ page, browse
   }
 });
 
+test('sign up and delete account', async ({ page }) => {
+  try {
+    // log out current user
+    await page.goto(`${url}/drive`);
+    await page.waitForTimeout(15000);
+    await fileActions.drivemenu.click();
+    await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
+    await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
+
+    // register new user
+    const username = (Math.random() + 1).toString(36).substring(2);
+    const password = (Math.random() + 1).toString(36).substring(2);
+    await userActions.register(username, password);
+
+    // access settings
+    await fileActions.drivemenu.click();
+    await expect(fileActions.settings).toBeVisible();
+    const pagePromise = page.waitForEvent('popup');
+    await fileActions.settings.click();
+    const page1 = await pagePromise;
+    await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
+
+    // delete new account
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill(password);
+    await page1.frameLocator('#sbox-iframe').getByText('Delete your account').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
+    await page1.waitForTimeout(5000);
+    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('Account deletion');
+    await page1.waitForTimeout(10000);
+    await expect(page1.frameLocator('#sbox-iframe').getByText(/Your user account is now deleted/)).toBeVisible();
+
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up and delete account', status: 'passed', reason: 'Can sign up and delete account' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up and delete account', status: 'failed', reason: 'Can\'t sign up and delete account' } })}`);
+  }
+});
+
 test('enable 2FA login', async ({ page, context }) => {
   try {
     // access settings
+    await page.goto(`${url}/drive`);
+
     await fileActions.drivemenu.click();
     await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
@@ -426,6 +468,8 @@ test('enable 2FA login', async ({ page, context }) => {
 test('enable 2FA login and recover account', async ({ page, context }) => {
   try {
     // access settings
+    await page.goto(`${url}/drive`);
+
     await fileActions.drivemenu.click();
     await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
@@ -478,7 +522,15 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
     await page1.getByRole('link', { name: 'Log in' }).click();
     await page1.waitForTimeout(5000);
     const userActions1 = new UserActions(page1);
-    await userActions1.login(username, testUser2Password);
+    await page1.getByPlaceholder('Username').fill('test-user');
+    await page1.waitForTimeout(10000);
+    await page1.getByPlaceholder('Password', { exact: true }).fill(mainAccountPassword);
+
+    await userActions1.loginButton.waitFor({ timeout: 18000 });
+    await expect(userActions1.loginButton).toBeVisible({ timeout: 1800 });
+    if (await userActions1.loginButton.isVisible()) {
+      await userActions1.loginButton.click();
+    }
     await page1.waitForTimeout(20000);
     await expect(page1.getByText('This account is protected')).toBeVisible();
 
@@ -525,48 +577,12 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
   }
 });
 
-test('sign up and delete account', async ({ page }) => {
-  try {
-    // log out current user
-    await page.goto(`${url}/drive`);
-    await page.waitForTimeout(15000);
-    await fileActions.drivemenu.click();
-    await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
-    await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
-
-    // register new user
-    const username = (Math.random() + 1).toString(36).substring(2);
-    const password = (Math.random() + 1).toString(36).substring(2);
-    await userActions.register(username, password);
-
-    // access settings
-    await fileActions.drivemenu.click();
-    await expect(fileActions.settings).toBeVisible();
-    const pagePromise = page.waitForEvent('popup');
-    await fileActions.settings.click();
-    const page1 = await pagePromise;
-    await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
-
-    // delete new account
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill(password);
-    await page1.frameLocator('#sbox-iframe').getByText('Delete your account').click();
-    await page1.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
-    await page1.waitForTimeout(5000);
-    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-loading-message')).toHaveText('Account deletion');
-    await page1.waitForTimeout(10000);
-    await expect(page1.frameLocator('#sbox-iframe').getByText(/Your user account is now deleted/)).toBeVisible();
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up and delete account', status: 'passed', reason: 'Can sign up and delete account' } })}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'sign up and delete account', status: 'failed', reason: 'Can\'t sign up and delete account' } })}`);
-  }
-});
 
 test('can change password', async ({ page, browser }) => {
   try {
     // access settings
+    await page.goto(`${url}/drive`);
+
     await fileActions.drivemenu.click();
     await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
@@ -595,13 +611,11 @@ test('can change password', async ({ page, browser }) => {
 
     // login using new password
     const userActions1 = new UserActions(page1);
-    await userActions1.login('test-user', mainAccountPassword);
+    await userActions1.login('test-user', 'password');
+    await page1.waitForTimeout(5000);
+    await page1.reload();
+    await page1.waitForTimeout(3000);
 
-    // access settings
-    if (!fileActions1.drivemenu.isVisible()) {
-      await page1.reload();
-      await page1.waitForTimeout(60000);
-    }
     await fileActions1.drivemenu.click();
     await expect(fileActions1.settings).toBeVisible();
     const page2Promise = page1.waitForEvent('popup');
@@ -629,37 +643,6 @@ test('can change password', async ({ page, browser }) => {
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' change password', status: 'passed', reason: 'Can change password' } })}`);
   } catch (e) {
-    // in case of test failure, ensure password is changed back to the original
-    contextOne = await browser.newContext({ storageState: 'auth/mainuser.json' });
-    pageOne = await contextOne.newPage();
-    await pageOne.goto(`${url}/drive`);
-    await pageOne.waitForTimeout(10000);
-
-    if (await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: 'The password for this account' }).nth(1).isVisible()) {
-      const userActions = new UserActions(pageOne);
-      await userActions.login('test-user', mainAccountPassword);
-      const fileActions1 = new FileActions(pageOne);
-      await fileActions1.drivemenu.click();
-      await expect(fileActions1.settings).toBeVisible();
-      const pagePromise = pageOne.waitForEvent('popup');
-      await fileActions1.settings.click();
-      const page2 = await pagePromise;
-      await expect(page2).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
-
-      await page2.frameLocator('#sbox-iframe').getByText('Security & Privacy').click();
-      await page2.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).click();
-      await page2.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).fill('password');
-      await page2.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).click();
-      await page2.frameLocator('#sbox-iframe').getByPlaceholder('New password', { exact: true }).fill(mainAccountPassword);
-      await page2.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').click();
-      await page2.frameLocator('#sbox-iframe').getByPlaceholder('Confirm new password').fill(mainAccountPassword);
-      await page2.waitForTimeout(5000);
-      await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'Change password' }).click();
-      await page2.waitForTimeout(3000);
-      await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).waitFor();
-      await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
-      await page2.waitForTimeout(20000);
-    }
     console.log(e);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' change password', status: 'failed', reason: 'Can\'t change password' } })}`);
   }

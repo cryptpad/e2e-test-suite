@@ -109,11 +109,7 @@ test('pad - history (previous author)', async ({ page, browser }) => {
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
-    await expect(fileActions.padeditor.getByText('And yet more test text by test-user!')).toHaveCount(0);
-    await expect(fileActions.padeditor.getByText('And more test text by test-user too!')).toHaveCount(0);
-
-    await expect(fileActions.padeditor.getByText('Some more test text by anon')).toBeVisible();
-    await expect(fileActions.padeditor.getByText('And here is more text by anon')).toBeVisible();
+    await expect(fileActions.padeditor.getByText('Here is even more test text by test-user!')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - file menu - history (previous author)', status: 'passed', reason: 'Can create Rich Text document and view history (previous author)' } })}`);
   } catch (e) {

@@ -44,8 +44,8 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
     await page.mouse.up();
     await page.waitForTimeout(3000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
-    await fileActions.shareLink.click();
+    await fileActions.share(mobile);
+    await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -68,7 +68,6 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
     });
     await pageOne.mouse.up();
 
-    await fileActions.filemenuClick(mobile);
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();

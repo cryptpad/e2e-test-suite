@@ -1,8 +1,12 @@
 const { test, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-const fs = require('fs');
+// const fs = require('fs');
 
 // const d3 = require('d3');
+(async () => {
+  const fs= await import('fs').then(fs => fs.default)
+  // YOUR CODE HERE
+})().catch(console.error)
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
@@ -1333,14 +1337,14 @@ test('form - add and respond to conditional section question (OR)', async ({ pag
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Conditional section' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option one' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option three' }).click();
     await page.waitForTimeout(1000);
 
@@ -1391,24 +1395,24 @@ test('form - add and respond to conditional section question (AND)', async ({ pa
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
     await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
     await page.waitForTimeout(1000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 1' }).click();
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add AND condition' }).click();
     await page.waitForTimeout(1000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a question ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
     await page.waitForTimeout(1000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Choose a value ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 3' }).click();
     await page.waitForTimeout(1000);

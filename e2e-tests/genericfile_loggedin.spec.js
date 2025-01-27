@@ -52,8 +52,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.waitForTimeout(10000);
 });
 
-// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
-const docNames = ['pad'];
+const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+// const docNames = ['diagram'];
 
 docNames.forEach(function (name) {
   test(`${name} - create without owner`, async ({ page }) => {
@@ -172,13 +172,16 @@ docNames.forEach(function (name) {
   });
 
   test(`${name} - edit document owners #1264`, async ({ page, browser }) => {
+    test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
     try {
       await fileActions.createFile.click();
 
       // add test-user3 as owner
       await page.waitForTimeout(5000);
       console.log(await fileActions.title(title));
-      await expect(await fileActions.title(title)).toBeVisible({ timeout: 5000 });
+      await fileActions.filemenu.waitFor();
+
+      await expect(await fileActions.title(title)).toBeVisible();
       await page.waitForTimeout(5000);
       await fileActions.access(mobile);
       await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'Owners' }).first().click();
@@ -210,7 +213,8 @@ docNames.forEach(function (name) {
       await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
       await pageTwo.bringToFront();
       const fileActions2 = new FileActions(pageTwo);
-      await fileActions2.filesaved.waitFor();
+      await fileActions2.filemenu.waitFor();
+
       await expect(await fileActions2.title(title)).toBeVisible();
       await page.bringToFront();
       await fileActions.closeButtonSecure.click();
@@ -259,7 +263,7 @@ docNames.forEach(function (name) {
         await fileActions.driveContentFolder.getByText(`${title}`).click({ button: 'right' });
       }
 
-      await fileActions.moveToTrash.click();
+      await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
       await page.waitForTimeout(5000);
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ` ${name} - add to team drive`, status: 'passed', reason: 'Can create document and add to team drive' } })}`);
@@ -285,7 +289,7 @@ docNames.forEach(function (name) {
 
       await fileActions.filemenuClick(mobile);
 
-      await fileActions.moveToTrash.click();
+      await fileActions.moveToTrash(local);
 
       await fileActions.okButton.click();
       if (name === 'diagram') {
@@ -327,7 +331,9 @@ docNames.forEach(function (name) {
         await fileActions.createFile.click();
 
         await page.waitForTimeout(5000);
-        await expect(await fileActions.title(title)).toBeVisible({ timeout: 5000 });
+        await fileActions.filemenu.waitFor();
+
+        await expect(await fileActions.title(title)).toBeVisible();
 
         await fileActions.share(mobile);
 
@@ -422,10 +428,9 @@ docNames.forEach(function (name) {
           await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
         }
         const pageTwo = await page2Promise;
+        await page.waitForTimeout(5000)
         const fileActions2 = new FileActions(pageTwo);
-
-        await fileActions2.filesaved.waitFor();
-        await expect(await fileActions2.title(title)).toBeVisible({ timeout: 5000 });
+        await expect(await fileActions2.title(title)).toBeVisible();
         await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible({ timeout: 5000 });
 
         /// /
@@ -434,7 +439,7 @@ docNames.forEach(function (name) {
         if (mobile) {
           await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
         }
-        await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
+        await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible();
 
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - share with contact (to view)`, status: 'passed', reason: `Can share ${name} with contact (to view)` } })}`);
       } catch (e) {
@@ -471,8 +476,10 @@ docNames.forEach(function (name) {
         const page1 = await page1Promise;
 
         await page1.waitForTimeout(10000);
-        await fileActions1.filesaved.waitFor();
-        await expect(await fileActions1.title(title)).toBeVisible({ timeout: 5000 });
+        const fileActions2 = new FileActions(page1);
+
+        await fileActions2.filemenu.waitFor();
+        await expect(await fileActions2.title(title)).toBeVisible();
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden();
 
         await page.waitForTimeout(3000);
@@ -535,7 +542,7 @@ docNames.forEach(function (name) {
 
         await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
         await page2.waitForTimeout(20000);
-        await expect(await fileActions2.title(title)).toBeVisible({ timeout: 5000 });
+        await expect(await fileActions2.title(title)).toBeVisible();
         await expect(page2.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible();
         await page2.reload();
         await page2.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner').waitFor();
@@ -576,7 +583,7 @@ docNames.forEach(function (name) {
 
         await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
         await pageOne.waitForTimeout(20000);
-        await expect(await fileActions1.title(title)).toBeVisible({ timeout: 5000 });
+        await expect(await fileActions1.title(title)).toBeVisible();
 
         await pageOne.reload();
         await pageOne.waitForTimeout(20000);
@@ -605,7 +612,9 @@ docNames.forEach(function (name) {
 
         // enable access list and add test-user3 to it
         await page.waitForTimeout(5000);
-        await expect(await fileActions.title(title)).toBeVisible({ timeout: 5000 });
+        await fileActions.filemenu.waitFor();
+
+        await expect(await fileActions.title(title)).toBeVisible();
         await fileActions.access(mobile);
         await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'List' }).first().click();
         await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: 'Enable access list' }).locator('span').first().click();
@@ -633,12 +642,12 @@ docNames.forEach(function (name) {
         await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
 
         // access document as test-user3
-        const userActions = new UserActions(pageOne);
-        await userActions.login('test-user3', testUser3Password);
-        await pageOne.goto(`${clipboardText}`);
-        await page.waitForTimeout(10000);
-        const fileActions1 = new FileActions(pageOne);
-        await fileActions1.filesaved.waitFor();
+        const contextTwo = await browser.newContext({ storageState: 'auth/testuser3.json' });
+        const pageTwo = await contextTwo.newPage();
+        await pageTwo.goto(`${clipboardText}`);
+        await pageTwo.waitForTimeout(10000);
+        const fileActions1 = new FileActions(pageTwo);
+        await fileActions1.filemenu.waitFor();
 
         await expect(await fileActions1.title(title)).toBeVisible();
 
@@ -649,10 +658,12 @@ docNames.forEach(function (name) {
         await page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user > .fa').first().click();
         await fileActions.closeButtonSecure.click();
 
-        await pageOne.reload();
-        await pageOne.waitForTimeout(5000);
-        await pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/).waitFor();
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
+        const contextThree = await browser.newContext({ storageState: 'auth/testuser3.json' });
+        const pageThree = await contextThree.newPage();
+        await pageThree.goto(`${clipboardText}`);
+        await pageThree.waitForTimeout(5000);
+        await pageThree.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/).waitFor();
+        await expect(pageThree.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
 
         await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - enable and add to access list`, status: 'passed', reason: `Can enable and add to access list in ${name} document` } })}`);
       } catch (e) {

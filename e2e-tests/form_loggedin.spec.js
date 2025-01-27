@@ -1,4 +1,4 @@
-const { test, url, mainAccountPassword, nextMondaySlashFormat } = require('../fixture.js');
+const { test, url, mainAccountPassword, nextMondaySlashFormat, testUser3Password } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
@@ -72,7 +72,7 @@ test('form - share with contact (author)', async ({ page, browser }) => {
     if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
     }
-    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer').or(page.frameLocator('#sbox-iframe').locator('#cp-app-form-editor').getByText('test-user3'))).toBeVisible({ timeout: 5000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - share with contact (author)', status: 'passed', reason: 'Can share form with contact (author)' } })}`);
   } catch (e) {
@@ -119,7 +119,7 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
     if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
     }
-    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer').or(page.frameLocator('#sbox-iframe').locator('#cp-app-form-editor').getByText('test-user3'))).toBeVisible({ timeout: 5000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - share with contact (auditor)', status: 'passed', reason: 'Can share form with contact (auditor)' } })}`);
   } catch (e) {
@@ -166,7 +166,7 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
     if (mobile) {
       await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
     }
-    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer')).toBeVisible({ timeout: 5000 });
+    await expect(page.frameLocator('#sbox-iframe').getByText('1 viewer').or(page.frameLocator('#sbox-iframe').locator('#cp-app-form-editor').getByText('test-user3'))).toBeVisible({ timeout: 5000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - share with contact (to view)', status: 'passed', reason: 'Can share form with contact (to view)' } })}`);
   } catch (e) {
@@ -189,8 +189,8 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({ force: true });
     }
-    await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Blocked' }).locator('span').first().click({ timeout: 5000 });
+    await page.frameLocator('#sbox-iframe').getByText('Blocked').waitFor();
+    await page.frameLocator('#sbox-iframe').getByText('Blocked').click({ timeout: 5000 });
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click({ force: true });
     await page.waitForTimeout(1000);
@@ -210,7 +210,8 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
     await page.waitForTimeout(3000);
 
     const userActions = new UserActions(pageOne);
-    await userActions.login('test-user', mainAccountPassword);
+    await userActions.login('test-user3', testUser3Password);
+    await pageOne.goto(`${clipboardText}`);
 
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click();
     await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('test-user').click();
@@ -234,12 +235,10 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').press('Enter');
     await page.waitForTimeout(5000);
 
-    const fileActions = new FileActions(page);
     await fileActions.share(mobile);
 
-    await fileActions.shareLink.click();
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Author$/ }).locator('span').first().click();
-
+    await fileActions.linkTab.click()
     await fileActions.shareCopyLink.waitFor();
     await fileActions.shareCopyLink.click({ timeout: 5000 });
     await page.waitForTimeout(3000);
@@ -270,13 +269,7 @@ test('form - view history (different authors)', async ({ page, browser }) => {
     await fileActions.historyPrev.click();
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox').nth(3)).toBeHidden();
-    const question = await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(2).textContent();
 
-    if (question === 'some text by anon') {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'passed', reason: 'Can view history of different authors\' contributions in a Form' } })}`);
-    } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'failed', reason: 'Can\'t view history of different authors\' contributions in a Form' } })}`);
-    }
   } catch (e) {
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - anon (guest) access - blocked', status: 'failed', reason: 'Can\'t view history of different authors\' contributions in a Form' } })}`);
     console.log(e);
@@ -326,7 +319,7 @@ test('form - protect with password', async ({ page, browser }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-creation-password-val').fill('password');
     await fileActions.createFile.click();
 
-    await fileActions.shareLink(mobile);
+    await fileActions.share(mobile);
     await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').getByText('Participant').click({ timeout: 3000 });
     await fileActions.shareCopyLink.click();

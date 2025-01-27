@@ -1,5 +1,5 @@
 const { expect } = require('@playwright/test');
-const { test, url, titleDate, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
+const { test, url, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
@@ -7,12 +7,17 @@ const { FileActions } = require('./fileactions.js');
 let pageOne;
 let cleanUp;
 let userActions;
-// let fileActions
+let fileActions
+let titleDate
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}`);
   await page.waitForTimeout(15000);
+  let mobile = isMobile;
+  let isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   userActions = new UserActions(page);
+  fileActions = new FileActions(page);
+  titleDate = await fileActions.titleDate(mobile, isBrowserstack);
   // fileActions = new UserActions(page);
 });
 
@@ -523,7 +528,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar-empty.png');
     await fileActions.okButton.click();

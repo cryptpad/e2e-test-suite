@@ -226,7 +226,7 @@ test('pad - export (.doc)', async ({ page }) => {
 
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.doc' }).click();
 
     const [download] = await Promise.all([
@@ -265,7 +265,7 @@ test('pad - export (md)', async ({ page, context }) => {
 
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: '.html ' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.md' }).click();
 
     const [download] = await Promise.all([

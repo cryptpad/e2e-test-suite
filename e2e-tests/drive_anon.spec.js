@@ -1,4 +1,4 @@
-const { test, url, titleDate } = require('../fixture.js');
+const { test, url, titleDate, titleDateComma } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
@@ -6,8 +6,11 @@ const { FileActions } = require('./fileactions.js');
 const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let fileActions;
+let isBrowserstack;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
+  mobile = isMobile;
+  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   test.setTimeout(210000);
   mobile = isMobile;
   await page.goto(`${url}/drive`);
@@ -84,7 +87,7 @@ userMenuItems.forEach(function (item) {
 
 //     //check that file is visible in drive
 
-//     var title = `Rich text - ${titleDate}`;
+//     var title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 //     await page1.waitForTimeout(10000)
 //     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
 //     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
@@ -118,7 +121,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
 
-    const title = `Rich text - ${titleDate}`;
+    const title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
     await page.waitForTimeout(10000);
     const visible = await page.frameLocator('#sbox-iframe').getByText(title).isVisible();
 
@@ -165,8 +168,8 @@ test('drive - anon - history', async ({ page, context }) => {
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
-
-    const title = `Rich text - ${titleDate}`;
+    
+    const title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
     await page.waitForTimeout(15000);
     await page.bringToFront();
     if (!mobile) {

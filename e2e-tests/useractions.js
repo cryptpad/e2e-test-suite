@@ -34,7 +34,9 @@ export class UserActions {
     await this.page.getByPlaceholder('Username').fill(username);
     await this.page.getByPlaceholder('Password', { exact: true }).fill(password);
     await this.page.getByPlaceholder('Confirm your password', { exact: true }).fill(password);
+    await this.page.waitForTimeout(3000)
     await this.registerButton.waitFor();
+    
 
     if (await this.page.locator('#userForm span').nth(2).isVisible()) {
       await this.page.locator('#userForm span').nth(2).click();

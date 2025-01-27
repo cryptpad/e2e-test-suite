@@ -20,7 +20,7 @@ exports.test = base.test.extend({
   page: async ({ page, playwright }, use, testInfo) => {
     test.setTimeout(210000);
     browserName = testInfo.project.name.split(/@/)[0];
-    loggedin = testInfo.titlePath[0].match(/loggedin/) | testInfo.titlePath[0].match(/signedin/);
+    loggedin = testInfo.titlePath[0].match(/loggedin/) || testInfo.titlePath[0].match(/signedin/);
     if (testInfo.project.name.match(/browserstack/)) {
       const mobile = testInfo.project.use.mobile;
       if (mobile) {
@@ -80,9 +80,9 @@ exports.test = base.test.extend({
         if (browserName === 'chrome' || browserName === 'edge') {
           browser = await chromium.launch();
           if (loggedin) {
-            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'], storageState: 'auth/mainuser.json' });
+            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'], storageState: 'auth/mainuser.json', locale: 'en-GB' });
           } else {
-            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'] });
+            context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write', 'notifications'], locale: 'en-GB' });
           }
         } else {
           browser = await firefox.launch({
@@ -132,7 +132,7 @@ exports.weekday = weekDays[date.getDay()];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const month = months[date.getMonth()];
 exports.titleDateComma = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
-exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}`;
+exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}` || `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
 
 const setTimeZone = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' });
 const now = new Date(setTimeZone);

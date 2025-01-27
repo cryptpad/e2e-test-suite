@@ -19,7 +19,7 @@ export class FileActions {
     // drive
     this.drivemenu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container');
     this.driveadd = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first();
-    this.notifications = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container');
+    this.notifications = page.frameLocator('#sbox-iframe').getByLabel('Notifications');
     this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder');
     this.newFile = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ });
     this.settings = page.frameLocator('#sbox-iframe').getByText('Settings');
@@ -37,11 +37,15 @@ export class FileActions {
     this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
     this.filesaved = page.frameLocator('#sbox-iframe').getByText('Saved');
     this.deletebutton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' });
-    this.moveToTrash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' });
+    // this.trash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' });
+    this.trash = page.frameLocator('#sbox-iframe').getByText('Move to trash')
+
     this.destroy = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Destroy' });
     this.linkTab = page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link');
     this.linkTabMobile = page.frameLocator('#sbox-secure-iframe').getByLabel('Link');
     this.createFile = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' });
+    this.oneTimeLocal = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'One time ' })
+    this.oneTime = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' One time' })
 
     // buttons
     this.closeButtonSecure = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' });
@@ -63,6 +67,25 @@ export class FileActions {
 
     // markdown
     this.slideeditor = page.frameLocator('#sbox-iframe').locator('.CodeMirror-code');
+  }
+
+  async moveToTrash() {
+    // if (local) {
+    //   await this.trashLocal.click()
+    
+    // } else {
+      await this.trash.click()
+    // }
+  
+  }
+
+  async oneTimeClick(local) {
+    if (local) {
+      await this.oneTimeLocal.click()
+    } else {
+      await this.oneTime.click()
+    }
+  
   }
 
   async title (title) {
@@ -164,7 +187,7 @@ export class FileActions {
 
   async importTemplate (mobile, local) {
     await this.filemenuClick(mobile);
-
+    console.log()
     if (local) {
       await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
     } else {

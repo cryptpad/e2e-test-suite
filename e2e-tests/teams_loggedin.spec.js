@@ -135,7 +135,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
 
     // upload new avatar
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
     await fileActions.okButton.click();
@@ -150,7 +150,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
 
     // change avatar back to original
     const fileChooserPromise1 = page.waitForEvent('filechooser');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Upload a new avatar' }).click();
+    await page.frameLocator('#sbox-iframe').getByLabel('Upload a new file to your').click();
     const fileChooser1 = await fileChooserPromise1;
     await fileChooser1.setFiles('testdocuments/teamavatar-empty.png');
     await fileActions.okButton.click();
@@ -324,7 +324,6 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
     await fileActions.okButton.click();
     await page.waitForTimeout(1800);
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('testuser')).toBeHidden({ timeout: 3000 });
-    await page.close();
 
     await pageOne.reload();
     await pageOne.waitForTimeout(10000);

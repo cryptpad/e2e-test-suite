@@ -1,4 +1,4 @@
-const { test, url, mainAccountPassword, titleDate } = require('../fixture.js');
+const { test, url, mainAccountPassword, titleDate, titleDateComma } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
@@ -14,15 +14,21 @@ let mobile;
 let cleanUp;
 let fileActions;
 let userActions;
+let isBrowserstack;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
+  mobile = isMobile;
+  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   test.setTimeout(210000);
   mobile = isMobile;
 
+  fileActions = new FileActions(page);
+  userActions = new UserActions(page);
+  cleanUp = new Cleanup(page);
+
   if (mobile) {
-    userActions = new UserActions(page);
     await userActions.login('test-user', mainAccountPassword);
-    fileActions = new FileActions(page);
+    
   }
 
   await page.goto(`${url}/drive`);
@@ -39,7 +45,7 @@ userMenuItems.forEach(function (item) {
         await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
         await page.waitForTimeout(10000);
-        await fileActions.loginLink.toBeVisible();
+        await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible();
       } else if (item === 'support' && url !== 'https://cryptpad.fr') {
         return;
       } else {
@@ -75,6 +81,8 @@ test('drive -  upgrade account', async ({ page }) => {
 
 test('drive -  upload file', async ({ page }) => {
   try {
+
+    await cleanUp.cleanFiles('myfile.doc');
     const fileChooserPromise = page.waitForEvent('filechooser');
 
     await fileActions.newFile.locator('span').first().click();
@@ -89,16 +97,11 @@ test('drive -  upload file', async ({ page }) => {
     }
 
     await page.frameLocator('#sbox-iframe').getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor();
-
+    await page.frameLocator('#sbox-iframe').locator('.cp-fileupload-header-close > .fa').click()
     await fileActions.driveContentFolder.getByText('myfile.doc').click({ button: 'right' });
     await page.waitForTimeout(10000);
-    if (await fileActions.moveToTrash.isVisible()) {
-      await page.waitForTimeout(10000);
-      await fileActions.moveToTrash.click();
-    } else {
-      await page.waitForTimeout(10000);
-      await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Remove' }).last().click();
-    }
+    await fileActions.moveToTrash();
+ 
     await expect(fileActions.driveContentFolder.getByText('myfile.doc')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - upload file', status: 'passed', reason: 'Can upload a file in Drive' } })}`);
@@ -110,7 +113,6 @@ test('drive -  upload file', async ({ page }) => {
 
 test('drive -  recent files', async ({ page }) => {
   try {
-    cleanUp = new Cleanup(page);
     await cleanUp.cleanUserDrive('Rich text - ');
 
     const page1Promise = page.waitForEvent('popup');
@@ -120,7 +122,7 @@ test('drive -  recent files', async ({ page }) => {
     const page1 = await page1Promise;
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
-    const title = `Rich text - ${titleDate}`;
+    const title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
     await page1.waitForTimeout(10000);
     await page1.close();
     await page.reload();
@@ -191,7 +193,7 @@ test('drive - create link', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
     await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').click({ button: 'right' });
-    await fileActions.moveToTrash.click();
+    await fileActions.moveToTrash(local);
     await expect(page.frameLocator('#sbox-iframe').getByText('My link')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - link', status: 'passed', reason: 'Can create link in Drive' } })}`);
@@ -214,7 +216,7 @@ test('drive - create folder', async ({ page }) => {
     await page.waitForTimeout(10000);
     await expect(fileActions.driveContentFolder.getByText('My test folder')).toBeVisible();
     await fileActions.driveContentFolder.getByText('My test folder').click({ button: 'right', timeout: 3000 });
-    await fileActions.moveToTrash.click();
+    await fileActions.moveToTrash(local);
     await page.waitForTimeout(3000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - folder', status: 'passed', reason: 'Can create folder in Drive' } })}`);
@@ -277,6 +279,9 @@ test('drive - create folder', async ({ page }) => {
 
 test('drive - toggle sidebar', async ({ page }) => {
   try {
+
+    await cleanUp.cleanUserDrive('my file');
+    await cleanUp.cleanUserDrive('my file');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Files' }).click();
     await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Files' }).click();
@@ -333,9 +338,15 @@ test('can download drive contents', async ({ page }) => {
     await fileActions.settings.click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
-
+    await page1.waitForTimeout(6000);
     await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').getByText('CryptDrive').click();
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
+
+    if (local) {
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
+    } else {
+      await page1.frameLocator('#sbox-iframe').getByText('Download my CryptDrive').click();
+    }
+
     await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('/tmp/mydrivecontents.zip');
     const download1Promise = page1.waitForEvent('download');
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
