@@ -18,7 +18,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test anon --project='chrome'
+      run: npx playwright test anon --project='chrome' --workers=2
       env: 
         PW_URL: ${{ secrets.PW_URL }}
         MY_SECRET_2: ${{ secrets.MY_SECRET_2 }}
