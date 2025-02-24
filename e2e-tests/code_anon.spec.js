@@ -121,7 +121,7 @@ test('code - import file #1367', async ({ page, context }) => {
 
   try {
     await fileActions.codeeditor.waitFor();
-    await page.waitForTimeout(10000);
+    // // await page.waitForTimeout(10000);
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -130,7 +130,7 @@ test('code - import file #1367', async ({ page, context }) => {
 
     await fileChooser.setFiles('testdocuments/myfile.html');
 
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
 
     await expect(fileActions.codeeditor.getByText('Test text here')).toBeVisible();
     await expect(fileActions.codepreview.getByText('Test text here')).toBeVisible();
@@ -178,7 +178,7 @@ test('code - export (md)', async ({ page }) => {
 //     await page.keyboard.press('o');
 //     await page.keyboard.press('n');
 //     await page.keyboard.press('e');
-//     await page.waitForTimeout(7000);
+//     // await page.waitForTimeout(7000);
 
 //     let key;
 //     if (platform === 'darwin') {
@@ -188,14 +188,14 @@ test('code - export (md)', async ({ page }) => {
 //     }
 //     await page.keyboard.press(`${key}+a`);
 //     await page.keyboard.press('Backspace');
-//     await page.waitForTimeout(3000);
+//     // await page.waitForTimeout(3000);
 //     await page.keyboard.press('t');
 //     await page.keyboard.press('w');
 //     await page.keyboard.press('o');
-//     await page.waitForTimeout(7000);
+//     // await page.waitForTimeout(7000);
 //     await page.keyboard.press(`${key}+a`);
 //     await page.keyboard.press('Backspace');
-//     await page.waitForTimeout(3000);
+//     // await page.waitForTimeout(3000);
 
 //     await fileActions.history(mobile)
 //     await fileActions.historyPrev.click();
@@ -205,9 +205,9 @@ test('code - export (md)', async ({ page }) => {
 
 //     await fileActions.share(mobile);
 //     await fileActions.shareLink.click();
-//     await page.waitForTimeout(5000);
+//     // await page.waitForTimeout(5000);
 //     await fileActions.shareCopyLink.click();
-//     await page.waitForTimeout(5000);
+//     // await page.waitForTimeout(5000);
 
 //     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
 //     pageOne = await browser.newPage();

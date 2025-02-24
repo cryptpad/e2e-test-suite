@@ -1,4 +1,4 @@
-const { test, url, mainAccountPassword, testUser3Password, nextWeekSlashFormat, titleDate } = require('../fixture.js');
+const { test, url, mainAccountPassword, testUser3Password, nextWeekSlashFormat, titleDate, titleDateComma } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
@@ -13,6 +13,7 @@ let mobile;
 let browserName;
 let cleanUp;
 let title;
+let titleComma
 let titleName;
 let contextOne;
 let fileActions;
@@ -31,16 +32,18 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   }
   fileActions = new FileActions(page);
   const name = testInfo.title.split(' ')[0];
-  const titleDate = await fileActions.titleDate(mobile, isBrowserstack);
   if (name === 'pad') {
     titleName = 'Rich text -';
     title = `${titleName} ${titleDate}`;
+    titleComma = `${titleName} ${titleDateComma}`
   } else if (name === 'slide') {
     titleName = 'Markdown slides -';
     title = `${titleName} ${titleDate}`;
+    titleComma = `${titleName} ${titleDateComma}`
   } else {
     titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -';
     title = `${titleName}` + ' ' + `${titleDate}`;
+    titleComma = `${titleName}` + ' ' + `${titleDateComma}`;
   }
 
   cleanUp = new Cleanup(page);
@@ -49,7 +52,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/${name}`);
 
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -89,7 +92,7 @@ docNames.forEach(function (name) {
   //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
   //     await fileActions.shareLink.click();
   //     await fileActions.shareCopyLink.click();
-  //     await page.waitForTimeout(3000);
+  //     // await page.waitForTimeout(3000);
   //     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
   //     // mocks future date in new context
@@ -127,7 +130,7 @@ docNames.forEach(function (name) {
   test(`${name} - tag`, async ({ page }) => {
     try {
       await fileActions.createFile.click();
-      await page.waitForTimeout(5000);
+      // await page.waitForTimeout(5000);
       if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
       } else {
@@ -138,18 +141,18 @@ docNames.forEach(function (name) {
         await fileActions.okButton.click();
       }
 
-      await page.waitForTimeout(5000);
+      // await page.waitForTimeout(5000);
       await fileActions.filemenuClick(mobile);
       await fileActions.clickTags(local);
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click();
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
       await fileActions.okButton.click();
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
 
       await page.goto(`${url}/drive/#`);
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await fileActions.driveSideMenu.getByText('Tags').click();
       await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
       if (mobile) {
@@ -177,19 +180,18 @@ docNames.forEach(function (name) {
       await fileActions.createFile.click();
 
       // add test-user3 as owner
-      await page.waitForTimeout(5000);
-      console.log(await fileActions.title(title));
+      // await page.waitForTimeout(5000);
       await fileActions.filemenu.waitFor();
 
-      await expect(await fileActions.title(title)).toBeVisible();
-      await page.waitForTimeout(5000);
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+      // await page.waitForTimeout(5000);
       await fileActions.access(mobile);
       await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'Owners' }).first().click();
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').nth(1).click({ timeout: 5000 });
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-secure-iframe').locator('.cp-share-column-mid > .btn').nth(1).click({ timeout: 5000 });
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await fileActions.okButtonSecure.click();
 
       const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
@@ -247,13 +249,13 @@ docNames.forEach(function (name) {
     try {
       await fileActions.createFile.waitFor();
       await fileActions.createFile.click();
-      await page.waitForTimeout(10000);
+      // await page.waitForTimeout(10000);
 
       await fileActions.share(mobile);
       await page.frameLocator('#sbox-secure-iframe').getByText('test team').click();
       await fileActions.shareSecureLink.click();
 
-      await page.waitForTimeout(5000);
+      // await page.waitForTimeout(5000);
       await page.goto(`${url}/teams/`);
       await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
 
@@ -264,7 +266,7 @@ docNames.forEach(function (name) {
       }
 
       await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
-      await page.waitForTimeout(5000);
+      // await page.waitForTimeout(5000);
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ` ${name} - add to team drive`, status: 'passed', reason: 'Can create document and add to team drive' } })}`);
     } catch (e) {
@@ -279,13 +281,13 @@ docNames.forEach(function (name) {
       await fileActions.createFile.click();
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 });
 
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       if (name === 'sheet') {
-        await page.waitForTimeout(5000);
+        // await page.waitForTimeout(5000);
       }
 
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-      await page.waitForTimeout(2000);
+      // await page.waitForTimeout(2000);
 
       await fileActions.filemenuClick(mobile);
 
@@ -293,20 +295,20 @@ docNames.forEach(function (name) {
 
       await fileActions.okButton.click();
       if (name === 'diagram') {
-        await page.waitForTimeout(8000);
+        // await page.waitForTimeout(8000);
       } else {
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
       }
 
       await expect(page.frameLocator('#sbox-iframe').getByText(/^That document has been moved to the trash/, { exact: true })).toBeVisible({ timeout: 10000 });
-      await page.waitForTimeout(2000);
+      // await page.waitForTimeout(2000);
       await fileActions.okButton.click();
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
 
       await page.goto(`${url}/drive`);
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').getByText('Trash', { exact: true }).click();
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Empty the trash' }).click();
       if (mobile) {
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Empty the trash' }).click();
@@ -330,17 +332,17 @@ docNames.forEach(function (name) {
         await page.frameLocator('#sbox-iframe').locator('#cp-creation-password-val').fill('password');
         await fileActions.createFile.click();
 
-        await page.waitForTimeout(5000);
-        await fileActions.filemenu.waitFor();
+        // await page.waitForTimeout(5000);
+        await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
 
-        await expect(await fileActions.title(title)).toBeVisible();
+        await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
         await fileActions.share(mobile);
 
         await fileActions.clickLinkTab(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({ timeout: 3000 });
         await fileActions.shareCopyLink.click();
-        await page.waitForTimeout(5000);
+        // await page.waitForTimeout(5000);
 
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
         if (mobile) {
@@ -369,14 +371,14 @@ docNames.forEach(function (name) {
         await page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Submit' }).click({ timeout: 3000 });
         await fileActions.okButtonSecure.click({ timeout: 3000 });
         if (name === 'sheet') {
-          await page.waitForTimeout(30000);
+          // await page.waitForTimeout(30000);
         } else {
-          await page.waitForTimeout(5000);
+          // await page.waitForTimeout(5000);
         }
 
         await fileActions.okButtonSecure.click({ timeout: 30000 });
 
-        await page.waitForTimeout(5000);
+        // await page.waitForTimeout(5000);
         await fileActions.share(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
 
@@ -428,7 +430,7 @@ docNames.forEach(function (name) {
           await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
         }
         const pageTwo = await page2Promise;
-        await page.waitForTimeout(5000)
+        // await page.waitForTimeout(5000)
         const fileActions2 = new FileActions(pageTwo);
         await expect(await fileActions2.title(title)).toBeVisible();
         await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible({ timeout: 5000 });
@@ -452,10 +454,10 @@ docNames.forEach(function (name) {
       test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
       try {
         await fileActions.createFile.click();
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
 
         await fileActions.share(mobile);
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
         await page.frameLocator('#sbox-secure-iframe').getByText('Edit').click();
         await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').click();
         await fileActions.shareSecureLink.click();
@@ -482,7 +484,7 @@ docNames.forEach(function (name) {
         await expect(await fileActions2.title(title)).toBeVisible();
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden();
 
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
         await page.bringToFront();
         if (mobile) {
           await page.frameLocator('#sbox-iframe').locator('.fa.fa-users').nth(1).click();
@@ -611,22 +613,22 @@ docNames.forEach(function (name) {
         await fileActions.createFile.click();
 
         // enable access list and add test-user3 to it
-        await page.waitForTimeout(5000);
+        // await page.waitForTimeout(5000);
         await fileActions.filemenu.waitFor();
 
-        await expect(await fileActions.title(title)).toBeVisible();
+        await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
         await fileActions.access(mobile);
         await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'List' }).first().click();
         await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: 'Enable access list' }).locator('span').first().click();
-        await page.waitForTimeout(5000);
+        // await page.waitForTimeout(5000);
         await page.frameLocator('#sbox-secure-iframe').getByText('test-user3').first().click();
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
         await page.frameLocator('#sbox-secure-iframe').locator('.cp-share-column-mid.cp-overlay-container').locator('.btn.btn-primary.cp-access-add').click();
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
         await fileActions.closeButtonSecure.click();
 
         // share link and attempt to access document anonymously
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
         await fileActions.share(mobile);
         await fileActions.clickLinkTab(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click({ timeout: 3000 });
@@ -652,7 +654,7 @@ docNames.forEach(function (name) {
         await expect(await fileActions1.title(title)).toBeVisible();
 
         // remove test-user3 from access list
-        await page.waitForTimeout(30000);
+        // await page.waitForTimeout(30000);
         await fileActions.access(mobile);
         await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'List' }).first().click();
         await page.frameLocator('#sbox-secure-iframe').locator('.cp-usergrid-user > .fa').first().click();

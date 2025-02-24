@@ -20,7 +20,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/whiteboard`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('screenshot whiteboard - display history (previous author)', async ({ page, browser }) => {
@@ -42,7 +42,7 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await fileActions.share(mobile);
     await fileActions.clickLinkTab(mobile);
@@ -102,7 +102,7 @@ test('whiteboard - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example whiteboard template');
     await fileActions.okButton.click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await page.goto(`${url}/whiteboard/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);

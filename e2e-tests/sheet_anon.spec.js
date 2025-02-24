@@ -10,7 +10,7 @@
 //   browserName = testInfo.project.name.split(/@/)[0];
 
 //   await page.goto(`${url}/sheet`);
-//   await page.waitForTimeout(10000);
+//   // await page.waitForTimeout(10000);
 // });
 
 // test('sheet doc - anon', async ({ page }) => {

@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 
   await page.goto(`${url}/slide`);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
   fileActions = new FileActions(page);
 });
 
@@ -41,11 +41,11 @@ test('slide - save as and import template', async ({ page }) => {
     await fileActions.codeeditor.waitFor();
     await fileActions.codeeditor.click();
     await fileActions.typeTestTextCode(mobile, 'Test text');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example markdown template');
     await fileActions.okButton.click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await page.goto(`${url}/slide/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
@@ -55,7 +55,7 @@ test('slide - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.driveContentFolder.getByText('example markdown template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await fileActions.okButton.click();
@@ -73,7 +73,7 @@ test('slide - history (previous author)', async ({ page, browser }) => {
 
     await fileActions.codeeditor.click();
     await fileActions.codeeditor.type('Test text');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.shareLink.click();
     await fileActions.clickLinkTab(mobile);
@@ -97,10 +97,10 @@ test('slide - history (previous author)', async ({ page, browser }) => {
     await page.keyboard.press('Enter');
     await fileActions.codeeditor.type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
-    // await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
     await fileActions.codeeditor.type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();

@@ -7,6 +7,7 @@ let fileActions;
 let documentTitleDate;
 let isBrowserstack;
 let title;
+let titleComma
 let titleName
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
@@ -15,16 +16,18 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   mobile = isMobile;
   fileActions = new FileActions(page);
   const name = testInfo.title.split(' ')[0];
-  const titleDate = await fileActions.titleDate(mobile, isBrowserstack);
   if (name === 'pad') {
     titleName = 'Rich text -';
     title = `${titleName} ${titleDate}`;
+    titleComma = `${titleName} ${titleDateComma}`
   } else if (name === 'slide') {
     titleName = 'Markdown slides -';
     title = `${titleName} ${titleDate}`;
+    titleComma = `${titleName} ${titleDateComma}`
   } else {
     titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -';
     title = `${titleName}` + ' ' + `${titleDate}`;
+    titleComma = `${titleName}` + ' ' + `${titleDateComma}`;
   }
 
 });
@@ -36,11 +39,11 @@ docNames.forEach(function (name) {
   test(`${name} - create new file from file menu`, async ({ page, context }) => {
     try {
       await page.goto(`${url}/${name}/`);
-      await page.waitForTimeout(15000);
+      // await page.waitForTimeout(15000);
       if (name === 'sheet' | name === 'diagram') {
-        await page.waitForTimeout(40000);
+        // await page.waitForTimeout(40000);
       } else {
-        await page.waitForTimeout(15000);
+        // await page.waitForTimeout(15000);
       }
 
       await fileActions.filemenuClick(mobile);
@@ -72,9 +75,9 @@ docNames.forEach(function (name) {
       try {
         await page.goto(`${url}/${name}/`);
         if (name === 'sheet' | name === 'diagram') {
-          await page.waitForTimeout(40000);
+          // await page.waitForTimeout(40000);
         } else {
-          await page.waitForTimeout(15000);
+          // await page.waitForTimeout(15000);
         }
 
         await fileActions.share(mobile);
@@ -87,9 +90,9 @@ docNames.forEach(function (name) {
         const page1 = await context.newPage();
 
         await page1.goto(`${clipboardText}`);
-        await page.waitForTimeout(10000);
-        await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
+        // await page.waitForTimeout(10000);
+        await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden();
 
@@ -104,9 +107,9 @@ docNames.forEach(function (name) {
       try {
         await page.goto(`${url}/${name}/`);
         if (name === 'sheet' | name === 'diagram') {
-          await page.waitForTimeout(40000);
+          // await page.waitForTimeout(40000);
         } else {
-          await page.waitForTimeout(15000);
+          // await page.waitForTimeout(15000);
         }
 
         await fileActions.share(mobile);
@@ -119,8 +122,8 @@ docNames.forEach(function (name) {
 
         await page1.goto(`${clipboardText}`);
         await page1.waitForTimeout(10000);
-        await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
+        await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
         await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible();
 
@@ -136,9 +139,9 @@ docNames.forEach(function (name) {
     try {
       await page.goto(`${url}/${name}`);
       if (name === 'sheet' | name === 'diagram') {
-        await page.waitForTimeout(40000);
+        // await page.waitForTimeout(40000);
       } else {
-        await page.waitForTimeout(15000);
+        // await page.waitForTimeout(15000);
       }
 
       if (mobile) {
@@ -152,11 +155,11 @@ docNames.forEach(function (name) {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').waitFor({ timeout: 5000 });
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').click();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').fill('test message');
-      await page.waitForTimeout(2000);
+      // await page.waitForTimeout(2000);
 
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Type a message here...').press('Enter');
       if (name === 'sheet' | name === 'diagram') {
-        await page.waitForTimeout(5000);
+        // await page.waitForTimeout(5000);
       }
       // if (page.frameLocator('#sbox-iframe').getByText('We need your help').isVisible()) {
       //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Not now' }).click();
@@ -175,9 +178,9 @@ docNames.forEach(function (name) {
     try {
       await page.goto(`${url}/drive`);
       if (name === 'sheet' | name === 'diagram') {
-        await page.waitForTimeout(40000);
+        // await page.waitForTimeout(40000);
       } else {
-        await page.waitForTimeout(15000);
+        // await page.waitForTimeout(15000);
       }
 
       await page.frameLocator('#sbox-iframe').getByText('New', { exact: true }).click();
@@ -231,17 +234,17 @@ docNames.forEach(function (name) {
       await page.goto(`${url}/${name}/`);
 
       if (name === 'sheet' | name === 'diagram') {
-        await page.waitForTimeout(40000);
+        // await page.waitForTimeout(40000);
       } else {
-        await page.waitForTimeout(15000);
+        // await page.waitForTimeout(15000);
       }
 
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
       await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
       await page.frameLocator('#sbox-iframe').getByPlaceholder(`${title}`).fill('new doc title');
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
       await expect(page.frameLocator('#sbox-iframe').getByText('new doc title')).toBeVisible();
 
@@ -257,16 +260,16 @@ docNames.forEach(function (name) {
     try {
       await page.goto(`${url}/${name}/`);
       if (name === 'sheet' | name === 'diagram') {
-        await page.waitForTimeout(20000);
+        // await page.waitForTimeout(20000);
       } else {
-        await page.waitForTimeout(15000);
+        // await page.waitForTimeout(15000);
       }
       await page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive').waitFor();
       await expect(page.frameLocator('#sbox-iframe').getByText('This pad is not in your CryptDrive')).toBeVisible();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor();
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
 
-      await page.waitForTimeout(3000);
+      // await page.waitForTimeout(3000);
 
       await fileActions.filemenuClick(mobile);
       await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();

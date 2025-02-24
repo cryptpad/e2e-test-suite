@@ -17,7 +17,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('kanban - new board', async ({ page }) => {
@@ -159,7 +159,7 @@ test('kanban - import file', async ({ page }) => {
     ]);
     await fileChooser.setFiles('testdocuments/testkanban.json');
 
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await expect(page.frameLocator('#sbox-iframe').getByText('board 1')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').getByText('board two')).toBeVisible();
@@ -181,13 +181,13 @@ test('kanban - make a copy', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByLabel('Title').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').type('new item content');
     await fileActions.closeButton.click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
@@ -214,7 +214,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('One moment in history');
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('One moment in history')).toBeVisible();
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
 
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'One moment in history' }).getByAltText('Edit this card').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
@@ -224,7 +224,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('Another moment in history');
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
 
     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Another moment in history' }).getByAltText('Edit this card').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
@@ -234,7 +234,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('Yet another moment in history');
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('Yet another moment in history')).toBeVisible();
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
@@ -250,7 +250,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
 
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await page1.frameLocator('#sbox-iframe').getByText('Another moment in history').waitFor();
     await expect(page1.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
 
@@ -264,7 +264,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
 test('(screenshot) kanban - can drag boards #1372', async ({ page }) => {
   test.skip();
   try {
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'To Do' }).hover();
     await page.mouse.down();

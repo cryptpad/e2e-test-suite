@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   test.setTimeout(210000);
 
   await page.goto(`${url}`);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('home page title', async ({ page }) => {
@@ -27,7 +27,7 @@ test('home page title', async ({ page }) => {
 test('homepage - access sign up', async ({ page }) => {
   try {
     await page.getByRole('link', { name: 'Sign up' }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await expect(page).toHaveURL(`${url}/register/`);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - access sign up', status: 'passed', reason: 'Can access sign up from homepage' } })}`);
   } catch (e) {

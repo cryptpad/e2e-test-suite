@@ -30,7 +30,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('kanban - save as and import template', async ({ page }) => {
@@ -46,7 +46,7 @@ test('kanban - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example kanban template');
     await fileActions.okButton.click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await page.goto(`${url}/kanban/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
@@ -56,7 +56,7 @@ test('kanban - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await page.frameLocator('#sbox-iframe').getByText('example kanban template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
@@ -79,7 +79,7 @@ if (!mobile) {
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('test text by test-user');
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      await page.waitForTimeout(5000);
+      // await page.waitForTimeout(5000);
 
       await fileActions.share(mobile);
       await fileActions.clickLinkTab(mobile);
@@ -108,7 +108,7 @@ if (!mobile) {
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('and some more text by test user here');
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      await page.waitForTimeout(5000);
+      // await page.waitForTimeout(5000);
 
       await fileActions.history(mobile);
       await fileActions.historyPrev.click();

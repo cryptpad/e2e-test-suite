@@ -31,7 +31,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/pad`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('pad - save as and import template', async ({ page }) => {
@@ -43,7 +43,7 @@ test('pad - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example pad template');
     await fileActions.okButton.click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await page.goto(`${url}/pad/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
@@ -53,11 +53,11 @@ test('pad - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.driveContentFolder.getByText('example pad template').click({ button: 'right' });
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
     await fileActions.okButton.click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example pad template')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad > save as template', status: 'passed', reason: 'Can save and use Rich Text document as template' } })}`);
@@ -102,10 +102,10 @@ test('pad - history (previous author)', async ({ page, browser }) => {
     await page.keyboard.press('Enter');
     await fileActions.padeditor.locator('body').type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.padeditor.locator('body').type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();

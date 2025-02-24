@@ -1,12 +1,9 @@
-const { test, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat } = require('../fixture.js');
+const { test, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat, titleDate, titleDateComma } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-// const fs = require('fs');
+const fs = require('fs');
 
 // const d3 = require('d3');
-(async () => {
-  const fs= await import('fs').then(fs => fs.default)
-  // YOUR CODE HERE
-})().catch(console.error)
+
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
@@ -26,11 +23,11 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   await page.goto(`${url}/form`);
   fileActions = new FileActions(page);
-  if (mobile) {
-    await page.waitForTimeout(30000);
-  } else {
-    await page.waitForTimeout(10000);
-  }
+  // if (mobile) {
+  //   // await page.waitForTimeout(30000);
+  // } else {
+  //   // await page.waitForTimeout(10000);
+  // }
 });
 
 test('form - submission (one time no edit)', async ({ page, context }) => {
@@ -40,7 +37,7 @@ test('form - submission (one time no edit)', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('One time only').click();
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
 
-    await page.waitForTimeout(10000);
+    // // await page.waitForTimeout(10000);
     await fileActions.copyPublicLink.waitFor();
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
@@ -104,7 +101,7 @@ test('form - submission (multiple times no edit)', async ({ page, context }) => 
 
 test('form - submission (one time) - delete', async ({ page, context }) => {
   try {
-    await page.waitForTimeout(10000);
+    // // await page.waitForTimeout(10000);
     await fileActions.copyPublicLink.waitFor();
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
@@ -146,7 +143,7 @@ test('form - submission (multiple times) - delete', async ({ page, context }) =>
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    await page1.waitForTimeout(10000);
+    // await page1.waitForTimeout(10000);
 
     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
@@ -189,7 +186,7 @@ test('form - submission (multiple times) - edit', async ({ page, context }) => {
     await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
 
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
 
@@ -235,9 +232,8 @@ test('form - submission (one time) - edit', async ({ page, context }) => {
 
 test('form - share (link) - auditor', async ({ page, context }) => {
   try {
-    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(title).waitFor({ timeout: 60000 });
+    await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
 
     await fileActions.share(mobile);
 
@@ -250,8 +246,8 @@ test('form - share (link) - auditor', async ({ page, context }) => {
     await page1.goto(`${clipboardText}`);
     await page1.waitForTimeout(10000);
 
-    await page1.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).waitFor();
-    await expect(page1.frameLocator('#sbox-iframe').getByRole('heading', { name: title })).toBeVisible({ timeout: 5000 });
+    await page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
+    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma))).toBeVisible({ timeout: 5000 });
     await page1.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor();
     await expect(page1.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
 
@@ -264,9 +260,9 @@ test('form - share (link) - auditor', async ({ page, context }) => {
 
 test('form - share (link) - author', async ({ page, context }) => {
   try {
-    const title = `Form - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
-
-    await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(title).waitFor({ timeout: 60000 });
+    const title = `Form - ${titleDate}`;
+    const titleComma = `Form - ${titleDateComma}`;
+    await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(title).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleComma)).waitFor({ timeout: 60000 });
 
     await fileActions.share(mobile);
 
@@ -309,7 +305,7 @@ test('form - add and respond to checkbox question', async ({ page, context }) =>
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`);
-    await pageOne.waitForTimeout(15000);
+    // await pageOne.waitForTimeout(15000);
 
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'box2' }).locator('span').first().waitFor();
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'box2' }).locator('span').first().click();
@@ -331,7 +327,7 @@ test('form - close and open', async ({ page, context }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
 
     const visible = await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).isVisible();
 
@@ -341,35 +337,35 @@ test('form - close and open', async ({ page, context }) => {
     }
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByLabel(`${todayStringFormat}`).click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
 
     await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill(`${hours}`);
-    await page.waitForTimeout(1000);
+    // // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill(`${minutes}`);
 
     if (mobile && parseInt(hours) < 12 && await page.frameLocator('#sbox-iframe').locator('.flatpickr-am-pm').isVisible()) {
       await page.frameLocator('#sbox-iframe').locator('.flatpickr-am-pm').click();
     }
-    await page.waitForTimeout(1000);
+    // // await page.waitForTimeout(1000);
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(1000);
+    // // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(1000);
+    // // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
 
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form was closed on ${dateTodaySlashFormat}`)).toBeVisible();
 
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`);
-    await pageOne.waitForTimeout(15000);
+    // await pageOne.waitForTimeout(15000);
     await pageOne.frameLocator('#sbox-iframe').getByText('Your question here?').waitFor();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Your question here?')).toBeVisible();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText(`This form was closed on ${dateTodaySlashFormat}`)).toBeVisible();
@@ -377,12 +373,13 @@ test('form - close and open', async ({ page, context }) => {
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open', exact: true }).click();
-    await page.waitForTimeout(1000);
+    // // await page.waitForTimeout(1000);
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText('This form is open')).toBeVisible();
 
     await pageOne.reload();
     await pageOne.bringToFront();
-    await pageOne.waitForTimeout(30000);
+    // await pageOne.waitForTimeout(30000);
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).waitFor()
     await expect(pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' })).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - open and close', status: 'passed', reason: 'Can close and open Form' } })}`);
@@ -405,20 +402,20 @@ test('form - set future closing date and open', async ({ page, context }) => {
       await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click({ force: true });
     }
 
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Set closing date' }).click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-app-form-container').getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await fileActions.copyPublicLink.dblclick();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -444,15 +441,15 @@ test('form - set future closing date and open', async ({ page, context }) => {
 
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`);
-    await pageOne.waitForTimeout(15000);
+    // await pageOne.waitForTimeout(15000);
     await pageOne.frameLocator('#sbox-iframe').getByText(`This form was closed on ${nextMondaySlashFormat}`).waitFor();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText(`This form was closed on ${nextMondaySlashFormat}`)).toBeVisible();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Remove closing date', exact: true }).click();
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('This form is open')).toBeVisible();
 
     await pageOne.reload();
@@ -469,7 +466,7 @@ test('form - set future closing date and open', async ({ page, context }) => {
 
 test('form - anonymize responses', async ({ page, context }) => {
   try {
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
     await fileActions.copyPublicLink.waitFor();
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
@@ -478,15 +475,15 @@ test('form - anonymize responses', async ({ page, context }) => {
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`);
 
-    await pageOne.waitForTimeout(1000);
+    // await pageOne.waitForTimeout(1000);
     await pageOne.frameLocator('#sbox-iframe').getByText('Please choose how you would like to answer this form:').waitFor();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Please choose how you would like to answer this form:')).toBeVisible({ timeout: 15000 });
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
     await page.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Anonymize responses' }).locator('span').first().click();
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
 
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Responses to this form are anonymized').first()).toBeVisible();
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Answer as')).toBeHidden();
@@ -509,7 +506,7 @@ test('form - anonymize responses', async ({ page, context }) => {
 
 test('form - publish responses', async ({ page, context }) => {
   try {
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.copyPublicLink.waitFor();
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
@@ -529,6 +526,7 @@ test('form - publish responses', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Publish responses' }).click();
     await fileActions.okButton.click();
 
+    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' View all responses (1)' }).waitFor()
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: ' View all responses (1)' }).click();
     await pageOne.frameLocator('#sbox-iframe').getByText(/Your question here\?Option 11 Option 20/).click();
 
@@ -579,7 +577,7 @@ test('form - import file', async ({ page }) => {
       await fileActions.importClick()
     ]);
     await fileChooser.setFiles('testdocuments/testform.json');
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('textbox')).toHaveValue('What to do today?');
     await expect(page.frameLocator('#sbox-iframe').getByText('Surf')).toBeVisible();
@@ -596,22 +594,22 @@ test('form - make a copy', async ({ page }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('What to do today?');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).nth(1).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 1').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 1').fill('Surf');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 2').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 2').fill('Cinema');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Preview form', exact: true }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.filemenuClick(mobile);
     const [pageOne] = await Promise.all([
       page.waitForEvent('popup'),
@@ -680,10 +678,10 @@ test('form - add description', async ({ page, context }) => {
   try {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).first().waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).first().click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Your text here' }).click();
     await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Your text here' }).fill('New description');
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -711,10 +709,10 @@ test('form - add submission message', async ({ page, context }) => {
     }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Add submit message' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Add submit message' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').locator('pre').nth(1).fill('Thank you for submitting your answer!');
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -725,11 +723,11 @@ test('form - add submission message', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
 
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await expect(pageOne.frameLocator('#sbox-iframe').getByText('Thank you for submitting your answer!')).toBeVisible();
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - add submission message', status: 'passed', reason: 'Can create Form with a submission message' } })}`);
   } catch (e) {
@@ -757,7 +755,7 @@ test('form - anon (guest) access - allowed', async ({ page, context }) => {
 
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
 
     await expect(page.frameLocator('#sbox-iframe').getByRole('heading', { name: 'Total responses: 1' })).toBeVisible();
@@ -806,7 +804,7 @@ test('form - add and respond to text question', async ({ page, context }) => {
 
 test('form - edit response', async ({ page, context }) => {
   try {
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.copyPublicLink.waitFor();
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
@@ -814,7 +812,7 @@ test('form - edit response', async ({ page, context }) => {
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`);
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click();
@@ -843,7 +841,7 @@ test('form - delete response', async ({ page, context }) => {
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     pageOne = await context.newPage();
     await pageOne.goto(`${clipboardText}`);
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByText('Option 1').click();
@@ -960,9 +958,9 @@ test('form - add and respond to choice question (required)', async ({ page, cont
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
     await page.frameLocator('#sbox-iframe').locator('.cp-form-edit-block-input > input').nth(2).click();
     await page.frameLocator('#sbox-iframe').locator('.cp-form-edit-block-input > input').nth(2).fill('test option three');
-    await page.waitForTimeout(2000);
+    // await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-checkmark-label').getByText('Required').nth(0).click();
-    await page.waitForTimeout(2000);
+    // await page.waitForTimeout(2000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -978,7 +976,7 @@ test('form - add and respond to choice question (required)', async ({ page, cont
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await expect(page.frameLocator('#sbox-iframe').getByText(/test option one1/)).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - add and respond to choice question (required)', status: 'passed', reason: 'Can create and answer choice question (required) in a Form' } })}`);
@@ -1023,7 +1021,7 @@ test('form - add and respond to choice grid question', async ({ page, context })
     await pageOne.waitForTimeout(1000);
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByText(/Choice10 Choice21/).waitFor();
     await expect(page.frameLocator('#sbox-iframe').getByText(/Choice10 Choice21/)).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').getByText(/Choice11 Choice20/)).toBeVisible();
@@ -1061,7 +1059,7 @@ test('form - add and respond to date question', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
-    await page.waitForTimeout(50000);
+    // await page.waitForTimeout(50000);
     await page.frameLocator('#sbox-iframe').getByText(`${dateTodayDashFormat}`).waitFor();
     await expect(page.frameLocator('#sbox-iframe').getByText(`${dateTodayDashFormat}`)).toBeVisible();
 
@@ -1091,7 +1089,7 @@ test('form - add and respond to checkbox grid question', async ({ page, context 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Add option$/ }).getByRole('textbox').first().fill('Box1');
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Add option$/ }).getByRole('textbox').nth(1).fill('Box2');
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Add option$/ }).getByRole('textbox').nth(2).fill('Box3');
-    await page.waitForTimeout(20000);
+    // await page.waitForTimeout(20000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -1135,7 +1133,7 @@ test('form - add and respond to ordered list question (schulze method)', async (
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option 3');
 
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -1199,7 +1197,7 @@ test('form - add and respond to ordered list question', async ({ page, context }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option 3');
 
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -1271,10 +1269,10 @@ test('form - add and respond to poll question', async ({ page, context }) => {
     await pageOne.frameLocator('#sbox-iframe').locator('.cp-poll-cell > i').first().click();
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first().click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
     await expect(page.frameLocator('#sbox-iframe').getByText(/Total1\(0\)0\(0\)/)).toBeVisible();
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - add and respond to poll question', status: 'passed', reason: 'Can create and answer poll question in a Form' } })}`);
   } catch (e) {
@@ -1289,15 +1287,15 @@ test('form - add and respond to form with page break', async ({ page, context })
     await page.frameLocator('#sbox-iframe').getByRole('textbox').first().waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').first().fill('Question one');
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Page break' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Page break' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Text' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).fill('Question two');
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -1346,14 +1344,14 @@ test('form - add and respond to conditional section question (OR)', async ({ pag
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option three' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').locator('.btn.cp-form-creator-inline-add').nth(2).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('.cptools.cptools-form-text').nth(2).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).fill('example question two?');
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -1392,38 +1390,38 @@ test('form - add and respond to conditional section question (AND)', async ({ pa
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example question?');
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Conditional section' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 1' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add AND condition' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 3' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').locator('.btn.cp-form-creator-inline-add').nth(2).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('.cptools.cptools-form-text').nth(2).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').nth(1).fill('example question two?');
 
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.copyPublicLink.click();
     await page.waitForTimeout(3000);
 
@@ -1581,7 +1579,7 @@ test('form - export responses (to sheet document)', async ({ page, context }) =>
     await pageOne.frameLocator('#sbox-iframe').locator('label').filter({ hasText: 'Answer anonymously' }).click();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
     await pageOne.close();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
     const page2Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Export to Sheet' }).click({ timeout: 3000 });

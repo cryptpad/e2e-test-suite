@@ -21,7 +21,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/calendar`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 
   cleanUp = new Cleanup(page);
   await cleanUp.cleanCalendar();
@@ -106,7 +106,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
     await fileActions.oneTimeClick()
 
     await page.frameLocator('#sbox-iframe').getByRole('link', { name: `Weekly on ${weekday}` }).click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     // set date and time
     if (mobile) {
@@ -129,7 +129,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
     }
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     // check if repeats next week
     await page.frameLocator('#sbox-iframe').getByLabel('Right').click();
@@ -195,7 +195,7 @@ test('create event in calendar and edit location', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('somewhere');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     // edit location
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
@@ -204,7 +204,7 @@ test('create event in calendar and edit location', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').dblclick();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('somewhere else');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     // check location changed
     await page.reload();
@@ -288,7 +288,7 @@ test('create event in calendar and edit time', async ({ page }) => {
       await page.keyboard.press('Enter');
     }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     // check time changed
     await page.reload();
@@ -371,7 +371,7 @@ test('create event in calendar and edit date', async ({ page }) => {
     }
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
 
     // //check date changed
     await page.reload();
@@ -408,7 +408,7 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
         }
         await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Remove' }).locator('a').click();
         await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-        await page.waitForTimeout(3000);
+        // await page.waitForTimeout(3000);
         calendarCount = calendarCount - 1;
       }
     }
@@ -418,7 +418,7 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').click();
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test calendar');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     // create event as part of calendar
     if (mobile) {
@@ -437,7 +437,7 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'My calendar' }).click();
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test calendar').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByText('test event').nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test calendar').nth(3)).toBeVisible();
 

@@ -12,7 +12,7 @@ test.beforeEach(async ({ page, isMobile }) => {
   await page.goto(`${url}/whiteboard`);
   fileActions = new FileActions(page);
   mobile = isMobile;
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('screenshot anon - can draw on whiteboard (default settings)', async ({ page }) => {
@@ -87,7 +87,7 @@ test('screenshot anon - erase on whiteboard', async ({ page }) => {
     await page.mouse.up();
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can erase on whiteboard', status: 'passed', reason: 'Can erase on whiteboard' } })}`);
@@ -108,7 +108,7 @@ test('screenshot anon - enter text on whiteboard', async ({ page }) => {
       }
     });
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test text');
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can enter text on whiteboard', status: 'passed', reason: 'Can enter text on whiteboard' } })}`);
@@ -218,7 +218,7 @@ test('screenshot anon - can clear whiteboard canvas', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
@@ -245,7 +245,7 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
@@ -278,7 +278,7 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test whiteboard');
 
@@ -288,7 +288,7 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
     ]);
 
     await download.saveAs('/tmp/test whiteboard');
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
     expect(download.suggestedFilename()).toBe('test whiteboard.png');
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - export as png', status: 'passed', reason: 'Can export Whiteboard as png' } })}`);
@@ -314,7 +314,7 @@ test('screenshot whiteboard - display history', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
@@ -344,7 +344,7 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
       }
     });
     await page.mouse.up();
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
       position: {
         x: 287,
@@ -362,15 +362,15 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.share(mobile);
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await fileActions.shareCopyLink.click();
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
     pageOne = await browser.newPage();
 
     await pageOne.goto(`${clipboardText}`);
-    await page.waitForTimeout(30000);
+    // await page.waitForTimeout(30000);
 
     await expect(pageOne).toHaveScreenshot({ maxDiffPixels: 7000 });
 
@@ -382,7 +382,7 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
 
 // test('screenshot whiteboard - insert image', async ({ page }) => {
 //   try {
-//     await page.waitForTimeout(5000);
+//     // await page.waitForTimeout(5000);
 //     const fileChooserPromise = page.waitForEvent('filechooser');
 //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Insert' }).click();
 //     const fileChooser = await fileChooserPromise;

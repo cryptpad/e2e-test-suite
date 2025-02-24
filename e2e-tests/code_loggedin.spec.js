@@ -29,12 +29,13 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('code - save as and import template', async ({ page }) => {
   try {
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
+    await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
     await fileActions.filesaved.waitFor();
     await fileActions.codeeditor.waitFor();
@@ -45,7 +46,7 @@ test('code - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile, local);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example code template');
     await fileActions.okButton.click();
-    await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(3000);
     await page.goto(`${url}/code/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
@@ -54,11 +55,11 @@ test('code - save as and import template', async ({ page }) => {
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.driveContentFolder.getByText('example code template').click({ button: 'right' });
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example template')).toHaveCount(0);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - save as template', status: 'passed', reason: 'Can save and use Code document as template' } })}`);
@@ -100,7 +101,7 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await fileActions.codeeditor.click();
     await fileActions.typeTestTextCode(mobile, 'And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await expect(fileActions.codeeditor.getByText('And yet more test text by test-user too!')).toBeVisible();
 
     await fileActions.history(mobile);

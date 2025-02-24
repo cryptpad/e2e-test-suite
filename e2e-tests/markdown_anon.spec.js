@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/slide`);
   fileActions = new FileActions(page);
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('markdown - anon - input text into editor and create slide', async ({ page }) => {
@@ -67,7 +67,7 @@ test('markdown - anon - create new slide', async ({ page }) => {
 
 test('markdown - toggle toolbar', async ({ page }) => {
   try {
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.toggleTools(mobile);
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible();
     await fileActions.toggleTools(mobile);
@@ -82,7 +82,7 @@ test('markdown - toggle toolbar', async ({ page }) => {
 
 test('markdown - toggle preview', async ({ page }) => {
   try {
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('Test text');
 
@@ -105,7 +105,7 @@ test('anon - slide - make a copy', async ({ page, context }) => {
   try {
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('Test text');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
@@ -129,7 +129,7 @@ test('slide - export (md)', async ({ page, context }) => {
   try {
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('Test text');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test markdown');
@@ -157,14 +157,14 @@ test('slide - share at a moment in history', async ({ page, context }) => {
   try {
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('One moment in history');
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
     await fileActions.slideeditor.fill('');
     await fileActions.slideeditor.type('Another moment in history');
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
 
     await fileActions.slideeditor.fill('');
     await fileActions.slideeditor.type('Yet another moment in history');
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
@@ -193,7 +193,7 @@ test('slide - history (previous version)', async ({ page, context }) => {
   try {
     await fileActions.slideeditor.click();
     await fileActions.slideeditor.type('Test text');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
@@ -217,7 +217,7 @@ test('markdown - import file', async ({ page }) => {
     ]);
     await fileChooser.setFiles('testdocuments/testslide.md');
 
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await expect(fileActions.slideeditor.getByText('1test text2​3---4​5new text')).toBeVisible();
 

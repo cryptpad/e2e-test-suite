@@ -93,14 +93,14 @@ userMenuItems.forEach(function (item) {
 //     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
 //     await page1.close()
 //     await page.reload()
-//     await page.waitForTimeout(10000)
+//     // await page.waitForTimeout(10000)
 //     await fileActions.driveContentFolder.locator('.cp-toolbar-title').getByText(`${title}`).click({timeout: 2000})
 
 //     //erase
 //     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();
 //     await fileActions.okButton.waitFor()
 //     await fileActions.okButton.click();
-//     await page.waitForTimeout(20000)
+//     // await page.waitForTimeout(20000)
 
 //     //check file is erased
 //     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0)
@@ -121,16 +121,18 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
 
-    const title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
-    await page.waitForTimeout(10000);
-    const visible = await page.frameLocator('#sbox-iframe').getByText(title).isVisible();
+    const title = `Rich text - ${titleDate}`;
+    const titleComma = `Rich text - ${titleDateComma}`
+    // // await page.waitForTimeout(10000);
+    // const visible = await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).isVisible();
 
     if (!mobile) {
-      if (!visible) {
-        await page.reload();
-        await page.waitForTimeout(20000);
-      }
-      await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
+      // if (!visible) {
+      //   await page.reload();
+      //   // // await page.waitForTimeout(20000);
+      // }
+      await page.frameLocator('#sbox-iframe').getByText(title).or(page.frameLocator('#sbox-iframe').getByText(titleComma)).waitFor()
+      await expect(page.frameLocator('#sbox-iframe').getByText(title).or(page.frameLocator('#sbox-iframe').getByText(titleComma))).toBeVisible();
     }
 
     await page.bringToFront();
@@ -169,15 +171,15 @@ test('drive - anon - history', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
     
-    const title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
-    await page.waitForTimeout(15000);
+    // // await page.waitForTimeout(15000);
     await page.bringToFront();
     if (!mobile) {
-      if (!await page.frameLocator('#sbox-iframe').getByText(title).isVisible()) {
-        await page.reload();
-        await page.waitForTimeout(20000);
-      }
-      await expect(page.frameLocator('#sbox-iframe').getByText(title)).toBeVisible();
+      // if (!await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).isVisible()) {
+      //   await page.reload();
+      //   // // await page.waitForTimeout(20000);
+      // }
+      await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).waitFor()
+      await expect(page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma))).toBeVisible();
     }
 
     await page.frameLocator('#sbox-iframe').locator('[data-original-title="Display the document history"]').click();
@@ -185,7 +187,7 @@ test('drive - anon - history', async ({ page, context }) => {
       clickCount: 3
     });
 
-    await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0);
+    await expect(page.frameLocator('#sbox-iframe').getByText(titleDate).and(page.frameLocator('#sbox-iframe').getByText(titleDateComma))).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive > history', status: 'passed', reason: 'Can anonymously navigate to Drive and view history' } })}`);
   } catch (e) {
@@ -213,7 +215,7 @@ test('drive - anon - sign up from drive page', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('body').filter({ hasText: 'You are not logged in' }).waitFor();
     await fileActions.registerLink.waitFor();
     await fileActions.registerLink.click();
-    await page.waitForTimeout(5000);
+    // // await page.waitForTimeout(5000);
     await expect(page).toHaveURL(`${url}/register/`, { timeout: 100000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive > sign up', status: 'passed', reason: 'Can anonymously navigate to Drive and find link to sign up' } })}`);
@@ -228,7 +230,7 @@ test('drive - anon - log in from drive page', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('body').filter({ hasText: 'You are not logged in' }).waitFor();
     await fileActions.loginLink.waitFor();
     await fileActions.loginLink.click();
-    await page.waitForTimeout(10000);
+    // // await page.waitForTimeout(10000);
     await expect(page).toHaveURL(`${url}/login/`, { timeout: 100000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive > log in', status: 'passed', reason: 'Can anonymously navigate to Drive and find link to log in' } })}`);

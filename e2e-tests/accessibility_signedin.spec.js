@@ -16,7 +16,7 @@ let results = '';
 test('settings - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/drive`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
     await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
@@ -46,7 +46,7 @@ test('settings - accessibility', async ({ page }, testInfo) => {
 test('calendar - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/calendar`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Calendar \n';
@@ -69,7 +69,7 @@ test('calendar - accessibility', async ({ page }, testInfo) => {
 test('drive (user) - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/drive`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -93,7 +93,7 @@ test('drive (user) - accessibility', async ({ page }, testInfo) => {
 test('teams - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/teams`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -117,14 +117,14 @@ test('teams - accessibility', async ({ page }, testInfo) => {
 test('teams (admin) - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/teams`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000);
+    // await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
-    await page.waitForTimeout(2000);
+    // await page.waitForTimeout(2000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {

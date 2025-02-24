@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.goto(`${url}/pad`);
   fileActions = new FileActions(page);
 
-  await page.waitForTimeout(10000);
+  // await page.waitForTimeout(10000);
 });
 
 test('pad - comment', async ({ page, context }) => {
@@ -52,19 +52,19 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await expect(fileActions.padeditor.locator('body')).toBeVisible();
     await fileActions.padeditor.locator('body').click();
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
 
     await fileActions.filemenuClick(mobile);
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').waitFor();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').fill('snap1');
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).click();
-    await page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
     await fileActions.closeButton.waitFor();
     await fileActions.closeButton.click();
     await fileActions.padeditor.locator('body').fill('');
@@ -74,7 +74,7 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
     await page.frameLocator('#sbox-iframe').getByText('snap1').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('snap1').click();
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open' }).click();
     await fileActions.padeditor.getByText('TEST TEXT').waitFor();
@@ -132,7 +132,7 @@ test('pad - import file', async ({ page }) => {
 
   try {
     await fileActions.padeditor.locator('html').waitFor();
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -140,7 +140,7 @@ test('pad - import file', async ({ page }) => {
     ]);
     await fileChooser.setFiles('testdocuments/myfile.html');
 
-    await page.waitForTimeout(3000);
+    // await page.waitForTimeout(3000);
 
     await expect(fileActions.padeditor.getByText('Test text here')).toBeVisible();
 
@@ -157,7 +157,7 @@ test('pad - make a copy', async ({ page, context }) => {
     await expect(fileActions.padeditor.locator('body')).toBeVisible();
     await fileActions.padeditor.locator('body').click();
     await fileActions.padeditor.locator('body').fill('TEST TEXT');
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     await expect(fileActions.padeditor.getByText('TEST TEXT')).toBeVisible();
 
     await fileActions.filemenuClick(mobile);
@@ -300,14 +300,14 @@ test('pad - share at a moment in history', async ({ page, context }) => {
       clickCount: 3
     });
 
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
     await fileActions.padeditor.getByText('One moment in history').fill('Another moment in history');
     await fileActions.padeditor.getByText('Another moment in history').click({
       clickCount: 3
     });
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
     await fileActions.padeditor.getByText('Another moment in history').fill('Yet another moment in history');
-    await page.waitForTimeout(7000);
+    // await page.waitForTimeout(7000);
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();

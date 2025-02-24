@@ -26,7 +26,7 @@ let results = '';
 test('404 page - accessibility', async ({ page }) => {
   try {
     await page.goto(`${url}/randommadeuppage`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -50,7 +50,7 @@ test('404 page - accessibility', async ({ page }) => {
 test('contact - accessibility', async ({ page }) => {
   try {
     await page.goto(`${url}/contact.html`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -74,7 +74,7 @@ test('contact - accessibility', async ({ page }) => {
 test('homepage - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -98,7 +98,7 @@ test('homepage - accessibility', async ({ page }, testInfo) => {
 test('sign up - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/register`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -122,7 +122,7 @@ test('sign up - accessibility', async ({ page }, testInfo) => {
 test('login - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/login`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -146,7 +146,7 @@ test('login - accessibility', async ({ page }, testInfo) => {
 test('code - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
-    await page.waitForTimeout(30000);
+    // await page.waitForTimeout(30000);
 
     await fileActions.codeeditor.waitFor();
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -171,7 +171,7 @@ test('code - accessibility', async ({ page }, testInfo) => {
 test('file menu - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
-    await page.waitForTimeout(30000);
+    // await page.waitForTimeout(30000);
     await fileActions.codeeditor.waitFor();
 
     await fileActions.filemenuClick(mobile);
@@ -197,7 +197,7 @@ test('file menu - accessibility', async ({ page }, testInfo) => {
 test('share modal - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
-    await page.waitForTimeout(30000);
+    // await page.waitForTimeout(30000);
 
     await fileActions.codeeditor.waitFor();
     await fileActions.share(mobile);
@@ -223,7 +223,7 @@ test('share modal - accessibility', async ({ page }, testInfo) => {
 test('access modal - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
-    await page.waitForTimeout(30000);
+    // await page.waitForTimeout(30000);
     await fileActions.codeeditor.waitFor();
     await fileActions.access(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -248,7 +248,7 @@ test('access modal - accessibility', async ({ page }, testInfo) => {
 test('drive (anon) - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/drive`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -272,7 +272,7 @@ test('drive (anon) - accessibility', async ({ page }, testInfo) => {
 test('form - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/form`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -296,7 +296,7 @@ test('form - accessibility', async ({ page }, testInfo) => {
 test('kanban - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/kanban`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -320,7 +320,7 @@ test('kanban - accessibility', async ({ page }, testInfo) => {
 test('markdown - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/slide`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -344,7 +344,7 @@ test('markdown - accessibility', async ({ page }, testInfo) => {
 test('pad - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/pad`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -368,7 +368,7 @@ test('pad - accessibility', async ({ page }, testInfo) => {
 test('sheet - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/sheet`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -392,7 +392,7 @@ test('sheet - accessibility', async ({ page }, testInfo) => {
 test('diagram - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/diagram`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -416,7 +416,7 @@ test('diagram - accessibility', async ({ page }, testInfo) => {
 test('whiteboard - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/whiteboard`);
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -440,7 +440,7 @@ test('whiteboard - accessibility', async ({ page }, testInfo) => {
 test('documentation - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto('https://docs.cryptpad.org/en/');
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {
@@ -464,7 +464,7 @@ test('documentation - accessibility', async ({ page }, testInfo) => {
 test('project website - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto('https://cryptpad.org/');
-    await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     if (accessibilityScanResults.violations.length) {

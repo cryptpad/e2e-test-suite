@@ -92,13 +92,13 @@ export class FileActions {
     return this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`);
   }
 
-  async titleDate (mobile, isBrowserstack) {
-    if (mobile && isBrowserstack || !mobile && !isBrowserstack) {
-      return titleDateComma;
-    } else {
-      return titleDate;
-    }
-  }
+  // async titleDate (mobile, isBrowserstack) {
+  //   if (mobile && isBrowserstack || !mobile && !isBrowserstack) {
+  //     return titleDateComma;
+  //   } else {
+  //     return titleDate;
+  //   }
+  // }
 
   async clickTags (local) {
     await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Tags' }).locator('a').click();
@@ -117,15 +117,17 @@ export class FileActions {
       await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
     } else {
       await this.page.reload();
-      await this.page.waitForTimeout(20000);
+      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).waitFor()
       await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).click();
     }
   }
 
   async filemenuClick (mobile) {
     if (mobile) {
+      await this.filemenuMobile.waitFor();
       await this.filemenuMobile.click();
     } else {
+      await this.filemenu.waitFor();
       await this.filemenu.click();
     }
   }
