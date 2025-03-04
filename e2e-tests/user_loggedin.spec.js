@@ -106,7 +106,7 @@ test('add other user as contact and decline request', async ({ page, browser }) 
     await fileActions1.shareLink.click();
     const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
     await page.goto(`${testuser2ProfileLink}`);
-    // await page.waitForTimeout(15000);
+    await page.locator('#sbox-iframe').contentFrame().locator('#cp-app-profile-displayname').getByText('test-user2').waitFor()
 
     // user 1: send user request to user 2
     if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Cancel' }).count() > 0) {
@@ -136,7 +136,7 @@ test('add other user as contact and decline request', async ({ page, browser }) 
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).click();
 
     // user 1: be notified of declined request
-    // await page.waitForTimeout(10000);
+    await page.waitForTimeout(5000);
     await fileActions.notifications.click();
     // await page.waitForTimeout(5000);
     if (await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').isHidden()) {
@@ -160,10 +160,11 @@ test('add and remove other user as contact', async ({ page, browser }) => {
     pageOne = await contextOne.newPage();
     await pageOne.goto(`${url}/profile`);
     const fileActions1 = new FileActions(pageOne);
-    await pageOne.waitForTimeout(15000);
+    await fileActions1.shareLink.waitFor()
     await fileActions1.shareLink.click();
     const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
     await page.goto(`${testuser2ProfileLink}`);
+    await page.locator('#sbox-iframe').contentFrame().locator('#cp-app-profile-displayname').getByText('test-user2').waitFor()
     // await page.waitForTimeout(15000);
 
     // user 1: send user request to user 2
@@ -181,7 +182,7 @@ test('add and remove other user as contact', async ({ page, browser }) => {
 
     // user 2: accept contact request
     await fileActions1.notifications.click();
-    await pageOne.waitForTimeout(5000);
+    // await pageOne.waitForTimeout(5000);
 
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
@@ -193,13 +194,15 @@ test('add and remove other user as contact', async ({ page, browser }) => {
 
     // user 1: remove contact
     await page.goto(`${url}/drive/`);
-    // await page.waitForTimeout(10000);
+    await page.waitForTimeout(10000);
+    await fileActions.notifications.waitFor()
     await fileActions.notifications.click();
+    console.log("hidden?", await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden())
     // await page.waitForTimeout(5000);
-    if (await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden()) {
-      await fileActions.notifications.click();
-      // await page.waitForTimeout(5000);
-    }
+    // if (await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').isHidden()) {
+    //   await fileActions.notifications.click();
+    //   // await page.waitForTimeout(5000);
+    // }
     await page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request').waitFor();
     await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 accepted your contact request')).toBeVisible();
 
@@ -225,11 +228,12 @@ test('request and cancel to add user as contact', async ({ page, browser }) => {
     pageOne = await contextOne.newPage();
     await pageOne.goto(`${url}/profile`);
     const fileActions1 = new FileActions(pageOne);
-    await pageOne.waitForTimeout(15000);
+    await fileActions1.shareLink.waitFor()
     await fileActions1.shareLink.click();
     const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
     await page.bringToFront();
     await page.goto(`${testuser2ProfileLink}`);
+    await page.locator('#sbox-iframe').contentFrame().locator('#cp-app-profile-displayname').getByText('test-user2').waitFor()
     // await page.waitForTimeout(15000);
 
     // user 1: send user request to user 2
@@ -308,6 +312,7 @@ test('sign up and delete account', async ({ page }) => {
     // log out current user
     await page.goto(`${url}/drive`);
     // await page.waitForTimeout(15000);
+    await fileActions.drivemenu.waitFor()
     await fileActions.drivemenu.click();
     await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
     await expect(page).toHaveURL(`${url}`, { timeout: 100000 });

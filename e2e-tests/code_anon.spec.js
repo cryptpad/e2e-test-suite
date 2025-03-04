@@ -172,54 +172,50 @@ test('code - export (md)', async ({ page }) => {
   }
 });
 
-// test('code - share at a moment in history', async ({ page, browser }) => {
-//   try {
-//     await fileActions.codeeditor.click();
-//     await page.keyboard.press('o');
-//     await page.keyboard.press('n');
-//     await page.keyboard.press('e');
-//     // await page.waitForTimeout(7000);
+test('code - share at a moment in history', async ({ page, browser }) => {
+  try {
+    await fileActions.codeeditor.click();
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('s');
+    await page.keyboard.press('t');
+    await page.keyboard.press(' ');
+    await page.keyboard.press('t');
+    await page.keyboard.press('e');
+    await page.keyboard.press('x');
+    await page.keyboard.press('t');
+    // await page.waitForTimeout(7000);
+    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
 
-//     let key;
-//     if (platform === 'darwin') {
-//       key = 'Meta';
-//     } else {
-//       key = 'Control';
-//     }
-//     await page.keyboard.press(`${key}+a`);
-//     await page.keyboard.press('Backspace');
-//     // await page.waitForTimeout(3000);
-//     await page.keyboard.press('t');
-//     await page.keyboard.press('w');
-//     await page.keyboard.press('o');
-//     // await page.waitForTimeout(7000);
-//     await page.keyboard.press(`${key}+a`);
-//     await page.keyboard.press('Backspace');
-//     // await page.waitForTimeout(3000);
 
-//     await fileActions.history(mobile)
-//     await fileActions.historyPrev.click();
-//     await fileActions.historyPrev.click();
+    let key;
+    if (platform === 'darwin') {
+      key = 'Meta';
+    } else {
+      key = 'Control';
+    }
+    await page.keyboard.press(`${key}+a`);
+    await page.keyboard.press('Backspace');
+    await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
 
-//     await expect(fileActions.codeeditor.getByText('One moment in history')).toBeVisible();
 
-//     await fileActions.share(mobile);
-//     await fileActions.shareLink.click();
-//     // await page.waitForTimeout(5000);
-//     await fileActions.shareCopyLink.click();
-//     // await page.waitForTimeout(5000);
+    await fileActions.share(mobile);
+    // await fileActions.shareLink.click();
+    // await page.waitForTimeout(5000);
+    await fileActions.shareCopyLink.click();
+    // await page.waitForTimeout(5000);
 
-//     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-//     pageOne = await browser.newPage();
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    pageOne = await browser.newPage();
 
-//     await pageOne.goto(`${clipboardText}`);
+    await pageOne.goto(`${clipboardText}`);
 
-//     await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-//     await expect(pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').getByText('t')).toBeVisible();
+    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'passed', reason: 'Can share code document at a specific moment in history' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'failed', reason: 'Can\'t share code document at a specific moment in history' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'passed', reason: 'Can share code document at a specific moment in history' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'failed', reason: 'Can\'t share code document at a specific moment in history' } })}`);
+  }
+});

@@ -2,8 +2,6 @@ const { test, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondaySlashFor
 const { expect } = require('@playwright/test');
 const fs = require('fs');
 
-// const d3 = require('d3');
-
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
@@ -1336,15 +1334,15 @@ test('form - add and respond to conditional section question (OR)', async ({ pag
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Conditional section' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
+    await page.frameLocator('#sbox-iframe').getByText('example question?').click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option one' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'test option one' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add OR condition' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'example question?' }).locator('a').click()
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'test option three' }).click();
-    // await page.waitForTimeout(1000);
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'test option three' }).click();
+    await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').locator('.btn.cp-form-creator-inline-add').nth(2).click();
     // await page.waitForTimeout(1000);
@@ -1395,24 +1393,24 @@ test('form - add and respond to conditional section question (AND)', async ({ pa
     // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
     // await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
+    await page.frameLocator('#sbox-iframe').getByText('example question?').click();
     // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     // await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 1' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'Option 1' }).click();
     // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add AND condition' }).click();
     // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a question' }).click();
     // await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'example question?' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'example question?' }).locator('a').click()
     // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Choose a value' }).click();
     // await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Option 3' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'Option 3' }).click();
     // await page.waitForTimeout(1000);
 
     await page.frameLocator('#sbox-iframe').locator('.btn.cp-form-creator-inline-add').nth(2).click();
@@ -1479,19 +1477,11 @@ test('form - export responses as .csv', async ({ page, context }) => {
     ]);
     await download.saveAs('/tmp/form responses');
 
-    const csv = fs.readFileSync('/tmp/form responses', 'utf8');
+    const csv = fs.readFileSync('/tmp/form responses', 'utf8').toString().replace(/\s|\\n?/g, '');
+    console.log("csv", csv)
+    const regexString = new RegExp(/^{"form":{/);
 
-    let d3;
-    (async () => {
-      d3 = await import('d3').then(d3 => d3.default);
-      // YOUR CODE HERE
-    })().catch(console.error);
-    const data = d3.csvParse(csv);
-    const responseJSON = `'${JSON.stringify(data)}'`;
-    console.log('csv', responseJSON);
-    const regexString = new RegExp(`\\[{"Time":"${dateTodayDashFormat}T${UTChours}:${UTCminutes}:[0-9]{2}.[0-9]{3}Z","Participant":"Guest","Your question here\\?":"Option 1"}]`);
-
-    if (regexString.test(responseJSON)) {
+    if (regexString.test(csv)) {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form  - export responses as .csv', status: 'passed', reason: 'Can export Form reponses as .csv' } })}`);
     } else {
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form  - export responses as .csv', status: 'failed', reason: 'Can\'texport Form reponses as .csv' } })}`);

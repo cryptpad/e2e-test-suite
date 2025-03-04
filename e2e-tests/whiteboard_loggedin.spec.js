@@ -102,7 +102,7 @@ test('whiteboard - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').locator('.dialog').getByRole('textbox').fill('example whiteboard template');
     await fileActions.okButton.click();
-    // await page.waitForTimeout(3000);
+    await page.waitForTimeout(3000);
     await page.goto(`${url}/whiteboard/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);

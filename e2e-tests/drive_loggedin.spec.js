@@ -168,7 +168,7 @@ test('drive - filter', async ({ page }) => {
     // await page.waitForTimeout(5000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Filter' }).click();
     // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Sheet' }).click();
+    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Sheet' }).locator('a').click()
     // await page.waitForTimeout(5000);
     await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
     await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toHaveCount(0);

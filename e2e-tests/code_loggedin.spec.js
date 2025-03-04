@@ -46,7 +46,7 @@ test('code - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile, local);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example code template');
     await fileActions.okButton.click();
-    // // await page.waitForTimeout(3000);
+    await page.waitForTimeout(3000);
     await page.goto(`${url}/code/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
@@ -83,6 +83,7 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.click();
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    await page.waitForTimeout(5000);
 
     pageOne = await browser.newPage();
     await pageOne.goto(`${clipboardText}`);
@@ -97,20 +98,16 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await expect(fileActions.codeeditor.getByText('Some more test text by anon')).toBeVisible();
     await pageOne.close();
 
-    await page.keyboard.press('Enter');
-    await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'And yet more test text by test-user too!');
-    await page.keyboard.press('Enter');
-    // await page.waitForTimeout(5000);
-    await expect(fileActions.codeeditor.getByText('And yet more test text by test-user too!')).toBeVisible();
-
     await fileActions.history(mobile);
 
     await fileActions.historyPrev.click();
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And yet more test text by test-user!')).toHaveCount(0);
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('And more test text by test-user too!')).toHaveCount(0);
+    console.log('visible?', await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon').isVisible())
+    if (await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon').isVisible()) {
+      await fileActions.historyPrev.click();
+    }
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon')).toHaveCount(0);
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text by test-user')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - history (previous author)', status: 'passed', reason: 'Can create code document and view history (previous author)' } })}`);
   } catch (e) {

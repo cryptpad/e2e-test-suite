@@ -33,21 +33,26 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+// const docNames = ['form'];
 
 docNames.forEach(function (name) {
 
   test(`${name} - create new file from file menu`, async ({ page, context }) => {
     try {
       await page.goto(`${url}/${name}/`);
-      // await page.waitForTimeout(15000);
+      await page.waitForTimeout(5000);
       if (name === 'sheet' | name === 'diagram') {
         // await page.waitForTimeout(40000);
       } else {
         // await page.waitForTimeout(15000);
       }
-
+      await fileActions.filesaved.waitFor();
       await fileActions.filemenuClick(mobile);
+      // if (!page.frameLocator('#sbox-iframe').getByText('New').isVisible()) {
 
+      //   await fileActions.filemenuClick(mobile);
+      // }
+      await page.frameLocator('#sbox-iframe').getByText('New').waitFor();
       await page.frameLocator('#sbox-iframe').getByText('New').click();
       const page2Promise = page.waitForEvent('popup');
       if (name === 'pad') {
@@ -60,8 +65,8 @@ docNames.forEach(function (name) {
       const page2 = await page2Promise;
       await page2.waitForTimeout(5000);
 
-      await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
+      await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or( page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or( page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ` ${name} - create new file from file menu`, status: 'passed', reason: `Can create new ${name} document from file menu` } })}`);
     } catch (e) {

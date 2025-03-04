@@ -75,6 +75,8 @@ test('create and delete event in calendar', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText(`${dateTodaySlashFormat} 20:00 - 20:30`)).toBeVisible();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+    await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(0).waitFor({ state: "hidden" }) 
+    await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(0).waitFor({ state: "hidden" }) 
     await expect(page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(0)).toBeHidden();
     await expect(page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(1)).toBeHidden();
 
@@ -105,7 +107,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
 
     await fileActions.oneTimeClick()
 
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: `Weekly on ${weekday}` }).click();
+    await page.frameLocator('#sbox-iframe').getByText(`Weekly on ${weekday}`).click();
     // await page.waitForTimeout(3000);
 
     // set date and time
@@ -136,7 +138,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test event')).toBeVisible();
 
     // delete event
-    await page.frameLocator('#sbox-iframe').locator('.fa.fa-chevron-left').click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Left' }).click();
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test event').click();
     await expect(page.frameLocator('#sbox-iframe').getByText(`${dateTodaySlashFormat} 20:00 - 20:30`)).toBeVisible();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
@@ -204,10 +206,9 @@ test('create event in calendar and edit location', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').dblclick();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('somewhere else');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
 
     // check location changed
-    await page.reload();
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText('somewhere else')).toBeVisible();
 
@@ -287,11 +288,11 @@ test('create event in calendar and edit time', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
       await page.keyboard.press('Enter');
     }
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
-    // await page.waitForTimeout(3000);
 
     // check time changed
-    await page.reload();
+    await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText(`${dateTodaySlashFormat} 20:15 - 20:30`)).toBeVisible();
 
@@ -369,17 +370,17 @@ test('create event in calendar and edit date', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
       await page.keyboard.press('Enter');
     }
-
+    await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
     // await page.waitForTimeout(7000);
 
     // //check date changed
-    await page.reload();
     await page.keyboard.down('End');
     const today = new Date();
     if (today.getDay() === 0) {
       await page.frameLocator('#sbox-iframe').getByLabel('Right').click();
     }
+    await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByLabel('Right').click();
     await page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').first().click();
     await expect(page.frameLocator('#sbox-iframe').getByText(`${nextMondaySlashFormat} 20:00 - 20:30`)).toBeVisible();
@@ -436,8 +437,11 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit' }).click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'My calendar' }).click();
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test calendar').click();
+    await page.waitForTimeout(1000);
+
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
     // await page.waitForTimeout(5000);
+    await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('test event').nth(1).click();
     await expect(page.frameLocator('#sbox-iframe').getByText('test calendar').nth(3)).toBeVisible();
 

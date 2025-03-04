@@ -31,7 +31,7 @@ export class FileActions {
     this.fileimport = page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import' }).locator('a');
     this.filecopy = page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a');
     this.historyPrev = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last();
-    this.toolbar = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' });
+    this.toolbar = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Tools' });
     this.shareLink = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
     this.shareSecureLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
     this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
@@ -123,6 +123,8 @@ export class FileActions {
   }
 
   async filemenuClick (mobile) {
+    await this.page.waitForTimeout(1000)
+    await this.filesaved.waitFor()
     if (mobile) {
       await this.filemenuMobile.waitFor();
       await this.filemenuMobile.click();
@@ -145,8 +147,8 @@ export class FileActions {
       await this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').waitFor();
       await this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
     } else {
-      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).waitFor();
-      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Tools' }).waitFor();
+      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Tools' }).click();
     }
   }
 
@@ -163,8 +165,10 @@ export class FileActions {
 
   async share (mobile) {
     if (mobile) {
+      await this.page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').waitFor()
       await this.page.frameLocator('#sbox-iframe').locator('.cp-toolar-share-button').click();
     } else {
+      await this.shareLink.waitFor()
       await this.shareLink.click();
     }
   }
@@ -191,8 +195,10 @@ export class FileActions {
     await this.filemenuClick(mobile);
     console.log()
     if (local) {
+      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).waitFor()
       await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Import a template', exact: true }).click();
     } else {
+      await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').waitFor()
       await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
     }
   }

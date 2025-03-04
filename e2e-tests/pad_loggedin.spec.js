@@ -43,7 +43,7 @@ test('pad - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example pad template');
     await fileActions.okButton.click();
-    // await page.waitForTimeout(3000);
+    await page.waitForTimeout(3000);
     await page.goto(`${url}/pad/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);

@@ -124,13 +124,13 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     const title = `Rich text - ${titleDate}`;
     const titleComma = `Rich text - ${titleDateComma}`
     // // await page.waitForTimeout(10000);
-    // const visible = await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).isVisible();
+    const visible = await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).isVisible();
 
     if (!mobile) {
-      // if (!visible) {
-      //   await page.reload();
-      //   // // await page.waitForTimeout(20000);
-      // }
+      if (!visible) {
+        await page.reload();
+        // // await page.waitForTimeout(20000);
+      }
       await page.frameLocator('#sbox-iframe').getByText(title).or(page.frameLocator('#sbox-iframe').getByText(titleComma)).waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText(title).or(page.frameLocator('#sbox-iframe').getByText(titleComma))).toBeVisible();
     }
@@ -174,10 +174,10 @@ test('drive - anon - history', async ({ page, context }) => {
     // // await page.waitForTimeout(15000);
     await page.bringToFront();
     if (!mobile) {
-      // if (!await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).isVisible()) {
-      //   await page.reload();
-      //   // // await page.waitForTimeout(20000);
-      // }
+      if (!await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).isVisible()) {
+        await page.reload();
+        // // await page.waitForTimeout(20000);
+      }
       await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma))).toBeVisible();
     }

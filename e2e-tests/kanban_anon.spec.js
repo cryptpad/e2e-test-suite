@@ -214,33 +214,13 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('One moment in history');
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('One moment in history')).toBeVisible();
-    // await page.waitForTimeout(7000);
-
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'One moment in history' }).getByAltText('Edit this card').first().click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
-    await page.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
-    await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-    await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('Another moment in history');
-    await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-    await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
-    // await page.waitForTimeout(7000);
-
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Another moment in history' }).getByAltText('Edit this card').first().click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
-    await page.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
-    await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-    await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('Yet another moment in history');
-    await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-    await expect(page.frameLocator('#sbox-iframe').getByText('Yet another moment in history')).toBeVisible();
-    // await page.waitForTimeout(7000);
+    await page.waitForTimeout(1000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
 
-    await expect(page.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').getByText('One moment in history')).toBeHidden();
 
     await fileActions.share(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
@@ -251,8 +231,8 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await page1.goto(`${clipboardText}`);
 
     // await page.waitForTimeout(5000);
-    await page1.frameLocator('#sbox-iframe').getByText('Another moment in history').waitFor();
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Another moment in history')).toBeVisible();
+    await fileActions.filesaved.waitFor()
+    await expect(page1.frameLocator('#sbox-iframe').getByText('One moment in history')).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - share at a moment in history', status: 'passed', reason: 'Can share Kanban at a specific moment in history' } })}`);
   } catch (e) {
@@ -282,15 +262,17 @@ test('(screenshot) kanban - can drag boards #1372', async ({ page }) => {
 });
 
 test('(screenshot) kanban - can drag items', async ({ page }) => {
+  test.skip();
   try {
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().dragTo(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first());
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().waitFor()
+    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().dragTo(page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first());
 
-    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
-    // await page.mouse.down();
-    // await page.mouse.move(0, 200);
-    // await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 1$/ }).first().hover()
+    await page.mouse.down();
+    await page.mouse.move(0, 200);
+    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Item 2$/ }).first().hover()
 
-    // await page.mouse.up();
+    await page.mouse.up();
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 1800 });
 

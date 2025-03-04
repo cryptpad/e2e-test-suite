@@ -106,17 +106,18 @@ test('pad - history (previous version)', async ({ page, context }) => {
 
 test('pad - toggle tools', async ({ page, context }) => {
   try {
+
+    // await fileActions.toggleTools(mobile)
     if (mobile) {
       await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').waitFor();
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
+      await fileActions.toggleTools(mobile)
       await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeVisible();
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-tools').click();
+      await fileActions.toggleTools(mobile)
       await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
     } else {
       await page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all').waitFor();
       await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeVisible();
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Tools' }).click();
+      await fileActions.toggleTools(mobile)
       await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
     }
 
@@ -227,7 +228,7 @@ test('pad - export (.doc)', async ({ page }) => {
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.doc' }).click();
+    await page.frameLocator('#sbox-iframe').getByText('.doc').click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -266,7 +267,7 @@ test('pad - export (md)', async ({ page, context }) => {
     await fileActions.export(mobile);
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('link', { name: '.md' }).click();
+    await page.frameLocator('#sbox-iframe').getByText('.md').click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -300,14 +301,14 @@ test('pad - share at a moment in history', async ({ page, context }) => {
       clickCount: 3
     });
 
-    // await page.waitForTimeout(7000);
+    await page.waitForTimeout(1000);
     await fileActions.padeditor.getByText('One moment in history').fill('Another moment in history');
     await fileActions.padeditor.getByText('Another moment in history').click({
       clickCount: 3
     });
-    // await page.waitForTimeout(7000);
+    await page.waitForTimeout(1000);
     await fileActions.padeditor.getByText('Another moment in history').fill('Yet another moment in history');
-    // await page.waitForTimeout(7000);
+    await page.waitForTimeout(1000);
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();

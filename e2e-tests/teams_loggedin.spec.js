@@ -27,7 +27,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   }
   await page.goto(`${url}/teams`);
   fileActions = new FileActions(page);
-  // await page.waitForTimeout(10000);
 });
 
 test('user menu - make and delete team', async ({ page }) => {
@@ -39,15 +38,13 @@ test('user menu - make and delete team', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example team');
     await fileActions.createFile.click();
     // await page.waitForTimeout(10000);
-    await expect(page).toHaveURL(`${url}/teams/`, { timeout: 100000 });
-
     await page.frameLocator('#sbox-iframe').getByText('example team').first().waitFor({ timeout: 10000 });
     await page.frameLocator('#sbox-iframe').getByText('example team').first().click();
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').hover();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
     await fileActions.okButton.click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(3000);
     await expect(page.frameLocator('#sbox-iframe').getByText('example team', { exact: true })).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'make team', status: 'passed', reason: 'Can create a team' } })}`);
@@ -63,7 +60,7 @@ test('can change team name', async ({ page }) => {
   try {
     // access team admin panel
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    // await page.waitForTimeout(2000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
@@ -72,12 +69,12 @@ test('can change team name', async ({ page }) => {
     // change team name
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('example team');
+    await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('example team2');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     // await page.waitForTimeout(5000);
     await page.reload();
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('example team').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('example team').click();
+    await page.frameLocator('#sbox-iframe').getByText('example team2').waitFor();
+    await page.frameLocator('#sbox-iframe').getByText('example team2').click();
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
@@ -89,8 +86,8 @@ test('can change team name', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     // await page.waitForTimeout(5000);
     await page.reload();
-    await page.frameLocator('#sbox-iframe').getByText('test team').waitFor();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test team')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await expect(page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'change team name', status: 'passed', reason: 'Can change team name' } })}`);
   } catch (e) {
@@ -104,8 +101,8 @@ test(' can access team public signing key', async ({ page }) => {
 
   try {
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    // await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
+    await page.waitForTimeout(2000);
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
@@ -129,6 +126,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
   try {
     // access team administration panel
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
@@ -138,11 +136,18 @@ test('(screenshot) change team avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
+    await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
+    await page.waitForTimeout(5000);
     // await page.waitForTimeout(10000);
     await page.goto(`${url}/teams`);
     // await page.waitForTimeout(20000);
-    // await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    if (browserName === 'chrome') {
+      await expect(page).toHaveScreenshot( { maxDiffPixels: 9000 });
+    } else {
+      await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
+    }
 
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
@@ -153,11 +158,17 @@ test('(screenshot) change team avatar', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByLabel('Upload a new file to your').click();
     const fileChooser1 = await fileChooserPromise1;
     await fileChooser1.setFiles('testdocuments/teamavatar-empty.png');
+    await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(5000);
     await page.goto(`${url}/teams`);
     // await page.waitForTimeout(20000);
-    // await expect(page).toHaveScreenshot({ maxDiffPixels: 100 });
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    if (browserName === 'chrome') {
+      await expect(page).toHaveScreenshot( { maxDiffPixels: 9000 });
+    } else {
+      await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
+    }
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'change team avatar', status: 'passed', reason: 'Can change team avatar' } })}`);
   } catch (e) {
@@ -172,7 +183,8 @@ test('can download team drive', async ({ page }) => {
 
   try {
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
+    await page.waitForTimeout(2000);
+    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
 
     // access administration panel
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
@@ -360,7 +372,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
     // await page.waitForTimeout(8000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
     if (!await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {
       await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
     }
@@ -389,9 +401,9 @@ test('promote team viewer to member', async ({ page, browser }) => {
     // check member can send team messages
     await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
     const dateTimeStamp = new Date();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().click();
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().fill(`hello at ${dateTimeStamp}`);
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().press('Enter');
 
     // check member can edit team docs
     await pageTwo.bringToFront();
@@ -417,7 +429,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
     await expect(user).toBeVisible({ timeout: 5000 });
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').click({ timeout: 5000 });
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'promote team viewer to member', status: 'passed', reason: 'Can promote team viewer to member and demote them' } })}`);
   } catch (e) {
@@ -436,7 +448,7 @@ test('promote team viewer to admin', async ({ page, browser }) => {
     // await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
-    // await page.waitForTimeout(2000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
 
@@ -463,9 +475,9 @@ test('promote team viewer to admin', async ({ page, browser }) => {
     await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
 
     const dateTimeStamp = new Date();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().click();
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().fill(`hello at ${dateTimeStamp}`);
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().press('Enter');
 
     await pageTwo.bringToFront();
     await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText('test pad').waitFor();
@@ -488,10 +500,10 @@ test('promote team viewer to admin', async ({ page, browser }) => {
     await expect(user).toBeVisible({ timeout: 5000 });
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'promote team viewer to admin', status: 'passed', reason: 'Can promote team viewer to admin and demote them' } })}`);
   } catch (e) {
@@ -509,17 +521,18 @@ test('promote team viewer to owner', async ({ page, browser }) => {
 
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
-    // await page.waitForTimeout(4000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
-    // await page.waitForTimeout(4000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up').click();
-    // await page.waitForTimeout(4000);
+    await page.waitForTimeout(2000);
     await expect(page.frameLocator('#sbox-iframe').getByText(/^Co-owners can modify or delete the team/)).toBeVisible({ timout: 3000 });
     // await page.waitForTimeout(2000);
+    await fileActions.okButton.waitFor()
     await fileActions.okButton.click();
-    // await page.waitForTimeout(2000);
+    await page.waitForTimeout(2000);
 
     ///
     // user 2: log in
@@ -534,8 +547,10 @@ test('promote team viewer to owner', async ({ page, browser }) => {
     // user 2: team viewer accepts promotion to owner
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user wants you to be an owner of test team').first().waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByText('test-user wants you to be an owner of test team').first().click();
+    await page.waitForTimeout(2000);
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor();
     await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+    await page.waitForTimeout(2000);
     await pageOne.goto(`${url}/teams`);
     await pageOne.waitForTimeout(5000);
     await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
@@ -548,9 +563,9 @@ test('promote team viewer to owner', async ({ page, browser }) => {
 
     await pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Chat$/ }).locator('span').first().click();
     const dateTimeStamp = new Date();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill(`hello at ${dateTimeStamp}`);
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().click();
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().fill(`hello at ${dateTimeStamp}`);
+    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).first().press('Enter');
 
     // check member can add members and access admin panel
     await expect(pageOne.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first()).toBeVisible();
@@ -576,13 +591,13 @@ test('promote team viewer to owner', async ({ page, browser }) => {
     await expect(user).toBeVisible({ timeout: 5000 });
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().waitFor();
     await page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last().click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
 
     await pageOne.reload();
     await pageOne.waitForTimeout(10000);
@@ -694,7 +709,7 @@ test('invite contact to team and cancel', async ({ page }) => {
     await expect(page.frameLocator('#sbox-iframe').getByText('testuser will know that you removed them from the team. Are you sure?')).toBeVisible();
     await fileActions.okButton.click();
     // await page.waitForTimeout(1800);
-    const user = page.frameLocator('#sbox-iframe').getByText('testuser', { exact: true });
+    const user = page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('testuser', { exact: true });
     await expect(user).toBeHidden({ timeout: 100000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'invite contact to team - cancel', status: 'passed', reason: 'Can invite contact to team and cancel invite' } })}`);

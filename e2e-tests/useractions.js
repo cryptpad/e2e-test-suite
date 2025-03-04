@@ -17,15 +17,13 @@ export class UserActions {
   async login (username, password) {
     await this.page.goto(`${url}/login`);
     await this.page.getByPlaceholder('Username').fill(username);
-    await this.page.waitForTimeout(10000);
+    await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder('Password', { exact: true }).fill(password);
 
-    await this.loginButton.waitFor({ timeout: 18000 });
-    await expect(this.loginButton).toBeVisible({ timeout: 1800 });
-    if (await this.loginButton.isVisible()) {
-      await this.loginButton.click();
-    }
+    await this.loginButton.waitFor();
+    await this.loginButton.click();
     await expect(this.page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).waitFor()
   }
 
   async register (username, password) {

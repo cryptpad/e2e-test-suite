@@ -52,6 +52,23 @@ export class Cleanup {
         eventCount = eventCount - 1;
       }
     }
+    await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Right' }).click();
+    let nextWeekEventCount = await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count();
+    console.log(nextWeekEventCount);
+    if (nextWeekEventCount > 0) {
+      while (nextWeekEventCount > 0) {
+        if (nextWeekEventCount > 1) {
+          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(nextWeekEventCount - 1).click();
+        } else {
+          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').click();
+        }
+        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
+        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+        await this.page.waitForTimeout(3000);
+        nextWeekEventCount = nextWeekEventCount - 1;
+      }
+    }
+    await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Left' }).click();
   }
 
   async cleanTemplates () {
@@ -134,8 +151,9 @@ export class Cleanup {
 
   async cleanTeamMembership () {
     await this.page.goto(`${url}/teams`);
-    await this.page.waitForTimeout(5000);
+    // await this.page.waitForTimeout(5000);
     await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await this.page.waitForTimeout(2000);
     await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
     await this.page.waitForTimeout(5000);
     await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor();
