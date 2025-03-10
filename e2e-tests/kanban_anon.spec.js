@@ -26,7 +26,7 @@ test('kanban - new board', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-addboard').click();
     await expect(page.frameLocator('#sbox-iframe').getByText('New board')).toBeVisible();
 
-    await page.frameLocator('#sbox-iframe').getByAltText('Edit this board').nth(3).click();
+    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'New board' }).getByLabel('Edit this board').click();
     await fileActions.deletebutton.click();
     await page.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
 
@@ -46,7 +46,8 @@ test('kanban - new list item', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('example item');
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'example item' }).getByAltText('Edit this card').first().click();
+     await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'example item' }).getByRole('button', { name: 'Edit this card' }).first().waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'example item' }).getByRole('button', { name: 'Edit this card' }).first().click({force: true});
     await fileActions.deletebutton.click();
     await page.frameLocator('#sbox-iframe').getByText('Are you sure?').click();
 
@@ -61,7 +62,7 @@ test('kanban - new list item', async ({ page }) => {
 
 test('kanban - edit board', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByAltText('Edit this board').click();
+    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
@@ -76,7 +77,7 @@ test('kanban - edit board', async ({ page }) => {
 
 test('kanban board - anon - edit list item title', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
+    await page.frameLocator('#sbox-iframe').getByRole('main').getByRole('button', { name: 'Edit this card' }).first().click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').click({ force: true });
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new item title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
@@ -91,7 +92,7 @@ test('kanban board - anon - edit list item title', async ({ page }) => {
 
 test('kanban board - anon - edit list item content', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Edit this card' }).first().click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').type('new item content');
     await fileActions.closeButton.click();
@@ -106,7 +107,7 @@ test('kanban board - anon - edit list item content', async ({ page }) => {
 
 test('kanban board - anon - add and filter by tag', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Edit this card' }).first().click();
     await page.frameLocator('#sbox-iframe').locator('#cp-kanban-edit-tags').click();
     await page.frameLocator('#sbox-iframe').locator('#cp-kanban-edit-tags').type('newtag');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
@@ -130,7 +131,8 @@ test('kanban board - anon - add and filter by tag', async ({ page }) => {
 
 test('kanban - view history', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByAltText('Edit this board').click();
+    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board').waitFor()
+    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new item title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
     await fileActions.history();
@@ -177,13 +179,13 @@ test('kanban - import file', async ({ page }) => {
 
 test('kanban - make a copy', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByAltText('Edit this board').click();
+    await page.frameLocator('#sbox-iframe').getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').click();
     await page.frameLocator('#sbox-iframe').getByLabel('Title').fill('new title');
     await page.frameLocator('#sbox-iframe').getByLabel('Title').press('Enter');
     // await page.waitForTimeout(3000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('main').filter({ hasText: 'Item 1' }).getByAltText('Edit this card').first().click();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Edit this card' }).first().click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').click();
     await page.frameLocator('#sbox-iframe').locator('.CodeMirror-lines').type('new item content');
     await fileActions.closeButton.click();

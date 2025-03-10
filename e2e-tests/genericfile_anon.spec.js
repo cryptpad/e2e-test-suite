@@ -6,6 +6,7 @@ let mobile;
 let fileActions;
 let documentTitleDate;
 let isBrowserstack;
+let browserName;
 let title;
 let titleComma
 let titleName
@@ -15,6 +16,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   mobile = isMobile;
   fileActions = new FileActions(page);
+  browserName = testInfo.project.name.split(/@/)[0];
+
   const name = testInfo.title.split(' ')[0];
   if (name === 'pad') {
     titleName = 'Rich text -';
@@ -33,7 +36,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
-// const docNames = ['form'];
+// const docNames = ['code'];
 
 docNames.forEach(function (name) {
 
@@ -119,6 +122,9 @@ docNames.forEach(function (name) {
 
         await fileActions.share(mobile);
         await page.frameLocator('#sbox-secure-iframe').getByText('View', { exact: true }).click();
+        if (browserName === 'playwright-firefox') {
+          await page.waitForTimeout(2000)
+        }
         await fileActions.shareCopyLink.click();
 
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
@@ -202,19 +208,19 @@ docNames.forEach(function (name) {
 
       await expect(page2).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 60000 });
       await page2.waitForTimeout(10000);
-      await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
+      await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
       await page2.waitForTimeout(10000);
       await page2.goto(`${url}/drive`);
       await page2.waitForTimeout(10000);
-      await page2.frameLocator('#sbox-iframe').getByText(`${title}`).waitFor();
-      await expect(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`)).toBeVisible();
+      await page2.frameLocator('#sbox-iframe').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').getByText(`${titleComma}`)).waitFor();
+      await expect(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${titleComma}`))).toBeVisible();
 
       if (mobile) {
         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').waitFor();
         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').click();
       } else {
-        await page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).click({ button: 'right' });
+        await page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${titleComma}`)).click({ button: 'right' });
       }
 
       if (await page2.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).isVisible()) {
@@ -244,11 +250,11 @@ docNames.forEach(function (name) {
         // await page.waitForTimeout(15000);
       }
 
-      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
+      await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
       // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-      await page.frameLocator('#sbox-iframe').getByPlaceholder(`${title}`).fill('new doc title');
+      await page.frameLocator('#sbox-iframe').getByPlaceholder(`${title}`).or(page.frameLocator('#sbox-iframe').getByPlaceholder(`${titleComma}`)).fill('new doc title');
       // await page.waitForTimeout(3000);
       await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
       await expect(page.frameLocator('#sbox-iframe').getByText('new doc title')).toBeVisible();

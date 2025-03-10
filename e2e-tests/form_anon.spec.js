@@ -175,8 +175,9 @@ test('form - submission (multiple times) - edit', async ({ page, context }) => {
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    await page1.waitForTimeout(10000);
-
+    // await page1.waitForTimeout(10000);
+    
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor()
     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
@@ -206,7 +207,7 @@ test('form - submission (one time) - edit', async ({ page, context }) => {
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    await page1.waitForTimeout(10000);
+    // await page1.waitForTimeout(10000);
 
     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
@@ -242,7 +243,7 @@ test('form - share (link) - auditor', async ({ page, context }) => {
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    await page1.waitForTimeout(10000);
+    // await page1.waitForTimeout(10000);
 
     await page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
     await expect(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma))).toBeVisible({ timeout: 5000 });
@@ -270,10 +271,10 @@ test('form - share (link) - author', async ({ page, context }) => {
     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    await page1.waitForTimeout(10000);
+    // await page1.waitForTimeout(10000);
 
-    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-    await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+    await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
     await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden();
 

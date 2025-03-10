@@ -18,10 +18,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
   mobile = isMobile;
 
-  if (mobile) {
-    const userActions = new UserActions(page);
-    await userActions.login('test-user', mainAccountPassword);
-  }
+  // if (mobile) {
+  //   const userActions = new UserActions(page);
+  //   await userActions.login('test-user', mainAccountPassword);
+  // }
 
   const template = testInfo.title.match(/import template/);
   if (template) {

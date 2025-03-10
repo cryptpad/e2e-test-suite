@@ -26,10 +26,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   userActions = new UserActions(page);
   cleanUp = new Cleanup(page);
 
-  if (mobile) {
-    await userActions.login('test-user', mainAccountPassword);
+  // if (mobile) {
+  //   await userActions.login('test-user', mainAccountPassword);
     
-  }
+  // }
 
   await page.goto(`${url}/drive`);
 });
@@ -184,10 +184,9 @@ test('drive - create link', async ({ page }) => {
   try {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanUserDrive('Cryptpad Docs');
-
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'New' }).locator('span').first().click();
-    // await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'New Link' }).click({ timeout: 2000 });
+    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: ' New' }).waitFor();
+    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: ' New' }).click();
+    await page.locator('#sbox-iframe').contentFrame().getByRole('menuitem', { name: ' New Link' }).locator('a').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('My link').fill('Cryptpad Docs');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('https://example.com').fill('https://docs.cryptpad.org');
 

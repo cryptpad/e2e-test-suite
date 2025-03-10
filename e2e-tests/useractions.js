@@ -18,7 +18,7 @@ export class UserActions {
     await this.page.goto(`${url}/login`);
     await this.page.getByPlaceholder('Username').fill(username);
     await this.page.waitForTimeout(1000);
-    await this.page.getByPlaceholder('Password', { exact: true }).fill(password);
+    await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
 
     await this.loginButton.waitFor();
     await this.loginButton.click();

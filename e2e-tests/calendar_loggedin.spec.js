@@ -14,10 +14,10 @@ let cleanUp;
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
   mobile = isMobile;
-  if (mobile) {
-    const userActions = new UserActions(page);
-    await userActions.login('test-user', mainAccountPassword);
-  }
+  // if (mobile) {
+  //   const userActions = new UserActions(page);
+  //   await userActions.login('test-user', mainAccountPassword);
+  // }
 
   await page.goto(`${url}/calendar`);
   fileActions = new FileActions(page);

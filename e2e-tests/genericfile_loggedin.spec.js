@@ -26,10 +26,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   browserName = testInfo.project.name.split(/@/)[0];
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
 
-  if (mobile) {
-    const userActions = new UserActions(page);
-    await userActions.login('test-user', mainAccountPassword);
-  }
+  // if (mobile) {
+  //   const userActions = new UserActions(page);
+  //   await userActions.login('test-user', mainAccountPassword);
+  // }
   fileActions = new FileActions(page);
   const name = testInfo.title.split(' ')[0];
   if (name === 'pad') {
