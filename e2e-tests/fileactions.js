@@ -35,7 +35,7 @@ export class FileActions {
     this.shareLink = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
     this.shareSecureLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
     this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
-    this.filesaved = page.frameLocator('#sbox-iframe').getByText('Saved');
+    this.filesaved = page.frameLocator('#sbox-iframe').getByText('Saved').nth(0);
     this.deletebutton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' });
     // this.trash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' });
     this.trash = page.frameLocator('#sbox-iframe').getByText('Move to trash')

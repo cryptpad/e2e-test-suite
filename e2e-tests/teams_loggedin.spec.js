@@ -21,10 +21,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
 
-  if (mobile) {
-    const userActions = new UserActions(page);
-    await userActions.login('test-user', mainAccountPassword);
-  }
+  // if (mobile) {
+  //   const userActions = new UserActions(page);
+  //   await userActions.login('test-user', mainAccountPassword);
+  // }
   await page.goto(`${url}/teams`);
   fileActions = new FileActions(page);
 });

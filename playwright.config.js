@@ -1,5 +1,5 @@
 // const path = require('node:path')
-const { defineConfig } = require('@playwright/test');
+const { defineConfig, devices } = require('@playwright/test');
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -83,6 +83,7 @@ module.exports = defineConfig({
     }, {
       name: 'playwright-firefox',
       use: {
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         locale: 'en-GB'
       }
     }, {
@@ -107,6 +108,7 @@ module.exports = defineConfig({
     }, {
       name: 'chrome@Samsung Galaxy S22:13',
       use: {
+        ...devices['Samsung Galaxy S22:13'],
         hasTouch: true,
         browserName: 'chromium',
         channel: 'chrome',
@@ -125,6 +127,17 @@ module.exports = defineConfig({
         mobile: true,
         acceptDownloads: true
 
+      }
+    }, {
+      name: 'chrome@Galaxy S9+',
+      use: {
+        ...devices['Galaxy S9+'],
+        hasTouch: true,
+        browserName: 'chromium',
+        channel: 'chrome',
+        locale: 'en-GB',
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+        mobile: true
       }
     }
   ]

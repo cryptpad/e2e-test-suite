@@ -19,9 +19,9 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   platform = os.platform();
   userActions = new UserActions(page);
 
-  if (mobile) {
-    await userActions.login('test-user', mainAccountPassword);
-  }
+  // if (mobile) {
+  //   await userActions.login('test-user', mainAccountPassword);
+  // }
   fileActions = new FileActions(page);
   // await page.waitForTimeout(35000);
 });
