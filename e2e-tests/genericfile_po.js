@@ -125,7 +125,8 @@ class FilePage {
 class NewFileModal {
     constructor(filePage) {
         this.filePage = filePage;
-        this.close = filePage.mainFrame.locator(".cp-modal-close");
+        this.modalRoot = filePage.mainFrame.locator('#cp-app-toolbar-creation-dialog');
+        this.close = this.modalRoot.locator(".cp-modal-close");
     }
 
     async createFileOfType(context, fileType) {
@@ -137,7 +138,6 @@ class NewFileModal {
     }
 
     iconLocator(fileType) {
-        console.log(this.iconName(fileType));
         return this
             .filePage
             .mainFrame
