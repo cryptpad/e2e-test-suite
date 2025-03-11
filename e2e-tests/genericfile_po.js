@@ -48,7 +48,8 @@ class FilePage {
 
     async loadFileType(fileType) {
         await this.page.goto(`${url}/${fileType}/`);
-        await expect(this.filemenu()).toBeVisible();
+        // loading a new file takes longer than the default timeout for expect calls.
+        await expect(this.filemenu()).toBeVisible({ timeout: 30_000 });
     }
 
     async newFileClick() {
