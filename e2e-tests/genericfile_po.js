@@ -113,6 +113,7 @@ class FilePage {
     async toFailure(exception, reason) {
         console.log(exception);
         await this.setStatus("failed", reason);
+        throw(exception);
     }
 }
 
