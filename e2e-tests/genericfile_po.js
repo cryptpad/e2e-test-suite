@@ -25,7 +25,10 @@ class FilePage {
         this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
         this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
         this.alertMessage = this.mainFrame.locator('.alertify').locator('.msg');
-        this.okButton = this.mainFrame.getByRole('button', { name: 'OK (enter)' });
+        this.okButton = this.mainFrame
+            .locator(".dialog")
+            .getByRole('button', { name: 'OK (enter)' })
+            .first();
         this.cancelButton = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
         this.storageSuccess = this.mainFrame.locator('alertify-logs');
 
