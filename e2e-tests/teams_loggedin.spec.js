@@ -59,22 +59,19 @@ test('can change team name', async ({ page }) => {
 
   try {
     // access team admin panel
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
-
+    await fileActions.accessTeam()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
 
     // change team name
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('example team2');
+    await page.frameLocator('#sbox-iframe').getByPlaceholder('Guest').fill('example team');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     // await page.waitForTimeout(5000);
     await page.reload();
-    await page.frameLocator('#sbox-iframe').getByText('example team2').waitFor();
-    await page.frameLocator('#sbox-iframe').getByText('example team2').click();
+    await page.frameLocator('#sbox-iframe').getByText('example team').waitFor();
+    await page.frameLocator('#sbox-iframe').getByText('example team').click();
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
@@ -100,9 +97,7 @@ test(' can access team public signing key', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    await fileActions.accessTeam()
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
@@ -125,9 +120,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
 
   try {
     // access team administration panel
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
+    await fileActions.accessTeam()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
 
@@ -149,7 +142,7 @@ test('(screenshot) change team avatar', async ({ page }) => {
       await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
     }
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    await fileActions.accessTeam()
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
 
@@ -182,9 +175,7 @@ test('can download team drive', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    await fileActions.accessTeam()
 
     // access administration panel
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
@@ -304,15 +295,14 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
 
     await page.reload();
     // await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    await fileActions.accessTeam()
 
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor();
     await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click();
     await expect(page.frameLocator('#sbox-iframe').locator('#cp-team-roster-container').getByText('testuser', { exact: true })).toBeVisible({ timeout: 100000 });
 
-    await expect(pageTwo.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team')).toBeVisible();
-    await pageTwo.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    const fileActions2 = new FileActions(pageTwo)
+    await fileActions2.accessTeam()
 
     await pageTwo.waitForTimeout(5000);
     const page3Promise = pageTwo.waitForEvent('popup');
@@ -361,6 +351,7 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
   }
 });
 
+//fixme
 test('promote team viewer to member', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
@@ -389,8 +380,10 @@ test('promote team viewer to member', async ({ page, browser }) => {
     await pageOne.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
     await pageOne.waitForTimeout(5000);
     await pageOne.waitForTimeout(3000);
+    await pageOne.frameLocator('#sbox-iframe').getByText('test pad').waitFor()
     const page2Promise = pageOne.waitForEvent('popup');
-    await pageOne.frameLocator('#sbox-iframe').getByText('test pad').dblclick({ timeout: 5000 });
+    await pageOne.frameLocator('#sbox-iframe').getByText('test pad').dblclick();
+    await pageOne.frameLocator('#sbox-iframe').getByText('test pad').dblclick();
     const pageTwo = await page2Promise;
 
     // check member can't add members or access admin panel

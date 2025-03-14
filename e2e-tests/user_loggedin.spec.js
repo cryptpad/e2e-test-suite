@@ -146,10 +146,10 @@ test('add other user as contact and decline request', async ({ page, browser }) 
     await page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request').waitFor();
     await expect(page.frameLocator('#sbox-iframe').getByText('test-user2 declined your contact request')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' add and remove other user as contact', status: 'passed', reason: 'Can add and remove other user as contact' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' add another user as contact and decline', status: 'passed', reason: 'Can add another user as contact and decline' } })}`);
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' add and remove other user as contact', status: 'failed', reason: 'Can\'t add and remove other user as contact' } })}`);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' add another user as contact and decline', status: 'failed', reason: 'Can\'t add another user as contact and decline' } })}`);
   }
 });
 
@@ -608,7 +608,8 @@ test('can change password', async ({ page, browser }) => {
     await page1.waitForTimeout(3000);
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).waitFor();
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
-    await page1.waitForTimeout(20000);
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).waitFor();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' })).toBeVisible();
     const fileActions1 = new FileActions(page1);
     await fileActions1.drivemenu.click();
     await page1.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
@@ -642,7 +643,8 @@ test('can change password', async ({ page, browser }) => {
     await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).waitFor();
     await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'I have written down my username and password, proceed' }).click();
 
-    await page2.waitForTimeout(5000);
+    await page2.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' }).waitFor();
+    await expect(page2.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Current password' })).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' change password', status: 'failed', reason: 'Can\'t change password' } })}`);
 

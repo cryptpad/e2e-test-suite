@@ -23,6 +23,9 @@ export class UserActions {
     await this.loginButton.waitFor();
     await this.loginButton.click();
     await expect(this.page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
+    if (!await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).isVisible({timeout: 10000})) {
+      await this.page.reload()
+    }
     await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).waitFor()
   }
 

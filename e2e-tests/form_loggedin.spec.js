@@ -16,7 +16,7 @@ let isBrowserstack;
 let mobile;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(2400000);
+  test.setTimeout(150000);
   mobile = isMobile;
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
 
@@ -56,15 +56,15 @@ test('form - share with contact (author)', async ({ page, browser }) => {
     await fileActions.notifications.click();
 
     const page2Promise = pageOne.waitForEvent('popup');
-    if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
+    // if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
       await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
-    } else {
-      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
-    }
+    // } else {
+    //   await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
+    // }
     const pageTwo = await page2Promise;
 
-    await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor();
-    await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible({ timeout: 5000 });
+    await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
+    await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible({ timeout: 5000 });
 
     /// /
 
@@ -102,15 +102,15 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
     await fileActions.notifications.click();
 
     const page2Promise = pageOne.waitForEvent('popup');
-    if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
+    // if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
       await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
-    } else {
-      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
-    }
+    // } else {
+    //   await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
+    // }
     const pageTwo = await page2Promise;
 
-    await pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).waitFor();
-    await expect(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title })).toBeVisible({ timeout: 5000 });
+    await pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).or(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: titleComma })).waitFor();
+    await expect(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).or(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: titleComma }))).toBeVisible({ timeout: 5000 });
     await pageTwo.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor();
     await expect(pageTwo.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
 
@@ -150,15 +150,15 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
     await fileActions.notifications.click();
 
     const page2Promise = pageOne.waitForEvent('popup');
-    if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
+    // if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
       await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
-    } else {
-      await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
-    }
+    // } else {
+    //   await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).click();
+    // }
     const pageTwo = await page2Promise;
 
-    await pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).waitFor();
-    await expect(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title })).toBeVisible({ timeout: 5000 });
+    await pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).or(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: titleComma })).waitFor();
+    await expect(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: title }).or(pageTwo.frameLocator('#sbox-iframe').getByRole('heading', { name: titleComma }))).toBeVisible({ timeout: 5000 });
     await pageTwo.frameLocator('#sbox-iframe').getByText('Please choose how you would').waitFor();
     await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Please choose how you would')).toBeVisible();
 

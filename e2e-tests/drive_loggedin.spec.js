@@ -34,7 +34,9 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/drive`);
 });
 
+// const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
 const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
+
 
 userMenuItems.forEach(function (item) {
   test(`drive -  user menu - ${item}`, async ({ page }) => {
@@ -123,7 +125,7 @@ test('drive -  recent files', async ({ page }) => {
     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
 
     const title = `Rich text - ${titleDate}`;
-    const titleComma = `Rich text - ${titleDate}`;
+    const titleComma = `Rich text - ${titleDateComma}`;
     await page1.waitForTimeout(10000);
     await page1.close();
     await page.reload();
