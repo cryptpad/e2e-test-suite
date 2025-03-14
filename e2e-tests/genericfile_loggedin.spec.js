@@ -49,14 +49,14 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   cleanUp = new Cleanup(page);
   // await cleanUp.cleanUserDrive(titleName);
   await cleanUp.cleanFiles(title);
-
+  await cleanUp.cleanFiles(titleComma);
   await page.goto(`${url}/${name}`);
 
   // await page.waitForTimeout(10000);
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
-// const docNames = ['sheet'];
+// const docNames = ['pad'];
 
 docNames.forEach(function (name) {
   test(`${name} - create without owner`, async ({ page }) => {
@@ -128,54 +128,57 @@ docNames.forEach(function (name) {
   //   }
   // });
 
-  // test(`${name} - tag`, async ({ page }) => {
-  //   try {
-  //     await fileActions.createFile.click();
-  //     // await page.waitForTimeout(5000);
-  //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-  //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-  //     // if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
-  //     //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-  //     // } else {
-  //     //   await fileActions.filemenuClick(mobile);
-  //     //   await fileActions.clickTags(local);
+  test(`${name} - tag`, async ({ page }) => {
+    try {
+      await fileActions.createFile.click();
+      // await page.waitForTimeout(5000);
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+      // if (await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).isVisible()) {
+      //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+      // } else {
+      //   await fileActions.filemenuClick(mobile);
+      //   await fileActions.clickTags(local);
 
-  //     //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-  //     //   await fileActions.okButton.click();
-  //     // }
+      //   await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
+      //   await fileActions.okButton.click();
+      // }
 
-  //     // await page.waitForTimeout(5000);
-  //     await fileActions.filemenuClick(mobile);
-  //     await fileActions.clickTags(local);
-  //     await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click();
-  //     await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
-  //     // await page.waitForTimeout(3000);
-  //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
-  //     await fileActions.okButton.click();
-  //     // await page.waitForTimeout(3000);
+      // await page.waitForTimeout(5000);
+      await fileActions.filemenuClick(mobile);
+      await fileActions.clickTags(local);
+      await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click();
+      await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
+      // await page.waitForTimeout(3000);
+      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
+      await fileActions.okButton.click();
+      if (browserName === 'playwright-firefox' || browserName === 'edge' ) {
+        await page.waitForTimeout(1000);
+      }
+      
 
-  //     await page.goto(`${url}/drive/#`);
-  //     // await page.waitForTimeout(3000);
-  //     await fileActions.driveSideMenu.getByText('Tags').click();
-  //     await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
-  //     if (mobile) {
-  //       await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
-  //     }
+      await page.goto(`${url}/drive/#`);
+      // await page.waitForTimeout(3000);
+      await fileActions.driveSideMenu.getByText('Tags').click();
+      await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
+      if (mobile) {
+        await page.frameLocator('#sbox-iframe').getByRole('link', { name: '#testtag' }).click();
+      }
 
-  //     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).waitFor();
-  //     await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`)).toBeVisible();
+      await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${titleComma}`)).waitFor();
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${titleComma}`))).toBeVisible();
 
-  //     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).click({ button: 'right' });
-  //     await fileActions.destroy.click();
-  //     await fileActions.okButton.click();
-  //     await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`)).toHaveCount(0);
+      await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${titleComma}`)).click({ button: 'right' });
+      await fileActions.destroy.click();
+      await fileActions.okButton.click();
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(`${titleComma}`))).toHaveCount(0);
 
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - tag`, status: 'passed', reason: `Can tag ${name} document` } })}`);
-  //   } catch (e) {
-  //     console.log(e);
-  //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - tag`, status: 'failed', reason: `Can't tag ${name} document` } })}`);
-  //   }
-  // });
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - tag`, status: 'passed', reason: `Can tag ${name} document` } })}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - tag`, status: 'failed', reason: `Can't tag ${name} document` } })}`);
+    }
+  });
 
   test(`${name} - edit document owners #1264`, async ({ page, browser }) => {
     test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
@@ -186,7 +189,7 @@ docNames.forEach(function (name) {
       // await page.waitForTimeout(5000);
       await fileActions.filemenu.waitFor();
 
-      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+      await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).first().or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`).first())).toBeVisible();
       // await page.waitForTimeout(5000);
       await fileActions.access(mobile);
       await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'Owners' }).first().click();
@@ -208,12 +211,14 @@ docNames.forEach(function (name) {
       await fileActions1.notifications.click();
 
       // accept ownership invitation
+      // console.log(await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).count())
+      // console.log(await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`).count())
 
-      if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).count() > 1) {
-        await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).first().click();
-      } else {
-        await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).click();
-      }
+      // if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).count() > 1) {
+        await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).first().click();
+      // } else {
+      //   await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).click();
+      // }
 
       const pagePromise = pageOne.waitForEvent('popup');
       await pageOne.frameLocator('#sbox-iframe').getByText('Open the document in a new tab').click();
@@ -265,11 +270,11 @@ docNames.forEach(function (name) {
       await page.goto(`${url}/teams/`);
       await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
 
-      if (await fileActions.driveContentFolder.getByText(`${title}`).count() > 1) {
-        await fileActions.driveContentFolder.getByText(`${title}`).first().click({ button: 'right' });
-      } else {
-        await fileActions.driveContentFolder.getByText(`${title}`).click({ button: 'right' });
-      }
+      // if (await fileActions.driveContentFolder.getByText(`${title}`).count() > 1) {
+      //   await fileActions.driveContentFolder.getByText(`${title}`).first().click({ button: 'right' });
+      // } else {
+        await fileActions.driveContentFolder.getByText(`${title}`).first().or(fileActions.driveContentFolder.getByText(`${titleComma}`)).first().click({ button: 'right' });
+      // }
 
       await page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
       await page.waitForTimeout(5000);

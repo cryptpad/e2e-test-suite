@@ -170,17 +170,20 @@ test('drive - anon - history', async ({ page, context }) => {
     const page1Promise = page.waitForEvent('popup');
     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
     const page1 = await page1Promise;
-    
+    const fileActions1 = new FileActions(page1);
     // // await page.waitForTimeout(15000);
+    await fileActions1.filesaved.waitFor()
     await page.bringToFront();
-    if (!mobile) {
-      if (!await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).isVisible()) {
-        await page.reload();
-        // // await page.waitForTimeout(20000);
-      }
-      await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).waitFor()
+    await page.reload();
+    await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).waitFor()
       await expect(page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma))).toBeVisible();
-    }
+    // if (!mobile) {
+    //   if (!await page.frameLocator('#sbox-iframe').getByText(titleDate).or(page.frameLocator('#sbox-iframe').getByText(titleDateComma)).isVisible()) {
+    //     await page.reload();
+    //     // // await page.waitForTimeout(20000);
+    //   }
+      
+    // }
 
     await page.frameLocator('#sbox-iframe').locator('[data-original-title="Display the document history"]').click();
     await fileActions.historyPrev.click({

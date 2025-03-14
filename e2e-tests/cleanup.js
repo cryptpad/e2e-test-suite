@@ -1,4 +1,5 @@
 const { url } = require('../fixture.js');
+const { FileActions } = require('./fileactions.js');
 
 export class Cleanup {
   /**
@@ -7,6 +8,7 @@ export class Cleanup {
   constructor (page) {
     this.page = page;
     this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder');
+    this.fileActions = new FileActions(this.page)
   }
 
   async cleanFiles (title) {
@@ -153,9 +155,14 @@ export class Cleanup {
     await this.page.goto(`${url}/teams`);
     // await this.page.waitForTimeout(5000);
     await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    // if (browserName)
     await this.page.waitForTimeout(2000);
     await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
     await this.page.waitForTimeout(5000);
+    console.log(await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible())
+    if (!await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible()){
+      await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    }
     await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor();
     await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click();
 

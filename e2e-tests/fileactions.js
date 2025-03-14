@@ -207,4 +207,17 @@ export class FileActions {
     await this.filemenuClick(mobile);
     await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
   }
+
+  async accessTeam (mobile, local) {
+    await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await this.page.waitForTimeout(2000);
+    await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    console.log(await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible())
+    if (!await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible()){
+      while (!await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible()) {
+        await this.page.waitForTimeout(2000);
+        await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+      }
+    }
+  }
 }
