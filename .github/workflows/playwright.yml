@@ -16,6 +16,14 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+    
+    - name: Clone Cryptpad
+      uses: actions/checkout@main
+        with:
+          name: cryptpad/cryptpad    
+          # ref: refs/heads/release
+    # - name: Clone cryptpad 
+    #   run: git@github.com:cryptpad/cryptpad.git
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
