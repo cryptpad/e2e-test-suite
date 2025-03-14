@@ -19,8 +19,8 @@ jobs:
     
     - name: Clone Cryptpad
       uses: actions/checkout@main
-        with:
-          name: cryptpad/cryptpad    
+      with:
+        name: cryptpad/cryptpad    
           # ref: refs/heads/release
     # - name: Clone cryptpad 
     #   run: git@github.com:cryptpad/cryptpad.git
