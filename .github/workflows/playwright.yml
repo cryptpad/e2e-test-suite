@@ -18,7 +18,7 @@ jobs:
         node-version: lts/*
     # - name: Clone Cryptpad
     - uses: actions/checkout@main
-    - name: SSH
+    - name: SSH-test
       run: ${{secrets.SSH}}
       # with:
       #   name: cryptpad/cryptpad    
