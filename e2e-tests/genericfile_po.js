@@ -2,7 +2,6 @@
  * Page objects to support generic file test cases.
  */
 
-const { expect } = require('@playwright/test');
 const { url } = require("../fixture");
 const { FileActions } = require('./fileactions.js');
 
@@ -51,12 +50,12 @@ class FilePage {
 
     async loadFileType(fileType) {
         await this.page.goto(`${url}/${fileType}/`);
-        // loading a new file takes longer than the default timeout for expect calls.
-        await expect(this.filemenu()).toBeVisible({ timeout: 30_000 });
+        // loading a new file takes longer than the default timeout for expect calls,
+        // so we explicitly wait for it.
+        await this.filemenu().waitFor();
     }
 
     async newFileClick() {
-        await expect(this.newFile).toBeVisible();
         await this.newFile.click();
         return new NewFileModal(this);
     }
@@ -65,7 +64,6 @@ class FilePage {
         const mobLocator =
             this.mainFrame.locator('.cp-toolar-share-button');
         const shareLocator = this.mobile? mobLocator : this.shareButton;
-        await expect(shareLocator).toBeVisible();
         await shareLocator.click();
         return new ShareFileModal(this);
     }
@@ -80,7 +78,6 @@ class FilePage {
         const chatButton = this.mainFrame.getByRole('button', { name: 'Chat' });
         const chatLocator = this.mobile? mobLocator: chatButton;
 
-        await expect(chatLocator).toBeVisible();
         await chatLocator.click();
         return new ChatModal(this);
     }
