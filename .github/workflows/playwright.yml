@@ -18,7 +18,7 @@ jobs:
         node-version: lts/*
     # - name: Clone Cryptpad
     - uses: actions/checkout@main
-    - name: SSH-test-2
+    - name: SSH-test-3
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
