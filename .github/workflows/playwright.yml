@@ -16,11 +16,12 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    
-    - name: Clone Cryptpad
-      uses: actions/checkout@main
-      with:
-        name: cryptpad/cryptpad    
+    # - name: Clone Cryptpad
+    - uses: actions/checkout@main
+    - name: SSH
+      run: ${{secrets.SSH}}
+      # with:
+      #   name: cryptpad/cryptpad    
           # ref: refs/heads/release
     # - name: Clone cryptpad 
     #   run: git@github.com:cryptpad/cryptpad.git
