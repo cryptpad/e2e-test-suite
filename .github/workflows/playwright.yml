@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@main
     - name: SSH-test-2
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: ${{secrets.SSH}}
       # with:
       #   name: cryptpad/cryptpad    
