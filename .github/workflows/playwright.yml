@@ -19,6 +19,8 @@ jobs:
     # - name: Clone Cryptpad
     - uses: actions/checkout@main
     - name: SSH-test-2
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
       run: ${{secrets.SSH}}
       # with:
       #   name: cryptpad/cryptpad    
