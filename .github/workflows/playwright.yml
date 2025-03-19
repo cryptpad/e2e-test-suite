@@ -21,7 +21,7 @@ jobs:
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-    - name: Deploy via SSH-17
+    - name: Deploy via SSH-18
       run: |
         ${{ secrets.SSH }}
     - name: Install dependencies
