@@ -26,6 +26,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
           repository: cryptpad/cryptpad
+          ref: GHA_simultaneous_tests
     - name: Use Node.js 18.15.0
       uses: actions/setup-node@v3
       with:
