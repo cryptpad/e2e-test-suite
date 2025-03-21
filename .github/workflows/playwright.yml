@@ -15,6 +15,14 @@ jobs:
     - uses: actions/checkout@v4
       with:
           repository: cryptpad/cryptpad
+    - name: Use Node.js 18.15.0
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.15.0
+        cache: 'npm'
+    - run: npm install
+    - run: npm run install:components
+    - run: npm run dev
     # - uses: actions/checkout@v4
     # - uses: actions/setup-node@v4
     #   with:
