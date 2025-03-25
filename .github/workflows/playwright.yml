@@ -8,6 +8,19 @@ on:
     branches: [ main, master ]
 
 jobs:
+  setup:
+    - uses: actions/checkout@v4
+      with:
+          repository: cryptpad/cryptpad
+          ref: GHA_simultaneous_tests
+    - name: Use Node.js 18.15.0
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.15.0
+        cache: 'npm'
+    - run: npm install
+    - run: npm run install:components
+    - run: npm run dev
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -21,23 +34,27 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-
-
-    - uses: actions/checkout@v4
-      with:
-          repository: cryptpad/cryptpad
-          ref: GHA_simultaneous_tests
-    - name: Use Node.js 18.15.0
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.15.0
-        cache: 'npm'
-    - run: npm install
-    - run: npm run install:components
-    # - run: npm run dev && npm run playwright-test-anon
-    - run: npm run playwright-test-anon
+    - name: Run tests
+      run: npx playwright test anon --project='chrome' --workers=2
       env: 
         PW_URL: ${{ secrets.PW_URL }}
+
+
+    # - uses: actions/checkout@v4
+    #   with:
+    #       repository: cryptpad/cryptpad
+    #       ref: GHA_simultaneous_tests
+    # - name: Use Node.js 18.15.0
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: 18.15.0
+    #     cache: 'npm'
+    # - run: npm install
+    # - run: npm run install:components
+    # # - run: npm run dev && npm run playwright-test-anon
+    # - run: npm run playwright-test-anon
+    #   env: 
+    #     PW_URL: ${{ secrets.PW_URL }}
     #//////
 
     # - name: Run Playwright tests
