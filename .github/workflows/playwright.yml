@@ -1,3 +1,4 @@
+
 name: Playwright Tests
 on:
   repository_dispatch:
@@ -8,22 +9,6 @@ on:
     branches: [ main, master ]
 
 jobs:
-  setup:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-          repository: cryptpad/cryptpad
-          ref: GHA_simultaneous_tests
-    - name: Use Node.js 18.15.0
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.15.0
-        cache: 'npm'
-    - run: npm install
-    - run: npm run install:components
-    - run: npm run dev
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -37,14 +22,73 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: check url
-      run: echo ${{ vars.PW_URL }} 
+
+
+    - uses: actions/checkout@v4
+      with:
+          repository: cryptpad/cryptpad
+          ref: GHA_simultaneous_tests
+    - name: Use Node.js 18.15.0
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.15.0
+        cache: 'npm'
+    - run: npm install
+    - run: npm run install:components
+    # - run: npm run dev && npm run playwright-test-anon
+    - run: npm run playwright-test-anon
       env: 
-        PW_URL: ${{ vars.PW_URL }} 
-    - name: Run tests
-      run: npx playwright test anon --project='chrome' --workers=2
-      env: 
-        PW_URL: ${{ vars.PW_URL }} 
+        PW_URL: ${{ vars.PW_URL }}
+
+
+
+# name: Playwright Tests
+# on:
+#   repository_dispatch:
+#       types: [trigger-e2e-tests]
+#   push:
+#     branches: [ main, master, CI_testing ]
+#   pull_request:
+#     branches: [ main, master ]
+
+# jobs:
+#   setup:
+#     timeout-minutes: 60
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v4
+#       with:
+#           repository: cryptpad/cryptpad
+#           ref: GHA_simultaneous_tests
+#     - name: Use Node.js 18.15.0
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: 18.15.0
+#         cache: 'npm'
+#     - run: npm install
+#     - run: npm run install:components
+#     - run: npm run dev
+#   test:
+#     timeout-minutes: 60
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v4
+#     - uses: actions/setup-node@v4
+#       with:
+#         node-version: lts/*
+#     - uses: actions/checkout@main
+#     - name: Install dependencies
+#       run: npm ci
+#     - name: Install Playwright Browsers
+#       run: npx playwright install --with-deps
+#     - name: check url
+#       run: echo ${{ vars.PW_URL }} 
+#       env: 
+#         PW_URL: ${{ vars.PW_URL }} 
+#     - name: Run tests
+#       run: npx playwright test anon --project='chrome' --workers=2
+#       env: 
+#         PW_URL: ${{ vars.PW_URL }} 
 
 
     # - uses: actions/checkout@v4
