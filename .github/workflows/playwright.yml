@@ -23,7 +23,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       - run: npm run install:components
-      - run: npm run dev 
+      - run: npm run dev &
       # - name: Install app dependencies
       #   run: |
       #     npm install
