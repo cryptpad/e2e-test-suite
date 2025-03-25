@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout app repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           repository: cryptpad/cryptpad
           ref: GHA_simultaneous_tests
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           repository: cryptpad/e2e-test-suite
           ref: CI_testing
