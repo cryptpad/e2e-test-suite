@@ -105,6 +105,7 @@ exports.test = base.test.extend({
   },
 
   beforeEach: [
+    console.log('testing'),
     test.setTimeout(2400000)
   ],
   afterEach: [
