@@ -39,6 +39,8 @@ jobs:
       run: npx playwright install --with-deps
     - name: check url
       run: echo ${{ vars.PW_URL }}
+      env: 
+        PW_URL: ${{ vars.PW_URL }} 
     - name: Run tests
       run: npx playwright test anon --project='chrome' --workers=2
       env: 
