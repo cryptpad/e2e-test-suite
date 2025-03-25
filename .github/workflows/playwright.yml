@@ -38,7 +38,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: check url
-      run: printenv
+      run: echo ${{ vars.PW_URL }} 
       env: 
         PW_URL: ${{ vars.PW_URL }} 
     - name: Run tests
