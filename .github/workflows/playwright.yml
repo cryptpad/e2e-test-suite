@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       app:
-        image: node:16  # Use a base image for your app's environment
+        image: node:18  # Use a base image for your app's environment
         options: >-
           --health-cmd="curl --silent --fail localhost:3000 || exit 1"
           --health-interval=10s
