@@ -1,0 +1,40 @@
+# name: Playwright tests - remote instance
+# on:
+#   repository_dispatch:
+#       types: [trigger-e2e-tests]
+#   push:
+#     branches: [ CI_testing ]
+
+# jobs:
+#   start_app:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Check out test repo
+#     - uses: actions/checkout@v4
+#     - name: Set up node
+#     - uses: actions/setup-node@v4
+#       with:
+#         node-version: lts/*
+#     - uses: actions/checkout@main
+#     - name: Set up SSH key
+#       uses: webfactory/ssh-agent@v0.9.0
+#       with:
+#         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#     - name: Update test instance
+#       run: |
+#         ${{ secrets.SSH }}
+#     - name: Install Playwright components
+#       run: npm ci
+#     - name: Install Playwright browsers
+#       run: npx playwright install --with-deps
+#     - name: Run Playwright tests
+#       run: npx playwright test anon --project='chrome' --workers=2
+#       env: 
+#         PW_URL: ${{ secrets.PW_URL }}
+#     - name: Upload report
+#     - uses: actions/upload-artifact@v4
+#       if: ${{ !cancelled() }}
+#       with:
+#         name: playwright-report
+#         path: playwright-report/
+#         retention-days: 30

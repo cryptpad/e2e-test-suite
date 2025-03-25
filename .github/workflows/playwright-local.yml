@@ -1,0 +1,50 @@
+name: Playwright tests - local instance
+on:
+  repository_dispatch:
+      types: [trigger-e2e-tests]
+  push:
+    branches: [ main, master, CI_testing ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  start_app:
+    runs-on: ubuntu-latest
+    services:
+      app:
+        image: node:18  
+        ports:
+          - 3000:3000 
+    steps:
+      - name: Checkout app repository
+        uses: actions/checkout@v4
+        with:
+          repository: cryptpad/cryptpad
+      - name: Use Node.js 18.15.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: 'npm'
+      - run: npm install
+      - run: npm run install:components
+      - run: npm run dev &
+        continue-on-error: true 
+      - name: Checkout test repository
+        uses: actions/checkout@v4
+        with:
+          repository: cryptpad/e2e-test-suite
+          ref: CI_testing
+
+      - name: Install components
+        run: |
+          npm ci
+
+      - name: Install deps
+        run: |
+          npx playwright install --with-deps
+          
+      - name: Run Playwright tests
+        run: |
+          npx playwright test anon --project='chrome' --workers=4 
+        env:
+          PW_URL: ${{ vars.PW_URL }}  
