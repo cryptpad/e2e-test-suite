@@ -8,68 +8,62 @@ on:
     branches: [ main, master ]
 
 jobs:
-  start_app:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout app repository
-        uses: actions/checkout@v4
-        with:
-          repository: cryptpad/cryptpad
-          ref: GHA_simultaneous_tests
-      - name: Use Node.js 18.15.0
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.15.0
-          cache: 'npm'
-      - run: npm install
-      - run: npm run install:components
-      - run: npm run dev &
-      # - name: Install app dependencies
-      #   run: |
-      #     npm install
-
-      # - name: Start app
-      #   run: |
-      #     npm start &  # Start the app in the background
-        # env:
-        #   NODE_ENV: production
-        continue-on-error: true  # Allow the step to complete even if the app process is terminated
-
-      - name: Wait for app to start
-        run: |
-          # You can add a small sleep or check that localhost:3000 is available
-          sleep 10  # Wait for the app to be up and running on localhost:3000
-
   run_tests:
-    needs: start_app  # This ensures the test job runs after the app is started
     runs-on: ubuntu-latest
+    services:
+      app:
+        image: node:16  # Use a base image for your app's environment
+        options: >-
+          --health-cmd="curl --silent --fail localhost:3000 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3000:3000  # Expose port 3000 on the container
+        env:
+          NODE_ENV: production
     steps:
-      - name: Checkout test repository
+      # Step 1: Checkout the e2e tests repository
+      - name: Checkout e2e test repository
         uses: actions/checkout@v4
         with:
           repository: cryptpad/e2e-test-suite
           ref: CI_testing
 
-      - name: Install components
+      # Step 2: Set up Node.js for Playwright tests
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Install Playwright dependencies
+      - name: Install Playwright dependencies
         run: |
           npm ci
+          npx playwright install --with-deps  # Install Playwright browsers
 
-      - name: Install deps
-        run: |
-          npm ci
-          
-      - name: Run Playwright tests
-        run: |
-          npx playwright install --with-deps  # Install Playwright dependencies
-          npx playwright test anon --project='chrome'  # or whatever command runs your tests
-        env:
-          PW_URL: ${{ vars.PW_URL }}  # Set the app's URL for Playwright to use
+      # Step 4: Checkout the app repository
+      - name: Checkout app repository
+        uses: actions/checkout@v4
+        with:
+          repository: cryptpad/cryptpad
+          # token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 5: Install app dependencies
+    - run: npm install
+    - run: npm run install:components
+    - run: npm run dev &
 
+      # # Step 6: Start the app in the background
+      # - name: Start app in the background
+      #   run: |
+      #     npm start &  # Start the app in the background
+      #     sleep 10  # Wait for the app to be fully available
 
-
-
-
+      # Step 7: Run Playwright tests
+      - run: npx playwright test anon --project='chrome'
+        env: 
+          PW_URL: ${{ vars.PW_URL }}
 
 
 
