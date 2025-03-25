@@ -63,7 +63,7 @@ jobs:
           npx playwright install --with-deps  # Install Playwright dependencies
           npx playwright test anon --project='chrome'  # or whatever command runs your tests
         env:
-          BASE_URL: http://localhost:3000  # Set the app's URL for Playwright to use
+          PW_URL: ${{ vars.PW_URL }}  # Set the app's URL for Playwright to use
 
 
 
