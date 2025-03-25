@@ -71,9 +71,9 @@ jobs:
           
       - name: Run Playwright tests
         run: |
-          npx playwright test anon --project='chrome'  # or whatever command runs your tests
+          npx playwright test anon --project='chrome' --workers=2 
         env:
-          PW_URL: ${{ vars.PW_URL }}  # Set the app's URL for Playwright to use
+          PW_URL: ${{ vars.PW_URL }}  
 
 
 
