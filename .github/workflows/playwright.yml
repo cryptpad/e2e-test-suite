@@ -9,6 +9,7 @@ on:
 
 jobs:
   setup:
+    steps:
     - uses: actions/checkout@v4
       with:
           repository: cryptpad/cryptpad
