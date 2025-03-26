@@ -30,7 +30,7 @@ jobs:
       - name: Install components  
         run: npm run install:components
       - name: Install OnlyOffice
-        run: y | ./install-onlyoffice.sh
+        run: ./install-onlyoffice.sh -a
       - name: Run local server
         timeout-minutes: 120
         run: nohup npm run dev &
