@@ -55,10 +55,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
 
-  await page.goto(`${url}/code`);
-  fileActions = new FileActions(page);
+  // await page.goto(`${url}/code`);
+  // fileActions = new FileActions(page);
 
-  await fileActions.codeeditor.waitFor();
+  // await fileActions.codeeditor.waitFor();
 });
 
 // const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -68,7 +68,8 @@ docNames.forEach(function (name) {
 
   test(`${name} - create new file from file menu`, async ({ page, context }) => {
     try {
-      // await page.goto(`${url}/${name}/`, { timeout: 60000 });
+      console.log('name', name)
+      await page.goto(`${url}/${name}/`, { timeout: 60000 });
       await page.waitForTimeout(5000);
       if (name === 'sheet' | name === 'diagram') {
         // await page.waitForTimeout(40000);
