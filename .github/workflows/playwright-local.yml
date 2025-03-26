@@ -26,11 +26,11 @@ jobs:
           node-version: 18.15.0
           cache: 'npm'
       - name: Install dependencies
-      - run: npm install
-      - run: npm run install:components
+        run: npm install
+        run: npm run install:components
       - name: Run local server
         timeout-minutes: 120
-      - run: nohup npm run dev &
+        run: nohup npm run dev &
         # continue-on-error: true 
       - name: Checkout test repository
         uses: actions/checkout@v4
