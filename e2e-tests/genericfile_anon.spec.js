@@ -69,7 +69,7 @@ docNames.forEach(function (name) {
   test(`${name} - create new file from file menu`, async ({ page, context }) => {
     try {
       console.log('name', name)
-      await page.goto(`${url}/${name}/`, { timeout: 60000 });
+      await page.goto(`${url}/code/`, { timeout: 60000 });
       await page.waitForTimeout(5000);
       if (name === 'sheet' | name === 'diagram') {
         // await page.waitForTimeout(40000);
