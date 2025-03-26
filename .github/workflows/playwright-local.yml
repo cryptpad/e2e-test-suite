@@ -26,8 +26,8 @@ jobs:
           node-version: 18.15.0
           cache: 'npm'
       - name: Install dependencies
-        run: npm install
-        run: npm run install:components
+        run: npm install & npm run install:components
+        # run: npm run install:components
       - name: Run local server
         timeout-minutes: 120
         run: nohup npm run dev &
