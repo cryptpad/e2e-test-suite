@@ -1,38 +1,64 @@
-const { test, url, titleDate, titleDateComma } = require('../fixture.js');
+// const { test, url, titleDate, titleDateComma } = require('../fixture.js');
+// const { expect } = require('@playwright/test');
+// const { FileActions } = require('./fileactions.js');
+
+// let mobile;
+// let fileActions;
+// let documentTitleDate;
+// let isBrowserstack;
+// let browserName;
+// let title;
+// let titleComma
+// let titleName
+
+// test.beforeEach(async ({ page, isMobile }, testInfo) => {
+//   test.setTimeout(210000);
+//   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
+//   mobile = isMobile;
+//   fileActions = new FileActions(page);
+//   browserName = testInfo.project.name.split(/@/)[0];
+
+//   const name = testInfo.title.split(' ')[0];
+//   if (name === 'pad') {
+//     titleName = 'Rich text -';
+//     title = `${titleName} ${titleDate}`;
+//     titleComma = `${titleName} ${titleDateComma}`
+//   } else if (name === 'slide') {
+//     titleName = 'Markdown slides -';
+//     title = `${titleName} ${titleDate}`;
+//     titleComma = `${titleName} ${titleDateComma}`
+//   } else {
+//     titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -';
+//     title = `${titleName}` + ' ' + `${titleDate}`;
+//     titleComma = `${titleName}` + ' ' + `${titleDateComma}`;
+//   }
+
+// });
+
+const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
+const fs = require('fs');
+require('dotenv').config();
+const os = require('os');
 
+let pageOne;
 let mobile;
+let browserstackMobile;
+let platform;
+const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
-let documentTitleDate;
-let isBrowserstack;
-let browserName;
-let title;
-let titleComma
-let titleName
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   mobile = isMobile;
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
+  platform = os.platform();
+
+  await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
-  browserName = testInfo.project.name.split(/@/)[0];
 
-  const name = testInfo.title.split(' ')[0];
-  if (name === 'pad') {
-    titleName = 'Rich text -';
-    title = `${titleName} ${titleDate}`;
-    titleComma = `${titleName} ${titleDateComma}`
-  } else if (name === 'slide') {
-    titleName = 'Markdown slides -';
-    title = `${titleName} ${titleDate}`;
-    titleComma = `${titleName} ${titleDateComma}`
-  } else {
-    titleName = name.charAt(0).toUpperCase() + name.slice(1) + ' -';
-    title = `${titleName}` + ' ' + `${titleDate}`;
-    titleComma = `${titleName}` + ' ' + `${titleDateComma}`;
-  }
-
+  await fileActions.codeeditor.waitFor();
 });
 
 // const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -42,7 +68,7 @@ docNames.forEach(function (name) {
 
   test(`${name} - create new file from file menu`, async ({ page, context }) => {
     try {
-      await page.goto(`${url}/${name}/`, { timeout: 60000 });
+      // await page.goto(`${url}/${name}/`, { timeout: 60000 });
       await page.waitForTimeout(5000);
       if (name === 'sheet' | name === 'diagram') {
         // await page.waitForTimeout(40000);
