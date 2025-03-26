@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       app:
-        image: node:18  
+        image: node:22  
         ports:
           - 3000:3000 
     steps:
