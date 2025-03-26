@@ -49,6 +49,6 @@ jobs:
           
       - name: Run Playwright tests
         run: |
-          npx playwright test anon --project='chrome' --workers=4 
+          npx playwright test anon --project='chrome' --workers=2 
         env:
           PW_URL: ${{ vars.PW_URL }}  
