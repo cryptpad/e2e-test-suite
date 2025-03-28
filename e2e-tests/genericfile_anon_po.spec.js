@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
+const { FileActions } = require('./fileactions.js');
 
 let filePage;
 
@@ -38,6 +39,7 @@ test.describe('New file modal', () => {
 
         // In the modal, click icon for file type to create a new one in a new browser tab.
         const nextPadPage = await newFileModal.createFileOfType(context, fileType);
+        await nextPadPage.filemenu().waitFor()
         await expect(nextPadPage.filemenu()).toBeVisible();
         // Ensure this is indeed a new pad, and not just the same we previously had.
         const secondPad = nextPadPage.fileId();
@@ -169,10 +171,13 @@ test.describe('Save/Remove ', () => {
         )).toBeVisible();
         await filePage.okButton.click();
 
+        
+
         // First store the document.
-        await filePage.filemenu().click();
-        await expect(filePage.storeFile).toBeVisible();
-        await filePage.storeFile.click();
+        await (new StoreModal(filePage)).storeButton.click();
+        await filePage.mainFrame.getByText(
+          'The document was successfully stored in your CryptDrive!'
+        ).waitFor();
         await expect(filePage.mainFrame.getByText(
           'The document was successfully stored in your CryptDrive!'
         )).toBeVisible();

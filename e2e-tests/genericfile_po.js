@@ -51,7 +51,7 @@ class FilePage {
     await this.page.goto(`${url}/${fileType}/`);
     // loading a new file takes longer than the default timeout for expect calls,
     // so we explicitly wait for it.
-    await this.filemenu().waitFor();
+    await this.fileActions.filesaved.waitFor({timeout: 90000})
   }
 
   async newFileClick () {
