@@ -20,7 +20,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   const fileType = 'code';
   // directly load a pad page and fetch its id from the url
-  await this.page.goto(`${url}/code/`);
+  await page.goto(`${url}/code/`);
   fileActions = new FileActions(page);
 });
 
