@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: cryptpad/cryptpad
-          path: main
+          path: cryptpad
       - name: Use Node.js 18.15.0
         uses: actions/setup-node@v3
         with:
