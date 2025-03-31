@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: cryptpad/cryptpad
-          # path: cryptpad
+          path: cryptpad
       # - name: Use Node.js 18.15.0
       #   uses: actions/setup-node@v3
       #   with:
@@ -39,8 +39,10 @@ jobs:
       - name: Checkout test repository
         uses: actions/checkout@v4
         with:
-          repository: cryptpad/e2e-test-suite
-          ref: CI_testing
+          path: main
+          # repository: cryptpad/e2e-test-suite
+          # ref: CI_testing
+
 
       - name: Install components
         run: |
