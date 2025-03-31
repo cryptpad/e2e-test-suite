@@ -39,10 +39,13 @@ jobs:
       # #   with:
       # #     node-version: 18.15.0
       # #     cache: 'npm'
-      - name: Install dependencies
+      - name: sleep
         run: sleep 2m 
+      - name: cd
         run: cd cryptpad 
+      - name: ls
         run: ls
+      - name: Install dependencies
         run: npm install 
       - name: Install components  
         run: npm run install:components
