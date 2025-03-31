@@ -70,13 +70,7 @@ export class FileActions {
   }
 
   async moveToTrash() {
-    // if (local) {
-    //   await this.trashLocal.click()
-    
-    // } else {
-      await this.trash.click()
-    // }
-  
+      await this.trash.click()  
   }
 
   async oneTimeClick(local) {
@@ -92,13 +86,6 @@ export class FileActions {
     return this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`);
   }
 
-  // async titleDate (mobile, isBrowserstack) {
-  //   if (mobile && isBrowserstack || !mobile && !isBrowserstack) {
-  //     return titleDateComma;
-  //   } else {
-  //     return titleDate;
-  //   }
-  // }
 
   async clickTags (local) {
     await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Tags' }).locator('a').click();
