@@ -40,7 +40,10 @@ jobs:
       # #     node-version: 18.15.0
       # #     cache: 'npm'
       - name: Install dependencies
-        run: sleep 2m & cd cryptpad & npm install 
+        run: sleep 2m 
+        run: cd cryptpad 
+        run: ls
+        run: npm install 
       - name: Install components  
         run: npm run install:components
       - name: Install OnlyOffice
