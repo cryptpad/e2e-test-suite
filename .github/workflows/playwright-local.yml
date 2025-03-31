@@ -3,9 +3,7 @@ on:
   repository_dispatch:
       types: [trigger-e2e-tests]
   push:
-    branches: [ main, master, CI_testing ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ CI_testing ]
 
 jobs:
   start_app:
@@ -16,53 +14,20 @@ jobs:
         ports:
           - 3000:3000 
     steps:
-
-
-      # - name: Checkout tools repo
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: cryptpad/cryptpad
       - name: Run multi repo cloning script
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git"
         shell: bash
-
-          # path: cryptpad/cryptpad
-      # - name: Checkout app repository
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: cryptpad/cryptpad
-      #     path: cryptpad
-      # # - name: Use Node.js 18.15.0
-      # #   uses: actions/setup-node@v3
-      # #   with:
-      # #     node-version: 18.15.0
-      # #     cache: 'npm'
-      # - name: sleep
-      #   run: sleep 2m 
-      # - name: cd
-      #   run: cd cryptpad 
-      # - name: ls
-      #   run: ls
-      # - name: cd
-      #   run: cd cryptpad 
-      # - name: ls
-      #   run: ls
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components  
         run: npm run install:components --prefix cryptpad
-      # - name: Install OnlyOffice
-      #   run: ./install-onlyoffice.sh -a --prefix cryptpad
+      - name: Install OnlyOffice
+        run: cryptpad/install-onlyoffice.sh -a 
       - name: Run local server
         timeout-minutes: 120
         run: nohup npm run dev --prefix cryptpad &
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      #   with:
-      #     path: main
-        # continue-on-error: true 
       - name: Run multi repo cloning script
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} # 
@@ -73,18 +38,6 @@ jobs:
       - name: Install dependencies
         run: npm exec playwright install --with-deps --prefix e2e-test-suite
       - name: Install dependencies
-        run: curl http://localhost:3000 
-      # - name: Install components
-      #   run: |
-      #     npm ci
-
-      # - name: Install deps
-      #   run: |
-      #     npx playwright install --with-deps
-          
-      # - name: Run Playwright tests
-      #   run: |
-      #     curl http://localhost:3000
-      #     # npx playwright test code_anon.spec.js --project='chrome' --workers=2
-      #   env:
-      #     PW_URL: ${{ vars.PW_URL }}  
+        run: npm exec playwright test code_anon.spec.js --project='chrome' --workers=2
+        env:
+          PW_URL: ${{ vars.PW_URL }} 
