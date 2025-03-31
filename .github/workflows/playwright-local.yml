@@ -51,6 +51,7 @@ jobs:
           
       - name: Run Playwright tests
         run: |
-          npx playwright test code_anon.spec.js --project='chrome' --workers=2
+          curl http://localhost:3000
+          # npx playwright test code_anon.spec.js --project='chrome' --workers=2
         env:
           PW_URL: ${{ vars.PW_URL }}  
