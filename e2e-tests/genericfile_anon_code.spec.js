@@ -19,10 +19,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(60000);
   filePage = new FilePage(page, testInfo.title, isMobile);
 
-  const fileType = 'code';
-        // directly load a pad page and fetch its id from the url
-  await filePage.loadFileType(fileType);
-  fileActions = new FileActions(page);
+  // const fileType = 'code';
+  //       // directly load a pad page and fetch its id from the url
+  // await filePage.loadFileType(fileType);
+  // fileActions = new FileActions(page);
 
   // await fileActions.codeeditor.waitFor();
 });
@@ -32,6 +32,10 @@ test.describe('New file modal', () => {
   // docTypes.forEach(function (name) {
     test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
       try {
+        const fileType = 'code';
+        // directly load a pad page and fetch its id from the url
+        await filePage.loadFileType(fileType);
+        fileActions = new FileActions(page);
         // // console.log("name", name)
         // const fileType = 'code';
         // // directly load a pad page and fetch its id from the url
