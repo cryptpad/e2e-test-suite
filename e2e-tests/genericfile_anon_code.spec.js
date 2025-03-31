@@ -51,49 +51,49 @@ test('anon - code - input text #1367', async ({ page }) => {
 //   filePage = new FilePage(page, testInfo.title, isMobile);
 // });
 
-// test.describe('New file modal', () => {
-//   // docTypes.forEach(function (name) {
-//     test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
-//       try {
-//         // console.log("name", name)
-//         const fileType = 'code';
-//         // directly load a pad page and fetch its id from the url
-//         await filePage.loadFileType(fileType);
-//         const firstPad = filePage.fileId();
+test.describe('New file modal', () => {
+  // docTypes.forEach(function (name) {
+    test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
+      try {
+        // console.log("name", name)
+        const fileType = 'code';
+        // directly load a pad page and fetch its id from the url
+        await filePage.loadFileType(fileType);
+        const firstPad = filePage.fileId();
 
-//         // click File twice and the menu will appear and then disappear.
-//         await filePage.filemenu().click();
-//         await expect(filePage.newFile).toBeVisible();
-//         await filePage.filemenu().click();
-//         await expect(filePage.newFile).not.toBeVisible();
+        // click File twice and the menu will appear and then disappear.
+        await filePage.filemenu().click();
+        await expect(filePage.newFile).toBeVisible();
+        await filePage.filemenu().click();
+        await expect(filePage.newFile).not.toBeVisible();
 
-//         // click File -> New to reach the new file modal dialog and close it immediately.
-//         await filePage.filemenu().click();
-//         const cancelledFileModal = await filePage.newFileClick();
-//         await expect(cancelledFileModal.close).toBeVisible();
-//         await cancelledFileModal.close.click();
-//         await expect(cancelledFileModal.close).not.toBeVisible();
-//         await expect(filePage.filemenu()).toBeVisible();
+        // click File -> New to reach the new file modal dialog and close it immediately.
+        await filePage.filemenu().click();
+        const cancelledFileModal = await filePage.newFileClick();
+        await expect(cancelledFileModal.close).toBeVisible();
+        await cancelledFileModal.close.click();
+        await expect(cancelledFileModal.close).not.toBeVisible();
+        await expect(filePage.filemenu()).toBeVisible();
 
-//         // click File -> New to reach the new file modal dialog again.
-//         await filePage.filemenu().click();
-//         const newFileModal = await filePage.newFileClick();
-//         await expect(newFileModal.close).toBeVisible();
+        // click File -> New to reach the new file modal dialog again.
+        await filePage.filemenu().click();
+        const newFileModal = await filePage.newFileClick();
+        await expect(newFileModal.close).toBeVisible();
 
-//         // In the modal, click icon for file type to create a new one in a new browser tab.
-//         const nextPadPage = await newFileModal.createFileOfType(context, fileType);
-//         await nextPadPage.filemenu().waitFor()
-//         await expect(nextPadPage.filemenu()).toBeVisible();
-//         // Ensure this is indeed a new pad, and not just the same we previously had.
-//         const secondPad = nextPadPage.fileId();
-//         expect(secondPad).not.toBe(firstPad);
+        // In the modal, click icon for file type to create a new one in a new browser tab.
+        const nextPadPage = await newFileModal.createFileOfType(context, fileType);
+        await nextPadPage.filemenu().waitFor()
+        await expect(nextPadPage.filemenu()).toBeVisible();
+        // Ensure this is indeed a new pad, and not just the same we previously had.
+        const secondPad = nextPadPage.fileId();
+        expect(secondPad).not.toBe(firstPad);
 
-//         await filePage.toSuccess('New file modal works');
-//       } catch (e) {
-//         await filePage.toFailure(e, "New file modal doesn't work");
-//       }
-//     });
-//   });
+        await filePage.toSuccess('New file modal works');
+      } catch (e) {
+        await filePage.toFailure(e, "New file modal doesn't work");
+      }
+    });
+  });
 // });
 
 // test.describe('Share modal', () => {
