@@ -73,7 +73,7 @@ jobs:
       - name: Install dependencies
         run: npm exec playwright install --with-deps --prefix e2e-test-suite
       - name: Install dependencies
-        run: curl http://localhost:3000 --prefix e2e-test-suite
+        run: curl http://localhost:3000 
       # - name: Install components
       #   run: |
       #     npm ci
@@ -82,9 +82,9 @@ jobs:
       #   run: |
       #     npx playwright install --with-deps
           
-      - name: Run Playwright tests
-        run: |
-          curl http://localhost:3000
+      # - name: Run Playwright tests
+      #   run: |
+      #     curl http://localhost:3000
       #     # npx playwright test code_anon.spec.js --project='chrome' --workers=2
       #   env:
       #     PW_URL: ${{ vars.PW_URL }}  
