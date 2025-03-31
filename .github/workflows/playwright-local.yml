@@ -16,16 +16,17 @@ jobs:
         ports:
           - 3000:3000 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: main
+
 
       - name: Checkout tools repo
         uses: actions/checkout@v4
         with:
           repository: cryptpad/cryptpad
-          # path: cryptpad/cryptpad
+          path: cryptpad/cryptpad
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: main
       # - name: Checkout app repository
       #   uses: actions/checkout@v4
       #   with:
