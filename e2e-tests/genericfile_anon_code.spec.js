@@ -4,6 +4,7 @@ const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
+const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
 let pageOne;
 let mobile;
@@ -11,12 +12,12 @@ let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
+let filePage;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(210000);
-  mobile = isMobile;
-  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-  platform = os.platform();
+  test.setTimeout(60000);
+  filePage = new FilePage(page, testInfo.title, isMobile);
 
   await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
