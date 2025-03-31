@@ -25,7 +25,7 @@ jobs:
       - name: Run multi repo cloning script
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} # `PAT_SECRET` is a secret that contains your PAT (Personal access token)
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" & sleep 1m
+        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git"
         shell: bash
 
           # path: cryptpad/cryptpad
@@ -40,7 +40,7 @@ jobs:
       # #     node-version: 18.15.0
       # #     cache: 'npm'
       - name: Install dependencies
-        run: npm install 
+        run: sleep 2m & npm install 
       - name: Install components  
         run: npm run install:components
       - name: Install OnlyOffice
