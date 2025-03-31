@@ -41,23 +41,23 @@ jobs:
       # #     cache: 'npm'
       - name: sleep
         run: sleep 2m 
-      - name: cd
-        run: cd cryptpad 
-      - name: ls
-        run: ls
-      - name: cd
-        run: cd cryptpad 
-      - name: ls
-        run: ls
+      # - name: cd
+      #   run: cd cryptpad 
+      # - name: ls
+      #   run: ls
+      # - name: cd
+      #   run: cd cryptpad 
+      # - name: ls
+      #   run: ls
       - name: Install dependencies
-        run: npm install 
+        run: npm install --prefix cryptpad
       - name: Install components  
-        run: npm run install:components
+        run: npm run install:components --prefix cryptpad
       - name: Install OnlyOffice
-        run: ./install-onlyoffice.sh -a
+        run: ./install-onlyoffice.sh -a --prefix cryptpad
       - name: Run local server
         timeout-minutes: 120
-        run: nohup npm run dev &
+        run: nohup npm run dev & --prefix cryptpad
       # - name: Checkout
       #   uses: actions/checkout@v4
         # with:
