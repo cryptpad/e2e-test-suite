@@ -63,7 +63,7 @@ jobs:
       #   with:
       #     path: main
         # continue-on-error: true 
-            - name: Run multi repo cloning script
+      - name: Run multi repo cloning script
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} # 
         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git"
