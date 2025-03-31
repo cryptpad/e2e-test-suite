@@ -71,7 +71,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefix e2e-test-suite
       - name: Install dependencies
-        run: npx playwright install --with-deps --prefix e2e-test-suite
+        run: npm exec playwright install --with-deps --prefix e2e-test-suite
       - name: Install dependencies
         run: curl http://localhost:3000 --prefix e2e-test-suite
       # - name: Install components
