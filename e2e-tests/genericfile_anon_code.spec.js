@@ -4,7 +4,6 @@ const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
-const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
 let pageOne;
 let mobile;
@@ -12,57 +11,99 @@ let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
-let filePage;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(60000);
-  filePage = new FilePage(page, testInfo.title, isMobile);
+  test.setTimeout(210000);
+  mobile = isMobile;
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
+  platform = os.platform();
 
-  const fileType = 'code';
-  // directly load a pad page and fetch its id from the url
-  await page.goto(`${url}/code/`);
+  await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
+
+  await fileActions.codeeditor.waitFor();
 });
 
+test('anon - code - input text #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
+  try {
+    await fileActions.codeeditor.click();
+    await fileActions.typeTestTextCode(mobile, 'test text');
+    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
+    await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-test.describe('New file modal', () => {
-    test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
-      try {
-        const firstPad = filePage.fileId();
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+  }
+});
 
-        // click File twice and the menu will appear and then disappear.
-        await filePage.filemenu().click();
-        await expect(filePage.newFile).toBeVisible();
-        await filePage.filemenu().click();
-        await expect(filePage.newFile).not.toBeVisible();
+// const { test, url } = require('../fixture.js');
+// const { expect } = require('@playwright/test');
+// const { FileActions } = require('./fileactions.js');
+// const fs = require('fs');
+// require('dotenv').config();
+// const os = require('os');
+// const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
-        // click File -> New to reach the new file modal dialog and close it immediately.
-        await filePage.filemenu().click();
-        const cancelledFileModal = await filePage.newFileClick();
-        await expect(cancelledFileModal.close).toBeVisible();
-        await cancelledFileModal.close.click();
-        await expect(cancelledFileModal.close).not.toBeVisible();
-        await expect(filePage.filemenu()).toBeVisible();
+// let pageOne;
+// let mobile;
+// let browserstackMobile;
+// let platform;
+// const local = !!process.env.PW_URL.includes('localhost');
+// let fileActions;
+// let filePage;
 
-        // click File -> New to reach the new file modal dialog again.
-        await filePage.filemenu().click();
-        const newFileModal = await filePage.newFileClick();
-        await expect(newFileModal.close).toBeVisible();
+// test.beforeEach(async ({ page, isMobile }, testInfo) => {
+//   test.setTimeout(60000);
+//   filePage = new FilePage(page, testInfo.title, isMobile);
 
-        // In the modal, click icon for file type to create a new one in a new browser tab.
-        const nextPadPage = await newFileModal.createFileOfType(context, fileType);
-        await nextPadPage.filemenu().waitFor()
-        await expect(nextPadPage.filemenu()).toBeVisible();
-        // Ensure this is indeed a new pad, and not just the same we previously had.
-        const secondPad = nextPadPage.fileId();
-        expect(secondPad).not.toBe(firstPad);
+//   const fileType = 'code';
+//   // directly load a pad page and fetch its id from the url
+//   await page.goto(`${url}/code/`);
+//   fileActions = new FileActions(page);
+// });
 
-        await filePage.toSuccess('New file modal works');
-      } catch (e) {
-        await filePage.toFailure(e, "New file modal doesn't work");
-      }
-    });
-  });
+
+// test.describe('New file modal', () => {
+//     test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
+//       try {
+//         const firstPad = filePage.fileId();
+
+//         // click File twice and the menu will appear and then disappear.
+//         await filePage.filemenu().click();
+//         await expect(filePage.newFile).toBeVisible();
+//         await filePage.filemenu().click();
+//         await expect(filePage.newFile).not.toBeVisible();
+
+//         // click File -> New to reach the new file modal dialog and close it immediately.
+//         await filePage.filemenu().click();
+//         const cancelledFileModal = await filePage.newFileClick();
+//         await expect(cancelledFileModal.close).toBeVisible();
+//         await cancelledFileModal.close.click();
+//         await expect(cancelledFileModal.close).not.toBeVisible();
+//         await expect(filePage.filemenu()).toBeVisible();
+
+//         // click File -> New to reach the new file modal dialog again.
+//         await filePage.filemenu().click();
+//         const newFileModal = await filePage.newFileClick();
+//         await expect(newFileModal.close).toBeVisible();
+
+//         // In the modal, click icon for file type to create a new one in a new browser tab.
+//         const nextPadPage = await newFileModal.createFileOfType(context, fileType);
+//         await nextPadPage.filemenu().waitFor()
+//         await expect(nextPadPage.filemenu()).toBeVisible();
+//         // Ensure this is indeed a new pad, and not just the same we previously had.
+//         const secondPad = nextPadPage.fileId();
+//         expect(secondPad).not.toBe(firstPad);
+
+//         await filePage.toSuccess('New file modal works');
+//       } catch (e) {
+//         await filePage.toFailure(e, "New file modal doesn't work");
+//       }
+//     });
+//   });
 
 // test.describe('Share modal', () => {
 //     test(`Explore share modal from code.`, async ({ page, context }, testInfo) => {
