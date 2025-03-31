@@ -16,16 +16,26 @@ jobs:
         ports:
           - 3000:3000 
     steps:
-      - name: Checkout app repository
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: main
+
+      - name: Checkout tools repo
         uses: actions/checkout@v4
         with:
           repository: cryptpad/cryptpad
           path: cryptpad
-      # - name: Use Node.js 18.15.0
-      #   uses: actions/setup-node@v3
+      # - name: Checkout app repository
+      #   uses: actions/checkout@v4
       #   with:
-      #     node-version: 18.15.0
-      #     cache: 'npm'
+      #     repository: cryptpad/cryptpad
+      #     path: cryptpad
+      # # - name: Use Node.js 18.15.0
+      # #   uses: actions/setup-node@v3
+      # #   with:
+      # #     node-version: 18.15.0
+      # #     cache: 'npm'
       - name: Install dependencies
         run: npm install 
       - name: Install components  
@@ -36,12 +46,12 @@ jobs:
         timeout-minutes: 120
         run: nohup npm run dev &
         # continue-on-error: true 
-      - name: Checkout test repository
-        uses: actions/checkout@v4
-        with:
-          path: main
-          # repository: cryptpad/e2e-test-suite
-          # ref: CI_testing
+      # - name: Checkout test repository
+      #   uses: actions/checkout@v4
+      #   with:
+      #     path: main
+      #     # repository: cryptpad/e2e-test-suite
+      #     # ref: CI_testing
 
 
       - name: Install components
