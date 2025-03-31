@@ -19,46 +19,23 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(60000);
   filePage = new FilePage(page, testInfo.title, isMobile);
 
-  await page.goto(`${url}/code`);
+  const fileType = 'code';
+        // directly load a pad page and fetch its id from the url
+  await filePage.loadFileType(fileType);
   fileActions = new FileActions(page);
 
-  await fileActions.codeeditor.waitFor();
+  // await fileActions.codeeditor.waitFor();
 });
 
-test('anon - code - input text #1367', async ({ page }) => {
-  test.fixme(mobile, 'mobile editor preview bug');
-  try {
-    await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'test text');
-    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
-    await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
-  }
-});
-
-// const { test, expect } = require('@playwright/test');
-// const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
-// const { FileActions } = require('./fileactions.js');
-
-// let filePage;
-
-// test.beforeEach(async ({ page, isMobile }, testInfo) => {
-//   test.setTimeout(60000);
-//   filePage = new FilePage(page, testInfo.title, isMobile);
-// });
 
 test.describe('New file modal', () => {
   // docTypes.forEach(function (name) {
     test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
       try {
-        // console.log("name", name)
-        const fileType = 'code';
-        // directly load a pad page and fetch its id from the url
-        await filePage.loadFileType(fileType);
+        // // console.log("name", name)
+        // const fileType = 'code';
+        // // directly load a pad page and fetch its id from the url
+        // await filePage.loadFileType(fileType);
         const firstPad = filePage.fileId();
 
         // click File twice and the menu will appear and then disappear.
