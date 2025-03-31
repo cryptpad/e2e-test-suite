@@ -24,7 +24,7 @@ jobs:
       #     repository: cryptpad/cryptpad
       - name: Run multi repo cloning script
         env: 
-            PA_TOKEN: ${{ secrets.PAT_SECRET }} # `PAT_SECRET` is a secret that contains your PAT (Personal access token)
+            PA_TOKEN: ${{ secrets.PAT_SECRET }} 
         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git"
         shell: bash
 
@@ -39,8 +39,8 @@ jobs:
       # #   with:
       # #     node-version: 18.15.0
       # #     cache: 'npm'
-      - name: sleep
-        run: sleep 2m 
+      # - name: sleep
+      #   run: sleep 2m 
       # - name: cd
       #   run: cd cryptpad 
       # - name: ls
@@ -63,14 +63,17 @@ jobs:
       #   with:
       #     path: main
         # continue-on-error: true 
-      - name: Checkout test repository
-        uses: actions/checkout@v4
-        with:
-          # path: main
-          repository: cryptpad/e2e-test-suite
-          ref: CI_testing
-
-
+            - name: Run multi repo cloning script
+        env: 
+            PA_TOKEN: ${{ secrets.PAT_SECRET }} # 
+        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git"
+        shell: bash
+      - name: Install dependencies
+        run: npm ci --prefix e2e-test-suite
+      - name: Install dependencies
+        run: npx playwright install --with-deps --prefix e2e-test-suite
+      - name: Install dependencies
+        run: curl http://localhost:3000 --prefix e2e-test-suite
       # - name: Install components
       #   run: |
       #     npm ci
