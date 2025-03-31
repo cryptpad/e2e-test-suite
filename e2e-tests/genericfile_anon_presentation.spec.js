@@ -1,21 +1,33 @@
-const { test, expect } = require('@playwright/test');
-const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
+const { test, url } = require('../fixture.js');
+const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
+const fs = require('fs');
+require('dotenv').config();
+const os = require('os');
+const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
-// let filePage;
+let pageOne;
+let mobile;
+let browserstackMobile;
+let platform;
+const local = !!process.env.PW_URL.includes('localhost');
+let fileActions;
+let filePage;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(60000);
   filePage = new FilePage(page, testInfo.title, isMobile);
+
+  const fileType = 'presentation';
+  // directly load a pad page and fetch its id from the url
+  await filePage.loadFileType(fileType);
+  fileActions = new FileActions(page);
 });
 
+
 test.describe('New file modal', () => {
-  docTypes.forEach(function (name) {
-    test(`Explore new file modal from ${name}.`, async ({ page, context }, testInfo) => {
+    test(`Explore new file modal from presentation.`, async ({ page, context }, testInfo) => {
       try {
-        const fileType = name;
-        // directly load a pad page and fetch its id from the url
-        await filePage.loadFileType(fileType);
         const firstPad = filePage.fileId();
 
         // click File twice and the menu will appear and then disappear.
@@ -51,14 +63,11 @@ test.describe('New file modal', () => {
       }
     });
   });
-});
 
 test.describe('Share modal', () => {
-  docTypes.forEach(function (name) {
-    test(`Explore share modal from ${name}.`, async ({ page, context }, testInfo) => {
+    test(`Explore share modal from presentation.`, async ({ page, context }, testInfo) => {
       try {
-        const fileType = name;
-        await filePage.loadFileType(fileType);
+
         const originalId = filePage.fileId();
 
         const shareModal = await filePage.shareButtonClick();
@@ -93,13 +102,10 @@ test.describe('Share modal', () => {
       }
     });
   });
-});
 
 test.describe('Chat modal', () => {
-  docTypes.forEach(function (docType) {
-    test(`Explore chat modal for ${docType}`, async ({ page, context }, testInfo) => {
+    test(`Explore chat modal for presentation`, async ({ page, context }, testInfo) => {
       try {
-        await filePage.loadFileType(docType);
 
         // Warning about storage may overlap with chat modal. First dismiss it.
         await (new StoreModal(filePage)).dismissButton.click();
@@ -128,14 +134,11 @@ test.describe('Chat modal', () => {
       }
     });
   });
-});
 
 test.describe('Change title', () => {
-  docTypes.forEach(function (docType) {
-    test(`Change title for ${docType}`, async ({ page, context }, testInfo) => {
+    test(`Change title for presentation`, async ({ page, context }, testInfo) => {
       try {
         // Load a new document.
-        await filePage.loadFileType(docType);
         await expect(filePage.fileName).toBeVisible();
 
         // Enter a new document name.
@@ -153,14 +156,11 @@ test.describe('Change title', () => {
       }
     });
   });
-});
 
 test.describe('Save/Remove ', () => {
-  docTypes.forEach(function (name) {
-    test(`Save and remove for ${name}`, async ({ page, context }, testInfo) => {
+    test(`Save and remove for presentation`, async ({ page, context }, testInfo) => {
       try {
-        const fileType = name;
-        await filePage.loadFileType(fileType);
+
         await expect(filePage.fileName).toBeVisible();
 
         // First try to trash without having saved, which should raise a warning.
@@ -204,4 +204,3 @@ test.describe('Save/Remove ', () => {
       }
     });
   });
-});
