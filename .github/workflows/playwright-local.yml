@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: cryptpad/cryptpad
-          path: cryptpad/cryptpad
+          # path: cryptpad/cryptpad
       # - name: Checkout app repository
       #   uses: actions/checkout@v4
       #   with:
