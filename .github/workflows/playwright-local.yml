@@ -57,7 +57,7 @@ jobs:
       #   run: ./install-onlyoffice.sh -a --prefix cryptpad
       - name: Run local server
         timeout-minutes: 120
-        run: nohup npm run dev & --prefix cryptpad
+        run: nohup npm run dev --prefix cryptpad
       # - name: Checkout
       #   uses: actions/checkout@v4
       #   with:
