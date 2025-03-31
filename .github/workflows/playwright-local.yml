@@ -23,10 +23,6 @@ jobs:
         with:
           repository: cryptpad/cryptpad
           path: cryptpad/cryptpad
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: main
       # - name: Checkout app repository
       #   uses: actions/checkout@v4
       #   with:
@@ -46,6 +42,10 @@ jobs:
       - name: Run local server
         timeout-minutes: 120
         run: nohup npm run dev &
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: main
         # continue-on-error: true 
       # - name: Checkout test repository
       #   uses: actions/checkout@v4
