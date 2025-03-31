@@ -1,43 +1,43 @@
-// const { test, url } = require('../fixture.js');
-// const { expect } = require('@playwright/test');
-// const { FileActions } = require('./fileactions.js');
-// const fs = require('fs');
-// require('dotenv').config();
-// const os = require('os');
+const { test, url } = require('../fixture.js');
+const { expect } = require('@playwright/test');
+const { FileActions } = require('./fileactions.js');
+const fs = require('fs');
+require('dotenv').config();
+const os = require('os');
 
-// let pageOne;
-// let mobile;
-// let browserstackMobile;
-// let platform;
-// const local = !!process.env.PW_URL.includes('localhost');
-// let fileActions;
+let pageOne;
+let mobile;
+let browserstackMobile;
+let platform;
+const local = !!process.env.PW_URL.includes('localhost');
+let fileActions;
 
-// test.beforeEach(async ({ page, isMobile }, testInfo) => {
-//   test.setTimeout(210000);
-//   mobile = isMobile;
-//   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-//   platform = os.platform();
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
+  test.setTimeout(210000);
+  mobile = isMobile;
+  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
+  platform = os.platform();
 
-//   await page.goto(`${url}/code`);
-//   fileActions = new FileActions(page);
+  await page.goto(`${url}/code`);
+  fileActions = new FileActions(page);
 
-//   await fileActions.codeeditor.waitFor();
-// });
+  await fileActions.codeeditor.waitFor();
+});
 
-// test('anon - code - input text #1367', async ({ page }) => {
-//   test.fixme(mobile, 'mobile editor preview bug');
-//   try {
-//     await fileActions.codeeditor.click();
-//     await fileActions.typeTestTextCode(mobile, 'test text');
-//     await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
-//     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
+test('anon - code - input text #1367', async ({ page }) => {
+  test.fixme(mobile, 'mobile editor preview bug');
+  try {
+    await fileActions.codeeditor.click();
+    await fileActions.typeTestTextCode(mobile, 'test text');
+    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
+    await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+  }
+});
 
 // test('code - file menu - history #1367', async ({ page }) => {
 //   test.fixme(mobile, 'mobile editor preview bug');

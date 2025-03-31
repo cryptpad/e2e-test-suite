@@ -51,6 +51,6 @@ jobs:
           
       - name: Run Playwright tests
         run: |
-          npx playwright test genericfile_anon_code.spec.js --project='chrome' --workers=2
+          npx playwright test code_anon.spec.js --project='chrome' --workers=2
         env:
           PW_URL: ${{ vars.PW_URL }}  
