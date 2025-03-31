@@ -29,7 +29,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 
 test.describe('New file modal', () => {
-  // docTypes.forEach(function (name) {
+  docTypes.forEach(function (name) {
     test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
       try {
         const fileType = 'code';
@@ -75,7 +75,7 @@ test.describe('New file modal', () => {
       }
     });
   });
-// });
+});
 
 // test.describe('Share modal', () => {
 //   docTypes.forEach(function (name) {
