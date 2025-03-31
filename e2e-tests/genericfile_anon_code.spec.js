@@ -30,7 +30,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test.describe('New file modal', () => {
   docTypes.forEach(function (name) {
-    test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
+    test(`Explore new file modal from ${name}.`, async ({ page, context }, testInfo) => {
       try {
         const fileType = 'code';
         // directly load a pad page and fetch its id from the url
