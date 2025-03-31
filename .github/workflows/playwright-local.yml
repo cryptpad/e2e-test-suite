@@ -53,22 +53,22 @@ jobs:
         run: npm install --prefix cryptpad
       - name: Install components  
         run: npm run install:components --prefix cryptpad
-      - name: Install OnlyOffice
-        run: ./install-onlyoffice.sh -a --prefix cryptpad
+      # - name: Install OnlyOffice
+      #   run: ./install-onlyoffice.sh -a --prefix cryptpad
       - name: Run local server
         timeout-minutes: 120
         run: nohup npm run dev & --prefix cryptpad
       # - name: Checkout
       #   uses: actions/checkout@v4
-        # with:
-        #   path: main
-        # continue-on-error: true 
-      # - name: Checkout test repository
-      #   uses: actions/checkout@v4
       #   with:
       #     path: main
-      #     # repository: cryptpad/e2e-test-suite
-      #     # ref: CI_testing
+        # continue-on-error: true 
+      - name: Checkout test repository
+        uses: actions/checkout@v4
+        with:
+          # path: main
+          repository: cryptpad/e2e-test-suite
+          ref: CI_testing
 
 
       # - name: Install components
@@ -79,9 +79,9 @@ jobs:
       #   run: |
       #     npx playwright install --with-deps
           
-      # - name: Run Playwright tests
-      #   run: |
-      #     curl http://localhost:3000
+      - name: Run Playwright tests
+        run: |
+          curl http://localhost:3000
       #     # npx playwright test code_anon.spec.js --project='chrome' --workers=2
       #   env:
       #     PW_URL: ${{ vars.PW_URL }}  
