@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let pageOne;
+let page1;
 let mobile;
 let cleanUp;
 let fileActions;
@@ -37,13 +37,13 @@ test.beforeEach(async ({ page }, testInfo) => {
 test('slide - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
-    await fileActions.filesaved.waitFor();
-    await fileActions.codeeditor.waitFor();
-    await fileActions.codeeditor.click();
+    await fileActions.fileSaved.waitFor();
+    await fileActions.codeEditor.waitFor();
+    await fileActions.codeEditor.click();
     await fileActions.typeTestTextCode(mobile, 'Test text');
     // await page.waitForTimeout(5000);
     await fileActions.saveTemplate(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example markdown template');
+    await fileActions.textbox.fill('example markdown template');
     await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/slide/`);
@@ -51,7 +51,7 @@ test('slide - save as and import template', async ({ page }) => {
     await fileActions.importTemplate(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example markdown template' }).nth(1).click();
-    await expect(fileActions.codeeditor.getByText('Test text')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('Test text')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
@@ -71,45 +71,52 @@ test('slide - history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
-    await fileActions.codeeditor.click();
-    await fileActions.codeeditor.type('Test text');
+    await fileActions.codeEditor.click();
+    await fileActions.codeEditor.type('Test text');
     // await page.waitForTimeout(5000);
 
     await fileActions.shareLink.click();
     await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.click();
-    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    if (clipboardText === "") {
+      await page.waitForTimeout(2000);
+      await fileActions.share(mobile);
+      await fileActions.shareCopyLink.click();
+    }
 
-    pageOne = await browser.newPage();
-    await pageOne.goto(`${clipboardText}`);
-    await pageOne.waitForTimeout(5000);
-    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
-    await pageOne.keyboard.press('Enter');
-    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Some more test text by anon');
-    await pageOne.keyboard.press('Enter');
-    // await pageOne.waitForTimeout(5000)
-    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('And here is more text by anon');
-    await pageOne.keyboard.press('Enter');
-    await pageOne.waitForTimeout(5000);
-    await pageOne.close();
+
+
+    page1 = await browser.newPage();
+    await page1.goto(`${clipboardText}`);
+    await page1.waitForTimeout(5000);
+    await page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').click();
+    await page1.keyboard.press('Enter');
+    await page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('Some more test text by anon');
+    await page1.keyboard.press('Enter');
+    // await page1.waitForTimeout(5000)
+    await page1.frameLocator('#sbox-iframe').locator('.CodeMirror-code').type('And here is more text by anon');
+    await page1.keyboard.press('Enter');
+    await page1.waitForTimeout(5000);
+    await page1.close();
 
     await page.keyboard.press('Enter');
-    await fileActions.codeeditor.type('And yet more test text by test-user too!');
+    await fileActions.codeEditor.type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
     // // await page.waitForTimeout(5000);
-    await fileActions.codeeditor.type('Here is even more test text by test-user!');
+    await fileActions.codeEditor.type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
     // await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
 
-    await expect(fileActions.codeeditor.getByText('And yet more test text by test-user!')).toHaveCount(0);
-    await expect(fileActions.codeeditor.getByText('And more test text by test-user too!')).toHaveCount(0);
+    await expect(fileActions.codeEditor.getByText('And yet more test text by test-user!')).toHaveCount(0);
+    await expect(fileActions.codeEditor.getByText('And more test text by test-user too!')).toHaveCount(0);
 
-    await expect(fileActions.codeeditor.getByText('Some more test text by anon')).toBeVisible();
-    await expect(fileActions.codeeditor.getByText('And here is more text by anon')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('Some more test text by anon')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('And here is more text by anon')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'slide - file menu - history (previous author)', status: 'passed', reason: 'Can create Rich Text document and view history (previous author)' } })}`);
   } catch (e) {

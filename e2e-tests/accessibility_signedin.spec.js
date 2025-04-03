@@ -5,7 +5,7 @@ const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
 
-let pageOne;
+let page1;
 let mobile;
 let browserstackMobile;
 let platform;

@@ -3,7 +3,7 @@ const { expect } = require('@playwright/test');
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
-let pageOne;
+let page1;
 const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let fileActions;
@@ -107,7 +107,7 @@ test('screenshot anon - enter text on whiteboard', async ({ page }) => {
         y: 74
       }
     });
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test text');
+    await fileActions.textbox.fill('test text');
     // await page.waitForTimeout(3000);
     await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
@@ -245,7 +245,6 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    // await page.waitForTimeout(3000);
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
@@ -278,9 +277,8 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    // await page.waitForTimeout(3000);
     await fileActions.export(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test whiteboard');
+    await fileActions.textbox.fill('test whiteboard');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -288,7 +286,6 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
     ]);
 
     await download.saveAs('/tmp/test whiteboard');
-    // await page.waitForTimeout(3000);
     expect(download.suggestedFilename()).toBe('test whiteboard.png');
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - export as png', status: 'passed', reason: 'Can export Whiteboard as png' } })}`);
@@ -314,8 +311,6 @@ test('screenshot whiteboard - display history', async ({ page }) => {
       }
     });
     await page.mouse.up();
-    // await page.waitForTimeout(3000);
-
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
@@ -344,7 +339,6 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
       }
     });
     await page.mouse.up();
-    // await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
       position: {
         x: 287,
@@ -361,18 +355,14 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
     await page.mouse.up();
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
-    await fileActions.share(mobile);
-    // await page.waitForTimeout(5000);
-    await fileActions.shareCopyLink.click();
-    // await page.waitForTimeout(5000);
+    var clipboardText = await fileActions.getShareLink()
 
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    pageOne = await browser.newPage();
+    page1 = await browser.newPage();
 
-    await pageOne.goto(`${clipboardText}`);
-    // await page.waitForTimeout(30000);
-
-    await expect(pageOne).toHaveScreenshot({ maxDiffPixels: 7000 });
+    await page1.goto(`${clipboardText}`);
+    const fileActions1 = new FileActions(page1)
+    await fileActions1.fileSaved.waitFor()
+    await expect(page1).toHaveScreenshot({ maxDiffPixels: 7000 });
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share whiteboard history at specific moment in time (link)', status: 'passed', reason: 'Can share Whiteboard history at specific moment in time (link)' } })}`);
   } catch (e) {

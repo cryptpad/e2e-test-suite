@@ -6,7 +6,7 @@ require('dotenv').config();
 const os = require('os');
 const { FileActions } = require('./fileactions.js');
 
-let pageOne;
+let page1;
 let mobile;
 let browserstackMobile;
 let platform;
@@ -148,7 +148,7 @@ test('code - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/code`);
     // await page.waitForTimeout(30000);
 
-    await fileActions.codeeditor.waitFor();
+    await fileActions.codeEditor.waitFor();
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
     if (accessibilityScanResults.violations.length) {
       results += '\n ## Code \n';
@@ -172,7 +172,7 @@ test('file menu - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     // await page.waitForTimeout(30000);
-    await fileActions.codeeditor.waitFor();
+    await fileActions.codeEditor.waitFor();
 
     await fileActions.filemenuClick(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -199,7 +199,7 @@ test('share modal - accessibility', async ({ page }, testInfo) => {
     await page.goto(`${url}/code`);
     // await page.waitForTimeout(30000);
 
-    await fileActions.codeeditor.waitFor();
+    await fileActions.codeEditor.waitFor();
     await fileActions.share(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
     if (accessibilityScanResults.violations.length) {
@@ -224,7 +224,7 @@ test('access modal - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/code`);
     // await page.waitForTimeout(30000);
-    await fileActions.codeeditor.waitFor();
+    await fileActions.codeEditor.waitFor();
     await fileActions.access(mobile);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
     if (accessibilityScanResults.violations.length) {

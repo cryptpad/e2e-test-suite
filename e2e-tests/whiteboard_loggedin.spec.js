@@ -4,7 +4,7 @@ require('dotenv').config();
 const { Cleanup } = require('./cleanup.js');
 const { FileActions } = require('./fileactions.js');
 
-let pageOne;
+let page1;
 const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let cleanUp;
@@ -48,30 +48,37 @@ test('screenshot whiteboard - display history (previous author)', async ({ page,
     await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.click();
-    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    if (clipboardText === "") {
+      await page.waitForTimeout(2000);
+      await fileActions.share(mobile);
+      await fileActions.shareCopyLink.click();
+    }
 
-    pageOne = await browser.newPage();
-    await pageOne.goto(`${clipboardText}`);
-    await pageOne.waitForTimeout(5000);
-    await pageOne.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+
+
+    page1 = await browser.newPage();
+    await page1.goto(`${clipboardText}`);
+    await page1.waitForTimeout(5000);
+    await page1.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
       position: {
         x: 287,
         y: 227
       }
     });
-    await pageOne.mouse.down();
-    await pageOne.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await page1.mouse.down();
+    await page1.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
       position: {
         x: 286,
         y: 314
       }
     });
-    await pageOne.mouse.up();
+    await page1.mouse.up();
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
-    await expect(pageOne).toHaveScreenshot();
+    await expect(page1).toHaveScreenshot();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'failed', reason: 'Can\'t clear whiteboard canvas' } })}`);
   } catch (e) {

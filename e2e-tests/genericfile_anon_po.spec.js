@@ -164,6 +164,7 @@ test.describe('Save/Remove ', () => {
         await expect(filePage.fileName).toBeVisible();
 
         // First try to trash without having saved, which should raise a warning.
+        console.log("filemeny", await filePage.filemenu())
         await filePage.filemenu().click();
         await filePage.trashFile.click();
         await expect(filePage.mainFrame.getByText(

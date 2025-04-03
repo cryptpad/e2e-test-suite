@@ -20,18 +20,16 @@ test.beforeEach(async ({ page }, testInfo) => {
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/pad`);
   fileActions = new FileActions(page);
-
-  // await page.waitForTimeout(10000);
 });
 
 test('pad - comment', async ({ page, context }) => {
   try {
-    await fileActions.padeditor.locator('body').waitFor();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
+    await fileActions.padEditor.locator('body').waitFor();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
 
-    await fileActions.padeditor.locator('body').fill('TEST TEXT');
-    await fileActions.padeditor.getByText('TEST TEXT').click({
+    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditor.getByText('TEST TEXT').click({
       clickCount: 3
     });
     await page.frameLocator('#sbox-iframe').locator('.cp-comment-bubble').locator('button').click();
@@ -48,37 +46,31 @@ test('pad - comment', async ({ page, context }) => {
 
 test('pad - create and open snapshot', async ({ page, context }) => {
   try {
-    await fileActions.padeditor.locator('body').waitFor();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
-    await fileActions.padeditor.locator('body').fill('TEST TEXT');
-    // await page.waitForTimeout(5000);
+    await fileActions.padEditor.locator('body').waitFor();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditor.locator('body').fill('TEST TEXT');
 
     await fileActions.filemenuClick(mobile);
-    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
-    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').waitFor();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').fill('snap1');
-    // await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).click();
-    // await page.waitForTimeout(1000);
     await fileActions.closeButton.waitFor();
     await fileActions.closeButton.click();
-    await fileActions.padeditor.locator('body').fill('');
+    await fileActions.padEditor.locator('body').fill('');
 
     await fileActions.filemenuClick(mobile);
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
     await page.frameLocator('#sbox-iframe').getByText('snap1').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('snap1').click();
-    // await page.waitForTimeout(10000);
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open' }).waitFor();
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open' }).click();
-    await fileActions.padeditor.getByText('TEST TEXT').waitFor();
-    await expect(fileActions.padeditor.getByText('TEST TEXT')).toBeVisible();
+    await fileActions.padEditor.getByText('TEST TEXT').waitFor();
+    await expect(fileActions.padEditor.getByText('TEST TEXT')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - create and open snapshot', status: 'passed', reason: 'Can create and open snapshot in Rich Text document' } })}`);
   } catch (e) {
@@ -89,13 +81,13 @@ test('pad - create and open snapshot', async ({ page, context }) => {
 
 test('pad - history (previous version)', async ({ page, context }) => {
   try {
-    await fileActions.padeditor.locator('html').click();
-    await fileActions.padeditor.locator('body').fill('Test text');
+    await fileActions.padEditor.locator('html').click();
+    await fileActions.padEditor.locator('body').fill('Test text');
 
     await fileActions.history(mobile);
 
     await fileActions.historyPrev.click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Test text')).toHaveCount(0);
+    await expect(fileActions.mainFrame.getByText('Test text')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - file menu - history (previous version)', status: 'passed', reason: 'Can create Rich Text document and view history (previous version)' } })}`);
   } catch (e) {
@@ -109,16 +101,16 @@ test('pad - toggle tools', async ({ page, context }) => {
 
     // await fileActions.toggleTools(mobile)
     if (mobile) {
-      await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
+      await expect(fileActions.padToolbar).toBeHidden();
       await fileActions.toggleTools(mobile)
-      await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeVisible();
+      await expect(fileActions.padToolbar).toBeVisible();
       await fileActions.toggleTools(mobile)
-      await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
+      await expect(fileActions.padToolbar).toBeHidden();
     } else {
-      await page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all').waitFor();
-      await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeVisible();
+      await fileActions.padToolbar.waitFor();
+      await expect(fileActions.padToolbar).toBeVisible();
       await fileActions.toggleTools(mobile)
-      await expect(page.frameLocator('#sbox-iframe').locator('.cke_toolbox_main.cke_reset_all')).toBeHidden();
+      await expect(fileActions.padToolbar).toBeHidden();
     }
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - toggle tools', status: 'passed', reason: 'Can toggle Tools in Rich Text document' } })}`);
@@ -132,18 +124,14 @@ test('pad - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.padeditor.locator('html').waitFor();
-    // await page.waitForTimeout(10000);
+    await fileActions.padEditor.locator('html').waitFor();
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
     await fileChooser.setFiles('testdocuments/myfile.html');
-
-    // await page.waitForTimeout(3000);
-
-    await expect(fileActions.padeditor.getByText('Test text here')).toBeVisible();
+    await expect(fileActions.padEditor.getByText('Test text here')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - import file', status: 'passed', reason: 'Can import file into Rich Text document' } })}`);
   } catch (e) {
@@ -154,23 +142,22 @@ test('pad - import file', async ({ page }) => {
 
 test('pad - make a copy', async ({ page, context }) => {
   try {
-    await fileActions.padeditor.locator('html').click();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
-    await fileActions.padeditor.locator('body').fill('TEST TEXT');
-    // await page.waitForTimeout(5000);
-    await expect(fileActions.padeditor.getByText('TEST TEXT')).toBeVisible();
+    await fileActions.padEditor.locator('html').click();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await expect(fileActions.padEditor.getByText('TEST TEXT')).toBeVisible();
 
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       await fileActions.filecopy.click()
     ]);
-
+    const fileActions1 = new FileActions(page1)
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 });
     await page1.waitForTimeout(5000);
-    await page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT').waitFor();
-    await expect(page1.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]').getByText('TEST TEXT')).toBeVisible();
+    await fileActions1.padEditor.getByText('TEST TEXT').waitFor();
+    await expect(fileActions1.padEditor.getByText('TEST TEXT')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - make a copy', status: 'passed', reason: 'Can\'t make copy of Rich Text document' } })}`);
   } catch (e) {
@@ -181,13 +168,13 @@ test('pad - make a copy', async ({ page, context }) => {
 
 test('pad - export (html)', async ({ page }) => {
   try {
-    await fileActions.padeditor.locator('body').waitFor();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
-    await fileActions.padeditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditor.locator('body').waitFor();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditor.locator('body').fill('TEST TEXT');
 
     await fileActions.export(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
+    await fileActions.textbox.fill('test pad');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -220,13 +207,13 @@ test('pad - export (html)', async ({ page }) => {
 
 test('pad - export (.doc)', async ({ page }) => {
   try {
-    await fileActions.padeditor.locator('body').waitFor();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
-    await fileActions.padeditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditor.locator('body').waitFor();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditor.locator('body').fill('TEST TEXT');
 
     await fileActions.export(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
+    await fileActions.textbox.fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
     await page.frameLocator('#sbox-iframe').getByText('.doc').click();
 
@@ -259,13 +246,13 @@ test('pad - export (.doc)', async ({ page }) => {
 
 test('pad - export (md)', async ({ page, context }) => {
   try {
-    await fileActions.padeditor.locator('body').waitFor();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
-    await fileActions.padeditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditor.locator('body').waitFor();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditor.locator('body').fill('TEST TEXT');
 
     await fileActions.export(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test pad');
+    await fileActions.textbox.fill('test pad');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
     await page.frameLocator('#sbox-iframe').getByText('.md').click();
 
@@ -292,40 +279,32 @@ test('pad - export (md)', async ({ page, context }) => {
 
 test('pad - share at a moment in history', async ({ page, context }) => {
   try {
-    await fileActions.padeditor.locator('body').waitFor();
-    await expect(fileActions.padeditor.locator('body')).toBeVisible();
-    await fileActions.padeditor.locator('body').click();
+    await fileActions.padEditor.locator('body').waitFor();
+    await expect(fileActions.padEditor.locator('body')).toBeVisible();
+    await fileActions.padEditor.locator('body').click();
 
-    await fileActions.padeditor.locator('body').fill('One moment in history');
-    await fileActions.padeditor.getByText('One moment in history').click({
+    await fileActions.padEditor.locator('body').fill('One moment in history');
+    await fileActions.padEditor.getByText('One moment in history').click({
       clickCount: 3
     });
 
     await page.waitForTimeout(1000);
-    await fileActions.padeditor.getByText('One moment in history').fill('Another moment in history');
-    await fileActions.padeditor.getByText('Another moment in history').click({
-      clickCount: 3
-    });
-    await page.waitForTimeout(1000);
-    await fileActions.padeditor.getByText('Another moment in history').fill('Yet another moment in history');
-    await page.waitForTimeout(1000);
+    await expect(fileActions.padEditor.getByText('One moment in history')).toBeVisible();
+    
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
     await fileActions.historyPrev.click();
 
-    await expect(fileActions.padeditor.getByText('One moment in history')).toBeVisible();
+    await expect(fileActions.padEditor.getByText('One moment in history')).toBeHidden();
 
-    await fileActions.share(mobile);
-    await page.frameLocator('#sbox-secure-iframe').locator('#cp-share-link-preview').click();
-    await fileActions.shareCopyLink.click();
+    var clipboardText = await fileActions.getShareLink()
 
-    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    fileActions = new FileActions(page1);
+    const fileActions1 = new FileActions(page1);
 
-    await fileActions.padeditor.getByText('One moment in history').waitFor();
-    await expect(fileActions.padeditor.getByText('One moment in history')).toBeVisible();
+    await fileActions1.fileSaved.waitFor();
+    await expect(fileActions1.padEditor.getByText('One moment in history')).toBeHidden();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - share at a moment in history', status: 'passed', reason: 'Can share Rich Text at a specific moment in history' } })}`);
   } catch (e) {

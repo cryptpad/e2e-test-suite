@@ -7,7 +7,7 @@ const { FileActions } = require('./fileactions.js');
 
 let mobile;
 let contextOne;
-let pageOne;
+let page1;
 let platform;
 let fileActions;
 let userActions;
@@ -99,12 +99,12 @@ test('add other user as contact and decline request', async ({ page, browser }) 
   try {
     // get user 2 profile link
     const contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
-    pageOne = await contextOne.newPage();
-    await pageOne.goto(`${url}/profile`);
-    const fileActions1 = new FileActions(pageOne);
-    await pageOne.waitForTimeout(15000);
+    page1 = await contextOne.newPage();
+    await page1.goto(`${url}/profile`);
+    const fileActions1 = new FileActions(page1);
+    await page1.waitForTimeout(15000);
     await fileActions1.shareLink.click();
-    const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
+    const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
     await page.goto(`${testuser2ProfileLink}`);
     await page.locator('#sbox-iframe').contentFrame().locator('#cp-app-profile-displayname').getByText('test-user2').waitFor()
 
@@ -125,15 +125,15 @@ test('add other user as contact and decline request', async ({ page, browser }) 
     await expect(page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Contact request pending...' })).toBeVisible();
 
     // user 2: decline contact request
-    await pageOne.bringToFront();
-    await pageOne.waitForTimeout(5000);
+    await page1.bringToFront();
+    await page1.waitForTimeout(5000);
     await fileActions1.notifications.click();
-    // await pageOne.waitForTimeout(5000);
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).waitFor();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).click();
+    // await page1.waitForTimeout(5000);
+    await page1.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
+    await page1.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).waitFor();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Decline' }).click();
 
     // user 1: be notified of declined request
     await page.waitForTimeout(5000);
@@ -157,12 +157,12 @@ test('add and remove other user as contact', async ({ page, browser }) => {
   try {
     // get user 2 profile link
     contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
-    pageOne = await contextOne.newPage();
-    await pageOne.goto(`${url}/profile`);
-    const fileActions1 = new FileActions(pageOne);
+    page1 = await contextOne.newPage();
+    await page1.goto(`${url}/profile`);
+    const fileActions1 = new FileActions(page1);
     await fileActions1.shareLink.waitFor()
     await fileActions1.shareLink.click();
-    const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
+    const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
     await page.goto(`${testuser2ProfileLink}`);
     await page.locator('#sbox-iframe').contentFrame().locator('#cp-app-profile-displayname').getByText('test-user2').waitFor()
     // await page.waitForTimeout(15000);
@@ -182,14 +182,14 @@ test('add and remove other user as contact', async ({ page, browser }) => {
 
     // user 2: accept contact request
     await fileActions1.notifications.click();
-    // await pageOne.waitForTimeout(5000);
+    // await page1.waitForTimeout(5000);
 
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
-    await pageOne.close();
+    await page1.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').waitFor();
+    await page1.frameLocator('#sbox-iframe').getByText('test-user sent you a contact request').click();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('test-user would like to add you as a contact. Accept?')).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+    await page1.close();
     /// /
 
     // user 1: remove contact
@@ -225,12 +225,12 @@ test('request and cancel to add user as contact', async ({ page, browser }) => {
   try {
     // get user 2 profile link
     const contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
-    pageOne = await contextOne.newPage();
-    await pageOne.goto(`${url}/profile`);
-    const fileActions1 = new FileActions(pageOne);
+    page1 = await contextOne.newPage();
+    await page1.goto(`${url}/profile`);
+    const fileActions1 = new FileActions(page1);
     await fileActions1.shareLink.waitFor()
     await fileActions1.shareLink.click();
-    const testuser2ProfileLink = await pageOne.evaluate('navigator.clipboard.readText()');
+    const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
     await page.bringToFront();
     await page.goto(`${testuser2ProfileLink}`);
     await page.locator('#sbox-iframe').contentFrame().locator('#cp-app-profile-displayname').getByText('test-user2').waitFor()
@@ -284,21 +284,21 @@ test('chat with contacts and erase message history #1415', async ({ page, browse
 
     // user 2: send message back
     contextOne = await browser.newContext({ storageState: 'auth/testuser.json' });
-    pageOne = await contextOne.newPage();
-    await pageOne.goto(`${url}/contacts/`);
-    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').waitFor({ timeout: 10000 });
-    await pageOne.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toBeVisible();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill('hello to you too!');
-    await pageOne.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
+    page1 = await contextOne.newPage();
+    await page1.goto(`${url}/contacts/`);
+    await page1.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').waitFor({ timeout: 10000 });
+    await page1.frameLocator('#sbox-iframe').locator('#cp-app-contacts-friendlist').getByText('test-user').click();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('hello')).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).fill('hello to you too!');
+    await page1.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Type a message here...' }).press('Enter');
 
     // user 1: view user 2's message and erase message history
     await expect(page.frameLocator('#sbox-iframe').getByText('hello to you too!')).toBeVisible();
     await page.frameLocator('#sbox-iframe').locator('#cp-app-contacts-messaging div').filter({ hasText: /^tetestuser$/ }).locator('span').nth(4).click();
     await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0);
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0);
+    await expect(page1.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'chat with contacts and erase message history', status: 'passed', reason: 'Can chat with contacts and erase chat history ' } })}`);
   } catch (e) {

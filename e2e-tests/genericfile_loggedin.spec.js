@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let pageOne;
+let page1;
 let mobile;
 let browserName;
 let cleanUp;
@@ -114,12 +114,12 @@ docNames.forEach(function (name) {
   //       Date.now = () => __DateNow() + __DateNowOffset
   //     }`);
 
-  //     const pageOne = await context.newPage();
-  //     await pageOne.goto(`${clipboardText}`);
-  //     await pageOne.waitForTimeout(15000);
+  //     const page1 = await context.newPage();
+  //     await page1.goto(`${clipboardText}`);
+  //     await page1.waitForTimeout(15000);
 
-  //     await pageOne.frameLocator('#sbox-iframe').getByText(/^This document has reached/).waitFor();
-  //     await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^This document has reached/)).toBeVisible();
+  //     await page1.frameLocator('#sbox-iframe').getByText(/^This document has reached/).waitFor();
+  //     await expect(page1.frameLocator('#sbox-iframe').getByText(/^This document has reached/)).toBeVisible();
 
   //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - create with destruction date`, status: 'passed', reason: `Can create ${name} with destruction date` } })}`);
   //   } catch (e) {
@@ -204,31 +204,31 @@ docNames.forEach(function (name) {
       await fileActions.okButtonSecure.click();
 
       const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
-      pageOne = await context.newPage();
-      await pageOne.goto(`${url}/drive`);
-      await pageOne.waitForTimeout(10000);
-      const fileActions1 = new FileActions(pageOne);
+      page1 = await context.newPage();
+      await page1.goto(`${url}/drive`);
+      await page1.waitForTimeout(10000);
+      const fileActions1 = new FileActions(page1);
       await fileActions1.notifications.click();
 
       // accept ownership invitation
-      // console.log(await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).count())
-      // console.log(await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`).count())
+      // console.log(await page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).count())
+      // console.log(await page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`).count())
 
-      // if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).count() > 1) {
-        await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).first().click();
+      // if (await page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).count() > 1) {
+        await page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).first().click();
       // } else {
-      //   await pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).click();
+      //   await page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user wants you to be an owner of ${titleComma}`)).click();
       // }
 
-      const pagePromise = pageOne.waitForEvent('popup');
-      await pageOne.frameLocator('#sbox-iframe').getByText('Open the document in a new tab').click();
-      const pageTwo = await pagePromise;
-      await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
-      await pageTwo.bringToFront();
-      const fileActions2 = new FileActions(pageTwo);
+      const pagePromise = page1.waitForEvent('popup');
+      await page1.frameLocator('#sbox-iframe').getByText('Open the document in a new tab').click();
+      const page2 = await pagePromise;
+      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+      await page2.bringToFront();
+      const fileActions2 = new FileActions(page2);
       await fileActions2.filemenu.waitFor();
 
-      await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+      await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
       await page.bringToFront();
       await fileActions.closeButtonSecure.click();
       if (mobile) {
@@ -243,9 +243,9 @@ docNames.forEach(function (name) {
       await fileActions.okButtonSecure.click();
       await fileActions.closeButtonSecure.click();
 
-      await pageTwo.reload();
+      await page2.reload();
       await fileActions.access(mobile);
-      await expect(pageTwo.frameLocator('#sbox-iframe').locator('#cp-app-pad-editor').getByText('test-user3')).toBeHidden({ timeout: 5000 });
+      await expect(page2.frameLocator('#sbox-iframe').locator('#cp-app-pad-editor').getByText('test-user3')).toBeHidden({ timeout: 5000 });
 
       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `${name} - edit document owners`, status: 'passed', reason: `Can edit ${name} document owners` } })}`);
     } catch (e) {
@@ -429,24 +429,24 @@ docNames.forEach(function (name) {
 
         ///
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
-        pageOne = await context.newPage();
-        await pageOne.goto(`${url}/drive`);
-        const fileActions1 = new FileActions(pageOne);
+        page1 = await context.newPage();
+        await page1.goto(`${url}/drive`);
+        const fileActions1 = new FileActions(page1);
 
         await fileActions1.notifications.click();
 
-        const page2Promise = pageOne.waitForEvent('popup');
-        if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
-          await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
+        const page2Promise = page1.waitForEvent('popup');
+        if (await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
+          await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
         } else {
-          await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).click();
+          await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).click();
         }
-        const pageTwo = await page2Promise;
+        const page2 = await page2Promise;
         // await page.waitForTimeout(5000)
-        const fileActions2 = new FileActions(pageTwo);
-        await pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor()
-        await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
-        await expect(pageTwo.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible({ timeout: 5000 });
+        const fileActions2 = new FileActions(page2);
+        await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor()
+        await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+        await expect(page2.frameLocator('#sbox-iframe').getByText('Read only')).toBeVisible({ timeout: 5000 });
 
         /// /
 
@@ -477,16 +477,16 @@ docNames.forEach(function (name) {
 
         ///
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
-        pageOne = await context.newPage();
-        await pageOne.goto(`${url}/drive`);
-        const fileActions1 = new FileActions(pageOne);
+        page1 = await context.newPage();
+        await page1.goto(`${url}/drive`);
+        const fileActions1 = new FileActions(page1);
         await fileActions1.notifications.waitFor();
         await fileActions1.notifications.click();
-        const page1Promise = pageOne.waitForEvent('popup');
-        if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
-          await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
+        const page1Promise = page1.waitForEvent('popup');
+        if (await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
+          await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
         } else {
-          await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).click();
+          await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).click();
         }
         const page1 = await page1Promise;
 
@@ -539,18 +539,18 @@ docNames.forEach(function (name) {
 
         ///
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
-        pageOne = await context.newPage();
-        await pageOne.goto(`${url}/drive`);
-        await pageOne.waitForTimeout(10000);
-        const fileActions1 = new FileActions(pageOne);
+        page1 = await context.newPage();
+        await page1.goto(`${url}/drive`);
+        await page1.waitForTimeout(10000);
+        const fileActions1 = new FileActions(page1);
 
         await fileActions1.notifications.click();
 
-        const page2Promise = pageOne.waitForEvent('popup');
-        if (await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
-          await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
+        const page2Promise = page1.waitForEvent('popup');
+        if (await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).count() > 1) {
+          await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).first().click();
         } else {
-          await pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(pageOne.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).click();
+          await page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${title}`).or(page1.frameLocator('#sbox-iframe').getByText(`test-user has shared a document with you: ${titleComma}`)).click();
         }
         const page2 = await page2Promise;
         const fileActions2 = new FileActions(page2);
@@ -591,20 +591,20 @@ docNames.forEach(function (name) {
 
         ///
         const contextOne = await browser.newContext();
-        const pageOne = await contextOne.newPage();
-        const fileActions1 = new FileActions(pageOne);
-        await pageOne.goto(`${clipboardText}`);
-        await pageOne.waitForTimeout(60000);
+        const page1 = await contextOne.newPage();
+        const fileActions1 = new FileActions(page1);
+        await page1.goto(`${clipboardText}`);
+        await page1.waitForTimeout(60000);
 
-        await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
-        await pageOne.waitForTimeout(20000);
-        await expect(pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+        await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'view and delete' }).click();
+        await page1.waitForTimeout(20000);
+        await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
-        await pageOne.reload();
-        await pageOne.waitForTimeout(20000);
-        await pageOne.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner').waitFor();
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible();
-        // await pageOne.close()
+        await page1.reload();
+        await page1.waitForTimeout(20000);
+        await page1.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner').waitFor();
+        await expect(page1.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible();
+        // await page1.close()
 
         /// /
 
@@ -627,7 +627,7 @@ docNames.forEach(function (name) {
 
         // enable access list and add test-user3 to it
         // await page.waitForTimeout(5000);
-        await fileActions.filesaved.waitFor()
+        await fileActions.fileSaved.waitFor()
         await fileActions.filemenu.waitFor();
 
         await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
@@ -653,22 +653,22 @@ docNames.forEach(function (name) {
         const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 
         // const context = await browser.newContext();
-        pageOne = await browser.newPage();
-        await pageOne.goto(`${clipboardText}`);
-        await pageOne.waitForTimeout(30000);
-        await pageOne.bringToFront();
-        await pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/).waitFor();
-        await expect(pageOne.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
+        page1 = await browser.newPage();
+        await page1.goto(`${clipboardText}`);
+        await page1.waitForTimeout(30000);
+        await page1.bringToFront();
+        await page1.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/).waitFor();
+        await expect(page1.frameLocator('#sbox-iframe').getByText(/^You are not authorized to access this document/)).toBeVisible();
 
         // access document as test-user3
         const contextTwo = await browser.newContext({ storageState: 'auth/testuser3.json' });
-        const pageTwo = await contextTwo.newPage();
-        await pageTwo.goto(`${clipboardText}`);
-        // await pageTwo.waitForTimeout(10000);
-        const fileActions1 = new FileActions(pageTwo);
+        const page2 = await contextTwo.newPage();
+        await page2.goto(`${clipboardText}`);
+        // await page2.waitForTimeout(10000);
+        const fileActions1 = new FileActions(page2);
         await fileActions1.filemenu.waitFor();
 
-        await expect(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(pageTwo.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+        await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
 
         // remove test-user3 from access list
         // await page.waitForTimeout(30000);

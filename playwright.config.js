@@ -64,11 +64,11 @@ module.exports = defineConfig({
   projects:
   [
     {
-      name: 'chrome@latest:OSX Ventura@browserstack',
-      use: {
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        locale: 'en-GB'
-      }
+      // name: 'chrome@latest:OSX Ventura@browserstack',
+      // use: {
+      //   permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+      //   locale: 'en-GB'
+      // }
     }, {
       name: 'chrome',
       use: {
@@ -76,10 +76,10 @@ module.exports = defineConfig({
         locale: 'en-GB'
       }
     }, {
-      name: 'playwright-firefox@latest:OSX Ventura@browserstack',
-      use: {
-        locale: 'en-GB'
-      }
+      // name: 'playwright-firefox@latest:OSX Ventura@browserstack',
+      // use: {
+      //   locale: 'en-GB'
+      // }
     }, {
       name: 'playwright-firefox',
       use: {
@@ -87,12 +87,12 @@ module.exports = defineConfig({
         locale: 'en-GB'
       }
     }, {
-      name: 'edge@latest:OSX Ventura@browserstack',
-      use: {
-        channel: 'msedge',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications']
-      }
+      // name: 'edge@latest:OSX Ventura@browserstack',
+      // use: {
+      //   channel: 'msedge',
+      //   locale: 'en-GB',
+      //   permissions: ['clipboard-read', 'clipboard-write', 'notifications']
+      // }
     }, {
       name: 'edge',
       use: {
@@ -106,28 +106,28 @@ module.exports = defineConfig({
         locale: 'en-GB'
       }
     }, {
-      name: 'chrome@Samsung Galaxy S22:13',
-      use: {
-        ...devices['Samsung Galaxy S22:13'],
-        hasTouch: true,
-        browserName: 'chromium',
-        channel: 'chrome',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        mobile: true
-      }
+      // name: 'chrome@Samsung Galaxy S22:13',
+      // use: {
+      //   ...devices['Samsung Galaxy S22:13'],
+      //   hasTouch: true,
+      //   browserName: 'chromium',
+      //   channel: 'chrome',
+      //   locale: 'en-GB',
+      //   permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+      //   mobile: true
+      // }
     }, {
-      name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
-      use: {
-        hasTouch: true,
-        browserName: 'chromium',
-        channel: 'chrome',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        mobile: true,
-        acceptDownloads: true
+      // name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
+      // use: {
+      //   hasTouch: true,
+      //   browserName: 'chromium',
+      //   channel: 'chrome',
+      //   locale: 'en-GB',
+      //   permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+      //   mobile: true,
+      //   acceptDownloads: true
 
-      }
+      // }
     }, {
       name: 'chrome@Galaxy S9+',
       use: {

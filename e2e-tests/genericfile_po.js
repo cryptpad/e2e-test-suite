@@ -10,113 +10,113 @@ exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'fo
 /**
  * A page object for a CryptPad file.
  */
-// class FilePage {
-//   constructor (page, testName, mobile) {
-//     this.page = page;
-//     this.testName = testName;
-//     this.mobile = mobile;
-//     this.fileActions = new FileActions(page);
+class FilePage {
+  constructor (page, testName, mobile) {
+    this.page = page;
+    this.testName = testName;
+    this.mobile = mobile;
+    this.fileActions = new FileActions(page);
 
-//     // locators
-//     this.mainFrame = page.frameLocator('#sbox-iframe');
-//     this.newFile = this.mainFrame.getByRole('menuitem', { name: 'New' }).locator('a');
-//     this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
-//     this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
-//     this.alertMessage = this.mainFrame.locator('.alertify').locator('.msg');
-//     this.okButton = this.mainFrame
-//       .locator('.dialog')
-//       .getByRole('button', { name: 'OK (enter)' })
-//       .first();
-//     this.cancelButton = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
-//     this.storageSuccess = this.mainFrame.locator('alertify-logs');
+    // locators
+    this.mainFrame = page.frameLocator('#sbox-iframe');
+    this.newFile = this.mainFrame.getByRole('menuitem', { name: 'New' }).locator('a');
+    this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
+    this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
+    this.alertMessage = this.mainFrame.locator('.alertify').locator('.msg');
+    this.okButton = this.mainFrame
+      .locator('.dialog')
+      .getByRole('button', { name: 'OK (enter)' })
+      .first();
+    this.cancelButton = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
+    this.storageSuccess = this.mainFrame.locator('alertify-logs');
 
-//     this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
+    this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
 
-//     this.fileName = this.mainFrame.locator('.cp-toolbar-title');
-//     this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit > .fa');
-//     this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
-//     this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
-//   }
+    this.fileName = this.mainFrame.locator('.cp-toolbar-title');
+    this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit > .fa');
+    this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
+    this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
+  }
 
-//   filemenu () {
-//     return this.mobile ? this.filemenuMobile : this.filemenu;
-//   }
+  filemenu () {
+    return this.mobile ? this.filemenuMobile : this.filemenu;
+  }
 
-//   // The last part of the URL gives the ID of a CryptPad file.
-//   fileId () {
-//     return this.page.url();
-//   }
+  // The last part of the URL gives the ID of a CryptPad file.
+  fileId () {
+    return this.page.url();
+  }
 
-//   async loadFileType (fileType) {
-//     await this.page.goto(`${url}/${fileType}/`);
-//     // loading a new file takes longer than the default timeout for expect calls,
-//     // so we explicitly wait for it.
-//     await this.fileActions.filesaved.waitFor({timeout: 90000})
-//   }
+  async loadFileType (fileType) {
+    await this.page.goto(`${url}/${fileType}/`);
+    // loading a new file takes longer than the default timeout for expect calls,
+    // so we explicitly wait for it.
+    await this.fileActions.fileSaved.waitFor({timeout: 90000})
+  }
 
-//   async newFileClick () {
-//     await this.newFile.click();
-//     return new NewFileModal(this);
-//   }
+  async newFileClick () {
+    await this.newFile.click();
+    return new NewFileModal(this);
+  }
 
-//   async shareButtonClick () {
-//     const mobLocator =
-//       this.mainFrame.locator('.cp-toolar-share-button');
-//     const shareLocator = this.mobile ? mobLocator : this.shareButton;
-//     await shareLocator.click();
-//     return new ShareFileModal(this);
-//   }
+  async shareButtonClick () {
+    const mobLocator =
+      this.mainFrame.locator('.cp-toolar-share-button');
+    const shareLocator = this.mobile ? mobLocator : this.shareButton;
+    await shareLocator.click();
+    return new ShareFileModal(this);
+  }
 
-//   async dismissHelpRequest () {
-//     const notNow = this.mainFrame.getByRole('button', { name: 'Not now', exact: true });
-//     await notNow.click();
-//   }
+  async dismissHelpRequest () {
+    const notNow = this.mainFrame.getByRole('button', { name: 'Not now', exact: true });
+    await notNow.click();
+  }
 
-//   async chatButtonClick () {
-//     const mobLocator = this.mainFrame.locator('#cp-toolbar-chat-drawer-open');
-//     const chatButton = this.mainFrame.getByRole('button', { name: 'Chat' });
-//     const chatLocator = this.mobile ? mobLocator : chatButton;
+  async chatButtonClick () {
+    const mobLocator = this.mainFrame.locator('#cp-toolbar-chat-drawer-open');
+    const chatButton = this.mainFrame.getByRole('button', { name: 'Chat' });
+    const chatLocator = this.mobile ? mobLocator : chatButton;
 
-//     await chatLocator.click();
-//     return new ChatModal(this);
-//   }
+    await chatLocator.click();
+    return new ChatModal(this);
+  }
 
-//   async setStatus (status, reason) {
-//     await this.page.evaluate(
-//       _ => {
-//       },
-//       `browserstack_executor: ${JSON.stringify({
-//         action: 'setSessionStatus',
-//         arguments: {
-//           name: this.testName,
-//           status,
-//           reason
-//         }
-//       })}`
-//     );
-//   }
+  async setStatus (status, reason) {
+    await this.page.evaluate(
+      _ => {
+      },
+      `browserstack_executor: ${JSON.stringify({
+        action: 'setSessionStatus',
+        arguments: {
+          name: this.testName,
+          status,
+          reason
+        }
+      })}`
+    );
+  }
 
-//   /**
-//    * Marks the test as successful.
-//    * @param reason
-//    * @returns {Promise<void>}
-//    */
-//   async toSuccess (reason) {
-//     await this.setStatus('passed', reason);
-//   }
+  /**
+   * Marks the test as successful.
+   * @param reason
+   * @returns {Promise<void>}
+   */
+  async toSuccess (reason) {
+    await this.setStatus('passed', reason);
+  }
 
-//   /**
-//    * Marks the test as failed.
-//    * @param exception
-//    * @param reason
-//    * @returns {Promise<void>}
-//    */
-//   async toFailure (exception, reason) {
-//     console.log(exception);
-//     await this.setStatus('failed', reason);
-//     throw exception;
-//   }
-// }
+  /**
+   * Marks the test as failed.
+   * @param exception
+   * @param reason
+   * @returns {Promise<void>}
+   */
+  async toFailure (exception, reason) {
+    console.log(exception);
+    await this.setStatus('failed', reason);
+    throw exception;
+  }
+}
 
 /**
  * A page object for the modal that appears when creating a new file.

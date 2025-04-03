@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let pageOne;
+let page1;
 let mobile;
 let cleanUp;
 let contextOne;
@@ -38,10 +38,10 @@ test('pad - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.waitFor();
     await fileActions.createFile.click();
-    await fileActions.padeditor.locator('html').click();
-    await fileActions.padeditor.locator('body').fill('example template content');
+    await fileActions.padEditor.locator('html').click();
+    await fileActions.padEditor.locator('body').fill('example template content');
     await fileActions.saveTemplate(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example pad template');
+    await fileActions.textbox.fill('example pad template');
     await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/pad/`);
@@ -49,7 +49,7 @@ test('pad - save as and import template', async ({ page }) => {
     await fileActions.importTemplate(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example pad template' }).nth(1).click();
-    await expect(fileActions.padeditor.getByText('example template content')).toBeVisible();
+    await expect(fileActions.padEditor.getByText('example template content')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
@@ -71,45 +71,52 @@ test('pad - history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
-    await fileActions.padeditor.locator('html').click();
-    await fileActions.padeditor.locator('body').type('Test text by test-user');
+    await fileActions.padEditor.locator('html').click();
+    await fileActions.padEditor.locator('body').type('Test text by test-user');
 
     await fileActions.share(mobile);
     await fileActions.clickLinkTab(mobile);
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
     await fileActions.shareCopyLink.click();
-    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    if (clipboardText === "") {
+      await page.waitForTimeout(2000);
+      await fileActions.share(mobile);
+      await fileActions.shareCopyLink.click();
+    }
+
+
 
     if (mobile) {
       contextOne = await browser.launchBrowser({ locale: 'en-GB', permissions: ['clipboard-read', 'clipboard-write'] });
     } else {
       contextOne = await browser.newContext();
     }
-    pageOne = await contextOne.newPage();
-    await pageOne.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(pageOne);
-    await pageOne.waitForTimeout(5000);
-    await fileActions1.padeditor.locator('body').click();
-    await pageOne.keyboard.press('Enter');
-    await fileActions1.padeditor.locator('body').type('Some more test text by anon');
-    await pageOne.keyboard.press('Enter');
-    await pageOne.waitForTimeout(5000);
+    page1 = await contextOne.newPage();
+    await page1.goto(`${clipboardText}`);
+    const fileActions1 = new FileActions(page1);
+    await page1.waitForTimeout(5000);
+    await fileActions1.padEditor.locator('body').click();
+    await page1.keyboard.press('Enter');
+    await fileActions1.padEditor.locator('body').type('Some more test text by anon');
+    await page1.keyboard.press('Enter');
+    await page1.waitForTimeout(5000);
 
-    await fileActions1.padeditor.locator('body').type('And here is more text by anon');
-    await pageOne.keyboard.press('Enter');
-    await pageOne.waitForTimeout(5000);
+    await fileActions1.padEditor.locator('body').type('And here is more text by anon');
+    await page1.keyboard.press('Enter');
+    await page1.waitForTimeout(5000);
 
     await page.keyboard.press('Enter');
-    await fileActions.padeditor.locator('body').type('And yet more test text by test-user too!');
+    await fileActions.padEditor.locator('body').type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
     // await page.waitForTimeout(5000);
-    await fileActions.padeditor.locator('body').type('Here is even more test text by test-user!');
+    await fileActions.padEditor.locator('body').type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
     // await page.waitForTimeout(5000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrev.click();
-    await expect(fileActions.padeditor.getByText('Here is even more test text by test-user!')).toHaveCount(0);
+    await expect(fileActions.padEditor.getByText('Here is even more test text by test-user!')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - file menu - history (previous author)', status: 'passed', reason: 'Can create Rich Text document and view history (previous author)' } })}`);
   } catch (e) {

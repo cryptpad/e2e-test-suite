@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const local = !!process.env.PW_URL.includes('localhost');
 
-let pageOne;
+let page1;
 let mobile;
 let cleanUp;
 let fileActions;
@@ -44,7 +44,7 @@ test('kanban - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
     await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
     await fileActions.saveTemplate(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('example kanban template');
+    await fileActions.textbox.fill('example kanban template');
     await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/kanban/`);
@@ -85,21 +85,28 @@ if (!mobile) {
       await fileActions.clickLinkTab(mobile);
       await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
       await fileActions.shareCopyLink.click();
-      const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    if (clipboardText === "") {
+      await page.waitForTimeout(2000);
+      await fileActions.share(mobile);
+      await fileActions.shareCopyLink.click();
+    }
 
-      pageOne = await browser.newPage();
-      await pageOne.goto(`${clipboardText}`);
-      await pageOne.waitForTimeout(5000);
-      await pageOne.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await pageOne.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('some test text by anon');
-      await pageOne.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      await pageOne.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await pageOne.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await pageOne.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('some more test text by anon!');
-      await pageOne.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      await pageOne.waitForTimeout(9000);
 
-      await pageOne.close();
+
+      page1 = await browser.newPage();
+      await page1.goto(`${clipboardText}`);
+      await page1.waitForTimeout(5000);
+      await page1.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
+      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('some test text by anon');
+      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
+      await page1.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
+      await page1.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
+      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('some more test text by anon!');
+      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
+      await page1.waitForTimeout(9000);
+
+      await page1.close();
 
       await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
       await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('and some more test text by test user');

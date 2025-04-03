@@ -4,7 +4,7 @@ const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
-let pageOne;
+let page1;
 let cleanUp;
 let userActions;
 let fileActions
@@ -76,8 +76,8 @@ test('create test team', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().click();
 
     // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test team');
+    await fileActions.textbox.waitFor()
+    await fileActions.textbox.fill('test team');
     const fileActions = new FileActions(page);
 
     await fileActions.createFile.click();
@@ -105,16 +105,16 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
 
     // login test-user
     const context = await browser.newContext();
-    pageOne = await context.newPage();
-    const userActions2 = new UserActions(pageOne);
+    page1 = await context.newPage();
+    const userActions2 = new UserActions(page1);
     await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
-    await pageOne.goto(`${testuserProfileLink}`);
-    await pageOne.waitForTimeout(10000);
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
+    await page1.goto(`${testuserProfileLink}`);
+    await page1.waitForTimeout(10000);
+    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
+    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
     // await page.waitForTimeout(7000);
     await fileActions.notifications.waitFor()
     await fileActions.notifications.click();
@@ -125,9 +125,9 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
     // await page.waitForTimeout(5000);
 
-    // await pageOne.waitForTimeout(7000);
-    await pageOne.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts').waitFor()
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts')).toBeVisible();
+    // await page1.waitForTimeout(7000);
+    await page1.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts').waitFor()
+    await expect(page1.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'link test-user and testuser as contacts', status: 'passed', reason: 'Can link test-user and testuser as contacts' } })}`);
   } catch (e) {
@@ -145,16 +145,16 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
 
     // login test-user
     const context = await browser.newContext();
-    pageOne = await context.newPage();
-    const userActions2 = new UserActions(pageOne);
+    page1 = await context.newPage();
+    const userActions2 = new UserActions(page1);
     await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
-    await pageOne.goto(`${testuserProfileLink}`);
-    await pageOne.waitForTimeout(10000);
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
+    await page1.goto(`${testuserProfileLink}`);
+    await page1.waitForTimeout(10000);
+    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
+    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
 
     // await page.waitForTimeout(7000);
     const fileActions = new FileActions(page);
@@ -168,9 +168,9 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
     // await page.waitForTimeout(5000);
 
-    // await pageOne.waitForTimeout(7000);
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts').waitFor()
-    await expect(pageOne.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts')).toBeVisible();
+    // await page1.waitForTimeout(7000);
+    await page1.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts').waitFor()
+    await expect(page1.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'link test-user and test-user3 as contacts', status: 'passed', reason: 'Can link test-user and test-user3 as contacts' } })}`);
   } catch (e) {
@@ -197,22 +197,22 @@ test('add test-user3 to test team', async ({ page, browser }) => {
 
     ///
 
-    pageOne = await browser.newPage();
-    const userActions2 = new UserActions(pageOne);
+    page1 = await browser.newPage();
+    const userActions2 = new UserActions(page1);
     await userActions2.login('test-user3', testUser3Password);
-    await pageOne.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
 
-    await pageOne.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').click({ timeout: 3000 });
-    await pageOne.waitForTimeout(3000);
-    await expect(pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' })).toBeVisible();
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor();
-    const page2Promise = pageOne.waitForEvent('popup');
-    await pageOne.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
-    const pageTwo = await page2Promise;
+    await page1.frameLocator('#sbox-iframe').getByText('test-user has invited you to join their team: test team').click({ timeout: 3000 });
+    await page1.waitForTimeout(3000);
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' })).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).waitFor();
+    const page2Promise = page1.waitForEvent('popup');
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Accept (Enter)' }).click();
+    const page2 = await page2Promise;
 
-    await pageTwo.waitForTimeout(6000);
-    await pageTwo.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    await pageTwo.close();
+    await page2.waitForTimeout(6000);
+    await page2.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await page2.close();
     await expect(page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' })).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'add test-user3 to test team', status: 'passed', reason: 'Can add test-user3 to test team' } })}`);

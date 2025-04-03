@@ -9,6 +9,9 @@ export class FileActions {
 	*/
   constructor (page, testName, mobile) {
     this.page = page;
+    this.mainFrame = page.frameLocator('#sbox-iframe');
+    this.testName = testName;
+    this.mobile = mobile;
 
     // user actions-related locators
     this.login = page.locator('.login');
@@ -24,16 +27,14 @@ export class FileActions {
     this.newFile = this.mainFrame.getByRole('listitem').filter({ hasText: /^New$/ });
     this.settings = this.mainFrame.getByText('Settings');
     this.driveSideMenu = this.mainFrame.locator('#cp-app-drive-tree');
+    this.driveHistory = this.mainFrame.locator('[data-original-title="Display the document history"]')
+    this.noNotifications = this.mainFrame.getByText('No notifications')
+    this.notLoggedIn = this.mainFrame.locator('body').filter({ hasText: 'You are not logged in' })
+    this.changeDriveView = this.mainFrame.locator('.cp-app-drive-viewmode-button')
+    this.driveContentList = this.mainFrame.locator('.cp-app-drive-content-list')
+    this.driveContentGrid = this.mainFrame.locator('.cp-app-drive-content-grid')
 
     // file locators
-
-    this.page = page;
-    this.testName = testName;
-    this.mobile = mobile;
-    
-
-    // locators
-    this.mainFrame = page.frameLocator('#sbox-iframe');
     this.newFile = this.mainFrame.getByRole('menuitem', { name: 'New' }).locator('a');
     this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
     this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
@@ -56,12 +57,14 @@ export class FileActions {
     this.filemenuMobile = this.mainFrame.locator('.cp-toolbar-file');
     this.fileimport = this.mainFrame.getByRole('menuitem', { name: ' Import' }).locator('a');
     this.filecopy = this.mainFrame.getByRole('menuitem', { name: ' Make a copy' }).locator('a');
-    this.historyPrev = this.mainFrame.locator('.cp-toolbar-history-previous').last();
-    this.toolbar = this.mainFrame.getByRole('button', { name: 'Tools' });
-    this.shareLink = this.mainFrame.getByRole('button', { name: ' Share' });
+    this.historyPrevFirst = this.mainFrame.locator('.cp-toolbar-history-previous').first();
+    this.historyPrevLast = this.mainFrame.locator('.cp-toolbar-history-previous').last();
+    this.toolbarButton = this.mainFrame.getByRole('button', { name: 'Tools' });
+    // this.shareButton = this.mainFrame.getByRole('button', { name: ' Share' });
+    this.shareByLink = this.mainFrame.locator('#cp-share-link-preview')
     this.shareSecureLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
     this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
-    this.filesaved = this.mainFrame.getByText('Saved');
+    this.fileSaved = this.mainFrame.getByText('Saved');
     this.deletebutton = this.mainFrame.getByRole('button', { name: 'Delete' });
     this.trash = this.mainFrame.getByText('Move to trash')
 
@@ -71,6 +74,8 @@ export class FileActions {
     this.createFile = this.mainFrame.getByRole('button', { name: 'Create' });
     this.oneTimeLocal = this.mainFrame.getByRole('button', { name: 'One time ' })
     this.oneTime = this.mainFrame.getByRole('button', { name: ' One time' })
+    this.textbox = this.mainFrame.getByRole('textbox')
+    this.areYouSure = this.mainFrame.getByText('Are you sure?')
 
     // buttons
     this.closeButtonSecure = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' });
@@ -80,17 +85,39 @@ export class FileActions {
 
 
     // code
-    this.codeeditor = this.mainFrame.locator('.CodeMirror-scroll');
+    this.codeEditor = this.mainFrame.locator('.CodeMirror-scroll');
     this.codepreview = this.mainFrame.locator('#cp-app-code-preview-content');
+    this.codeToolbar = this.mainFrame.locator('.cp-markdown-toolbar');
 
     // form
     this.copyPublicLink = this.mainFrame.getByRole('button', { name: 'Copy public link' });
+    this.formSettings = this.mainFrame.getByRole('button', { name: ' Form settings' })
+    this.closeModal = this.mainFrame.locator('.cp-modal-close')
+    this.formOptionOne = this.mainFrame.getByText('Option 1')
+    this.answerAnon = this.mainFrame.getByText('Answer anonymously')
+    this.submitAnswer = this.mainFrame.getByRole('button', { name: 'Submit' })
+    this.editResponses = this.mainFrame.getByRole('button', { name: ' Edit my responses' })
 
     // pad
-    this.padeditor = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]');
+    this.padEditor = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]');
+    this.padToolbar = this.mainFrame.locator('.cke_toolbox_main.cke_reset_all')
 
     // markdown
-    this.slideeditor = this.mainFrame.locator('.CodeMirror-code');
+    this.slideEditor = this.mainFrame.locator('.CodeMirror-code');
+    this.slideContent = this.mainFrame.locator('#cp-app-slide-modal-content')
+    this.nextSlide = this.mainFrame.locator('#cp-app-slide-modal-right span')
+
+    //kanban
+    this.addBoard = this.mainFrame.locator('#kanban-addboard')
+    this.boardTitle = this.mainFrame.getByLabel('Title')
+    this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board')
+    this.addItem = this.mainFrame.locator('.kanban-title-button')
+    this.editItem = this.mainFrame.locator('#kanban-edit')
+    this.kanbanContainer = this.mainFrame.locator('#cp-app-kanban-content')
+    this.kanbanEditor = this.mainFrame.locator('.CodeMirror-lines')
+    this.newBoard = this.mainFrame.getByText('New board')
+    this.editNewBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByLabel('Edit this board')
+
   }
 
   async moveToTrash() {
@@ -107,11 +134,11 @@ export class FileActions {
   }
 
   async title (title) {
-    return this.this.mainFrame.locator('.cp-toolbar-title').getByText(`${title}`);
+    return this.mainFrame.locator('.cp-toolbar-title').getByText(`${title}`);
   }
 
   async clickTags (local) {
-    await this.this.mainFrame.getByRole('menuitem', { name: ' Tags' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: ' Tags' }).locator('a').click();
   }
 
   async clickLinkTab (mobile) {
@@ -122,19 +149,58 @@ export class FileActions {
     }
   }
 
+  async getLinkAfterCopy () {
+    let clipboardText = await this.page.evaluate('navigator.clipboard.readText()');
+    if (clipboardText === "") {
+      console.log("empty string")
+      await this.page.waitForTimeout(5000);
+      await this.fileActions.share(mobile);
+      await this.page.waitForTimeout(5000);
+
+      await this.fileActions.clickLinkTab.click();
+      clipboardText = await this.page.evaluate(() => navigator.clipboard.readText());
+    }
+
+    return clipboardText
+  }
+
+  async getLinkAfterCopyForm () {
+    let clipboardText = await this.page.evaluate('navigator.clipboard.readText()');
+    if (clipboardText === "") {
+      console.log("empty string")
+      await this.page.waitForTimeout(20000);
+      await this.page.share(mobile);
+      await this.shareCopyLink.click();
+      clipboardText = await this.page.evaluate(() => navigator.clipboard.readText());
+    }
+    console.log("RUL", clipboardText)
+    return clipboardText
+  }
+
+  async getShareLink (mobile) {
+    await this.share(mobile);
+    await this.shareCopyLink.click();
+    const clipboardText = this.getLinkAfterCopy()
+    return clipboardText
+  }
+
+  async driveListViewSpan (item) {
+    return this.mainFrame.locator('span').filter({ hasText: `${item}` })
+  }
+
   async responses (visible) {
     if (visible) {
-      await this.this.mainFrame.getByRole('button', { name: ' Responses (1)' }).click();
+      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).click();
     } else {
       await this.page.reload();
-      await this.this.mainFrame.getByRole('button', { name: ' Responses (1)' }).waitFor()
-      await this.this.mainFrame.getByRole('button', { name: ' Responses (1)' }).click();
+      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).waitFor()
+      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).click();
     }
   }
 
   async filemenuClick (mobile) {
     await this.page.waitForTimeout(1000)
-    await this.filesaved.waitFor()
+    await this.fileSaved.waitFor()
     if (mobile) {
       await this.filemenuMobile.waitFor();
       await this.filemenuMobile.click();
@@ -144,21 +210,34 @@ export class FileActions {
     }
   }
 
+  async driveMenuItem (item) {
+    return this.mainFrame.locator('a').filter({ hasText: `${item}` })
+  
+  }
+
+  async driveFileTitle (title, titleComma) {
+    return this.mainFrame.getByText(title).or(this.mainFrame.getByText(titleComma))
+  }
+
+  async driveAddMenuItem (item, first) {
+    return this.mainFrame.getByRole('listitem')
+  }
+
   async togglePreview (mobile) {
     if (mobile) {
-      await this.this.mainFrame.locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
+      await this.mainFrame.locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
     } else {
-      await this.this.mainFrame.getByRole('button', { name: 'Preview' }).click();
+      await this.mainFrame.getByRole('button', { name: 'Preview' }).click();
     }
   }
 
   async toggleTools (mobile) {
     if (mobile) {
-      await this.this.mainFrame.locator('.cp-toolbar-tools').waitFor();
-      await this.this.mainFrame.locator('.cp-toolbar-tools').click();
+      await this.mainFrame.locator('.cp-toolbar-tools').waitFor();
+      await this.mainFrame.locator('.cp-toolbar-tools').click();
     } else {
-      await this.this.mainFrame.getByRole('button', { name: 'Tools' }).waitFor();
-      await this.this.mainFrame.getByRole('button', { name: 'Tools' }).click();
+      await this.mainFrame.getByRole('button', { name: 'Tools' }).waitFor();
+      await this.mainFrame.getByRole('button', { name: 'Tools' }).click();
     }
   }
 
@@ -167,7 +246,7 @@ export class FileActions {
   }
 
   async typeTestTextCode (mobile, string) {
-    await this.filesaved.waitFor();
+    await this.fileSaved.waitFor();
     for (let i = 0; i < string.length; i++) {
       await this.page.keyboard.press(`${string.charAt(i)}`);
     }
@@ -175,47 +254,77 @@ export class FileActions {
 
   async share (mobile) {
     if (mobile) {
-      await this.this.mainFrame.locator('.cp-toolar-share-button').waitFor()
-      await this.this.mainFrame.locator('.cp-toolar-share-button').click();
+      await this.mainFrame.locator('.cp-toolar-share-button').waitFor()
+      await this.mainFrame.locator('.cp-toolar-share-button').click();
     } else {
-      await this.shareLink.waitFor()
-      await this.shareLink.click();
+      await this.shareButton.waitFor()
+      await this.shareButton.click();
     }
   }
 
   async access (mobile) {
     if (mobile) {
-      await this.this.mainFrame.locator('.cp-toolar-access-button').click();
+      await this.mainFrame.locator('.cp-toolar-access-button').click();
     } else {
-      await this.this.mainFrame.getByRole('button', { name: ' Access' }).click();
+      await this.mainFrame.getByRole('button', { name: ' Access' }).click();
     }
   }
 
   async history (mobile) {
     await this.filemenuClick(mobile);
-    await this.this.mainFrame.getByRole('menuitem', { name: ' History' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: ' History' }).locator('a').click();
   }
 
   async export (mobile) {
     await this.filemenuClick(mobile);
-    await this.this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').click();
   }
 
   async importTemplate (mobile, local) {
     await this.filemenuClick(mobile);
-    console.log()
-    if (local) {
-      await this.this.mainFrame.getByRole('button', { name: ' Import a template', exact: true }).waitFor()
-      await this.this.mainFrame.getByRole('button', { name: ' Import a template', exact: true }).click();
-    } else {
-      await this.this.mainFrame.getByRole('menuitem', { name: ' Import a template' }).locator('a').waitFor()
-      await this.this.mainFrame.getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
-    }
+    await this.mainFrame.getByRole('menuitem', { name: ' Import a template' }).locator('a').waitFor()
+    await this.mainFrame.getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
   }
 
   async saveTemplate (mobile, local) {
     await this.filemenuClick(mobile);
-    await this.this.mainFrame.getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+  }
+
+  async setStatus (status, reason) {
+    await this.page.evaluate(
+      _ => {
+      },
+      `browserstack_executor: ${JSON.stringify({
+        action: 'setSessionStatus',
+        arguments: {
+          name: this.testName,
+          status,
+          reason
+        }
+      })}`
+    );
+  }
+
+    /**
+   * Marks the test as successful.
+   * @param reason
+   * @returns {Promise<void>}
+   */
+  async toSuccess (reason) {
+    await this.setStatus('passed', reason);
+  }
+
+  /**
+   * Marks the test as failed.
+   * @param exception
+   * @param reason
+   * @returns {Promise<void>}
+   */
+  async toFailure (exception, reason) {
+    console.log(exception);
+    await this.setStatus('failed', reason);
+    throw exception;
   }
 
   
@@ -314,3 +423,4 @@ class StoreModal {
   }
 }
 
+exports.StoreModal = StoreModal;

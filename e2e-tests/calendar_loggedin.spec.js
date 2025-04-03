@@ -416,8 +416,8 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
 
     // create calendar
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New calendar' }).click();
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').click();
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test calendar');
+    await fileActions.textbox.click();
+    await fileActions.textbox.fill('test calendar');
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
     // await page.waitForTimeout(5000);
 

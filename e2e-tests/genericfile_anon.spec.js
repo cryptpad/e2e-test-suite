@@ -49,7 +49,7 @@ docNames.forEach(function (name) {
       } else {
         // await page.waitForTimeout(15000);
       }
-      await fileActions.filesaved.waitFor();
+      await fileActions.fileSaved.waitFor();
       await fileActions.filemenuClick(mobile);
       // if (!page.frameLocator('#sbox-iframe').getByText('New').isVisible()) {
 
@@ -93,7 +93,14 @@ docNames.forEach(function (name) {
         await fileActions.shareCopyLink.waitFor();
         await fileActions.shareCopyLink.click({ timeout: 5000 });
 
-        const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+        const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    if (clipboardText === "") {
+      await page.waitForTimeout(2000);
+      await fileActions.share(mobile);
+      await fileActions.shareCopyLink.click();
+    }
+
+
 
         const page1 = await context.newPage();
 
@@ -127,7 +134,14 @@ docNames.forEach(function (name) {
         }
         await fileActions.shareCopyLink.click();
 
-        const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+        const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    if (clipboardText === "") {
+      await page.waitForTimeout(2000);
+      await fileActions.share(mobile);
+      await fileActions.shareCopyLink.click();
+    }
+
+
 
         const page1 = await context.newPage();
 
