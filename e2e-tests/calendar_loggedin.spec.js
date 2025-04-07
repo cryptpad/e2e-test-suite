@@ -57,15 +57,15 @@ test('create and delete event in calendar', async ({ page }) => {
       await page.keyboard.press('Enter');
     } else {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('00');
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.click();
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
@@ -118,15 +118,15 @@ test('create and delete repeating event in calendar', async ({ page }) => {
       await page.keyboard.press('Enter');
     } else {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('00');
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.click();
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
 
@@ -181,15 +181,15 @@ test('create event in calendar and edit location', async ({ page }) => {
       await page.keyboard.press('Enter');
     } else {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('00');
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.click();
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
 
@@ -205,7 +205,7 @@ test('create event in calendar and edit location', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').dblclick();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Location').fill('somewhere else');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
+    await fileActions.updateButton.click();
     await page.waitForTimeout(2000);
 
     // check location changed
@@ -248,15 +248,15 @@ test('create event in calendar and edit time', async ({ page }) => {
       await page.keyboard.press('Enter');
     } else {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('00');
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.click();
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
 
@@ -277,19 +277,19 @@ test('create event in calendar and edit time', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('15');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('15');
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.click();
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
     await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
+    await fileActions.updateButton.click();
 
     // check time changed
     await page.waitForTimeout(1000);
@@ -332,15 +332,15 @@ test('create event in calendar and edit date', async ({ page }) => {
       await page.keyboard.press('Enter');
     } else {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('00');
       await page.keyboard.press('Enter');
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.click();
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Save' }).click();
@@ -358,20 +358,20 @@ test('create event in calendar and edit date', async ({ page }) => {
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').waitFor();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('Start date').click();
       await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).nth(1).click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('00');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('00');
 
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').waitFor();
       await page.frameLocator('#sbox-iframe').getByPlaceholder('End date').click();
       await page.frameLocator('#sbox-iframe').getByLabel(`${nextMondayStringFormat}`).first().click({ timeout: 3000 });
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).click();
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Hour' }).fill('20');
-      await page.frameLocator('#sbox-iframe').getByRole('spinbutton', { name: 'Minute' }).fill('30');
+      await fileActions.pickHour.click();
+      await fileActions.pickHour.fill('20');
+      await fileActions.pickMinute.fill('30');
       await page.keyboard.press('Enter');
     }
     await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
+    await fileActions.updateButton.click();
     // await page.waitForTimeout(7000);
 
     // //check date changed
@@ -439,7 +439,7 @@ test('create new calendar and edit calendar in event', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test calendar').click();
     await page.waitForTimeout(1000);
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
+    await fileActions.updateButton.click();
     // await page.waitForTimeout(5000);
     await page.waitForTimeout(1000);
     await page.frameLocator('#sbox-iframe').getByText('test event').nth(1).click();

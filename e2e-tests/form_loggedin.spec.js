@@ -405,7 +405,7 @@ test('form - save as and import template', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 1').fill('test option one');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 2').click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('Option 2').fill('test option two');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add option' }).click();
+    await fileActions.addOption.click();
     await page.frameLocator('#sbox-iframe').getByPlaceholder('New option').fill('test option three');
     // await page.waitForTimeout(3000);
 

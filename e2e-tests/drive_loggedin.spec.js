@@ -192,7 +192,7 @@ test('drive - create link', async ({ page }) => {
     await page.frameLocator('#sbox-iframe').getByPlaceholder('My link').fill('Cryptpad Docs');
     await page.frameLocator('#sbox-iframe').getByPlaceholder('https://example.com').fill('https://docs.cryptpad.org');
 
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
+    await fileActions.addButton.click();
     await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').waitFor();
     await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').click({ button: 'right' });
     await fileActions.moveToTrash(local);

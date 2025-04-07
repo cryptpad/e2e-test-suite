@@ -39,7 +39,7 @@ class FilePage {
   }
 
   filemenu () {
-    return this.mobile ? this.filemenuMobile : this.filemenu;
+    return this.mobile ? this.fileActions.filemenuMobile : this.fileActions.filemenu;
   }
 
   // The last part of the URL gives the ID of a CryptPad file.

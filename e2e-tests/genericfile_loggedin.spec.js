@@ -150,7 +150,7 @@ docNames.forEach(function (name) {
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').click();
       await page.frameLocator('#sbox-iframe').locator('.token-input.ui-autocomplete-input').fill('testtag');
       // await page.waitForTimeout(3000);
-      await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Add' }).click();
+      await fileActions.addButton.click();
       await fileActions.okButton.click();
       if (browserName === 'playwright-firefox' || browserName === 'edge' ) {
         await page.waitForTimeout(1000);

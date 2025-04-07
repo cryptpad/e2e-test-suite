@@ -2,78 +2,83 @@ const { test, url, titleDate, titleDateComma } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
+const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
+
 
 const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let fileActions;
 let isBrowserstack;
+let filePage
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   mobile = isMobile;
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
   await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
+    filePage = new FilePage(page);
+
 });
 
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
 
-// userMenuItems.forEach(function (item) {
-//   test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {
-//     if (item === 'pricing') {
-//       test.skip(local, 'pricing not available on dev instance');
-//     }
-//     try {
-//       await fileActions.drivemenu.waitFor();
-//       await fileActions.drivemenu.click();
-//       if (item === 'about') {
-//         await fileActions.driveMenuItem(item, true)
-//         if (url === 'https://cryptpad.fr') {
-//           await expect(fileActions.mainFrame.getByText('CryptPad.fr is the official instance of the open-source CryptPad project. It is ')).toBeVisible();
-//         } else {
-//           await expect(fileActions.mainFrame.getByText('This is an independent community instance of CryptPad')).toBeVisible();
-//         }
-//       } else if (item === 'log in') {
-//         await fileActions.driveMenuItem(item, true)
-//         await expect(page).toHaveURL(new RegExp(`^${url}/login/`), { timeout: 100000 });
-//       } else if (item === 'sign up') {
-//         await fileActions.driveMenuItem(item, true)
-//         await expect(page).toHaveURL(new RegExp(`^${url}/register/`), { timeout: 100000 });
-//       } else {
-//         const pagePromise = page.waitForEvent('popup');
-//         if (item === 'documentation') {
-//           await fileActions.driveMenuItem(item, true)
-//         } else {
-//           await fileActions.driveMenuItem(item)
-//         }
-//         const page1 = await pagePromise;
-//         if (item === 'home page') {
-//           await expect(page1).toHaveURL(`${url}/index.html`, { timeout: 100000 });
-//         } else if (item === 'pricing') {
-//           await expect(page1).toHaveURL(`${url}/features.html`, { timeout: 100000 });
-//         } else if (item === 'donate') {
-//           page.once('dialog', dialog => {
-//             console.log(`Dialog message: ${dialog.message()}`);
-//             dialog.accept().catch(() => {});
-//           });
-//           await expect(page1).toHaveURL(/#https%3A%2F%2Fopencollective.com%2Fcryptpad%2F$/, { timeout: 100000 });
-//         } else if (item === 'documentation') {
-//           await expect(page1).toHaveURL('https://docs.cryptpad.org/en/', { timeout: 100000 });
-//         } else if (item === 'settings') {
-//           await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
-//         } else {
-//           await expect(page1).toHaveURL(`${url}/${item}/`, { timeout: 100000 });
-//         }
-//       }
+userMenuItems.forEach(function (item) {
+  test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {
+    if (item === 'pricing') {
+      test.skip(local, 'pricing not available on dev instance');
+    }
+    try {
+      await fileActions.drivemenu.waitFor();
+      await fileActions.drivemenu.click();
+      if (item === 'about') {
+        await fileActions.driveMenuItem(item, true).click()
+        if (url === 'https://cryptpad.fr') {
+          await expect(fileActions.mainFrame.getByText('CryptPad.fr is the official instance of the open-source CryptPad project. It is ')).toBeVisible();
+        } else {
+          await expect(fileActions.mainFrame.getByText('This is an independent community instance of CryptPad')).toBeVisible();
+        }
+      } else if (item === 'log in') {
+        await fileActions.driveMenuItem(item, true).click()
+        await expect(page).toHaveURL(new RegExp(`^${url}/login/`), { timeout: 100000 });
+      } else if (item === 'sign up') {
+        await fileActions.driveMenuItem(item, true).click()
+        await expect(page).toHaveURL(new RegExp(`^${url}/register/`), { timeout: 100000 });
+      } else {
+        const pagePromise = page.waitForEvent('popup');
+        if (item === 'documentation') {
+          await fileActions.driveMenuItem(item, true).click()
+        } else {
+          await fileActions.driveMenuItem(item).click()
+        }
+        const page1 = await pagePromise;
+        if (item === 'home page') {
+          await expect(page1).toHaveURL(`${url}/index.html`, { timeout: 100000 });
+        } else if (item === 'pricing') {
+          await expect(page1).toHaveURL(`${url}/features.html`, { timeout: 100000 });
+        } else if (item === 'donate') {
+          page.once('dialog', dialog => {
+            console.log(`Dialog message: ${dialog.message()}`);
+            dialog.accept().catch(() => {});
+          });
+          await expect(page1).toHaveURL(/#https%3A%2F%2Fopencollective.com%2Fcryptpad%2F$/, { timeout: 100000 });
+        } else if (item === 'documentation') {
+          await expect(page1).toHaveURL('https://docs.cryptpad.org/en/', { timeout: 100000 });
+        } else if (item === 'settings') {
+          await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
+        } else {
+          await expect(page1).toHaveURL(`${url}/${item}/`, { timeout: 100000 });
+        }
+      }
 
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon drive > ${item}`, status: 'passed', reason: `Can anonymously navigate to Drive and access ${item}` } })}`);
-//     } catch (e) {
-//       console.log(e);
-//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon drive > ${item}`, status: 'failed', reason: `Can't anonymously navigate to Drive and access ${item}` } })}`);
-//     }
-//   });
-// });
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon drive > ${item}`, status: 'passed', reason: `Can anonymously navigate to Drive and access ${item}` } })}`);
+    } catch (e) {
+      console.log(e);
+      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon drive > ${item}`, status: 'failed', reason: `Can't anonymously navigate to Drive and access ${item}` } })}`);
+    }
+  });
+});
 
 // test('drive - anon - erase all', async ({ page, context }) => {
 
@@ -82,28 +87,27 @@ const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'prici
 //     //create file
 //     await fileActions.driveadd.click();
 //     const page1Promise = page.waitForEvent('popup');
-//     await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Rich text' }).click();
+//     await fileActions.driveAddMenuItem('Rich text').click();
 //     const page1 = await page1Promise;
 
 //     //check that file is visible in drive
-
-//     var title = `Rich text - ${await fileActions.titleDate(mobile, isBrowserstack)}`;
 //     await page1.waitForTimeout(10000)
-//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).waitFor()
-//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toBeVisible()
+//     const fileActions1 = new FileActions(page1);
+
+//     await fileActions1.fileTitle('Rich text').waitFor()
+//     await expect(fileActions1.fileTitle('Rich text')).toBeVisible()
 //     await page1.close()
 //     await page.reload()
-//     // await page.waitForTimeout(10000)
-//     await fileActions.driveContentFolder.locator('.cp-toolbar-title').getByText(`${title}`).click({timeout: 2000})
+//     await fileActions.driveFileTitle('Rich text').waitFor()
+//     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible()
 
 //     //erase
-//     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-bottom-right').getByRole('button').nth(1).click();
+//     await fileActions.eraseDrive.click();
 //     await fileActions.okButton.waitFor()
 //     await fileActions.okButton.click();
-//     // await page.waitForTimeout(20000)
 
 //     //check file is erased
-//     await expect(page.frameLocator('#sbox-iframe').getByText(title)).toHaveCount(0)
+//     await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0)
 
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'passed',reason: 'Can navigate to Drive and erase all'}})}`);
 //   } catch (e) {
@@ -121,12 +125,9 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await fileActions.driveAddMenuItem('Rich text').click();
     const page1 = await page1Promise;
 
-    const title = `Rich text - ${titleDate}`;
-    const titleComma = `Rich text - ${titleDateComma}`
-
     await page.reload();
-    await fileActions.driveFileTitle(title, titleComma).waitFor()
-    await expect(fileActions.driveFileTitle(title, titleComma)).toBeVisible();
+    await fileActions.driveFileTitle('Rich text').waitFor()
+    await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
 
     await page.bringToFront();
     await fileActions.changeDriveView.click();
@@ -134,9 +135,10 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     if (mobile) {
       await expect(fileActions.driveContentList).toBeVisible();
     } else {
-      await expect(fileActions.driveListViewSpan('Type')).toBeVisible();
-      await expect(fileActions.driveListViewSpan('Last access')).toBeVisible();
-      await expect(fileActions.driveListViewSpan('Creation')).toBeVisible();
+      console.log(await fileActions.driveListViewSpan('Type'))
+      await expect(await fileActions.driveListViewSpan('Type')).toBeVisible();
+      await expect(await fileActions.driveListViewSpan('Last access')).toBeVisible();
+      await expect(await fileActions.driveListViewSpan('Creation')).toBeVisible();
     }
 
     await fileActions.changeDriveView.click();
@@ -164,24 +166,18 @@ test('drive - anon - history', async ({ page, context }) => {
     await fileActions.driveAddMenuItem('Rich text' ).click();
     const page1 = await page1Promise;
     const fileActions1 = new FileActions(page1);
-    // // await page.waitForTimeout(15000);
     await fileActions1.fileSaved.waitFor()
-    const title = `Rich text - ${titleDate}`;
-    const titleComma = `Rich text - ${titleDateComma}`
-    // // await page.waitForTimeout(10000);
-
 
     await page.reload();
-      // // await page.waitForTimeout(20000);
-    await fileActions.driveFileTitle(title, titleComma).waitFor()
-    await expect(fileActions.driveFileTitle(title, titleComma)).toBeVisible();
+    await fileActions.driveFileTitle('Rich text').waitFor()
+    await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
 
     await fileActions.driveHistory.click();
     await fileActions.historyPrevLast.click({
       clickCount: 3
     });
 
-    await expect(fileActions.driveFileTitle(title, titleComma)).toHaveCount(0);
+    await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0);
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive > history', status: 'passed', reason: 'Can anonymously navigate to Drive and view history' } })}`);
   } catch (e) {

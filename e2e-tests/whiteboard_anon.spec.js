@@ -12,7 +12,7 @@ test.beforeEach(async ({ page, isMobile }) => {
   await page.goto(`${url}/whiteboard`);
   fileActions = new FileActions(page);
   mobile = isMobile;
-  // await page.waitForTimeout(10000);
+  await fileActions.fileSaved.waitFor();
 });
 
 test('screenshot anon - can draw on whiteboard (default settings)', async ({ page }) => {
@@ -85,9 +85,7 @@ test('screenshot anon - erase on whiteboard', async ({ page }) => {
       }
     });
     await page.mouse.up();
-
     await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
-    // await page.waitForTimeout(3000);
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can erase on whiteboard', status: 'passed', reason: 'Can erase on whiteboard' } })}`);
@@ -108,7 +106,6 @@ test('screenshot anon - enter text on whiteboard', async ({ page }) => {
       }
     });
     await fileActions.textbox.fill('test text');
-    // await page.waitForTimeout(3000);
     await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can enter text on whiteboard', status: 'passed', reason: 'Can enter text on whiteboard' } })}`);

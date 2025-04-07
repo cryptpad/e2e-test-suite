@@ -20,22 +20,21 @@ test.beforeEach(async ({ page }, testInfo) => {
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   await page.goto(`${url}/pad`);
   fileActions = new FileActions(page);
+  await fileActions.fileSaved.waitFor()
 });
 
 test('pad - comment', async ({ page, context }) => {
   try {
-    await fileActions.padEditor.locator('body').waitFor();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditorBody.click();
 
-    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditorBody.fill('TEST TEXT');
     await fileActions.padEditor.getByText('TEST TEXT').click({
       clickCount: 3
     });
-    await page.frameLocator('#sbox-iframe').locator('.cp-comment-bubble').locator('button').click();
-    await page.frameLocator('#sbox-iframe').getByRole('textbox', { name: 'Comment' }).fill('Test comment');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Test comment', { exact: true })).toBeVisible();
+    await fileActions.addComment.click();
+    await fileActions.commentTextBox.fill('Test comment');
+    await fileActions.submitAnswer.click();
+    await expect(fileActions.mainFrame.getByText('Test comment', { exact: true })).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad > comment', status: 'passed', reason: 'Can create comment in Rich Text document' } })}`);
   } catch (e) {
@@ -46,29 +45,27 @@ test('pad - comment', async ({ page, context }) => {
 
 test('pad - create and open snapshot', async ({ page, context }) => {
   try {
-    await fileActions.padEditor.locator('body').waitFor();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
-    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditorBody.click();
+    await fileActions.padEditorBody.fill('TEST TEXT');
 
     await fileActions.filemenuClick(mobile);
-    await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
-    await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').waitFor();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Snapshot title').fill('snap1');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'New snapshot' }).click();
+    await fileActions.snapshots.waitFor();
+    await fileActions.snapshots.click();
+    await fileActions.snapshotTitle.waitFor();
+    await fileActions.snapshotTitle.fill('snap1');
+    await fileActions.newSnapshot.waitFor();
+    await fileActions.newSnapshot.click();
     await fileActions.closeButton.waitFor();
     await fileActions.closeButton.click();
-    await fileActions.padEditor.locator('body').fill('');
+    await fileActions.padEditorBody.fill('');
 
     await fileActions.filemenuClick(mobile);
-    await page.frameLocator('#sbox-iframe').getByText('Snapshots').waitFor();
-    await page.frameLocator('#sbox-iframe').getByText('Snapshots').click();
-    await page.frameLocator('#sbox-iframe').getByText('snap1').waitFor();
-    await page.frameLocator('#sbox-iframe').getByText('snap1').click();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open' }).waitFor();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Open' }).click();
+    await fileActions.snapshots.waitFor();
+    await fileActions.snapshots.click();
+    await fileActions.mainFrame.getByText('snap1').waitFor();
+    await fileActions.mainFrame.getByText('snap1').click();
+    await fileActions.openButton.waitFor();
+    await fileActions.openButton.click();
     await fileActions.padEditor.getByText('TEST TEXT').waitFor();
     await expect(fileActions.padEditor.getByText('TEST TEXT')).toBeVisible();
 
@@ -81,8 +78,8 @@ test('pad - create and open snapshot', async ({ page, context }) => {
 
 test('pad - history (previous version)', async ({ page, context }) => {
   try {
-    await fileActions.padEditor.locator('html').click();
-    await fileActions.padEditor.locator('body').fill('Test text');
+    await fileActions.padEditorHTML.click();
+    await fileActions.padEditorBody.fill('Test text');
 
     await fileActions.history(mobile);
 
@@ -99,7 +96,6 @@ test('pad - history (previous version)', async ({ page, context }) => {
 test('pad - toggle tools', async ({ page, context }) => {
   try {
 
-    // await fileActions.toggleTools(mobile)
     if (mobile) {
       await expect(fileActions.padToolbar).toBeHidden();
       await fileActions.toggleTools(mobile)
@@ -124,7 +120,6 @@ test('pad - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.padEditor.locator('html').waitFor();
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -142,10 +137,8 @@ test('pad - import file', async ({ page }) => {
 
 test('pad - make a copy', async ({ page, context }) => {
   try {
-    await fileActions.padEditor.locator('html').click();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
-    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditorBody.click();
+    await fileActions.padEditorBody.fill('TEST TEXT');
     await expect(fileActions.padEditor.getByText('TEST TEXT')).toBeVisible();
 
     await fileActions.filemenuClick(mobile);
@@ -168,10 +161,8 @@ test('pad - make a copy', async ({ page, context }) => {
 
 test('pad - export (html)', async ({ page }) => {
   try {
-    await fileActions.padEditor.locator('body').waitFor();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
-    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditorBody.click();
+    await fileActions.padEditorBody.fill('TEST TEXT');
 
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test pad');
@@ -207,15 +198,13 @@ test('pad - export (html)', async ({ page }) => {
 
 test('pad - export (.doc)', async ({ page }) => {
   try {
-    await fileActions.padEditor.locator('body').waitFor();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
-    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditorBody.click();
+    await fileActions.padEditorBody.fill('TEST TEXT');
 
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
-    await page.frameLocator('#sbox-iframe').getByText('.doc').click();
+    await fileActions.html.click();
+    await fileActions.mainFrame.getByText('.doc').click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -246,15 +235,13 @@ test('pad - export (.doc)', async ({ page }) => {
 
 test('pad - export (md)', async ({ page, context }) => {
   try {
-    await fileActions.padEditor.locator('body').waitFor();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
-    await fileActions.padEditor.locator('body').fill('TEST TEXT');
+    await fileActions.padEditorBody.click();
+    await fileActions.padEditorBody.fill('TEST TEXT');
 
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test pad');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' .html' }).click();
-    await page.frameLocator('#sbox-iframe').getByText('.md').click();
+    await fileActions.html.click();
+    await fileActions.mainFrame.getByText('.md').click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -279,11 +266,9 @@ test('pad - export (md)', async ({ page, context }) => {
 
 test('pad - share at a moment in history', async ({ page, context }) => {
   try {
-    await fileActions.padEditor.locator('body').waitFor();
-    await expect(fileActions.padEditor.locator('body')).toBeVisible();
-    await fileActions.padEditor.locator('body').click();
+    await fileActions.padEditorBody.click();
 
-    await fileActions.padEditor.locator('body').fill('One moment in history');
+    await fileActions.padEditorBody.fill('One moment in history');
     await fileActions.padEditor.getByText('One moment in history').click({
       clickCount: 3
     });
