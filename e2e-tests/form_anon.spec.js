@@ -29,227 +29,227 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   // }
 });
 
-// test('form - submission (one time no edit)', async ({ page, context }) => {
-//   try {
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-//     await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('One time only').click();
-//     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
+test('form - submission (one time no edit)', async ({ page, context }) => {
+  try {
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
+    await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('One time only').click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
 
-//     // // await page.waitForTimeout(10000);
-//     await fileActions.copyPublicLink.waitFor();
-//     await fileActions.copyPublicLink.click();
-//     await page.waitForTimeout(3000);
+    // // await page.waitForTimeout(10000);
+    await fileActions.copyPublicLink.waitFor();
+    await fileActions.copyPublicLink.click();
+    await page.waitForTimeout(3000);
 
-//     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-//     if (clipboardText === '') {
-//       await fileActions.copyPublicLink.waitFor();
-//       await fileActions.copyPublicLink.click();
-//       await page.waitForTimeout(3000);
-//     }
-//     const page1 = await context.newPage();
-//     await page1.goto(`${clipboardText}`);
-//     await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    if (clipboardText === '') {
+      await fileActions.copyPublicLink.waitFor();
+      await fileActions.copyPublicLink.click();
+      await page.waitForTimeout(3000);
+    }
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    await page1.waitForTimeout(10000);
 
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' })).toBeHidden();
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' })).toBeHidden();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' })).toBeHidden();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' })).toBeHidden();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time no edit)', status: 'passed', reason: 'Can anonymously create form with one time submission (no edit)' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time no edit)', status: 'failed', reason: 'Can\'t anonymously create form with one time submission (no edit)' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time no edit)', status: 'passed', reason: 'Can anonymously create form with one time submission (no edit)' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time no edit)', status: 'failed', reason: 'Can\'t anonymously create form with one time submission (no edit)' } })}`);
+  }
+});
 
-// test('form - submission (multiple times no edit)', async ({ page, context }) => {
-//   try {
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-//     await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('Multiple times', { exact: true }).click();
-//     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
+test('form - submission (multiple times no edit)', async ({ page, context }) => {
+  try {
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
+    await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('Multiple times', { exact: true }).click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
 
-//     await fileActions.copyPublicLink.waitFor();
-//     await fileActions.copyPublicLink.click();
-//     await page.waitForTimeout(3000);
+    await fileActions.copyPublicLink.waitFor();
+    await fileActions.copyPublicLink.click();
+    await page.waitForTimeout(3000);
 
-//     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-//     const page1 = await context.newPage();
-//     await page1.goto(`${clipboardText}`);
-//     await page1.waitForTimeout(15000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    await page1.waitForTimeout(15000);
 
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' })).toBeHidden();
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' })).toBeHidden();
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' })).toBeHidden();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' })).toBeHidden();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times no edit)', status: 'passed', reason: 'Can anonymously create form with multiple submissions (no edit)' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times no edit)', status: 'failed', reason: 'Can\'t anonymously create form with multiple submissions (no edit)' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times no edit)', status: 'passed', reason: 'Can anonymously create form with multiple submissions (no edit)' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times no edit)', status: 'failed', reason: 'Can\'t anonymously create form with multiple submissions (no edit)' } })}`);
+  }
+});
 
-// test('form - submission (one time) - delete', async ({ page, context }) => {
-//   try {
-//     // // await page.waitForTimeout(10000);
-//     await fileActions.copyPublicLink.waitFor();
-//     await fileActions.copyPublicLink.click();
-//     await page.waitForTimeout(3000);
+test('form - submission (one time) - delete', async ({ page, context }) => {
+  try {
+    // // await page.waitForTimeout(10000);
+    await fileActions.copyPublicLink.waitFor();
+    await fileActions.copyPublicLink.click();
+    await page.waitForTimeout(3000);
 
-//     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-//     const page1 = await context.newPage();
-//     await page1.goto(`${clipboardText}`);
-//     await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    await page1.waitForTimeout(10000);
 
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeHidden();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Your question here?').waitFor();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeHidden();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Your question here?').waitFor();
 
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
-//     await expect(page.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    await expect(page.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - delete', status: 'passed', reason: 'Can anonymously create form with one time submission - delete' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - delete', status: 'failed', reason: 'Can\'t anonymously create form with one time submission - delete' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - delete', status: 'passed', reason: 'Can anonymously create form with one time submission - delete' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - delete', status: 'failed', reason: 'Can\'t anonymously create form with one time submission - delete' } })}`);
+  }
+});
 
-// test('form - submission (multiple times) - delete', async ({ page, context }) => {
-//   try {
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-//     await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('Multiple times and edit/delete').click();
-//     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
+test('form - submission (multiple times) - delete', async ({ page, context }) => {
+  try {
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
+    await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('Multiple times and edit/delete').click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
 
-//     await fileActions.copyPublicLink.waitFor();
-//     await fileActions.copyPublicLink.click();
-//     await page.waitForTimeout(3000);
+    await fileActions.copyPublicLink.waitFor();
+    await fileActions.copyPublicLink.click();
+    await page.waitForTimeout(3000);
 
-//     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-//     const page1 = await context.newPage();
-//     await page1.goto(`${clipboardText}`);
-//     // await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    // await page1.waitForTimeout(10000);
 
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Your question here?').waitFor();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Delete' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Your question here?').waitFor();
 
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
-//     await expect(page.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (0)' }).click();
+    await expect(page.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - delete', status: 'passed', reason: 'Can anonymously create form with multiple submissions - delete' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - delete', status: 'failed', reason: 'Can\'t anonymously create form with multiple submissions - delete' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - delete', status: 'passed', reason: 'Can anonymously create form with multiple submissions - delete' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - delete', status: 'failed', reason: 'Can\'t anonymously create form with multiple submissions - delete' } })}`);
+  }
+});
 
-// test('form - submission (multiple times) - edit', async ({ page, context }) => {
-//   try {
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
-//     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
-//     await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('Multiple times and edit/delete').click();
-//     await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
+test('form - submission (multiple times) - edit', async ({ page, context }) => {
+  try {
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).waitFor();
+    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Form settings' }).click();
+    await page.frameLocator('#sbox-iframe').locator('#cp-form-settings').getByText('Multiple times and edit/delete').click();
+    await page.frameLocator('#sbox-iframe').locator('.cp-modal-close').click();
 
-//     await fileActions.copyPublicLink.waitFor();
-//     await fileActions.copyPublicLink.click();
-//     await page.waitForTimeout(3000);
+    await fileActions.copyPublicLink.waitFor();
+    await fileActions.copyPublicLink.click();
+    await page.waitForTimeout(3000);
 
-//     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-//     const page1 = await context.newPage();
-//     await page1.goto(`${clipboardText}`);
-//     // await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    // await page1.waitForTimeout(10000);
     
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor()
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').waitFor()
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
 
-//     // // await page.waitForTimeout(3000);
-//     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
-//     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
+    // // await page.waitForTimeout(3000);
+    await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
+    await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeVisible();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - edit', status: 'passed', reason: 'Can anonymously create form with multiple submissions - edit' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - edit', status: 'failed', reason: 'Can\'t anonymously create form with multiple submissions - edit' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - edit', status: 'passed', reason: 'Can anonymously create form with multiple submissions - edit' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (multiple times) - edit', status: 'failed', reason: 'Can\'t anonymously create form with multiple submissions - edit' } })}`);
+  }
+});
 
-// test('form - submission (one time) - edit', async ({ page, context }) => {
-//   try {
-//     await fileActions.copyPublicLink.waitFor();
-//     await fileActions.copyPublicLink.click();
-//     await page.waitForTimeout(3000);
+test('form - submission (one time) - edit', async ({ page, context }) => {
+  try {
+    await fileActions.copyPublicLink.waitFor();
+    await fileActions.copyPublicLink.click();
+    await page.waitForTimeout(3000);
 
-//     const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-//     const page1 = await context.newPage();
-//     await page1.goto(`${clipboardText}`);
-//     // await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    // await page1.waitForTimeout(10000);
 
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
-//     await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
-//     await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 1').click();
+    await page1.frameLocator('#sbox-iframe').getByText('Answer anonymously').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Submit' }).click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Edit my responses' }).click();
+    await page1.frameLocator('#sbox-iframe').getByText('Option 2').click();
+    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Update' }).click();
 
-//     await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
+    await fileActions.responses(await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Responses (1)' }).isVisible());
 
-//     await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
+    await expect(page.frameLocator('#sbox-iframe').getByText(/Option 21/)).toBeVisible();
 
-//     await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeHidden();
+    await expect(page1.frameLocator('#sbox-iframe').getByRole('button', { name: ' Submit again' })).toBeHidden();
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - edit', status: 'passed', reason: 'Can anonymously create form with one time submission - edit' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - edit', status: 'failed', reason: 'Can\'t anonymously create form with one time submission - edit' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - edit', status: 'passed', reason: 'Can anonymously create form with one time submission - edit' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - submission (one time) - edit', status: 'failed', reason: 'Can\'t anonymously create form with one time submission - edit' } })}`);
+  }
+});
 
 test('form - share (link) - auditor', async ({ page, context }) => {
   try {
 
-    // await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
-    console.log('title', await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').textContent())
-    // await fileActions.share(mobile);
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDateComma)).waitFor({ timeout: 60000 });
+    console.log('title', await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').textContent())
+    await fileActions.share(mobile);
 
-    // await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
-    // await fileActions.shareCopyLink.waitFor();
-    // await fileActions.shareCopyLink.click();
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
+    await fileActions.shareCopyLink.waitFor();
+    await fileActions.shareCopyLink.click();
 
-    // const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-    // const page1 = await context.newPage();
-    // await page1.goto(`${clipboardText}`);
-    // // await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    // await page1.waitForTimeout(10000);
 
-    // await page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
-    // await expect(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma))).toBeVisible({ timeout: 5000 });
-    // await page1.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor();
-    // await expect(page1.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDateComma)).waitFor({ timeout: 60000 });
+    await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDateComma))).toBeVisible({ timeout: 5000 });
+    await page1.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - share (link - auditor)', status: 'passed', reason: 'Can anonymously create form and share link (auditor)' } })}`);
   } catch (e) {
@@ -262,7 +262,7 @@ test('form - share (link) - author', async ({ page, context }) => {
   try {
     const title = `Form - ${titleDate}`;
     const titleComma = `Form - ${titleDateComma}`;
-    await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(title).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleComma)).waitFor({ timeout: 60000 });
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(title).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleComma)).waitFor({ timeout: 60000 });
 
     await fileActions.share(mobile);
 
