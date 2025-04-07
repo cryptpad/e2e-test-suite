@@ -1,9 +1,11 @@
+
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
+const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
 let pageOne;
 let mobile;
@@ -11,237 +13,195 @@ let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
+let filePage;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
-  mobile = isMobile;
-  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-  platform = os.platform();
+  test.setTimeout(60000);
+  filePage = new FilePage(page, testInfo.title, isMobile);
 
-  await page.goto(`${url}/code`);
+  const fileType = 'code';
+  // directly load a pad page and fetch its id from the url
+  await page.goto(`${url}/code/`);
   fileActions = new FileActions(page);
-
-  await fileActions.codeeditor.waitFor();
 });
 
-test('anon - code - input text #1367', async ({ page }) => {
-  test.fixme(mobile, 'mobile editor preview bug');
-  try {
-    await fileActions.codeeditor.click();
-    await fileActions.typeTestTextCode(mobile, 'test text');
-    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
-    await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
-  }
-});
+test.describe('New file modal', () => {
+    test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
+      try {
+        const firstPad = filePage.fileId();
 
-// const { test, url } = require('../fixture.js');
-// const { expect } = require('@playwright/test');
-// const { FileActions } = require('./fileactions.js');
-// const fs = require('fs');
-// require('dotenv').config();
-// const os = require('os');
-// const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
+        // click File twice and the menu will appear and then disappear.
+        await filePage.filemenu().click();
+        await expect(filePage.newFile).toBeVisible();
+        await filePage.filemenu().click();
+        await expect(filePage.newFile).not.toBeVisible();
 
-// let pageOne;
-// let mobile;
-// let browserstackMobile;
-// let platform;
-// const local = !!process.env.PW_URL.includes('localhost');
-// let fileActions;
-// let filePage;
+        // click File -> New to reach the new file modal dialog and close it immediately.
+        await filePage.filemenu().click();
+        const cancelledFileModal = await filePage.newFileClick();
+        await expect(cancelledFileModal.close).toBeVisible();
+        await cancelledFileModal.close.click();
+        await expect(cancelledFileModal.close).not.toBeVisible();
+        await expect(filePage.filemenu()).toBeVisible();
 
-// test.beforeEach(async ({ page, isMobile }, testInfo) => {
-//   test.setTimeout(60000);
-//   filePage = new FilePage(page, testInfo.title, isMobile);
+        // click File -> New to reach the new file modal dialog again.
+        await filePage.filemenu().click();
+        const newFileModal = await filePage.newFileClick();
+        await expect(newFileModal.close).toBeVisible();
 
-//   const fileType = 'code';
-//   // directly load a pad page and fetch its id from the url
-//   await page.goto(`${url}/code/`);
-//   fileActions = new FileActions(page);
-// });
+        // In the modal, click icon for file type to create a new one in a new browser tab.
+        const nextPadPage = await newFileModal.createFileOfType(context, fileType);
+        await nextPadPage.filemenu().waitFor()
+        await expect(nextPadPage.filemenu()).toBeVisible();
+        // Ensure this is indeed a new pad, and not just the same we previously had.
+        const secondPad = nextPadPage.fileId();
+        expect(secondPad).not.toBe(firstPad);
 
+        await filePage.toSuccess('New file modal works');
+      } catch (e) {
+        await filePage.toFailure(e, "New file modal doesn't work");
+      }
+    });
+  });
 
-// test.describe('New file modal', () => {
-//     test(`Explore new file modal from code.`, async ({ page, context }, testInfo) => {
-//       try {
-//         const firstPad = filePage.fileId();
+test.describe('Share modal', () => {
+    test(`Explore share modal from code.`, async ({ page, context }, testInfo) => {
+      try {
 
-//         // click File twice and the menu will appear and then disappear.
-//         await filePage.filemenu().click();
-//         await expect(filePage.newFile).toBeVisible();
-//         await filePage.filemenu().click();
-//         await expect(filePage.newFile).not.toBeVisible();
+        const originalId = filePage.fileId();
 
-//         // click File -> New to reach the new file modal dialog and close it immediately.
-//         await filePage.filemenu().click();
-//         const cancelledFileModal = await filePage.newFileClick();
-//         await expect(cancelledFileModal.close).toBeVisible();
-//         await cancelledFileModal.close.click();
-//         await expect(cancelledFileModal.close).not.toBeVisible();
-//         await expect(filePage.filemenu()).toBeVisible();
+        const shareModal = await filePage.shareButtonClick();
+        // check that the link to be copied points to the file currently open
+        await shareModal.copyButton.click();
+        const actual = await shareModal.getLinkAfterCopy();
+        expect(actual).toBe(originalId);
+        expect(actual).toContain('edit');
 
-//         // click File -> New to reach the new file modal dialog again.
-//         await filePage.filemenu().click();
-//         const newFileModal = await filePage.newFileClick();
-//         await expect(newFileModal.close).toBeVisible();
+        // check that the link for viewing is different from the link for editing.
+        await filePage.shareButtonClick();
+        await shareModal.viewToggle(fileType).click();
+        await shareModal.copyButton.click();
+        const actualForViewing = await shareModal.getLinkAfterCopy();
+        expect(actualForViewing).not.toBe(originalId);
+        expect(actualForViewing).toContain('view');
 
-//         // In the modal, click icon for file type to create a new one in a new browser tab.
-//         const nextPadPage = await newFileModal.createFileOfType(context, fileType);
-//         await nextPadPage.filemenu().waitFor()
-//         await expect(nextPadPage.filemenu()).toBeVisible();
-//         // Ensure this is indeed a new pad, and not just the same we previously had.
-//         const secondPad = nextPadPage.fileId();
-//         expect(secondPad).not.toBe(firstPad);
+        // check that opening a link correctly opens a new browser tab
+        await filePage.shareButtonClick();
+        await shareModal.viewToggle(fileType).click();
+        const openedLinkPage = await shareModal.openLinkClick(context);
+        const openedFileId = openedLinkPage.fileId();
+        expect(openedFileId).not.toBe(originalId);
+        if (fileType !== 'form') {
+          await expect(openedLinkPage.filemenu()).toBeVisible();
+          await expect(filePage.fileName).toContainText('(Read only)');
+        }
 
-//         await filePage.toSuccess('New file modal works');
-//       } catch (e) {
-//         await filePage.toFailure(e, "New file modal doesn't work");
-//       }
-//     });
-//   });
+        await filePage.toSuccess('Share modal works well');
+      } catch (e) {
+        await filePage.toFailure(e, 'Share modal failed');
+      }
+    });
+  });
 
-// test.describe('Share modal', () => {
-//     test(`Explore share modal from code.`, async ({ page, context }, testInfo) => {
-//       try {
+test.describe('Chat modal', () => {
+    test(`Explore chat modal for code`, async ({ page, context }, testInfo) => {
+      try {
 
-//         const originalId = filePage.fileId();
+        // Warning about storage may overlap with chat modal. First dismiss it.
+        await (new StoreModal(filePage)).dismissButton.click();
 
-//         const shareModal = await filePage.shareButtonClick();
-//         // check that the link to be copied points to the file currently open
-//         await shareModal.copyButton.click();
-//         const actual = await shareModal.getLinkAfterCopy();
-//         expect(actual).toBe(originalId);
-//         expect(actual).toContain('edit');
+        // Click chat to display the chat modal
+        const chatModal = await filePage.chatButtonClick();
+        await expect(chatModal.chatInput).toBeVisible();
 
-//         // check that the link for viewing is different from the link for editing.
-//         await filePage.shareButtonClick();
-//         await shareModal.viewToggle(fileType).click();
-//         await shareModal.copyButton.click();
-//         const actualForViewing = await shareModal.getLinkAfterCopy();
-//         expect(actualForViewing).not.toBe(originalId);
-//         expect(actualForViewing).toContain('view');
+        // Enter a message.
+        const chatMessage = 'This is a test message';
+        await chatModal.enterText(chatMessage);
 
-//         // check that opening a link correctly opens a new browser tab
-//         await filePage.shareButtonClick();
-//         await shareModal.viewToggle(fileType).click();
-//         const openedLinkPage = await shareModal.openLinkClick(context);
-//         const openedFileId = openedLinkPage.fileId();
-//         expect(openedFileId).not.toBe(originalId);
-//         if (fileType !== 'form') {
-//           await expect(openedLinkPage.filemenu()).toBeVisible();
-//           await expect(filePage.fileName).toContainText('(Read only)');
-//         }
+        // Now a request for help appears in the corner overlapping with chat.
+        await filePage.dismissHelpRequest();
 
-//         await filePage.toSuccess('Share modal works well');
-//       } catch (e) {
-//         await filePage.toFailure(e, 'Share modal failed');
-//       }
-//     });
-//   });
+        // With the popup gone we can verify the visibility of the message.
+        await expect(chatModal.chatPane).toHaveText(new RegExp('.*' + chatMessage));
 
-// test.describe('Chat modal', () => {
-//     test(`Explore chat modal for code`, async ({ page, context }, testInfo) => {
-//       try {
+        // Click chat again to dismiss the chat modal.
+        await filePage.chatButtonClick();
+        await expect(chatModal.chatInput).not.toBeVisible();
 
-//         // Warning about storage may overlap with chat modal. First dismiss it.
-//         await (new StoreModal(filePage)).dismissButton.click();
+        await filePage.toSuccess('Chat modal works well');
+      } catch (e) {
+        await filePage.toFailure(e, 'Chat modal failed');
+      }
+    });
+  });
 
-//         // Click chat to display the chat modal
-//         const chatModal = await filePage.chatButtonClick();
-//         await expect(chatModal.chatInput).toBeVisible();
+test.describe('Change title', () => {
+    test(`Change title for code`, async ({ page, context }, testInfo) => {
+      try {
+        // Load a new document.
+        await expect(filePage.fileName).toBeVisible();
 
-//         // Enter a message.
-//         const chatMessage = 'This is a test message';
-//         await chatModal.enterText(chatMessage);
+        // Enter a new document name.
+        const newName = docType + '-' + Math.random();
+        await filePage.titleEditBox.click();
+        await filePage.titleInput.fill(newName);
 
-//         // Now a request for help appears in the corner overlapping with chat.
-//         await filePage.dismissHelpRequest();
+        // Save the changed document name.
+        await filePage.saveTitle.click();
+        await expect(filePage.fileName).toContainText(newName);
 
-//         // With the popup gone we can verify the visibility of the message.
-//         await expect(chatModal.chatPane).toHaveText(new RegExp('.*' + chatMessage));
+        await filePage.toSuccess('Changing title succeeded');
+      } catch (e) {
+        await filePage.toFailure(e, 'Changing title failed');
+      }
+    });
+  });
 
-//         // Click chat again to dismiss the chat modal.
-//         await filePage.chatButtonClick();
-//         await expect(chatModal.chatInput).not.toBeVisible();
+test.describe('Save/Remove ', () => {
+    test(`Save and remove for code`, async ({ page, context }, testInfo) => {
+      try {
 
-//         await filePage.toSuccess('Chat modal works well');
-//       } catch (e) {
-//         await filePage.toFailure(e, 'Chat modal failed');
-//       }
-//     });
-//   });
+        await expect(filePage.fileName).toBeVisible();
 
-// test.describe('Change title', () => {
-//     test(`Change title for code`, async ({ page, context }, testInfo) => {
-//       try {
-//         // Load a new document.
-//         await expect(filePage.fileName).toBeVisible();
-
-//         // Enter a new document name.
-//         const newName = docType + '-' + Math.random();
-//         await filePage.titleEditBox.click();
-//         await filePage.titleInput.fill(newName);
-
-//         // Save the changed document name.
-//         await filePage.saveTitle.click();
-//         await expect(filePage.fileName).toContainText(newName);
-
-//         await filePage.toSuccess('Changing title succeeded');
-//       } catch (e) {
-//         await filePage.toFailure(e, 'Changing title failed');
-//       }
-//     });
-//   });
-
-// test.describe('Save/Remove ', () => {
-//     test(`Save and remove for code`, async ({ page, context }, testInfo) => {
-//       try {
-
-//         await expect(filePage.fileName).toBeVisible();
-
-//         // First try to trash without having saved, which should raise a warning.
-//         await filePage.filemenu().click();
-//         await filePage.trashFile.click();
-//         await expect(filePage.mainFrame.getByText(
-//           'You must store this document in your CryptDrive before being able to use this feature.'
-//         )).toBeVisible();
-//         await filePage.okButton.click();
+        // First try to trash without having saved, which should raise a warning.
+        await filePage.filemenu().click();
+        await filePage.trashFile.click();
+        await expect(filePage.mainFrame.getByText(
+          'You must store this document in your CryptDrive before being able to use this feature.'
+        )).toBeVisible();
+        await filePage.okButton.click();
 
         
 
-//         // First store the document.
-//         await (new StoreModal(filePage)).storeButton.click();
-//         await filePage.mainFrame.getByText(
-//           'The document was successfully stored in your CryptDrive!'
-//         ).waitFor();
-//         await expect(filePage.mainFrame.getByText(
-//           'The document was successfully stored in your CryptDrive!'
-//         )).toBeVisible();
+        // First store the document.
+        await (new StoreModal(filePage)).storeButton.click();
+        await filePage.mainFrame.getByText(
+          'The document was successfully stored in your CryptDrive!'
+        ).waitFor();
+        await expect(filePage.mainFrame.getByText(
+          'The document was successfully stored in your CryptDrive!'
+        )).toBeVisible();
 
-//         // Then trash the document, first canceling.
-//         await filePage.filemenu().click();
-//         await filePage.trashFile.click();
-//         await expect(filePage.alertMessage).toContainText('Are you sure');
-//         await filePage.cancelButton.click();
-//         await expect(filePage.cancelButton).not.toBeVisible();
+        // Then trash the document, first canceling.
+        await filePage.filemenu().click();
+        await filePage.trashFile.click();
+        await expect(filePage.alertMessage).toContainText('Are you sure');
+        await filePage.cancelButton.click();
+        await expect(filePage.cancelButton).not.toBeVisible();
 
-//         // Now try trashing again, but do it for real.
-//         await filePage.filemenu().click();
-//         await filePage.trashFile.click();
-//         await expect(filePage.alertMessage).toContainText('Are you sure');
-//         await filePage.okButton.click();
-//         await expect(filePage.mainFrame.getByText('Deleted')).toBeVisible();
-//         await filePage.okButton.click();
-//         await expect(filePage.alertMessage).not.toBeVisible();
+        // Now try trashing again, but do it for real.
+        await filePage.filemenu().click();
+        await filePage.trashFile.click();
+        await expect(filePage.alertMessage).toContainText('Are you sure');
+        await filePage.okButton.click();
+        await expect(filePage.mainFrame.getByText('Deleted')).toBeVisible();
+        await filePage.okButton.click();
+        await expect(filePage.alertMessage).not.toBeVisible();
 
-//         await filePage.toSuccess('Save/remove works well');
-//       } catch (e) {
-//         await filePage.toFailure(e, 'Save/remove failed');
-//       }
-//     });
-//   });
+        await filePage.toSuccess('Save/remove works well');
+      } catch (e) {
+        await filePage.toFailure(e, 'Save/remove failed');
+      }
+    });
+  });
