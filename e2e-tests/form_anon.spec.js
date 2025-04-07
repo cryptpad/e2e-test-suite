@@ -233,23 +233,23 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 test('form - share (link) - auditor', async ({ page, context }) => {
   try {
 
-    // await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDateComma)).waitFor({ timeout: 60000 });
-    console.log('title', await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').textContent())
-    // await fileActions.share(mobile);
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDateComma)).waitFor({ timeout: 60000 });
+    console.log('title', await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').textContent())
+    await fileActions.share(mobile);
 
-    // await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
-    // await fileActions.shareCopyLink.waitFor();
-    // await fileActions.shareCopyLink.click();
+    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
+    await fileActions.shareCopyLink.waitFor();
+    await fileActions.shareCopyLink.click();
 
-    // const clipboardText = await page.evaluate('navigator.clipboard.readText()');
-    // const page1 = await context.newPage();
-    // await page1.goto(`${clipboardText}`);
-    // // await page1.waitForTimeout(10000);
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    const page1 = await context.newPage();
+    await page1.goto(`${clipboardText}`);
+    // await page1.waitForTimeout(10000);
 
-    // await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDateComma)).waitFor({ timeout: 60000 });
-    // await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleDateComma))).toBeVisible({ timeout: 5000 });
-    // await page1.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor();
-    // await expect(page1.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
+    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDateComma)).waitFor({ timeout: 60000 });
+    await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDate).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDateComma))).toBeVisible({ timeout: 5000 });
+    await page1.frameLocator('#sbox-iframe').getByText('There are no responses').waitFor();
+    await expect(page1.frameLocator('#sbox-iframe').getByText('There are no responses')).toBeVisible();
 
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'form - share (link - auditor)', status: 'passed', reason: 'Can anonymously create form and share link (auditor)' } })}`);
   } catch (e) {
@@ -262,7 +262,7 @@ test('form - share (link) - auditor', async ({ page, context }) => {
 //   try {
 //     const title = `Form - ${titleDate}`;
 //     const titleComma = `Form - ${titleDateComma}`;
-//     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(title).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(titleComma)).waitFor({ timeout: 60000 });
+//     await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(title).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleComma)).waitFor({ timeout: 60000 });
 
 //     await fileActions.share(mobile);
 
@@ -274,8 +274,8 @@ test('form - share (link) - auditor', async ({ page, context }) => {
 //     await page1.goto(`${clipboardText}`);
 //     // await page1.waitForTimeout(10000);
 
-//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`)).waitFor();
-//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${titleComma}`))).toBeVisible();
+//     await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(`${titleComma}`)).waitFor();
+//     await expect(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(`${title}`).or(page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(`${titleComma}`))).toBeVisible();
 
 //     await expect(page1.frameLocator('#sbox-iframe').getByText('Read only')).toBeHidden();
 
