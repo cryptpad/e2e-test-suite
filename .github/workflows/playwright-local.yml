@@ -17,7 +17,7 @@ jobs:
       - name: Run multi repo cloning script
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
-        run: git ls-remote --heads git@github.com:cryptpad/e2e-test-suite.git
+        run: git ls-remote --heads "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git"
         # run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b CI_testing
         shell: bash
       - name: Install dependencies
