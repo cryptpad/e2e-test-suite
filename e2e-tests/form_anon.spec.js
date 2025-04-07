@@ -14,7 +14,7 @@ let fileActions;
 let isBrowserstack;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(60000);
 
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
@@ -234,7 +234,7 @@ test('form - share (link) - auditor', async ({ page, context }) => {
   try {
 
     // await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
-    console.log('title', await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').waitFor())
+    console.log('title', await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').textContent())
     await fileActions.share(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
