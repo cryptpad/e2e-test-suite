@@ -232,9 +232,9 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test('form - share (link) - auditor', async ({ page, context }) => {
   try {
-
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDateComma)).waitFor();
     console.log('title', await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').textContent())
+    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-value').getByText(titleDateComma)).waitFor();
+    
     await fileActions.share(mobile);
 
     await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Auditor$/ }).locator('span').first().click();
