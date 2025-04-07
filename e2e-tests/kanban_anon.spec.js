@@ -159,7 +159,7 @@ test('kanban - import file', async ({ page }) => {
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
-    await fileChooser.setFiles('testdocuments/testkanban.json');
+    await fileChooser.setFiles('e2e-test-suite/testdocuments/testkanban.json');
 
     // await page.waitForTimeout(3000);
 

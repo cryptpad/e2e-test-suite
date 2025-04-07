@@ -215,7 +215,7 @@ test('markdown - import file', async ({ page }) => {
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
-    await fileChooser.setFiles('testdocuments/testslide.md');
+    await fileChooser.setFiles('e2e-test-suite/testdocuments/testslide.md');
 
     // await page.waitForTimeout(3000);
 

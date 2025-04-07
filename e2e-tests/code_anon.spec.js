@@ -129,7 +129,7 @@ test('code - import file #1367', async ({ page, context }) => {
       await fileActions.importClick()
     ]);
 
-    await fileChooser.setFiles('testdocuments/myfile.html');
+    await fileChooser.setFiles('e2e-test-suite/testdocuments/myfile.html');
 
     // // await page.waitForTimeout(3000);
 
