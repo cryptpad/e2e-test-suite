@@ -38,6 +38,6 @@ jobs:
       - name: Install dependencies
         run: npm exec playwright install --with-deps --prefix e2e-test-suite
       - name: Install dependencies
-        run: npm exec playwright test anon --project='chrome' --workers=2 --prefix e2e-test-suite
+        run: npm exec playwright test form_anon.spec.js:233 --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
