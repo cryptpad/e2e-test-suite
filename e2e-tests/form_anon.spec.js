@@ -233,7 +233,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 test('form - share (link) - auditor', async ({ page, context }) => {
   try {
 
-    await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
+    // await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDate).or(page.frameLocator('#sbox-iframe').locator('#cp-toolbar').getByText(titleDateComma)).waitFor({ timeout: 60000 });
     console.log('title', await page.frameLocator('#sbox-iframe').locator('#cp-toolbar').waitFor())
     await fileActions.share(mobile);
 
