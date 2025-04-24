@@ -50,7 +50,7 @@ jobs:
         env:
           PW_URL: ${{ vars.PW_URL }} 
       - name: Main2
-        run: ls
+        run: ls test-results
         if: always()
       - name: Main2
         run: ls e2e-test-suite
