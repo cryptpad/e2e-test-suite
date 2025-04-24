@@ -44,7 +44,10 @@ module.exports = defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html'], ['playwright-ctrf-json-reporter', {}]],
+  reporter: [['html'], 
+  ['@estruyf/github-actions-reporter']
+  // ['playwright-ctrf-json-reporter', {}]
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
