@@ -2,7 +2,7 @@
 // import { title } from 'process';
 
 
-const { url, titleDate, titleDateComma, titleDateTwoCommas, dateTodayDashFormat } = require('../fixture.js');
+const { url, titleDate, titleDateComma, titleDateTwoCommas, titleDateNoYear, dateTodayDashFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 
 export class FileActions {
@@ -18,6 +18,7 @@ export class FileActions {
     this.titleDate = titleDate
     this.titleDateComma = titleDateComma
     this.titleDateTwoCommas = titleDateTwoCommas
+    this.titleDateNoYear = titleDateNoYear
 
     // user actions-related locators
     this.login = page.locator('.login');
@@ -730,7 +731,8 @@ export class FileActions {
     var titleDate = `${name} - ${this.titleDate}`;
     var titleDateComma = `${name} - ${this.titleDateComma}`
     var titleDateTwoCommas = `${name} - ${this.titleDateTwoCommas}`
-    return [titleDate, titleDateComma, titleDateTwoCommas]
+    var titleDateNoYear = `${name} - ${this.titleDateNoYear}`
+    return [titleDate, titleDateComma, titleDateTwoCommas, titleDateNoYear]
   }
 
   driveFileTitle (fileName) {
@@ -738,15 +740,17 @@ export class FileActions {
     var title = titles[0]
     var titleComma = titles[1]
     var titleTwoCommas = titles[2]
-    return this.driveElementText.getByText(title).or(this.driveElementText.getByText(titleComma)).or(this.driveElementText.getByText(titleTwoCommas))
+    var titleNoYear = titles[3]
+    return this.driveElementText.getByText(title).or(this.driveElementText.getByText(titleComma)).or(this.driveElementText.getByText(titleTwoCommas)).or(this.driveElementText.getByText(titleNoYear))
   }
 
-  fileTitleTextOnly (fileName) {
+  fileTitleAllFormats (fileName) {
     var titles = this.getTitle(fileName)
     var title = titles[0]
     var titleComma = titles[1]
     var titleTwoCommas = titles[2]
-    return this.mainFrame.getByText(title).or(this.mainFrame.getByText(titleComma)).or(this.mainFrame.getByText(titleTwoCommas))
+    var titleNoYear = titles[3]
+    return this.mainFrame.getByText(title).or(this.mainFrame.getByText(titleComma)).or(this.mainFrame.getByText(titleTwoCommas)).or(this.mainFrame.getByText(titleNoYear))
   }
 
   trashFileTitle (fileName) {
