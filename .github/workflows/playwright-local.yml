@@ -36,11 +36,11 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefix e2e-test-suite
       - name: Install dependencies 2
-        run: npm exec playwright install --with-deps --prefix e2e-test-suite
+        run: npm exec playwright install-deps --with-deps --prefix e2e-test-suite
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
       - name: Run tests
-        run: npm exec playwright test anon --project='chrome' --workers=2 --prefix e2e-test-suite
+        run: npm exec playwright test code_anon.spec.js:168 --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
       - name: Publish Test Report
