@@ -50,8 +50,8 @@ jobs:
         run: ls e2e-test-suite
         if: always()
       - name: Publish test summary results...
-          run: npm exec github-actions-ctrf ctrf.json --prefix e2e-test-suite
-          if: always()
+        run: npm exec github-actions-ctrf ctrf.json --prefix e2e-test-suite
+        if: always()
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         # uses: estruyf/github-actions-reporter@1
