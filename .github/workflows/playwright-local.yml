@@ -50,7 +50,16 @@ jobs:
         run: npm exec playwright test drive_anon.spec.js:121 DEBUG=1 --config=playwright.config.js --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
+      - name: Generate HTML Report
+        run: npx playwright show-report --output=playwright-report
       - uses: actions/download-artifact@v4
+      
+      - name: Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
       - name: Main2
         run: ls test-results
         if: always()
