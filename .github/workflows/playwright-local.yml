@@ -48,7 +48,8 @@ jobs:
           PW_URL: ${{ vars.PW_URL }} 
       - name: Main
         run: |
-          ls
+          echo "Running ls..."
+          ls -la
       - name: Main2
         run: |
           ls
