@@ -99,8 +99,8 @@ userMenuItems.forEach(function (item) {
 //     await expect(fileActions1.fileTitle('Rich text')).toBeVisible()
 //     await page1.close()
 //     await page.reload()
-//     await fileActions.driveFileTitle('Rich text').waitFor()
-//     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible()
+//     await fileActions.fileTitleAllFormats('Rich text').waitFor()
+//     await expect(fileActions.fileTitleAllFormats('Rich text')).toBeVisible()
 
 //     //erase
 //     await fileActions.eraseDrive.click();
@@ -108,7 +108,7 @@ userMenuItems.forEach(function (item) {
 //     await fileActions.okButton.click();
 
 //     //check file is erased
-//     await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0)
+//     await expect(fileActions.fileTitleAllFormats('Rich text')).toHaveCount(0)
 
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'passed',reason: 'Can navigate to Drive and erase all'}})}`);
 //   } catch (e) {
@@ -127,39 +127,29 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     const page1 = await page1Promise;
 
     await page.reload();
-    // await fileActions.mainFrame.waitFor()
-    // await page.locator('#sbox-iframe').getByText('Rich text - Thu, 24 April,').waitFor()
-    await fileActions.mainFrame.getByText('Rich text - Thu, April 24,').waitFor()
-    console.log(await fileActions.mainFrame.getByText('Rich text - Thu, April 24,'))
-    console.log(await fileActions.fileTitleAllFormats('Rich text'))
-    console.log(await fileActions.fileTitleAllFormats('pad'))
+
     await fileActions.fileTitleAllFormats('Rich text').waitFor()
-    // await page.locator('#sbox-iframe').getByText('Rich text').waitFor()
-    // await fileActions.mainFrame.getByText('Rich text').waitFor()
 
-    // await fileActions.fileTitleAllFormats('Rich text').waitFor()
-    // await expect(fileActions.mainFrame.getByText('Rich text - Thu, 24 April,')).toBeVisible();
+    await page.bringToFront();
+    await fileActions.changeDriveView.click();
 
-    // await page.bringToFront();
-    // await fileActions.changeDriveView.click();
+    if (mobile) {
+      await expect(fileActions.driveContentList).toBeVisible();
+    } else {
+      await expect(await fileActions.driveListViewSpan('Type')).toBeVisible();
+      await expect(await fileActions.driveListViewSpan('Last access')).toBeVisible();
+      await expect(await fileActions.driveListViewSpan('Creation')).toBeVisible();
+    }
 
-    // if (mobile) {
-    //   await expect(fileActions.driveContentList).toBeVisible();
-    // } else {
-    //   await expect(await fileActions.driveListViewSpan('Type')).toBeVisible();
-    //   await expect(await fileActions.driveListViewSpan('Last access')).toBeVisible();
-    //   await expect(await fileActions.driveListViewSpan('Creation')).toBeVisible();
-    // }
+    await fileActions.changeDriveView.click();
 
-    // await fileActions.changeDriveView.click();
-
-    // if (mobile) {
-    //   await expect(fileActions.driveContentGrid).toBeVisible();
-    // } else {
-    //   await expect(fileActions.driveListViewSpan('Type')).toBeHidden();
-    //   await expect(fileActions.driveListViewSpan('Last access')).toBeHidden();
-    //   await expect(fileActions.driveListViewSpan('Creation')).toBeHidden();
-    // }
+    if (mobile) {
+      await expect(fileActions.driveContentGrid).toBeVisible();
+    } else {
+      await expect(fileActions.driveListViewSpan('Type')).toBeHidden();
+      await expect(fileActions.driveListViewSpan('Last access')).toBeHidden();
+      await expect(fileActions.driveListViewSpan('Creation')).toBeHidden();
+    }
 
     await fileActions.toSuccess('Can anonymously navigate to Drive and change the view to list/grid');
   } catch (e) {
@@ -190,15 +180,15 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 //       await page.reload();
 //     });
 
-//     await fileActions.driveFileTitle('Rich text').waitFor()
-//     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
+//     await fileActions.fileTitleAllFormats('Rich text').waitFor()
+//     await expect(fileActions.fileTitleAllFormats('Rich text')).toBeVisible();
 
 //     await fileActions.driveHistory.click();
 //     await fileActions.historyPrevLast.click({
 //       clickCount: 3
 //     });
 
-//     await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0);
+//     await expect(fileActions.fileTitleAllFormats('Rich text')).toHaveCount(0);
 
 //     await fileActions.toSuccess('Can anonymously navigate to Drive and view history');
 //   } catch (e) {

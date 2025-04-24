@@ -134,13 +134,13 @@ docNames.forEach(function (name) {
         await fileActions.tag.click();
       }
 
-      await fileActions.driveFileTitle(name).waitFor();
-      await expect(fileActions.driveFileTitle(name)).toBeVisible();
+      await fileActions.fileTitleAllFormats(name).waitFor();
+      await expect(fileActions.fileTitleAllFormats(name)).toBeVisible();
 
-      await fileActions.driveFileTitle(name).click({ button: 'right' });
+      await fileActions.fileTitleAllFormats(name).click({ button: 'right' });
       await fileActions.destroy.click();
       await fileActions.okButton.click();
-      await expect(fileActions.driveFileTitle(name)).toHaveCount(0);
+      await expect(fileActions.fileTitleAllFormats(name)).toHaveCount(0);
 
       await fileActions.toSuccess(`Can tag ${name} document`);
     } catch (e) {
@@ -221,7 +221,7 @@ docNames.forEach(function (name) {
       await page.goto(`${url}/teams/`);
       await fileActions.teamSlot.getByText('test team').click();
 
-      await fileActions.driveFileTitle(name).first().click({ button: 'right' });
+      await fileActions.fileTitleAllFormats(name).first().click({ button: 'right' });
 
       await fileActions.moveToTrash.click();
       await page.waitForTimeout(5000);
