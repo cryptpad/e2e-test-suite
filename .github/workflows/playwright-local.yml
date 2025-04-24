@@ -49,6 +49,9 @@ jobs:
       - name: Main
         run: echo "hello"
         if: always()
+      - name: Main
+        run: echo "hello"
+        if: always()
       - name: Main2
         if: always()
         run: echo "hi"
