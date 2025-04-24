@@ -1,6 +1,8 @@
 // const path = require('node:path')
 const { defineConfig, devices } = require('@playwright/test');
 
+console.log("✅ Playwright config loaded");
+
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
