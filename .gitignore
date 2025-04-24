@@ -4,7 +4,6 @@ playwright-report/
 local.log
 test-results
 index.html
-ctrf/
 auth/*.json
 **/e2e-tests/**/*.png
 **/.DS_STORE
