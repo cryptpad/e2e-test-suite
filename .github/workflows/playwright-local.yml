@@ -42,6 +42,7 @@ jobs:
       - name: Install test reporter
         # run: npm install @estruyf/github-actions-reporter --prefix e2e-test-suite
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
+      
       - name: test reporter 
         run: npm install @estruyf/github-actions-reporter --prefix e2e-test-suite
         if: always()
@@ -59,7 +60,8 @@ jobs:
       - name: Main2
         run: ls 
         if: always()
-
+      - name: Check for ctrf.json
+        run: find . -name "ctrf.json"
       - name: Publish test summary results...
         run: npm exec github-actions-ctrf e2e-test-suite/ctrf.json --prefix e2e-test-suite
         if: always()
