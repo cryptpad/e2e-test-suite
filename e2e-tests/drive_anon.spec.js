@@ -99,8 +99,8 @@ userMenuItems.forEach(function (item) {
 //     await expect(fileActions1.fileTitle('Rich text')).toBeVisible()
 //     await page1.close()
 //     await page.reload()
-//     await fileActions.fileTitleAllFormats('Rich text').waitFor()
-//     await expect(fileActions.fileTitleAllFormats('Rich text')).toBeVisible()
+//     await fileActions.driveFileTitle('Rich text').waitFor()
+//     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible()
 
 //     //erase
 //     await fileActions.eraseDrive.click();
@@ -108,7 +108,7 @@ userMenuItems.forEach(function (item) {
 //     await fileActions.okButton.click();
 
 //     //check file is erased
-//     await expect(fileActions.fileTitleAllFormats('Rich text')).toHaveCount(0)
+//     await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0)
 
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - erase', status: 'passed',reason: 'Can navigate to Drive and erase all'}})}`);
 //   } catch (e) {
@@ -180,15 +180,15 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 //       await page.reload();
 //     });
 
-//     await fileActions.fileTitleAllFormats('Rich text').waitFor()
-//     await expect(fileActions.fileTitleAllFormats('Rich text')).toBeVisible();
+//     await fileActions.driveFileTitle('Rich text').waitFor()
+//     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
 
 //     await fileActions.driveHistory.click();
 //     await fileActions.historyPrevLast.click({
 //       clickCount: 3
 //     });
 
-//     await expect(fileActions.fileTitleAllFormats('Rich text')).toHaveCount(0);
+//     await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0);
 
 //     await fileActions.toSuccess('Can anonymously navigate to Drive and view history');
 //   } catch (e) {

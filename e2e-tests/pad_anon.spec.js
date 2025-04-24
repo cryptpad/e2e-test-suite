@@ -274,7 +274,7 @@ test('pad - share at a moment in history', async ({ page, context }) => {
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
 
-    await fileActions1.fileTitleAllFormats('Rich text').waitFor()
+    await fileActions1.driveFileTitle('Rich text').waitFor()
     await expect(fileActions1.padEditor.getByText('One moment in history')).toBeHidden();
 
     await fileActions.toSuccess( 'Can share Rich Text at a specific moment in history');

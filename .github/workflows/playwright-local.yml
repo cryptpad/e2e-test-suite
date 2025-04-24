@@ -54,11 +54,17 @@ jobs:
         if: always()
 
       - name: Publish test summary results...
-        run: npm exec github-actions-ctrf ctrf.json --prefix e2e-test-suite
+        run: npm exec github-actions-ctrf e2e-test-suite/ctrf.json --prefix e2e-test-suite
         if: always()
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         # uses: estruyf/github-actions-reporter@1
         with:
-          report-path: 'e2e-test-suite/ctrf/*.json'
+          report-path: 'e2e-test-suite/ctrf.json'
         if: always()
+      # - name: Publish Test Report
+      #   uses: ctrf-io/github-test-reporter@v1
+      #   # uses: estruyf/github-actions-reporter@1
+      #   with:
+      #     report-path: 'e2e-test-suite/ctrf.json'
+      #   if: always()

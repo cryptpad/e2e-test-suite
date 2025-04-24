@@ -121,8 +121,8 @@ test('drive -  recent files', async ({ page }) => {
     await page1.close();
     await page.reload();
     await fileActions.driveSideBarItem('Recent').first().click();
-    await expect(fileActions.fileTitleAllFormats('Rich text')).toBeVisible();
-    await fileActions.fileTitleAllFormats('Rich text').click({ button: 'right' });
+    await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
+    await fileActions.driveFileTitle('Rich text').click({ button: 'right' });
     await fileActions.destroy.click();
     await fileActions.okButton.click();
 
