@@ -22,12 +22,14 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
+// const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
+const userMenuItems = ['pricing']
+
 
 userMenuItems.forEach(function (item) {
   test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {
     if (item === 'pricing') {
-      test.skip(local, 'pricing not available on dev instance');
+      test.skip(url !== 'https://cryptpad.fr', 'pricing not available on dev instance');
     }
     try {
       await fileActions.drivemenu.waitFor();

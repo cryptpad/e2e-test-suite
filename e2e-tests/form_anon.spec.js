@@ -615,10 +615,10 @@ test('form - add and respond to text question', async ({ page, context }) => {
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
-    await fileActions1.formTextInput.waitFor();
+    await fileActions1.formTextBox.waitFor();
 
-    await fileActions1.formTextInput.click();
-    await fileActions1.formTextInput.fill('Anon user');
+    await fileActions1.formTextBox.click();
+    await fileActions1.formTextBox.fill('Anon user');
     await page1.waitForTimeout(1000);
     await fileActions1.answerAnonSpan.click();
     await fileActions1.submitButton.click();
@@ -832,8 +832,8 @@ test('form - add and respond to date question', async ({ page, context }) => {
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
 
-    await fileActions1.formTextInput.waitFor();
-    await fileActions1.formTextInput.click();
+    await fileActions1.formTextBox.waitFor();
+    await fileActions1.formTextBox.click();
     await fileActions1.mainFrame.getByLabel(`${todayStringFormat}`).click();
     await page1.keyboard.press('Enter');
     await fileActions1.answerAnonSpan.click();

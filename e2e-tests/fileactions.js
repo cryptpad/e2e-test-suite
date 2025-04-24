@@ -172,7 +172,7 @@ export class FileActions {
     this.anonymizeResponses = this.mainFrame.locator('label').filter({ hasText: 'Anonymize responses' }).locator('span').first()
     this.showIndividualAnswers = this.mainFrame.getByRole('button', { name: 'Show individual answers' })
     this.oneTotalResponse = this.mainFrame.getByRole('heading', { name: 'Total responses: 1' })
-    this.formTextInput = this.mainFrame.locator('#cp-app-form-container input[type="text"]')
+    this.formTextBox = this.mainFrame.locator('#cp-app-form-container input[type="text"]')
     this.formEditorButton = this.mainFrame.getByRole('button', { name: ' Editor' })
     this.exportToSheet = this.mainFrame.getByRole('button', { name: ' Export to Sheet' })
     this.pageBreak = this.mainFrame.getByRole('button', { name: ' Page break' })

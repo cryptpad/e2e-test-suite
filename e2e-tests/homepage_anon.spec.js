@@ -45,6 +45,7 @@ test('homepage - access log in', async ({ page }) => {
 });
 
 test('home page > features', async ({ page }) => {
+  test.skip(url !== 'https://cryptpad.fr' && url !== 'http://localhost:3000', 'pricing not available on dev instance');
   try {
     if (!local) {
       await fileActions.homePageLink('Pricing' ).waitFor();
