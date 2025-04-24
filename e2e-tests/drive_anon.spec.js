@@ -121,13 +121,13 @@ userMenuItems.forEach(function (item) {
 test('drive - anon - list/grid view', async ({ page, context }) => {
   try {
     await fileActions.driveadd.waitFor();
-    // await fileActions.driveadd.click();
-    // const page1Promise = page.waitForEvent('popup');
-    // await fileActions.driveAddMenuItem('Rich text').click();
-    // const page1 = await page1Promise;
+    await fileActions.driveadd.click();
+    const page1Promise = page.waitForEvent('popup');
+    await fileActions.driveAddMenuItem('Rich text').click();
+    const page1 = await page1Promise;
 
-    // await page.reload();
-    // await fileActions.mainFrame.getByText('Rich text - Thu, 24 April,').waitFor()
+    await page.reload();
+    await fileActions.mainFrame.getByText('Rich text - Thu, 24 April,').waitFor()
 
     // // await fileActions.driveFileTitle('Rich text').waitFor()
     // await expect(fileActions.mainFrame.getByText('Rich text - Thu, 24 April,')).toBeVisible();
