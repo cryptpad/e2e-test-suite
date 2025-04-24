@@ -120,7 +120,7 @@ test('pad - import file', async ({ page }) => {
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
-    await fileChooser.setFiles('testdocuments/myfile.html');
+    await fileChooser.setFiles('e2e-test-suite/testdocuments/myfile.html');
     await expect(fileActions.padEditor.getByText('Test text here')).toBeVisible();
 
     await fileActions.toSuccess( 'Can import file into Rich Text document');
