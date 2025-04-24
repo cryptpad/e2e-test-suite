@@ -750,7 +750,7 @@ export class FileActions {
     var titleComma = titles[1]
     var titleTwoCommas = titles[2]
     var titleNoYear = titles[3]
-    return this.mainFrame.getByText(title).or(this.mainFrame.getByText(titleComma)).or(this.mainFrame.getByText(titleTwoCommas)).or(this.mainFrame.getByText(titleNoYear))
+    return this.mainFrame.getByText(titleNoYear)
   }
 
   trashFileTitle (fileName) {
