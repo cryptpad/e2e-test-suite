@@ -130,6 +130,9 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     // await fileActions.mainFrame.waitFor()
     // await page.locator('#sbox-iframe').getByText('Rich text - Thu, 24 April,').waitFor()
     await fileActions.mainFrame.getByText('Rich text - Thu, April 24,').waitFor()
+    console.log(await fileActions.fileTitleAllFormats('Rich text'))
+    console.log(await fileActions.fileTitleAllFormats('pad'))
+    await fileActions.fileTitleAllFormats('Rich text').waitFor()
     // await page.locator('#sbox-iframe').getByText('Rich text').waitFor()
     // await fileActions.mainFrame.getByText('Rich text').waitFor()
 
