@@ -750,7 +750,6 @@ export class FileActions {
     var titleComma = titles[1]
     var titleTwoCommas = titles[2]
     var titleNoYear = titles[3]
-    console.log('no year', titleNoYear)
     return this.mainFrame.getByText(titleNoYear).or(this.mainFrame.getByText(title)).or(this.mainFrame.getByText(titleComma)).or(this.mainFrame.getByText(titleTwoCommas))
   }
 

@@ -128,7 +128,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 
     await page.reload();
 
-    await fileActions.fileTitleAllFormats('Rich text').waitFor()
+    await fileActions.driveFileTitle('Rich text').waitFor()
 
     await page.bringToFront();
     await fileActions.changeDriveView.click();
