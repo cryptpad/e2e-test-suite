@@ -741,6 +741,14 @@ export class FileActions {
     return this.driveElementText.getByText(title).or(this.driveElementText.getByText(titleComma)).or(this.driveElementText.getByText(titleTwoCommas))
   }
 
+  fileTitleTextOnly (fileName) {
+    var titles = this.getTitle(fileName)
+    var title = titles[0]
+    var titleComma = titles[1]
+    var titleTwoCommas = titles[2]
+    return this.mainFrame.getByText(title).or(this.mainFrame.getByText(titleComma)).or(this.mainFrame.getByText(titleTwoCommas))
+  }
+
   trashFileTitle (fileName) {
     var titles = this.getTitle(fileName)
     var title = titles[0]
