@@ -8,11 +8,11 @@ on:
 jobs:
   run_tests:
     runs-on: ubuntu-latest 
-    services:
-      app:
-        image: node:22  
-        ports:
-          - 3000:3000 
+    # services:
+    #   app:
+    #     image: node:22  
+    #     ports:
+    #       - 3000:3000 
     steps:
       - name: Clone CryptPad repository
         env: 
