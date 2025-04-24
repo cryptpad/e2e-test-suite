@@ -127,10 +127,10 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     const page1 = await page1Promise;
 
     await page.reload();
-    await fileActions.fileTitleTextOnly('Rich text').waitFor()
+    await fileActions.getByText('Rich text - Thu, 24 April, 2025').waitFor()
 
     // await fileActions.driveFileTitle('Rich text').waitFor()
-    await expect(fileActions.fileTitleTextOnly('Rich text')).toBeVisible();
+    await expect(fileActions.getByText('Rich text - Thu, 24 April, 2025')).toBeVisible();
 
     await page.bringToFront();
     await fileActions.changeDriveView.click();
