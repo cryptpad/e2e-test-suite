@@ -46,8 +46,9 @@ jobs:
         run: npm exec playwright test drive_anon.spec.js:121 --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
-      # - name: Publish Test Report
-      #   uses: ctrf-io/github-test-reporter@v1
+      - name: Publish Test Report
+        # uses: ctrf-io/github-test-reporter@v1
+        uses: estruyf/github-actions-reporter@1
       #   with:
       #     report-path: 'e2e-test-suite/ctrf/*.json'
       #   if: always()
