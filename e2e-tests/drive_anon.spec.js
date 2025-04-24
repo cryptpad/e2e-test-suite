@@ -129,7 +129,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await page.reload();
     // await fileActions.mainFrame.getByText('Rich text - Thu, 24 April,').waitFor()
 
-    await fileActions.fileActions.mainFrame.getByText('Rich text').waitFor()
+    await fileActions.mainFrame.getByText('Rich text').waitFor()
     // await expect(fileActions.mainFrame.getByText('Rich text - Thu, 24 April,')).toBeVisible();
 
     // await page.bringToFront();
