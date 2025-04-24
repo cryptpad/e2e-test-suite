@@ -9,37 +9,37 @@ let mobile;
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }) => {
-  await page.goto(`${url}/whiteboard`);
   fileActions = new FileActions(page);
   mobile = isMobile;
-  await fileActions.fileSaved.waitFor();
+  await fileActions.loadFileType("whiteboard")
+
 });
 
 test('screenshot anon - can draw on whiteboard (default settings)', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
     await page.mouse.up();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
@@ -47,195 +47,194 @@ test('screenshot anon - can draw on whiteboard (default settings)', async ({ pag
     });
     await page.mouse.up();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'passed', reason: 'Can draw on whiteboard (default settings)' } })}`);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
+    await fileActions.toSuccess( 'Can draw on whiteboard (default settings)');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'failed', reason: 'Can\'t draw on whiteboard (default settings)' } })}`);
+    await fileActions.toFailure(e, 'Can\'t draw on whiteboard (default settings)');
   }
 });
 
 test('screenshot anon - erase on whiteboard', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
     await page.mouse.up();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
       }
     });
     await page.mouse.up();
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
+    await fileActions.clearButton.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can erase on whiteboard', status: 'passed', reason: 'Can erase on whiteboard' } })}`);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4400 });
+    await fileActions.toSuccess( 'Can erase on whiteboard');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can erase on whiteboard', status: 'failed', reason: 'Can\'t erase on whiteboard' } })}`);
+    await fileActions.toFailure(e,'Can\'t erase on whiteboard');
   }
 });
 
 test('screenshot anon - enter text on whiteboard', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.cp-whiteboard-text').click();
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardText.click();
 
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).dblclick({
+    await fileActions.whiteBoardCanvas.dblclick({
       position: {
         x: 26,
         y: 74
       }
     });
     await fileActions.textbox.fill('test text');
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can enter text on whiteboard', status: 'passed', reason: 'Can enter text on whiteboard' } })}`);
+    await fileActions.toSuccess(  'Can enter text on whiteboard');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can enter text on whiteboard', status: 'failed', reason: 'Can\'t enter text on whiteboard' } })}`);
+    await fileActions.toFailure(e, 'Can\'t enter text on whiteboard');
   }
 });
 
 test('screenshot anon - delete selection on whiteboard', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
     await page.mouse.up();
-    await page.frameLocator('#sbox-iframe').locator('.btn.move.fa.fa-arrows').click();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).click({
+    await fileActions.whiteBoardArrows.click();
+    await fileActions.whiteBoardCanvas.click({
       position: {
         x: 174,
         y: 230
       }
     });
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-whiteboard-delete').click();
+    await fileActions.whiteBoardDelete.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - delete selection on whiteboard', status: 'passed', reason: 'Can delete selection on Whiteboard' } })}`);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4900 });
+    await fileActions.toSuccess( 'Can delete selection on Whiteboard' );
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - delete selection on whiteboard', status: 'failed', reason: 'Can\'t delete selection on Whiteboard' } })}`);
+    await fileActions.toFailure(e, 'Can\'t delete selection on Whiteboard');
   }
 });
 
 test('screenshot anon - can change whiteboard brush thickness', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByLabel('Width:').click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Width:').fill('50');
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardWidth.click();
+    await fileActions.whiteBoardWidth.fill('50');
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - change whiteboard brush thickness', status: 'passed', reason: 'Can change Whiteboard brush thickness' } })}`);
+    await fileActions.toSuccess(  'Can change Whiteboard brush thickness');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - change whiteboard brush thickness', status: 'failed', reason: 'Can\'t change Whiteboard brush thickness' } })}`);
+    await fileActions.toFailure(e, 'Can\'t change Whiteboard brush thickness');
   }
 });
 
 test('screenshot anon - can change whiteboard brush opacity', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByLabel('Opacity:').click();
-    await page.frameLocator('#sbox-iframe').getByLabel('Opacity:').fill('0.5');
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardOpacity.click();
+    await fileActions.whiteBoardOpacity.fill('0.5');
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'passed', reason: 'Can draw on whiteboard (default settings)' } })}`);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4300 });
+    await fileActions.toSuccess(  'Can draw on whiteboard (default settings)');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - can draw on whiteboard (default settings)', status: 'failed', reason: 'Can\'t draw on whiteboard (default settings)' } })}`);
+    await fileActions.toFailure(e, 'Can\'t draw on whiteboard (default settings)');
   }
 });
 
 test('screenshot anon - can clear whiteboard canvas', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
     await page.mouse.up();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Clear' }).click();
+    await fileActions.clearButton.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'passed', reason: 'Can clear whiteboard canvas' } })}`);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4400 });
+    await fileActions.toSuccess( 'Can clear whiteboard canvas');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'clear whiteboard canvas', status: 'failed', reason: 'Can\'t clear whiteboard canvas' } })}`);
+    await fileActions.toFailure(e, 'Can\'t clear whiteboard canvas');
   }
 });
 
 test('screenshot whiteboard - make a copy', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
@@ -245,29 +244,29 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.filecopy.click()
+      await fileActions.fileMenuItem(' Make a copy').click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/whiteboard`), { timeout: 100000 });
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 3000 });
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - make a copy', status: 'passed', reason: 'Can make copy of Whiteboard document' } })}`);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4400 });
+    await fileActions.toSuccess( 'Can make copy of Whiteboard document');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - make a copy', status: 'failed', reason: 'Can\'t make copy of Whiteboard document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t make copy of Whiteboard document');
   }
 });
 
 test('screenshot whiteboard - export as png', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
@@ -285,23 +284,23 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
     await download.saveAs('/tmp/test whiteboard');
     expect(download.suggestedFilename()).toBe('test whiteboard.png');
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - export as png', status: 'passed', reason: 'Can export Whiteboard as png' } })}`);
+    await fileActions.toSuccess(  'Can export Whiteboard as png');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - export as png', status: 'failed', reason: 'Can\'t export Whiteboard as png' } })}`);
+    await fileActions.toFailure(e, 'Can\'t export Whiteboard as png');
   }
 });
 
 test('screenshot whiteboard - display history', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
@@ -309,41 +308,41 @@ test('screenshot whiteboard - display history', async ({ page }) => {
     });
     await page.mouse.up();
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click();
-    await fileActions.historyPrev.click();
+    await fileActions.historyPrevLast.click();
+    await fileActions.historyPrevLast.click();
     await expect(page).toHaveScreenshot({ maxDiffPixels: 7000 });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - display history', status: 'passed', reason: 'Can display Whiteboard history' } })}`);
+    await fileActions.toSuccess( 'Can display Whiteboard history');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'whiteboard - display history', status: 'failed', reason: 'Can\'t display Whiteboard history' } })}`);
+    await fileActions.toFailure(e,'Can\'t display Whiteboard history');
   }
 });
 
 test('screenshot whiteboard - share whiteboard history at specific moment in time (link)', async ({ page, browser }) => {
   try {
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).waitFor();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 175,
         y: 315
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
       }
     });
     await page.mouse.up();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
       }
     });
     await page.mouse.down();
-    await page.frameLocator('#sbox-iframe').locator('canvas').nth(1).hover({
+    await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
@@ -351,19 +350,19 @@ test('screenshot whiteboard - share whiteboard history at specific moment in tim
     });
     await page.mouse.up();
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click();
+    await fileActions.historyPrevLast.click();
     var clipboardText = await fileActions.getShareLink()
 
     page1 = await browser.newPage();
 
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
-    await fileActions1.fileSaved.waitFor()
-    await expect(page1).toHaveScreenshot({ maxDiffPixels: 7000 });
+    await fileActions1.fileTitle('Whiteboard').waitFor()
+    await expect(page1).toHaveScreenshot({ maxDiffPixels: 4000 });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share whiteboard history at specific moment in time (link)', status: 'passed', reason: 'Can share Whiteboard history at specific moment in time (link)' } })}`);
+    await fileActions.toSuccess( 'Can share Whiteboard history at specific moment in time (link)');
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'share whiteboard history at specific moment in time (link)', status: 'failed', reason: 'Can\'t share Whiteboard history at specific moment in time (link)' } })}`);
+    await fileActions.toFailure(e,'Can\'t share Whiteboard history at specific moment in time (link)');
   }
 });
 

@@ -17,7 +17,7 @@ test('settings - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/drive`);
     // await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').click();
+    await fileActions.drivemenu.click();
     await expect(fileActions.settings).toBeVisible();
     const pagePromise = page.waitForEvent('popup');
     await fileActions.settings.click();
@@ -118,12 +118,12 @@ test('teams (admin) - accessibility', async ({ page }, testInfo) => {
   try {
     await page.goto(`${url}/teams`);
     // await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await fileActions.teamSlot.getByText('test team').waitFor();
     // await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click({ timeout: 3000 });
+    await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
 
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Administration$/ }).locator('span').first().click();
+    await fileActions.teamAdminTab.waitFor();
+    await fileActions.teamAdminTab.click();
     // await page.waitForTimeout(2000);
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 

@@ -3,10 +3,12 @@ const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 const { FileActions } = require('./fileactions.js');
 
 let filePage;
+let fileActions
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(60000);
   filePage = new FilePage(page, testInfo.title, isMobile);
+  fileActions = new FileActions(page, testInfo.title, isMobile)
 });
 
 test.describe('New file modal', () => {
@@ -19,6 +21,8 @@ test.describe('New file modal', () => {
         const firstPad = filePage.fileId();
 
         // click File twice and the menu will appear and then disappear.
+        // await page.waitForTimeout(2000)
+        await filePage.filemenu().waitFor();
         await filePage.filemenu().click();
         await expect(filePage.newFile).toBeVisible();
         await filePage.filemenu().click();
@@ -45,9 +49,9 @@ test.describe('New file modal', () => {
         const secondPad = nextPadPage.fileId();
         expect(secondPad).not.toBe(firstPad);
 
-        await filePage.toSuccess('New file modal works');
+        await fileActions.toSuccess('New file modal works');
       } catch (e) {
-        await filePage.toFailure(e, "New file modal doesn't work");
+        await fileActions.toFailure(e, "New file modal doesn't work");
       }
     });
   });
@@ -87,9 +91,9 @@ test.describe('Share modal', () => {
           await expect(filePage.fileName).toContainText('(Read only)');
         }
 
-        await filePage.toSuccess('Share modal works well');
+        await fileActions.toSuccess('Share modal works well');
       } catch (e) {
-        await filePage.toFailure(e, 'Share modal failed');
+        await fileActions.toFailure(e, 'Share modal failed');
       }
     });
   });
@@ -122,9 +126,9 @@ test.describe('Chat modal', () => {
         await filePage.chatButtonClick();
         await expect(chatModal.chatInput).not.toBeVisible();
 
-        await filePage.toSuccess('Chat modal works well');
+        await fileActions.toSuccess('Chat modal works well');
       } catch (e) {
-        await filePage.toFailure(e, 'Chat modal failed');
+        await fileActions.toFailure(e, 'Chat modal failed');
       }
     });
   });
@@ -147,9 +151,9 @@ test.describe('Change title', () => {
         await filePage.saveTitle.click();
         await expect(filePage.fileName).toContainText(newName);
 
-        await filePage.toSuccess('Changing title succeeded');
+        await fileActions.toSuccess('Changing title succeeded');
       } catch (e) {
-        await filePage.toFailure(e, 'Changing title failed');
+        await fileActions.toFailure(e, 'Changing title failed');
       }
     });
   });
@@ -164,9 +168,8 @@ test.describe('Save/Remove ', () => {
         await expect(filePage.fileName).toBeVisible();
 
         // First try to trash without having saved, which should raise a warning.
-        console.log("filemeny", await filePage.filemenu())
         await filePage.filemenu().click();
-        await filePage.trashFile.click();
+        await fileActions.fileMenuItem('Move to trash').click();
         await expect(filePage.mainFrame.getByText(
           'You must store this document in your CryptDrive before being able to use this feature.'
         )).toBeVisible();
@@ -185,24 +188,77 @@ test.describe('Save/Remove ', () => {
 
         // Then trash the document, first canceling.
         await filePage.filemenu().click();
-        await filePage.trashFile.click();
+        await fileActions.fileMenuItem('Move to trash').click();
         await expect(filePage.alertMessage).toContainText('Are you sure');
-        await filePage.cancelButton.click();
-        await expect(filePage.cancelButton).not.toBeVisible();
+        await filePage.cancelButtonEsc.click();
+        await expect(filePage.cancelButtonEsc).not.toBeVisible();
 
         // Now try trashing again, but do it for real.
         await filePage.filemenu().click();
-        await filePage.trashFile.click();
+        await fileActions.fileMenuItem('Move to trash').click();
         await expect(filePage.alertMessage).toContainText('Are you sure');
         await filePage.okButton.click();
         await expect(filePage.mainFrame.getByText('Deleted')).toBeVisible();
         await filePage.okButton.click();
         await expect(filePage.alertMessage).not.toBeVisible();
 
-        await filePage.toSuccess('Save/remove works well');
+        await fileActions.toSuccess('Save/remove works well');
       } catch (e) {
-        await filePage.toFailure(e, 'Save/remove failed');
+        await fileActions.toFailure(e, 'Save/remove failed');
       }
     });
   });
 });
+
+// test.describe(`${name} - create from drive - move to trash #1263`, async ({ page, context }) => {
+//   docTypes.forEach(function (name) {
+//     test.fixme(name === 'sheet', 'sheet doc status bug');
+//     try {
+//       await page.goto(`${url}/drive`);
+//       await page.frameLocator('#sbox-iframe').getByText('New', { exact: true }).waitFor()
+//       await page.frameLocator('#sbox-iframe').getByText('New', { exact: true }).click();
+
+//       const page2Promise = page.waitForEvent('popup');
+//       if (name === 'pad') {
+//         await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Rich text').click({ timeout: 3000 });
+//       } else if (name === 'slide') {
+//         await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Markdown slides', { exact: true }).click();
+//       } else {
+//         await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText(`${name.charAt(0).toUpperCase() + name.slice(1)}`, { exact: true }).click();
+//       }
+//       const page2 = await page2Promise;
+
+//       await expect(page2).toHaveURL(new RegExp(`^${url}/${name}`), { timeout: 60000 });
+//       await page2.waitForTimeout(10000);
+//       await fileActions2.fileTitle(name).waitFor();
+//       await expect(fileActions2.fileTitle(name)).toBeVisible();
+//       await page2.waitForTimeout(10000);
+//       await page2.goto(`${url}/drive`);
+//       await page2.waitForTimeout(10000);
+//       await page2.frameLocator('#sbox-iframe').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').getByText(`${titleComma}`)).waitFor();
+//       await expect(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${titleComma}`))).toBeVisible();
+
+//       if (mobile) {
+//         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').waitFor();
+//         await page2.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-menu > .fa').click();
+//       } else {
+//         await page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${title}`).or(page2.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder').getByText(`${titleComma}`)).click({ button: 'right' });
+//       }
+
+//       if (await page2.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).isVisible()) {
+//         await page2.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' }).click();
+//       } else {
+//         await page2.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Remove' }).click();
+//       }
+
+//       await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+//       await page2.waitForTimeout(10000);
+//       await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`${title}`)).toHaveCount(0);
+
+//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon - ${name} - drive - move to trash`, status: 'passed', reason: `Can anonymously create ${name} in Drive and move to trash` } })}`);
+//     } catch (e) {
+//       console.log(e);
+//       await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon - ${name} - drive - move to trash`, status: 'failed', reason: `Can't anonymously create ${name} in Drive annd move to trash` } })}`);
+//     }
+//     });
+//   });

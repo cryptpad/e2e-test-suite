@@ -14,7 +14,7 @@ const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();

@@ -14,13 +14,8 @@ let cleanUp;
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
-
-  // if (mobile) {
-  //   const userActions = new UserActions(page);
-  //   await userActions.login('test-user', mainAccountPassword);
-  // }
 
   const template = testInfo.title.match(/import template/);
   if (template) {
@@ -30,19 +25,18 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
-  // await page.waitForTimeout(10000);
+  await fileActions.createFile.waitFor();
 });
 
 test('kanban - save as and import template', async ({ page }) => {
   try {
-    await fileActions.createFile.waitFor();
     await fileActions.createFile.click();
 
-    await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-    await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('example item');
-    await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-    await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
+    await fileActions.addItem.first().waitFor();
+    await fileActions.addItem.first().click();
+    await fileActions.editItem.fill('example item');
+    await fileActions.editItem.press('Enter');
+    await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
     await fileActions.saveTemplate(mobile);
     await fileActions.textbox.fill('example kanban template');
     await fileActions.okButton.click();
@@ -51,81 +45,65 @@ test('kanban - save as and import template', async ({ page }) => {
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
 
-    await page.frameLocator('#sbox-secure-iframe').getByText('example kanban template').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('example item')).toBeVisible();
+    await fileActions.secureFrame.getByText('example kanban template').click();
+    await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
-    // await page.waitForTimeout(3000);
 
-    await page.frameLocator('#sbox-iframe').getByText('example kanban template').click({ button: 'right' });
-    await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
+    await fileActions.mainFrame.getByText('example kanban template').click({ button: 'right' });
+    await fileActions.destroyItem.click();
     await fileActions.okButton.click();
-    await expect(page.frameLocator('#sbox-secure-iframe').getByText('example kanban template')).toHaveCount(0);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - save as template', status: 'passed', reason: 'Can save and use Kanban document as template' } })}`);
+    await expect(fileActions.mainFrame.getByText('example kanban template')).toHaveCount(0);
+    await fileActions.toSuccess( 'Can save and use Kanban document as template');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - save as template', status: 'failed', reason: 'Can\'t save and use Kanban document as template' } })}`);
+    await fileActions.toFailure(e,  'Can\'t save and use Kanban document as template');
   }
 });
 
 if (!mobile) {
   test('kanban - history (previous author)', async ({ page, browser }) => {
     try {
-      await fileActions.createFile.waitFor();
       await fileActions.createFile.click();
 
-      await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().waitFor();
-      await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('test text by test-user');
-      await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      // await page.waitForTimeout(5000);
+      await fileActions.addItem.first().waitFor();
+      await fileActions.addItem.first().click();
+      await fileActions.editItem.fill('test text by test-user');
+      await fileActions.editItem.press('Enter');
 
       await fileActions.share(mobile);
-      await fileActions.clickLinkTab(mobile);
-      await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-      await fileActions.shareCopyLink.click();
-      const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    if (clipboardText === "") {
-      await page.waitForTimeout(2000);
-      await fileActions.share(mobile);
-      await fileActions.shareCopyLink.click();
-    }
-
-
-
+      const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
       page1 = await browser.newPage();
       await page1.goto(`${clipboardText}`);
-      await page1.waitForTimeout(5000);
-      await page1.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('some test text by anon');
-      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      await page1.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page1.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('some more test text by anon!');
-      await page1.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
+      const fileActions1 = new FileActions(page1, mobile)
+
+      await fileActions1.addItem.first().click();
+      await fileActions1.editItem.fill('some test text by anon');
+      await fileActions1.editItem.press('Enter');
+      await fileActions1.addItem.first().click();
+      await fileActions1.addItem.first().click();
+      await fileActions1.editItem.fill('some more test text by anon!');
+      await fileActions1.editItem.press('Enter');
       await page1.waitForTimeout(9000);
 
       await page1.close();
 
-      await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('and some more test text by test user');
-      await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page.frameLocator('#sbox-iframe').locator('.kanban-title-button').first().click();
-      await page.frameLocator('#sbox-iframe').locator('#kanban-edit').fill('and some more text by test user here');
-      await page.frameLocator('#sbox-iframe').locator('#kanban-edit').press('Enter');
-      // await page.waitForTimeout(5000);
+      await fileActions.addItem.first().click();
+      await fileActions.editItem.fill('and some more test text by test user');
+      await fileActions.editItem.press('Enter');
+      await fileActions.addItem.first().click();
+      await fileActions.addItem.first().click();
+      await fileActions.editItem.fill('and some more text by test user here');
+      await fileActions.editItem.press('Enter');
 
       await fileActions.history(mobile);
-      await fileActions.historyPrev.click();
+      await fileActions.historyPrevLast.click();
 
-      await expect(page.frameLocator('#sbox-iframe').getByText('and some more text by test user here')).toHaveCount(0);
+      await expect(fileActions.mainFrame.getByText('and some more text by test user here')).toHaveCount(0);
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - history (previous author)', status: 'passed', reason: 'Can create Kanban document and view history (previous author)' } })}`);
+      await fileActions.toSuccess( 'Can create Kanban document and view history (previous author)');
     } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - history (previous author)', status: 'failed', reason: 'Can\'t create Kanban document and view history (previous author)' } })}`);
+      await fileActions.toFailure(e, 'Can\'t create Kanban document and view history (previous author)');
     }
   });
 }

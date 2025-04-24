@@ -14,15 +14,12 @@ let fileActions;
 let fileActions1
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
-
-  await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
-
-  await fileActions.fileSaved.waitFor({timeout: 90000})
+  await fileActions.loadFileType("code")
 });
 
 test('anon - code - input text #1367', async ({ page }) => {
@@ -33,10 +30,10 @@ test('anon - code - input text #1367', async ({ page }) => {
     await expect(fileActions.codeEditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
+    await fileActions.toSuccess('Can create Code document and input text');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+    await fileActions.toFailure(e, 'Can\'t acreate Code document and input text');
   }
 });
 
@@ -52,10 +49,10 @@ test('code - file menu - history #1367', async ({ page }) => {
     await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - file menu - history', status: 'passed', reason: 'Can view Code document history' } })}`);
+   await fileActions.toSuccess('Can view Code document history');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - file menu - history', status: 'failed', reason: 'Can\'t view Code document history' } })}`);
+    await fileActions.toFailure(e,  'Can\'t view Code document history');
   }
 });
 
@@ -66,10 +63,10 @@ test('code - toggle toolbar #1367', async ({ page }) => {
     await fileActions.toolbarButton.click();
     await expect(fileActions.codeToolbar).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - toggle toolbar', status: 'passed', reason: 'Can toggle toolbar in Code document' } })}`);
+    await fileActions.toSuccess('Can toggle toolbar in Code document');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - toggle toolbar', status: 'failed', reason: 'Can\'t toggle toolbar in Code document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t toggle toolbar in Code document');
   }
 });
 
@@ -83,10 +80,10 @@ test('code - toggle preview #1367', async ({ page }) => {
 
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - code - toggle preview', status: 'passed', reason: 'Can toggle preview in Code document' } })}`);
+    await fileActions.toSuccess('Can toggle preview in Code document' );
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - code - toggle preview', status: 'failed', reason: 'Can\'t toggle preview in Code document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t toggle preview in Code document');
   }
 });
 
@@ -100,7 +97,7 @@ test('code -  make a copy #1367', async ({ page }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.filecopy.click()
+      await fileActions.fileMenuItem(' Make a copy').click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/code`), { timeout: 100000 });
@@ -110,10 +107,10 @@ test('code -  make a copy #1367', async ({ page }) => {
     await fileActions1.codepreview.getByText('Test text').waitFor();
     await expect(fileActions1.codepreview.getByText('test text')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code -  make a copy', status: 'passed', reason: 'Can make a copy' } })}`);
+    await fileActions.toSuccess('Can make a copy of Code document');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code -  make a copy', status: 'failed', reason: 'Can\'t make a copy' } })}`);
+    await fileActions.toFailure(e, 'Can\'t make a copy of Code document');
   }
 });
 
@@ -133,10 +130,10 @@ test('code - import file #1367', async ({ page, context }) => {
     await expect(fileActions.codeEditor.getByText('Test text here')).toBeVisible();
     await expect(fileActions.codepreview.getByText('Test text here')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - import file', status: 'passed', reason: 'Can import file into Code document' } })}`);
+    await fileActions.toSuccess('Can import file into Code document');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - import file', status: 'failed', reason: 'Can\'t import file into Code document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t import file into Code document');
   }
 });
 
@@ -156,13 +153,11 @@ test('code - export (md)', async ({ page }) => {
     ]);
 
     await download.saveAs('/tmp/test code');
-
     const readData = fs.readFileSync('/tmp/test code', 'utf8');
-    console.log(readData);
     if (readData.trim() === 'test text') {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'passed', reason: 'Can export Code document as .md' } })}`);
+      await fileActions.toSuccess('Can export Code document as .md');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'failed', reason: 'Can\'t export Code document as .md' } })}`);
+      await fileActions.toFailure(e, 'Can\'t export Code document as .md');
     }
   } catch (e) {
     console.log(e);

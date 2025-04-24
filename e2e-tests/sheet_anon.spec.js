@@ -5,7 +5,7 @@
 // let browserName;
 
 // test.beforeEach(async ({ page }) => {
-//   test.setTimeout(210000);
+//   test.setTimeout(90000);
 //   mobile = testInfo.project.use.mobile;
 //   browserName = testInfo.project.name.split(/@/)[0];
 

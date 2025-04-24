@@ -1,14 +1,15 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
+const { FileActions } = require('./fileactions.js');
 
 const local = !!process.env.PW_URL.includes('localhost');
+let fileActions
 
 test.beforeEach(async ({ page }) => {
-  test.setTimeout(210000);
-
+  test.setTimeout(60000);
   await page.goto(`${url}`);
-  // await page.waitForTimeout(10000);
+  fileActions = new FileActions(page);
 });
 
 test('home page title', async ({ page }) => {
@@ -16,144 +17,129 @@ test('home page title', async ({ page }) => {
     if (url === 'https://cryptpad.fr') {
       await expect(page).toHaveTitle('CryptPad: Collaboration suite, encrypted and open-source');
     }
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage title', status: 'passed', reason: 'Can navigate to home page' } })}`);
+    await fileActions.toSuccess( 'Can navigate to home page');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage title', status: 'failed', reason: 'Can\'t navigate to home page' } })}`);
+    await fileActions.toFailure(e, 'Can\'t navigate to home page');
   }
 });
 
 test('homepage - access sign up', async ({ page }) => {
   try {
-    await page.getByRole('link', { name: 'Sign up' }).click();
-    // await page.waitForTimeout(5000);
+    await fileActions.registerLink.waitFor();
+    await fileActions.registerLink.click();
     await expect(page).toHaveURL(`${url}/register/`);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - access sign up', status: 'passed', reason: 'Can access sign up from homepage' } })}`);
+    await fileActions.toSuccess( 'Can access sign up from homepage');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - access sign up', status: 'failed', reason: 'Can\'t access sign up from homepage' } })}`);
+    await fileActions.toFailure(e, 'Can\'t access sign up from homepage');
   }
 });
 
 test('homepage - access log in', async ({ page }) => {
   try {
-    await page.getByRole('link', { name: 'Log in' }).click();
-
+    await fileActions.loginLink.click();
     await expect(page).toHaveURL(`${url}/login/`);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - access log in', status: 'passed', reason: 'Can acces login from homepage' } })}`);
+    await fileActions.toSuccess('Can acces login from homepage');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage - access log in', status: 'failed', reason: 'Can\'t acces login from homepage' } })}`);
+    await fileActions.toFailure(e,'Can\'t acces login from homepage');
   }
 });
 
 test('home page > features', async ({ page }) => {
   try {
     if (!local) {
-      await page.getByRole('link', { name: 'Pricing' }).waitFor();
-      await page.getByRole('link', { name: 'Pricing' }).click();
+      await fileActions.homePageLink('Pricing' ).waitFor();
+      await fileActions.homePageLink('Pricing' ).click();
     } else {
-      await page.getByRole('link', { name: 'Features' }).waitFor();
-      await page.getByRole('link', { name: 'Features' }).click();
+      await fileActions.homePageLink('Features' ).waitFor();
+      await fileActions.homePageLink('Features' ).click();
     }
     await expect(page).toHaveURL(`${url}/features.html`);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > features', status: 'passed', reason: 'Can navigate from home page to features page' } })}`);
+    await fileActions.toSuccess( 'Can navigate from home page to features page');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > features', status: 'failed', reason: 'Can\'t navigate from home page to features page' } })}`);
+    await fileActions.toFailure(e, 'Can\'t navigate from home page to features page');
   }
 });
 
 test('home page > documentation', async ({ page }) => {
   try {
-    await page.getByRole('link', { name: 'Documentation' }).waitFor();
-    await page.getByRole('link', { name: 'Documentation' }).click();
-
+    await fileActions.homePageLink('Documentation' ).waitFor();
+    await fileActions.homePageLink('Documentation' ).click();
     await expect(page).toHaveURL('https://docs.cryptpad.org/en/');
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > documentation', status: 'passed', reason: 'Can navigate from home page to documentation' } })}`);
+    await fileActions.toSuccess( 'Can navigate from home page to documentation' );
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > documentation', status: 'failed', reason: 'Can\'t navigate from home page to documentation' } })}`);
+    await fileActions.toFailure(e,'Can\'t navigate from home page to documentation');
   }
 });
 
 test('home page > contact', async ({ page }) => {
   try {
-    await page.getByRole('link', { name: 'Contact' }).waitFor();
-    await page.getByRole('link', { name: 'Contact' }).click();
+    await fileActions.homePageLink('Contact' ).waitFor();
+    await fileActions.homePageLink('Contact' ).click();
     await expect(page).toHaveURL(new RegExp(`^${url}/contact`));
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > contact', status: 'passed', reason: 'Can navigate from home page to contact page' } })}`);
+    await fileActions.toSuccess( 'Can navigate from home page to contact page');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > contact', status: 'failed', reason: 'Can\'t navigate from home page to contact page' } })}`);
+    await fileActions.toFailure(e, 'Can\'t navigate from home page to contact page');
   }
 });
 
 test('home page > project website', async ({ page }) => {
   try {
-    await page.getByRole('link', { name: 'Project website' }).waitFor();
+    await fileActions.homePageLink('Project website' ).waitFor();
     const pagePromise = page.waitForEvent('popup');
-    await page.getByRole('link', { name: 'Project website' }).click();
+    await fileActions.homePageLink('Project website' ).click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL('https://cryptpad.org');
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > project website', status: 'passed', reason: 'Can navigate from home page to project website' } })}`);
+    await fileActions.toSuccess( 'Can navigate from home page to project website');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > project website', status: 'failed', reason: 'Can\'t navigate from home page to project website' } })}`);
+    await fileActions.toFailure(e, 'Can\'t navigate from home page to project website');
   }
 });
 
 test('home page > donate', async ({ page }) => {
   try {
-    await page.getByRole('link', { name: 'Donate' }).waitFor();
+    await fileActions.homePageLink('Donate' ).waitFor();
     const pagePromise = page.waitForEvent('popup');
-    await page.getByRole('link', { name: 'Donate' }).click();
+    await fileActions.homePageLink('Donate' ).click();
     const page1 = await pagePromise;
-    await expect(page1).toHaveURL('https://opencollective.com/cryptpad/contribute');
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > donate', status: 'passed', reason: 'Can navigate from home page to donation website' } })}`);
+    await expect(page1).toHaveURL('https://opencollective.com/cryptpad/contribute?hostname=opencollective.com');
+    await fileActions.toSuccess( 'Can navigate from home page to donation website');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > donate', status: 'failed', reason: 'Can\'t navigate from home page to donation website' } })}`);
+    await fileActions.toFailure(e, 'Can\'t navigate from home page to donation website');
   }
 });
 
 test('home page - translation - french - (***)', async ({ page }) => {
   try {
     if (url === 'https://cryptpad.fr') {
-      await page.getByRole('listbox').selectOption('fr');
+      await page.getByLabel('Select a language').selectOption('fr');
       await expect(page.getByText('Instance officielle de CryptPad, suite collaborative chiffrée de bout en bout')).toBeVisible();
     }
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > translation', status: 'passed', reason: 'Can change site language from homepage' } })}`);
+    await fileActions.toSuccess( 'Can change site language from homepage');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > translation', status: 'failed', reason: 'Can\'t change site language from homepage' } })}`);
+    await fileActions.toFailure(e, 'Can\'t change site language from homepage');
   }
 });
 
 if (url.toString() === 'https://cryptpad.fr') {
   test('home page > privacy policy', async ({ page }) => {
     try {
-      await page.getByRole('link', { name: 'Privacy Policy' }).waitFor();
-      await page.getByRole('link', { name: 'Privacy Policy' }).click();
+      await fileActions.homePageLink('Privacy Policy' ).waitFor();
+      await fileActions.homePageLink('Privacy Policy' ).click();
       await expect(page).toHaveURL('https://cryptpad.fr/pad/#/2/pad/view/GcNjAWmK6YDB3EO2IipRZ0fUe89j43Ryqeb4fjkjehE/');
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > privacy', status: 'passed', reason: 'Can navigate from home page to privacy policy' } })}`);
+      await fileActions.toSuccess( 'Can navigate from home page to privacy policy');
     } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > privacy', status: 'failed', reason: 'Can\'t navigate from home page to privacy policy' } })}`);
+      await fileActions.toFailure(e, 'Can\'t navigate from home page to privacy policy');
     }
   });
 
   test('home page > tos', async ({ page }) => {
     try {
-      await page.getByRole('link', { name: 'Terms of Service' }).waitFor();
-      await page.getByRole('link', { name: 'Terms of Service' }).click();
-      await expect(page).toHaveURL('https://cryptpad.fr/code/#/2/code/view/QpPIuoUAHytCF8JjkunAPqnO7yuu1GWd3OUDwYe5ZA8/present/');
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > tos', status: 'passed', reason: 'Can navigate from home page to TOS' } })}`);
+      await fileActions.homePageLink('Terms of Service').waitFor();
+      await fileActions.homePageLink('Terms of Service').click();
+      await expect(page).toHaveURL('https://cryptpad.fr/code/#/2/code/view/j18D9zbfY98cwWPGHPv91vllEYOy0tCGk1gCD5UOzlk/present/');
+      await fileActions.toSuccess( 'Can navigate from home page to TOS');
     } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'homepage > tos', status: 'failed', reason: 'Can\'t navigate from home page to TOS' } })}`);
+      await fileActions.toFailure(e,'Can\'t navigate from home page to TOS');
     }
   });
 }

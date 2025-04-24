@@ -13,14 +13,13 @@ let browserstackMobile;
 let fileActions;
 
 test.beforeEach(async ({ page }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
 
   mobile = testInfo.project.use.mobile;
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-  await page.goto(`${url}/pad`);
   fileActions = new FileActions(page);
-  await fileActions.fileSaved.waitFor()
+  await fileActions.loadFileType("pad")
 });
 
 test('pad - comment', async ({ page, context }) => {
@@ -32,14 +31,13 @@ test('pad - comment', async ({ page, context }) => {
       clickCount: 3
     });
     await fileActions.addComment.click();
-    await fileActions.commentTextBox.fill('Test comment');
-    await fileActions.submitAnswer.click();
+    await fileActions.commenttextbox.fill('Test comment');
+    await fileActions.submitButton.click();
     await expect(fileActions.mainFrame.getByText('Test comment', { exact: true })).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad > comment', status: 'passed', reason: 'Can create comment in Rich Text document' } })}`);
+    await fileActions.toSuccess( 'Can create comment in Rich Text document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad > comment', status: 'failed', reason: 'Can\'t create comment in Rich Text document' } })}`);
+    await fileActions.toFailure(e,'Can\'t create comment in Rich Text document');
   }
 });
 
@@ -69,10 +67,9 @@ test('pad - create and open snapshot', async ({ page, context }) => {
     await fileActions.padEditor.getByText('TEST TEXT').waitFor();
     await expect(fileActions.padEditor.getByText('TEST TEXT')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - create and open snapshot', status: 'passed', reason: 'Can create and open snapshot in Rich Text document' } })}`);
+    await fileActions.toSuccess('Can create and open snapshot in Rich Text document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - create and open snapshot', status: 'failed', reason: 'Can\'t create and open snapshot in Rich Text document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t create and open snapshot in Rich Text document');
   }
 });
 
@@ -83,13 +80,12 @@ test('pad - history (previous version)', async ({ page, context }) => {
 
     await fileActions.history(mobile);
 
-    await fileActions.historyPrev.click();
+    await fileActions.historyPrevLast.click();
     await expect(fileActions.mainFrame.getByText('Test text')).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - file menu - history (previous version)', status: 'passed', reason: 'Can create Rich Text document and view history (previous version)' } })}`);
+    await fileActions.toSuccess( 'Can create Rich Text document and view history (previous version)');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - file menu - history (previous version)', status: 'failed', reason: 'Can\'t create Rich Text document and view history (previous version)' } })}`);
+    await fileActions.toFailure(e,'Can\'t create Rich Text document and view history (previous version)');
   }
 });
 
@@ -109,10 +105,9 @@ test('pad - toggle tools', async ({ page, context }) => {
       await expect(fileActions.padToolbar).toBeHidden();
     }
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - toggle tools', status: 'passed', reason: 'Can toggle Tools in Rich Text document' } })}`);
+    await fileActions.toSuccess( 'Can toggle Tools in Rich Text document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - toggle tools', status: 'failed', reason: 'Can\'t toggle Tools in Rich Text document' } })}`);
+    await fileActions.toFailure(e,'Can\'t toggle Tools in Rich Text document');
   }
 });
 
@@ -128,10 +123,9 @@ test('pad - import file', async ({ page }) => {
     await fileChooser.setFiles('testdocuments/myfile.html');
     await expect(fileActions.padEditor.getByText('Test text here')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - import file', status: 'passed', reason: 'Can import file into Rich Text document' } })}`);
+    await fileActions.toSuccess( 'Can import file into Rich Text document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - import file', status: 'failed', reason: 'Can\'t import file into Rich Text document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t import file into Rich Text document');
   }
 });
 
@@ -144,7 +138,7 @@ test('pad - make a copy', async ({ page, context }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.filecopy.click()
+      await fileActions.fileMenuItem(' Make a copy').click()
     ]);
     const fileActions1 = new FileActions(page1)
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 });
@@ -152,10 +146,9 @@ test('pad - make a copy', async ({ page, context }) => {
     await fileActions1.padEditor.getByText('TEST TEXT').waitFor();
     await expect(fileActions1.padEditor.getByText('TEST TEXT')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - make a copy', status: 'passed', reason: 'Can\'t make copy of Rich Text document' } })}`);
+    await fileActions.toSuccess( 'Can\'t make copy of Rich Text document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - make a copy', status: 'failed', reason: 'Can\'t make copy of Rich Text document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t make copy of Rich Text document');
   }
 });
 
@@ -173,9 +166,7 @@ test('pad - export (html)', async ({ page }) => {
     ]);
 
     await download.saveAs('/tmp/test pad');
-
     const readData = fs.readFileSync('/tmp/test pad', 'utf8');
-    console.log(readData);
 
     let expectedString;
     if (browserName === 'playwright-firefox') {
@@ -183,16 +174,13 @@ test('pad - export (html)', async ({ page }) => {
     } else {
       expectedString = '<!DOCTYPEhtml><html><head><metacharset="utf-8"></head><body>TESTTEXT<p></p></body></html>';
     }
-    console.log(expectedString);
-
     if (expectedString === readData.normalize().replace(/[\s]/g, '')) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (html)', status: 'passed', reason: 'Can export Rich Text document as .html' } })}`);
+      await fileActions.toSuccess( 'Can export Rich Text document as .html');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (html)', status: 'failed', reason: 'Can\'t export Rich Text document as .html' } })}`);
+      await fileActions.toFailure(e, 'Can\'t export Rich Text document as .html');
     }
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (html)', status: 'failed', reason: 'Can\'t export Rich Text document as .html' } })}`);
+    await fileActions.toFailure(e, 'Can\'t export Rich Text document as .html');
   }
 });
 
@@ -223,13 +211,12 @@ test('pad - export (.doc)', async ({ page }) => {
     }
 
     if (readData.trim().replace(/[\s]/g, '') === expectedString) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (.doc)', status: 'passed', reason: 'Can export Rich Text document as .doc' } })}`);
+      await fileActions.toSuccess( 'Can export Rich Text document as .doc');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (.doc)', status: 'failed', reason: 'Can\'t export Rich Text document as .doc' } })}`);
+      await fileActions.toFailure(e, 'Can\'t export Rich Text document as .doc' );
     }
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (.doc)', status: 'failed', reason: 'Can\'t export Rich Text document as .doc' } })}`);
+    await fileActions.toFailure(e,'Can\'t export Rich Text document as .doc');
   }
 });
 
@@ -254,13 +241,12 @@ test('pad - export (md)', async ({ page, context }) => {
     const expectedString = 'TEST TEXT';
 
     if (expectedString === readData.trim()) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (md)', status: 'passed', reason: 'Can export Rich Text document as .md' } })}`);
+      await fileActions.toSuccess('Can export Rich Text document as .md');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (md)', status: 'failed', reason: 'Can\'t export Rich Text document as .md' } })}`);
+      await fileActions.toFailure(e, 'Can\'t export Rich Text document as .md');
     }
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - export (md)', status: 'failed', reason: 'Can\'t export Rich Text document as .md' } })}`);
+    await fileActions.toFailure(e,'Can\'t export Rich Text document as .md');
   }
 });
 
@@ -277,8 +263,8 @@ test('pad - share at a moment in history', async ({ page, context }) => {
     await expect(fileActions.padEditor.getByText('One moment in history')).toBeVisible();
     
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click();
-    await fileActions.historyPrev.click();
+    await fileActions.historyPrevLast.click();
+    await fileActions.historyPrevLast.click();
 
     await expect(fileActions.padEditor.getByText('One moment in history')).toBeHidden();
 
@@ -288,12 +274,11 @@ test('pad - share at a moment in history', async ({ page, context }) => {
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
 
-    await fileActions1.fileSaved.waitFor();
+    await fileActions1.fileTitle('Rich text').waitFor()
     await expect(fileActions1.padEditor.getByText('One moment in history')).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - share at a moment in history', status: 'passed', reason: 'Can share Rich Text at a specific moment in history' } })}`);
+    await fileActions.toSuccess( 'Can share Rich Text at a specific moment in history');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'pad - share at a moment in history', status: 'failed', reason: 'Can share Rich Text at a specific moment in history' } })}`);
+    await fileActions.toFailure(e,'Can share Rich Text at a specific moment in history');
   }
 });

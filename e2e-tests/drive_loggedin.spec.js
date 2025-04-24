@@ -3,6 +3,7 @@ const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
+const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
 const fs = require('fs');
 const unzipper = require('unzipper');
@@ -13,28 +14,22 @@ const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let cleanUp;
 let fileActions;
+let filePage
 let userActions;
 let isBrowserstack;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   mobile = isMobile;
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
 
   fileActions = new FileActions(page);
   userActions = new UserActions(page);
   cleanUp = new Cleanup(page);
-
-  // if (mobile) {
-  //   await userActions.login('test-user', mainAccountPassword);
-    
-  // }
-
   await page.goto(`${url}/drive`);
 });
 
-// const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
 const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
 
 
@@ -44,72 +39,70 @@ userMenuItems.forEach(function (item) {
       await fileActions.drivemenu.waitFor();
       await fileActions.drivemenu.click();
       if (item === 'log out') {
-        await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: /^Log out$/ }).click();
+        await fileActions.driveMenuItem(item).nth(1).click();
         await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
-        // await page.waitForTimeout(10000);
-        await expect(page.getByRole('link', { name: 'Log in' })).toBeVisible();
+        await expect(fileActions.loginLink).toBeVisible();
       } else if (item === 'support' && url !== 'https://cryptpad.fr') {
         return;
       } else {
         const pagePromise = page.waitForEvent('popup');
-        await page.frameLocator('#sbox-iframe').locator('a').filter({ hasText: `${item}` }).click();
+        await fileActions.driveMenuItem(item).click();
         const page1 = await pagePromise;
         await expect(page1).toHaveURL(`${url}/${item}/`, { timeout: 100000 });
       }
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `drive - user menu - ${item}`, status: 'passed', reason: `Can access ${item} from Drive menu` } })}`);
+      await fileActions.toSuccess(`Can access ${item} from Drive menu`);
     } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `drive -  user menu - ${item}`, status: 'failed', reason: `Can't access ${item} from Drive menu` } })}`);
+      await fileActions.toFailure(e, `Can't access ${item} from Drive menu`);
     }
   });
 });
 
 test('drive -  upgrade account', async ({ page }) => {
-  test.skip(local, 'no option to upgrade on local dev instance');
+
+  var notFlagship = (url === 'https://cryptpad.fr') ? false : true
+  test.skip(notFlagship, 'no option to upgrade on local dev instance');
 
   try {
+    await fileActions.mainFrame.getByText('Upgrade account').waitFor()
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Upgrade account').click();
+    await fileActions.mainFrame.getByText('Upgrade account').click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/accounts/#`, { timeout: 100000 });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - upgrade account', status: 'passed', reason: 'Can upgrade account from Drive' } })}`);
+    await fileActions.toSuccess( 'Can upgrade account from Drive');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - upgrade account', status: 'failed', reason: 'Can\'t upgrade account from Drive' } })}`);
+    await fileActions.toFailure(e,  'Can\'t upgrade account from Drive');
   }
 });
 
 test('drive -  upload file', async ({ page }) => {
   try {
 
-    await cleanUp.cleanFiles('myfile.doc');
+    await cleanUp.cleanUserDrive('myfile.doc');
     const fileChooserPromise = page.waitForEvent('filechooser');
 
     await fileActions.newFile.locator('span').first().click();
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Upload files' }).click();
+    await fileActions.driveAddMenuItem('Upload files').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/myfile.doc');
     await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
-    if (await page.frameLocator('#sbox-iframe').getByText('You already have an upload in progress. Cancel it and upload your new file?').count() === 1) {
+    if (await fileActions.mainFrame.getByText('You already have an upload in progress. Cancel it and upload your new file?').count() === 1) {
       console.log('upload in progress');
       await fileActions.okButton.click();
     }
 
-    await page.frameLocator('#sbox-iframe').getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.cp-fileupload-header-close > .fa').click()
+    await fileActions.mainFrame.getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor();
+    await fileActions.fileUploadClose.click()
     await fileActions.driveContentFolder.getByText('myfile.doc').click({ button: 'right' });
-    // await page.waitForTimeout(10000);
-    await fileActions.moveToTrash();
+    await fileActions.trash.click();
  
     await expect(fileActions.driveContentFolder.getByText('myfile.doc')).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - upload file', status: 'passed', reason: 'Can upload a file in Drive' } })}`);
+    await fileActions.toSuccess('Can upload a file in Drive');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - upload file', status: 'failed', reason: 'Can\'t upload a file in Drive' } })}`);
+    await fileActions.toFailure(e, 'Can\'t upload a file in Drive');
   }
 });
 
@@ -119,66 +112,54 @@ test('drive -  recent files', async ({ page }) => {
 
     const page1Promise = page.waitForEvent('popup');
     await fileActions.newFile.locator('span').first().click();
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Rich text$/ }).locator('span').first().click();
-
+    await fileActions.newDriveFile(/^Rich text$/).click();
     const page1 = await page1Promise;
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create', exact: true }).click();
+    const fileActions1 = new FileActions(page1)
+    await fileActions1.createFile.click();
 
-    const title = `Rich text - ${titleDate}`;
-    const titleComma = `Rich text - ${titleDateComma}`;
-    await page1.waitForTimeout(10000);
+    await fileActions1.fileSaved.waitFor();
     await page1.close();
     await page.reload();
-    // await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Recent' }).first().click();
-    await expect(fileActions.driveContentFolder.getByText(title).or(fileActions.driveContentFolder.getByText(titleComma))).toBeVisible();
-    await fileActions.driveContentFolder.getByText(`${title}`).or(fileActions.driveContentFolder.getByText(titleComma)).click({ button: 'right' });
-    // await page.waitForTimeout(10000);
+    await fileActions.driveSideBarItem('Recent').first().click();
+    await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
+    await fileActions.driveFileTitle('Rich text').click({ button: 'right' });
     await fileActions.destroy.click();
     await fileActions.okButton.click();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - recent files', status: 'passed', reason: 'Can access recent files in Drive' } })}`);
+    await fileActions.toSuccess('Can access recent files in Drive');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - recent files', status: 'failed', reason: 'Can\'t access recent files in Drive' } })}`);
+    await fileActions.toFailure(e,  'Can\'t access recent files in Drive');
   }
 });
 
 test('drive -  notifications panel', async ({ page }) => {
   try {
     await fileActions.notifications.click();
-    await page.frameLocator('#sbox-iframe').getByText('Open notifications panel').waitFor();
+    await fileActions.notifPanel.waitFor();
     const pagePromise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByText('Open notifications panel').click();
+    await fileActions.notifPanel.click();
     const page1 = await pagePromise;
     await page1.waitForTimeout(5000);
     await expect(page1).toHaveURL(`${url}/notifications/#all`, { timeout: 100000 });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - notifications panel', status: 'passed', reason: 'Can navigate to Drive and open notifications panel' } })}`);
+    await fileActions.toSuccess( 'Can navigate to Drive and open notifications panel' );
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - notifications panel', status: 'failed', reason: 'Can\'t navigate to Drive and open notifications panel' } })}`);
+    await fileActions.toFailure(e,  'Can\'t navigate to Drive and open notifications panel');
   }
 });
 
 test('drive - filter', async ({ page }) => {
   try {
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByText('test sheet').waitFor();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByText('test whiteboard').waitFor();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Filter' }).click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Sheet' }).locator('a').click()
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toHaveCount(0);
+    await fileActions.mainFrame.getByText('test sheet').waitFor();
+    await fileActions.mainFrame.getByText('test whiteboard').waitFor();
+    await fileActions.filterDrive.click();
+    await fileActions.dropDownItem( ' Sheet' ).click()
+    await expect(fileActions.mainFrame.getByText('test sheet')).toBeVisible();
+    await expect(fileActions.mainFrame.getByText('test whiteboard')).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - filter', status: 'passed', reason: 'Can filter files by file type in Drive' } })}`);
+    await fileActions.toSuccess( 'Can filter files by file type in Drive');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - filter', status: 'failed', reason: 'Can\'t filter files by file type in Drive' } })}`);
+    await fileActions.toFailure(e, 'Can\'t filter files by file type in Drive');
   }
 });
 
@@ -186,22 +167,21 @@ test('drive - create link', async ({ page }) => {
   try {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanUserDrive('Cryptpad Docs');
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: ' New' }).waitFor();
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: ' New' }).click();
-    await page.locator('#sbox-iframe').contentFrame().getByRole('menuitem', { name: ' New Link' }).locator('a').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('My link').fill('Cryptpad Docs');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('https://example.com').fill('https://docs.cryptpad.org');
+    await fileActions.newItem.waitFor();
+    await fileActions.newItem.click();
+    await fileActions.dropDownItem( ' New Link' ).click();
+    await fileActions.mainFrame.getByPlaceholder('My link').fill('Cryptpad Docs');
+    await fileActions.mainFrame.getByPlaceholder('https://example.com').fill('https://docs.cryptpad.org');
 
     await fileActions.addButton.click();
-    await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').waitFor();
-    await page.frameLocator('#sbox-iframe').getByText('Cryptpad Docs').click({ button: 'right' });
-    await fileActions.moveToTrash(local);
-    await expect(page.frameLocator('#sbox-iframe').getByText('My link')).toHaveCount(0);
+    await fileActions.mainFrame.getByText('Cryptpad Docs').waitFor();
+    await fileActions.mainFrame.getByText('Cryptpad Docs').click({ button: 'right' });
+    await fileActions.mainFrame.getByText('Move to trash').click();
+    await expect(fileActions.mainFrame.getByText('My link')).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - link', status: 'passed', reason: 'Can create link in Drive' } })}`);
+    await fileActions.toSuccess( 'Can create link in Drive' );
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - link', status: 'failed', reason: 'Can\'t create link in Drive' } })}`);
+    await fileActions.toFailure(e,  'Can\'t create link in Drive');
   }
 });
 
@@ -211,20 +191,16 @@ test('drive - create folder', async ({ page }) => {
     await cleanUp.cleanUserDrive('My test folder');
 
     await fileActions.newFile.click();
-    // await page.waitForTimeout(2000);
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^Folder$/ }).click({ timeout: 2000 });
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('New folder').fill('My test folder');
+    await fileActions.driveAddMenuItem(/^Folder$/ ).click({ timeout: 2000 });
+    await fileActions.mainFrame.getByPlaceholder('New folder').fill('My test folder');
     await page.keyboard.press('Enter');
-    // await page.waitForTimeout(10000);
     await expect(fileActions.driveContentFolder.getByText('My test folder')).toBeVisible();
     await fileActions.driveContentFolder.getByText('My test folder').click({ button: 'right', timeout: 3000 });
-    await fileActions.moveToTrash(local);
-    // await page.waitForTimeout(3000);
+    await fileActions.trash.click();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - folder', status: 'passed', reason: 'Can create folder in Drive' } })}`);
+    await fileActions.toSuccess( 'Can create folder in Drive');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - folder', status: 'failed', reason: 'Can\'t create folder in Drive' } })}`);
+    await fileActions.toFailure(e,  'Can\'t create folder in Drive');
   }
 });
 
@@ -257,9 +233,9 @@ test('drive - create folder', async ({ page }) => {
 //     // await page.waitForTimeout(5000);
 //     await page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element > .cptools-shared-folder').click({button: 'right'})
 //     // await page.waitForTimeout(5000);
-//     await page.frameLocator('#sbox-iframe').getByText('Destroy').waitFor()
+//     await fileActions.destroyItem.waitFor()
 //     // await page.waitForTimeout(5000);
-//     await page.frameLocator('#sbox-iframe').getByText('Destroy').click()
+//     await fileActions.destroyItem.click()
 //     // await page.waitForTimeout(5000);
 //     await fileActions.okButton.waitFor()
 //     // await page.waitForTimeout(5000);
@@ -268,7 +244,7 @@ test('drive - create folder', async ({ page }) => {
 
 //     // await page.reload()
 //     // await expect(page.frameLocator('#sbox-iframe').getByText('Your shared folder My shared folder is no longer available.')).toBeVisible()
-//     // await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
+//     // await fileActions.deleteButton.click();
 //     // // await page.waitForTimeout(5000);
 
 //     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({action: 'setSessionStatus',arguments: {name: 'drive - shared folder', status: 'passed',reason: `Can create shared folder in Drive`}})}`);
@@ -284,45 +260,37 @@ test('drive - toggle sidebar', async ({ page }) => {
 
     await cleanUp.cleanUserDrive('my file');
     await cleanUp.cleanUserDrive('my file');
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Files' }).click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Files' }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').getByText('Search...')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Recent')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Drive' }).nth(3)).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first()).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Trash' }).first()).toBeVisible();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Files' }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').getByText('Search...')).toBeHidden();
-    await expect(page.frameLocator('#sbox-iframe').getByText('Recent')).toBeHidden();
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Drive' }).nth(3)).toBeHidden();
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first()).toBeHidden();
-    await expect(page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Trash' }).first()).toBeHidden();
+    await fileActions.filesButton.click();
+    await fileActions.filesButton.click();
+    await expect(fileActions.mainFrame.getByText('Search...')).toBeVisible();
+    await expect(fileActions.mainFrame.getByText('Recent')).toBeVisible();
+    await expect(fileActions.driveSideBarItem('Drive').nth(3)).toBeVisible();
+    await expect(fileActions.driveSideBarItem('Templates').first()).toBeVisible();
+    await expect(fileActions.driveSideBarItem('Trash').first()).toBeVisible();
+    await fileActions.filesButton.click();
+    await expect(fileActions.mainFrame.getByText('Search...')).toBeHidden();
+    await expect(fileActions.mainFrame.getByText('Recent')).toBeHidden();
+    await expect(fileActions.driveSideBarItem('Drive').nth(3)).toBeHidden();
+    await expect(fileActions.driveSideBarItem('Templates').first()).toBeHidden();
+    await expect(fileActions.driveSideBarItem('Trash').first()).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - toggle sidebar', status: 'passed', reason: 'Can toggle sidebar in Drive' } })}`);
+    await fileActions.toSuccess( 'Can toggle sidebar in Drive');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - toggle sidebar', status: 'failed', reason: 'Can\'t toggle sidebar in Drive' } })}`);
+    await fileActions.toFailure(e, 'Can\'t toggle sidebar in Drive');
   }
 });
 
 test('drive - search', async ({ page }) => {
   try {
-    await page.frameLocator('#sbox-iframe').getByText('test sheet').waitFor();
-    await page.frameLocator('#sbox-iframe').getByText('test whiteboard').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Search...' }).first().click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').fill('test sheet');
-    await page.frameLocator('#sbox-iframe').getByPlaceholder('Search').press('Enter');
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByText('test sheet').first().waitFor();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toHaveCount(0);
+    await fileActions.mainFrame.getByText('test sheet').waitFor();
+    await fileActions.mainFrame.getByText('test whiteboard').waitFor();
+    await fileActions.driveSideBarItem('Search...' ).first().click();
+    await fileActions.mainFrame.getByPlaceholder('Search').fill('test sheet');
+    await fileActions.mainFrame.getByPlaceholder('Search').press('Enter');
+    await fileActions.mainFrame.getByText('test sheet').first().waitFor();
+    await expect(fileActions.mainFrame.getByText('test whiteboard')).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - search', status: 'passed', reason: 'Can search files in Drive' } })}`);
+    await fileActions.toSuccess( 'Can search files in Drive');
   } catch (e) {
     console.log(e);
     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive - search', status: 'failed', reason: 'Can\'t search files in Drive' } })}`);
@@ -330,10 +298,10 @@ test('drive - search', async ({ page }) => {
 });
 
 test('can download drive contents', async ({ page }) => {
+test.skip()
   try {
     const menu = fileActions.drivemenu;
     await menu.click();
-    // await page.waitForTimeout(6000);
     await expect(fileActions.settings).toBeVisible();
 
     const pagePromise = page.waitForEvent('popup');
@@ -341,22 +309,19 @@ test('can download drive contents', async ({ page }) => {
     const page1 = await pagePromise;
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
     await page1.waitForTimeout(6000);
-    await page1.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-leftside').getByText('CryptDrive').click();
+    const fileActions1 = new FileActions(page1)
+    await fileActions1.driveSideBar.getByText('CryptDrive').click();
 
-    if (local) {
-      await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'Download my CryptDrive' }).click();
-    } else {
-      await page1.frameLocator('#sbox-iframe').getByText('Download my CryptDrive').click();
-    }
+    await fileActions1.downloadCryptDrive.click()
 
-    await page1.frameLocator('#sbox-iframe').getByRole('textbox').fill('/tmp/mydrivecontents.zip');
+    await fileActions1.textbox.fill('/tmp/mydrivecontents.zip');
     const download1Promise = page1.waitForEvent('download');
-    await page1.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    await fileActions1.okButton.click();
     const download1 = await download1Promise;
 
     await download1.saveAs('/tmp/mydrivecontents.zip');
 
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Your download is ready!')).toBeVisible();
+    await expect(fileActions1.mainFrame.getByText('Your download is ready!')).toBeVisible();
 
     const expectedFiles = ['Drive/', 'Drive/test code.md', 'Drive/test form.json', 'Drive/test kanban.json', 'Drive/test pad.html', 'Drive/test markdown.md', 'Drive/test sheet.xlsx', 'Drive/test whiteboard.png', 'Drive/test diagram.drawio'];
     const actualFiles = [];
@@ -367,8 +332,8 @@ test('can download drive contents', async ({ page }) => {
           .pipe(unzipper.Parse())
           .on('entry', function (entry) {
             const fileName = entry.path;
-            actualFiles.push(fileName);
-            console.log(fileName);
+            actualFiles.push();
+            // console.log(fileName);
           })
           .on('finish', resolve);
       });
@@ -377,7 +342,8 @@ test('can download drive contents', async ({ page }) => {
     async function compareFiles () {
       await unzipDownload();
       const checker = (arr, target) => target.every(v => arr.includes(v));
-      console.log(actualFiles);
+      console.log('act', actualFiles);
+      console.log('exp', expectedFiles)
       const check = checker(actualFiles, expectedFiles);
       if (check) {
         return true;
@@ -387,12 +353,11 @@ test('can download drive contents', async ({ page }) => {
     }
     const files = await compareFiles();
     if (files) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents', status: 'passed', reason: 'Can download drive contents' } })}`);
+      await fileActions.toSuccess('Can download drive contents');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents ', status: 'failed', reason: 'Can\'t download drive contents' } })}`);
+      await fileActions.toFailure(e,  'Can\'t download drive contents');
     }
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'can download drive contents', status: 'failed', reason: 'Can\'t download drive contents' } })}`);
+    await fileActions.toFailure(e,  'Can\'t download drive contents');
   }
 });

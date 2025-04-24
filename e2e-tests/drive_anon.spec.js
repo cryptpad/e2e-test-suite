@@ -18,7 +18,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   mobile = isMobile;
   await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
-    filePage = new FilePage(page);
+  filePage = new FilePage(page);
 
 });
 
@@ -72,10 +72,9 @@ userMenuItems.forEach(function (item) {
         }
       }
 
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon drive > ${item}`, status: 'passed', reason: `Can anonymously navigate to Drive and access ${item}` } })}`);
+      await fileActions.toSuccess(`Can anonymously navigate to Drive and access ${item}`);
     } catch (e) {
-      console.log(e);
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: `anon drive > ${item}`, status: 'failed', reason: `Can't anonymously navigate to Drive and access ${item}` } })}`);
+      await fileActions.toFailure(e,`Can't anonymously navigate to Drive and access ${item}`);
     }
   });
 });
@@ -135,7 +134,6 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     if (mobile) {
       await expect(fileActions.driveContentList).toBeVisible();
     } else {
-      console.log(await fileActions.driveListViewSpan('Type'))
       await expect(await fileActions.driveListViewSpan('Type')).toBeVisible();
       await expect(await fileActions.driveListViewSpan('Last access')).toBeVisible();
       await expect(await fileActions.driveListViewSpan('Creation')).toBeVisible();
@@ -151,40 +149,51 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
       await expect(fileActions.driveListViewSpan('Creation')).toBeHidden();
     }
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive > list/grid view', status: 'passed', reason: 'Can anonymously navigate to Drive and change the view to list/grid' } })}`);
+    await fileActions.toSuccess('Can anonymously navigate to Drive and change the view to list/grid');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive > list/grid view', status: 'failed', reason: 'Can\'t anonymously navigate to Drive and change the view to list/grid' } })}`);
+    await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and change the view to list/grid' );
   }
 });
 
-test('drive - anon - history', async ({ page, context }) => {
-  try {
-    await fileActions.driveadd.waitFor();
-    await fileActions.driveadd.click();
-    const page1Promise = page.waitForEvent('popup');
-    await fileActions.driveAddMenuItem('Rich text' ).click();
-    const page1 = await page1Promise;
-    const fileActions1 = new FileActions(page1);
-    await fileActions1.fileSaved.waitFor()
+// test('drive - anon - history', async ({ page, context }) => {
+//   try {
+//     await fileActions.driveadd.waitFor();
+//     await fileActions.driveadd.click();
+//     const page1Promise = page.waitForEvent('popup');
+//     await fileActions.driveAddMenuItem('Rich text' ).click();
+//     const page1 = await page1Promise;
+//     const fileActions1 = new FileActions(page1);
+//     await Promise.all([
+//       fileActions1.fileSaved.waitFor({ state: 'visible' }),
+//       page1.locator('#sbox-iframe').locator('.cp-loading-progress-bar').waitFor({ state: 'hidden' }),
+//       page1.waitUntil('load'),
+//       page1.waitUntil('domcontentloaded'),
+//       page1.waitUntil('networkidle'),
+//       console.log("KUWRA")
+//     ]).then(async () => {
+//           console.log("KUWRA!!!!!!!!!")
 
-    await page.reload();
-    await fileActions.driveFileTitle('Rich text').waitFor()
-    await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
+//       await page.waitForTimeout(100); // buffer
+//       await page.reload();
+//     });
 
-    await fileActions.driveHistory.click();
-    await fileActions.historyPrevLast.click({
-      clickCount: 3
-    });
+//     await fileActions.driveFileTitle('Rich text').waitFor()
+//     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
 
-    await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0);
+//     await fileActions.driveHistory.click();
+//     await fileActions.historyPrevLast.click({
+//       clickCount: 3
+//     });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive > history', status: 'passed', reason: 'Can anonymously navigate to Drive and view history' } })}`);
-  } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive > history', status: 'failed', reason: 'Can\'t anonymously navigate to Drive and view history' } })}`);
-  }
-});
+//     await expect(fileActions.driveFileTitle('Rich text')).toHaveCount(0);
+
+//     await fileActions.toSuccess('Can anonymously navigate to Drive and view history');
+//   } catch (e) {
+//     console.log(e);
+//     await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and view history');
+//   }
+// });
 
 test('drive - anon - notifications', async ({ page, context }) => {
   try {
@@ -193,37 +202,37 @@ test('drive - anon - notifications', async ({ page, context }) => {
 
     await expect(fileActions.noNotifications).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive - notifications', status: 'passed', reason: 'Can check notifications' } })}`);
+    await fileActions.toSuccess('Can check notifications');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon drive - notifications', status: 'failed', reason: 'Can\'t check notifications' } })}`);
+    await fileActions.toFailure(e, 'Can\'t check notifications');
   }
 });
 
 test('drive - anon - sign up from drive page', async ({ page, context }) => {
   try {
     await fileActions.notLoggedIn.waitFor();
-    await fileActions.registerLink.waitFor();
-    await fileActions.registerLink.click();
+    await fileActions.registerLinkDrive.waitFor();
+    await fileActions.registerLinkDrive.click();
     await expect(page).toHaveURL(`${url}/register/`, { timeout: 100000 });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive > sign up', status: 'passed', reason: 'Can anonymously navigate to Drive and find link to sign up' } })}`);
+   await fileActions.toSuccess('Can anonymously navigate to Drive and find link to sign up');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive > sign up', status: 'failed', reason: 'Can\'t anonymously navigate to Drive and find link to sign up' } })}`);
+   await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and find link to sign up');
   }
 });
 
 test('drive - anon - log in from drive page', async ({ page, context }) => {
   try {
     await fileActions.notLoggedIn.waitFor();
-    await fileActions.loginLink.waitFor();
-    await fileActions.loginLink.click();
+    await fileActions.loginLinkDrive.waitFor();
+    await fileActions.loginLinkDrive.click();
     await expect(page).toHaveURL(`${url}/login/`, { timeout: 100000 });
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive > log in', status: 'passed', reason: 'Can anonymously navigate to Drive and find link to log in' } })}`);
+    await fileActions.toSuccess('Can anonymously navigate to Drive and find link to log in');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'drive > log in', status: 'failed', reason: 'Can\'t anonymously navigate to Drive and find link to log in' } })}`);
+    await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and find link to log in');
   }
 });

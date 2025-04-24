@@ -12,12 +12,12 @@ let browserstackMobile;
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-  await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
-  await fileActions.fileSaved.waitFor({timeout: 90000})
+  await fileActions.loadFileType("kanban")
+
 });
 
 test('kanban - new board', async ({ page }) => {
@@ -26,15 +26,14 @@ test('kanban - new board', async ({ page }) => {
     await expect(fileActions.newBoard).toBeVisible();
 
     await fileActions.editNewBoard.click();
-    await fileActions.deletebutton.click();
+    await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
 
     await expect(fileActions.newBoard).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban', status: 'passed', reason: 'Can anonymously create Kanban board' } })}`);
+    await fileActions.toSuccess('Can anonymously create Kanban board');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban', status: 'failed', reason: 'Can\'t anonymously create Kanban board' } })}`);
+    await fileActions.toFailure(e,'Can\'t anonymously create Kanban board');
   }
 });
 
@@ -46,15 +45,14 @@ test('kanban - new list item', async ({ page }) => {
     await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
     await fileActions.editItemContent.first().waitFor()
     await fileActions.editItemContent.first().click({force: true});
-    await fileActions.deletebutton.click();
+    await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
 
     await expect(fileActions.mainFrame.getByText('example item')).toHaveCount(0);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - new list item', status: 'passed', reason: 'Can create list item in Kanban board' } })}`);
+    await fileActions.toSuccess( 'Can create list item in Kanban board');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - new list item', status: 'failed', reason: 'Can\'t create list item in Kanban board' } })}`);
+    await fileActions.toFailure(e, 'Can\'t create list item in Kanban board');
   }
 });
 
@@ -66,10 +64,9 @@ test('kanban - edit board', async ({ page }) => {
     await fileActions.boardTitle.press('Enter');
     await expect(fileActions.mainFrame.getByText('new title')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit board', status: 'passed', reason: 'Can edit Kanban board' } })}`);
+    await fileActions.toSuccess( 'Can edit Kanban board');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit board', status: 'failed', reason: 'Can\'t edit Kanban board' } })}`);
+    await fileActions.toFailure(e, 'Can\'t edit Kanban board');
   }
 });
 
@@ -81,10 +78,9 @@ test('kanban board - anon - edit list item title', async ({ page }) => {
     await fileActions.boardTitle.press('Enter');
     await expect(fileActions.mainFrame.getByText('new item title')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit list item title', status: 'passed', reason: 'Can edit Kanban list item title' } })}`);
+    await fileActions.toSuccess('Can edit Kanban list item title');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit list item title', status: 'failed', reason: 'Can\'t edit Kanban list item title' } })}`);
+    await fileActions.toFailure(e,'Can\'t edit Kanban list item title');
   }
 });
 
@@ -96,10 +92,9 @@ test('kanban board - anon - edit list item content', async ({ page }) => {
     await fileActions.closeButton.click();
     await expect(fileActions.mainFrame.getByText('new item content')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit list item content', status: 'passed', reason: 'Can edit Kanban list item content' } })}`);
+    await fileActions.toSuccess('Can edit Kanban list item content');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - edit list item content', status: 'failed', reason: 'Can\'t edit Kanban list item content' } })}`);
+    await fileActions.toFailure(e,'Can\'t edit Kanban list item content');
   }
 });
 
@@ -111,7 +106,7 @@ test('kanban board - anon - add and filter by tag', async ({ page }) => {
     await fileActions.addButton.click();
     await fileActions.closeButton.click();
     await expect(fileActions.kanbanContent.getByText('newtag')).toBeVisible();
-
+  
     await fileActions.kanbanControls.getByText('newtag').click();
     await expect(fileActions.mainFrame.getByText('Item 1')).toBeVisible();
     await expect(fileActions.mainFrame.getByText('Item 2')).toBeHidden();
@@ -120,10 +115,9 @@ test('kanban board - anon - add and filter by tag', async ({ page }) => {
     await expect(fileActions.mainFrame.getByText('Item 1')).toBeVisible();
     await expect(fileActions.mainFrame.getByText('Item 2')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - add and filter by tag', status: 'passed', reason: 'Can add and filter by tag in Kanban board' } })}`);
+    await fileActions.toSuccess( 'Can add and filter by tag in Kanban board');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - add and filter by tag', status: 'failed', reason: 'Can\'t add and filter by tag in Kanban board' } })}`);
+    await fileActions.toFailure(e, 'Can\'t add and filter by tag in Kanban board');
   }
 });
 
@@ -140,10 +134,9 @@ test('kanban - view history', async ({ page }) => {
     await fileActions.closeButton.click();
     await expect(fileActions.mainFrame.getByText('new item title')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - view history', status: 'passed', reason: 'Can view Kanban history' } })}`);
+    await fileActions.toSuccess( 'Can view Kanban history');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - view history', status: 'failed', reason: 'Can\'t view Kanban history' } })}`);
+    await fileActions.toFailure(e,'Can\'t view Kanban history');
   }
 });
 
@@ -165,10 +158,9 @@ test('kanban - import file', async ({ page }) => {
     await expect(fileActions.kanbanContainer.getByText('tagone')).toBeVisible();
     await expect(fileActions.kanbanContainer.getByText('tagtwo')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - import file', status: 'passed', reason: 'Can import file into Kanban document' } })}`);
+    await fileActions.toSuccess('Can import file into Kanban document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - import file', status: 'failed', reason: 'Can\'t import file into Kanban document' } })}`);
+    await fileActions.toFailure(e,'Can\'t import file into Kanban document');
   }
 });
 
@@ -187,7 +179,7 @@ test('kanban - make a copy', async ({ page }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.filecopy.click()
+      await fileActions.fileMenuItem(' Make a copy').click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/kanban`), { timeout: 100000 });
@@ -196,10 +188,9 @@ test('kanban - make a copy', async ({ page }) => {
     await expect(fileActions1.mainFrame.getByText('new title')).toBeVisible();
     await expect(fileActions1.mainFrame.getByText('new item content')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - make a copy', status: 'passed', reason: 'Can create a copy of Kanban document' } })}`);
+    await fileActions.toSuccess('Can create a copy of Kanban document');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - make a copy', status: 'failed', reason: 'Can\'t create a copy of Kanban document' } })}`);
+    await fileActions.toFailure(e,'Can\'t create a copy of Kanban document');
   }
 });
 
@@ -213,8 +204,8 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     await page.waitForTimeout(1000);
 
     await fileActions.history(mobile);
-    await fileActions.historyPrev.click();
-    await fileActions.historyPrev.click();
+    await fileActions.historyPrevLast.click();
+    await fileActions.historyPrevLast.click();
 
     await expect(fileActions.mainFrame.getByText('One moment in history')).toBeHidden();
 
@@ -222,13 +213,12 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
-    await fileActions1.fileSaved.waitFor()
+    await fileActions1.fileTitle('Kanban').waitFor()
     await expect(fileActions1.mainFrame.getByText('One moment in history')).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - share at a moment in history', status: 'passed', reason: 'Can share Kanban at a specific moment in history' } })}`);
+    await fileActions.toSuccess( 'Can share Kanban at a specific moment in history');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - share at a moment in history', status: 'failed', reason: 'Can share Kanban at a specific moment in history' } })}`);
+    await fileActions.toFailure(e,'Can share Kanban at a specific moment in history');
   }
 });
 
@@ -288,12 +278,11 @@ test('kanban - export as .json', async ({ page }) => {
     const expectedString = JSON.stringify({ list: [11, 12, 13], data: { 11: { id: 11, title: 'To Do', item: [1, 2] }, 12: { id: 12, title: 'In progress', item: [] }, 13: { id: 13, title: 'Done', item: [] } }, items: { 1: { id: 1, title: 'Item 1' }, 2: { id: 2, title: 'Item 2' } } });
 
     if (expectedString === kanbanJSONString) {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - export responses as .json', status: 'passed', reason: 'Can export Kanban document as .json' } })}`);
+      await fileActions.toSuccess( 'Can export Kanban document as .json');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - export responses as .json', status: 'failed', reason: 'Can\'t export Kanban document as .json' } })}`);
+      await fileActions.toFailure(e, 'Can\'t export Kanban document as .json');
     }
   } catch (e) {
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - export as .json', status: 'failed', reason: 'Can\'t export Kanban document as .json' } })}`);
-    console.log(e);
+    await fileActions.toFailure(e,'Can\'t export Kanban document as .json');
   }
 });

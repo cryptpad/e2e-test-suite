@@ -13,14 +13,8 @@ let cleanUp;
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
-
-  // if (mobile) {
-  //   const userActions = new UserActions(page);
-  //   await userActions.login('test-user', mainAccountPassword);
-  // }
-
   const template = testInfo.title.match(/import template/);
   if (template) {
     cleanUp = new Cleanup(page);
@@ -29,13 +23,12 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
-  // await page.waitForTimeout(10000);
+  await fileActions.createFile.waitFor();
 });
 
 test('code - save as and import template', async ({ page }) => {
   try {
-    // // await page.waitForTimeout(3000);
-    await fileActions.createFile.waitFor()
+
     await fileActions.createFile.click();
     await fileActions.fileSaved.waitFor();
     await fileActions.codeEditor.waitFor();
@@ -44,28 +37,25 @@ test('code - save as and import template', async ({ page }) => {
 
     await expect(fileActions.codeEditor.getByText('example template content')).toBeVisible();
     await fileActions.saveTemplate(mobile, local);
-    await fileActions.textbox.fill('example code template');
+    await fileActions.templateName.fill('example code template');
     await fileActions.okButton.click();
     await page.waitForTimeout(3000);
     await page.goto(`${url}/code/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
-    await page.frameLocator('#sbox-secure-iframe').locator('span').filter({ hasText: 'example code template' }).nth(1).click();
+    await fileActions.templateSpan('example code template').click();
+    await fileActions.codeEditor.getByText('example template content').waitFor()
     await expect(fileActions.codeEditor.getByText('example template content')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
     await fileActions.driveSideMenu.getByText('Templates').click();
-    // await page.waitForTimeout(1000);
     await fileActions.driveContentFolder.getByText('example code template').click({ button: 'right' });
-    // await page.waitForTimeout(1000);
-    await page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-    // await page.waitForTimeout(1000);
+    await fileActions.destroyItem.click();
     await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example template')).toHaveCount(0);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - save as template', status: 'passed', reason: 'Can save and use Code document as template' } })}`);
+    await fileActions.toSuccess('Can save and use Code document as template');
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - save as template', status: 'failed', reason: 'Can\'t save and use Codedocument as template' } })}`);
+    await fileActions.toFailure(e, 'Can\'t save and use Codedocument as template');
   }
 });
 
@@ -79,18 +69,7 @@ test('code - history (previous author)', async ({ page, browser }) => {
     await expect(fileActions.codeEditor.getByText('Test text by test-user')).toBeVisible();
 
     await fileActions.share(mobile);
-    await fileActions.clickLinkTab(mobile);
-    await page.frameLocator('#sbox-secure-iframe').locator('label').filter({ hasText: /^Edit$/ }).locator('span').first().click();
-    await fileActions.shareCopyLink.click();
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    if (clipboardText === "") {
-      await page.waitForTimeout(2000);
-      await fileActions.share(mobile);
-      await fileActions.shareCopyLink.click();
-    }
-
-
-    await page.waitForTimeout(5000);
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);
@@ -107,18 +86,16 @@ test('code - history (previous author)', async ({ page, browser }) => {
 
     await fileActions.history(mobile);
 
-    await fileActions.historyPrev.click();
-    console.log('visible?', await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon').isVisible())
-    if (await page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon').isVisible()) {
-      await fileActions.historyPrev.click();
+    await fileActions.historyPrevLast.click();
+    if (await fileActions.slideEditor.getByText('Some more test text by anon').isVisible()) {
+      await fileActions.historyPrevLast.click();
     }
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Some more test text by anon')).toHaveCount(0);
+    await expect(fileActions.slideEditor.getByText('Some more test text by anon')).toHaveCount(0);
 
-    await expect(page.frameLocator('#sbox-iframe').locator('.CodeMirror-code').getByText('Test text by test-user')).toBeVisible();
+    await expect(fileActions.slideEditor.getByText('Test text by test-user')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - history (previous author)', status: 'passed', reason: 'Can create code document and view history (previous author)' } })}`);
+    await fileActions.toSuccess( 'Can create code document and view history (previous author)' );
   } catch (e) {
-    console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - history (previous author)', status: 'failed', reason: 'Can\'t create code document and view history (previous author)' } })}`);
+    await fileActions.toFailure(e, 'Can\'t create code document and view history (previous author)');
   }
 });
