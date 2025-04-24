@@ -1,0 +1,41 @@
+{
+  "results": {
+    "tool": {
+      "name": "playwright"
+    },
+    "summary": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "pending": 0,
+      "skipped": 0,
+      "other": 0,
+      "start": 1745497300657,
+      "stop": 1745497306077,
+      "suites": 0
+    },
+    "tests": [
+      {
+        "name": "homepage - access log in",
+        "status": "passed",
+        "duration": 3282,
+        "start": 1745497301,
+        "stop": 1745497305,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/homepage_anon.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > homepage_anon.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      }
+    ]
+  }
+}

@@ -14,7 +14,7 @@ jobs:
         ports:
           - 3000:3000 
     steps:
-      - name: Run multi repo cloning script
+      - name: Clone CryptPad repository
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" 
@@ -28,16 +28,20 @@ jobs:
       - name: Run local server
         timeout-minutes: 180
         run: nohup npm run dev --prefix cryptpad &
-      - name: Run multi repo cloning script
+      - name: Clone test repository
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} # 
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git" -b CI_testing
+        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git" -b testing_branch
         shell: bash
       - name: Install dependencies
         run: npm ci --prefix e2e-test-suite
-      - name: Install dependencies
+      - name: Install dependencies 2
         run: npm exec playwright install --with-deps --prefix e2e-test-suite
-      - name: Install dependencies
-        run: npm exec playwright test form_anon.spec.js --project='chrome' --workers=2 --prefix e2e-test-suite
+      - name: Install test reporter
+        run: npm install --save-dev playwright-ctrf-json-reporter --prefix e2e-test-suite
+      - name: Run tests
+        run: npm exec playwright test homepage_anon.spec.js:37 --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
+      - name: Publish Test Summary Results
+        run: npm exec github-actions-ctrf ctrf/ctrf-report.json --prefix e2e-test-suite
