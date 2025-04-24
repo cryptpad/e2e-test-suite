@@ -96,9 +96,10 @@ jobs:
       #   with:
       #     report-path: 'e2e-test-suite/ctrf/*.json'
       #   if: always()
-      # - name: Publish Test Report
-      #   uses: ctrf-io/github-test-reporter@v1
-      #   # uses: estruyf/github-actions-reporter@1
-      #   with:
-      #     report-path: 'e2e-test-suite/ctrf.json'
-      #   if: always()
+      - name: Publish Test Report
+        working-directory: e2e-test-suite
+        uses: ctrf-io/github-test-reporter@v1
+        # uses: estruyf/github-actions-reporter@1
+        with:
+          report-path: 'ctrf.json'
+        if: always()
