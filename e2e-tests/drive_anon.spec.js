@@ -132,26 +132,26 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     await fileActions.mainFrame.getByText('Rich text - Thu, April 24,').waitFor()
     // await expect(fileActions.mainFrame.getByText('Rich text - Thu, 24 April,')).toBeVisible();
 
-    // await page.bringToFront();
-    // await fileActions.changeDriveView.click();
+    await page.bringToFront();
+    await fileActions.changeDriveView.click();
 
-    // if (mobile) {
-    //   await expect(fileActions.driveContentList).toBeVisible();
-    // } else {
-    //   await expect(await fileActions.driveListViewSpan('Type')).toBeVisible();
-    //   await expect(await fileActions.driveListViewSpan('Last access')).toBeVisible();
-    //   await expect(await fileActions.driveListViewSpan('Creation')).toBeVisible();
-    // }
+    if (mobile) {
+      await expect(fileActions.driveContentList).toBeVisible();
+    } else {
+      await expect(await fileActions.driveListViewSpan('Type')).toBeVisible();
+      await expect(await fileActions.driveListViewSpan('Last access')).toBeVisible();
+      await expect(await fileActions.driveListViewSpan('Creation')).toBeVisible();
+    }
 
-    // await fileActions.changeDriveView.click();
+    await fileActions.changeDriveView.click();
 
-    // if (mobile) {
-    //   await expect(fileActions.driveContentGrid).toBeVisible();
-    // } else {
-    //   await expect(fileActions.driveListViewSpan('Type')).toBeHidden();
-    //   await expect(fileActions.driveListViewSpan('Last access')).toBeHidden();
-    //   await expect(fileActions.driveListViewSpan('Creation')).toBeHidden();
-    // }
+    if (mobile) {
+      await expect(fileActions.driveContentGrid).toBeVisible();
+    } else {
+      await expect(fileActions.driveListViewSpan('Type')).toBeHidden();
+      await expect(fileActions.driveListViewSpan('Last access')).toBeHidden();
+      await expect(fileActions.driveListViewSpan('Creation')).toBeHidden();
+    }
 
     await fileActions.toSuccess('Can anonymously navigate to Drive and change the view to list/grid');
   } catch (e) {
