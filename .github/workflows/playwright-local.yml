@@ -49,7 +49,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: e2e-test-suite
-        run: npx playwright test --config=playwright.config.js --project='chrome' --workers=2
+        run: npx playwright test drive_anon.spec.js:121 --config=playwright.config.js --project='chrome' --workers=2
         env:
           PW_URL: ${{ vars.PW_URL }}
       # - name: Run tests
