@@ -60,7 +60,7 @@ jobs:
         uses: ctrf-io/github-test-reporter@v1
         # uses: estruyf/github-actions-reporter@1
         with:
-          report-path: 'e2e-test-suite/ctrf.json'
+          report-path: 'e2e-test-suite/ctrf/*.json'
         if: always()
       # - name: Publish Test Report
       #   uses: ctrf-io/github-test-reporter@v1
