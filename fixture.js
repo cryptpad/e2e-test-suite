@@ -132,7 +132,7 @@ exports.weekday = weekDays[date.getDay()];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const month = months[date.getMonth()];
 
-exports.titleDateNoYear = `${weekday}, ${date.getDate()} ${month},`;
+exports.titleDateNoYear = `${weekday}, ${month} ${date.getDate()},`;
 exports.titleDateTwoCommas = `${weekday}, ${date.getDate()} ${month}, ${date.getFullYear()}`;
 exports.titleDateComma = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
 exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}` || `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
