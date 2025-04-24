@@ -49,7 +49,6 @@ module.exports = defineConfig({
   reporter: [['html'], 
   // ['@estruyf/github-actions-reporter']
   ['playwright-ctrf-json-reporter', { outputFile: 'ctrf.json' }],
-  ['@estruyf/github-actions-reporter']
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
