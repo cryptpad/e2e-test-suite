@@ -3,10 +3,12 @@ const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 const { FileActions } = require('./fileactions.js');
 
 let filePage;
+let fileActions
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(60000);
   filePage = new FilePage(page, testInfo.title, isMobile);
+  fileActions = new FileActions(page, testInfo.title, isMobile)
 });
 
 test.describe('New file modal', () => {
@@ -19,6 +21,8 @@ test.describe('New file modal', () => {
         const firstPad = filePage.fileId();
 
         // click File twice and the menu will appear and then disappear.
+        // await page.waitForTimeout(2000)
+        await filePage.filemenu().waitFor();
         await filePage.filemenu().click();
         await expect(filePage.newFile).toBeVisible();
         await filePage.filemenu().click();
@@ -45,9 +49,9 @@ test.describe('New file modal', () => {
         const secondPad = nextPadPage.fileId();
         expect(secondPad).not.toBe(firstPad);
 
-        await filePage.toSuccess('New file modal works');
+        await fileActions.toSuccess('New file modal works');
       } catch (e) {
-        await filePage.toFailure(e, "New file modal doesn't work");
+        await fileActions.toFailure(e, "New file modal doesn't work");
       }
     });
   });
@@ -87,9 +91,9 @@ test.describe('Share modal', () => {
           await expect(filePage.fileName).toContainText('(Read only)');
         }
 
-        await filePage.toSuccess('Share modal works well');
+        await fileActions.toSuccess('Share modal works well');
       } catch (e) {
-        await filePage.toFailure(e, 'Share modal failed');
+        await fileActions.toFailure(e, 'Share modal failed');
       }
     });
   });
@@ -122,9 +126,9 @@ test.describe('Chat modal', () => {
         await filePage.chatButtonClick();
         await expect(chatModal.chatInput).not.toBeVisible();
 
-        await filePage.toSuccess('Chat modal works well');
+        await fileActions.toSuccess('Chat modal works well');
       } catch (e) {
-        await filePage.toFailure(e, 'Chat modal failed');
+        await fileActions.toFailure(e, 'Chat modal failed');
       }
     });
   });
@@ -147,9 +151,9 @@ test.describe('Change title', () => {
         await filePage.saveTitle.click();
         await expect(filePage.fileName).toContainText(newName);
 
-        await filePage.toSuccess('Changing title succeeded');
+        await fileActions.toSuccess('Changing title succeeded');
       } catch (e) {
-        await filePage.toFailure(e, 'Changing title failed');
+        await fileActions.toFailure(e, 'Changing title failed');
       }
     });
   });
@@ -165,7 +169,7 @@ test.describe('Save/Remove ', () => {
 
         // First try to trash without having saved, which should raise a warning.
         await filePage.filemenu().click();
-        await filePage.trashFile.click();
+        await fileActions.fileMenuItem('Move to trash').click();
         await expect(filePage.mainFrame.getByText(
           'You must store this document in your CryptDrive before being able to use this feature.'
         )).toBeVisible();
@@ -184,23 +188,23 @@ test.describe('Save/Remove ', () => {
 
         // Then trash the document, first canceling.
         await filePage.filemenu().click();
-        await filePage.trashFile.click();
+        await fileActions.fileMenuItem('Move to trash').click();
         await expect(filePage.alertMessage).toContainText('Are you sure');
-        await filePage.cancelButton.click();
-        await expect(filePage.cancelButton).not.toBeVisible();
+        await filePage.cancelButtonEsc.click();
+        await expect(filePage.cancelButtonEsc).not.toBeVisible();
 
         // Now try trashing again, but do it for real.
         await filePage.filemenu().click();
-        await filePage.trashFile.click();
+        await fileActions.fileMenuItem('Move to trash').click();
         await expect(filePage.alertMessage).toContainText('Are you sure');
         await filePage.okButton.click();
         await expect(filePage.mainFrame.getByText('Deleted')).toBeVisible();
         await filePage.okButton.click();
         await expect(filePage.alertMessage).not.toBeVisible();
 
-        await filePage.toSuccess('Save/remove works well');
+        await fileActions.toSuccess('Save/remove works well');
       } catch (e) {
-        await filePage.toFailure(e, 'Save/remove failed');
+        await fileActions.toFailure(e, 'Save/remove failed');
       }
     });
   });

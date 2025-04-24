@@ -1,5 +1,7 @@
 const { url } = require('../fixture.js');
 const { FileActions } = require('./fileactions.js');
+const os = require('os');
+
 
 export class Cleanup {
   /**
@@ -9,93 +11,126 @@ export class Cleanup {
     this.page = page;
     this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder');
     this.fileActions = new FileActions(this.page)
+    this.platform = os.platform();
+
   }
 
-  async cleanFiles (title) {
+  async cleanFiles (titles) {
     await this.page.goto(`${url}/drive`);
-    await this.page.waitForTimeout(10000);
-    await this.page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container').waitFor();
-    let fileCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).count();
-    console.log(fileCount);
+    await this.fileActions.drivemenu.waitFor();
+    let fileCount = await this.fileActions.driveElementText.getByText(titles[0]).count();
     if (fileCount > 0) {
-      console.log('fileCount');
-
       while (fileCount > 0) {
         if (fileCount > 1) {
-          await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).nth(fileCount - 1).click({ button: 'right' });
+          await this.fileActions.driveElementText.getByText(titles[0]).nth(fileCount - 1).click({ button: 'right' });
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name-text').getByText(title).click({ button: 'right' });
+          await this.fileActions.driveElementText.getByText(titles[0]).click({ button: 'right' });
         }
-        await this.page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await this.fileActions.destroyItem.click();
+        await this.fileActions.okButton.click();
 
-        await this.page.waitForTimeout(3000);
+        await this.page.waitForTimeout(1000);
         fileCount = fileCount - 1;
+      }
+    }
+    let fileCount1 = await this.fileActions.driveElementText.getByText(titles[1]).count();
+    if (fileCount1 > 0) {
+      while (fileCount1 > 0) {
+        if (fileCount1 > 1) {
+          await this.fileActions.driveElementText.getByText(titles[1]).nth(fileCount1 - 1).click({ button: 'right' });
+        } else {
+          await this.fileActions.driveElementText.getByText(titles[2]).click({ button: 'right' });
+        }
+        await this.fileActions.destroyItem.click();
+        await this.fileActions.okButton.click();
+
+        await this.page.waitForTimeout(1000);
+        fileCount1 = fileCount1 - 1;
+      }
+    }
+    let fileCount2 = await this.fileActions.driveElementText.getByText(titles[2]).count();
+    if (fileCount2 > 0) {
+      while (fileCount2 > 0) {
+        if (fileCount2 > 1) {
+          await this.fileActions.driveElementText.getByText(titles[2]).nth(fileCount2 - 1).click({ button: 'right' });
+        } else {
+          await this.fileActions.driveElementText.getByText(titles[2]).click({ button: 'right' });
+        }
+        await this.fileActions.destroyItem.click();
+        await this.fileActions.okButton.click();
+
+        await this.page.waitForTimeout(1000);
+        fileCount2 = fileCount2 - 1;
       }
     }
   }
 
   async cleanCalendar () {
     await this.page.goto(`${url}/calendar`);
-    await this.page.waitForTimeout(5000);
-    await this.page.frameLocator('#sbox-iframe').locator('.cp-calendar-newevent').waitFor();
-    let eventCount = await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count();
-    console.log(eventCount);
+    await this.fileActions.newEventMobile.waitFor();
+    let eventCount = await this.fileActions.calendarTestEvent.count();
     if (eventCount > 0) {
       while (eventCount > 0) {
         if (eventCount > 1) {
-          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(eventCount - 1).click();
+          await this.fileActions.calendarTestEvent.nth(eventCount - 1).click();
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').click();
+          await this.fileActions.calendarTestEvent.click();
         }
-        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
-        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+        await this.fileActions.deleteButton.click();
+        await this.fileActions.areYouSureButton.click();
         await this.page.waitForTimeout(3000);
         eventCount = eventCount - 1;
       }
     }
-    await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Right' }).click();
-    let nextWeekEventCount = await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').count();
-    console.log(nextWeekEventCount);
+    await this.fileActions.nextWeek.click();
+    let nextWeekEventCount = await this.fileActions.calendarTestEvent.count();
     if (nextWeekEventCount > 0) {
       while (nextWeekEventCount > 0) {
         if (nextWeekEventCount > 1) {
-          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').nth(nextWeekEventCount - 1).click();
+          await this.fileActions.calendarTestEvent.nth(nextWeekEventCount - 1).click();
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('.tui-full-calendar-time-schedule-content').getByText('test event').click();
+          await this.fileActions.calendarTestEvent.click();
         }
-        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' }).click();
-        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Are you sure?' }).click();
+        await this.fileActions.deleteButton.click();
+        await this.fileActions.areYouSureButton.click();
         await this.page.waitForTimeout(3000);
         nextWeekEventCount = nextWeekEventCount - 1;
       }
     }
-    await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Left' }).click();
+    await this.fileActions.prevWeek.click();
   }
 
   async cleanTemplates () {
     await this.page.goto(`${url}/drive`);
-    await this.page.waitForTimeout(5000);
-    await this.page.frameLocator('#sbox-iframe').locator('span').filter({ hasText: 'Templates' }).first().click();
+    await this.fileActions.drivemenu.waitFor();
+    if (await this.fileActions.driveSideBarItem('Templates').first().isVisible()) {
+      await this.fileActions.driveSideBarItem('Templates').first().click();
 
-    await this.page.waitForTimeout(5000);
-    let elementCount = await this.driveContentFolder.filter({ hasText: 'template' }).count();
-    console.log(elementCount);
-    if (elementCount > 0) {
-      while (elementCount > 0) {
-        if (elementCount > 1) {
-          await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: 'template' }).nth(elementCount - 1).click({ button: 'right' });
+      let elementCount = await this.fileActions.template.count();
+      if (elementCount > 0) {
+        let key;
+        if (this.platform === 'darwin') {
+          key = 'Meta';
         } else {
-          await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: 'template' }).click({ button: 'right' });
+          key = 'Control';
         }
-        await this.page.waitForTimeout(3000);
-        await this.page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-        await this.page.waitForTimeout(3000);
-        await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
-        await this.page.waitForTimeout(10000);
-        elementCount = elementCount - 1;
+        await this.page.keyboard.press(`${key}+a`);
+        await this.fileActions.template.first().click({ button: 'right' });
+        // while (elementCount > 0) {
+        //   if (elementCount > 1) {
+        //     await this.fileActions.template.nth(elementCount - 1).click({ button: 'right' });
+        //   } else {
+        //     await
+        //      this.fileActions.template.click({ button: 'right' });
+        //   }
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
+          await this.page.waitForTimeout(1000);
+        //   elementCount = elementCount - 1;
+        // }
       }
     }
+
   }
 
   /**
@@ -103,8 +138,8 @@ export class Cleanup {
    */
   async cleanUserDrive (file) {
     await this.page.goto(`${url}/drive`);
-    await this.page.waitForTimeout(10000);
-    let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: file }).count();
+    await this.fileActions.drivemenu.waitFor();
+    let elementCount = await this.fileActions.driveElement(file).count();
     if (elementCount > 0) {
       while (elementCount > 0) {
         if (elementCount > 1) {
@@ -112,15 +147,14 @@ export class Cleanup {
         } else {
           await this.driveContentFolder.getByText(`${file}`).click({ button: 'right' });
         }
-        await this.page.waitForTimeout(3000);
-        if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {
-          await this.page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-          await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await this.page.waitForTimeout(1000);
+        if (await this.fileActions.destroyItem.isVisible()) {
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
         } else {
-          await this.page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
+          await this.fileActions.moveToTrash.click();
         }
-        await this.page.waitForTimeout(3000);
-        await this.page.waitForTimeout(10000);
+        await this.page.waitForTimeout(1000);
         elementCount = elementCount - 1;
       }
     }
@@ -130,7 +164,7 @@ export class Cleanup {
    * @param {string} file
    */
   async cleanTeamDrive (file) {
-    let elementCount = await this.page.frameLocator('#sbox-iframe').locator('.cp-app-drive-element-name').filter({ hasText: file }).count();
+    let elementCount = await this.fileActions.driveElement(file).count();
     if (elementCount > 0) {
       while (elementCount > 0) {
         if (elementCount > 0) {
@@ -138,14 +172,14 @@ export class Cleanup {
         } else {
           await this.driveContentFolder.getByText(`${file}`).click({ button: 'right' });
         }
-        await this.page.waitForTimeout(3000);
-        if (await this.page.frameLocator('#sbox-iframe').getByText('Destroy').isVisible()) {
-          await this.page.frameLocator('#sbox-iframe').getByText('Destroy').click();
-          await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+        await this.page.waitForTimeout(1000);
+        if (await this.fileActions.destroyItem.isVisible()) {
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
         } else {
-          await this.page.frameLocator('#sbox-iframe').getByText('Move to trash').click();
+          await this.fileActions.trash.click();
         }
-        await this.page.waitForTimeout(10000);
+        await this.page.waitForTimeout(1000);
         elementCount = elementCount - 1;
       }
     }
@@ -153,45 +187,38 @@ export class Cleanup {
 
   async cleanTeamMembership () {
     await this.page.goto(`${url}/teams`);
-    // await this.page.waitForTimeout(5000);
-    await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
-    // if (browserName)
-    await this.page.waitForTimeout(2000);
-    await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
-    await this.page.waitForTimeout(5000);
-    console.log(await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible())
-    if (!await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible()){
-      await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
-    }
-    await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().waitFor();
-    await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().click();
+    await this.fileActions.accessTeam()
+    await this.fileActions.teamTab(/^Members$/).waitFor();
+    await this.fileActions.teamTab(/^Members$/).click();
 
-    if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).isVisible()) {
-      await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'testuser' }).locator('.fa.fa-times').click();
-      await this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' }).click();
+    if (await this.fileActions.teamMemberFilter('testuser').isVisible()) {
+      await this.fileActions.removeMember('testuser').click();
+      await this.fileActions.okButton.click();
     }
 
-    if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {
-      await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').click();
-      await this.page.waitForTimeout(2000);
-      if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {
-        await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').click();
-        await this.page.waitForTimeout(2000);
-        if (await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').isVisible()) {
-          await this.page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').click();
+    if (await this.fileActions.demoteTestUser3Arrow.isVisible()) {
+      await this.fileActions.demoteTestUser3()
+      await this.page.waitForTimeout(1000);
+      if (await this.fileActions.demoteTestUser3Arrow.isVisible()) {
+        await this.fileActions.demoteTestUser3();
+        await this.page.waitForTimeout(1000);
+        if (await this.fileActions.demoteTestUser3Arrow.isVisible()) {
+          await this.fileActions.demoteTestUser3();
+          await this.page.waitForTimeout(1000);
         }
-        await this.page.waitForTimeout(2000);
+        
       }
     }
   }
 
   async cleanNotifs () {
     await this.page.goto(`${url}/drive`);
-    await this.page.waitForTimeout(10000);
-    await this.page.frameLocator('#sbox-iframe').getByLabel('Notifications').click();
+    await this.fileActions.notifications.waitFor();
+    await this.fileActions.notifications.click();
     const page1Promise = this.page.waitForEvent('popup');
-    await this.page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: 'Open notifications panel' }).locator('a').click();
+    await this.fileActions.notifPanel.click();
     const page1 = await page1Promise;
-    await page1.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Notifications - All$/ }).locator('span').click();
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.cleanNotifs.click();
   }
 }

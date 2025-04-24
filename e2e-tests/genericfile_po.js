@@ -21,13 +21,13 @@ class FilePage {
     this.mainFrame = page.frameLocator('#sbox-iframe');
     this.newFile = this.mainFrame.getByRole('menuitem', { name: 'New' }).locator('a');
     this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
-    this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
+    // this.fileMenuItem('Move to trash') = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
     this.alertMessage = this.mainFrame.locator('.alertify').locator('.msg');
     this.okButton = this.mainFrame
       .locator('.dialog')
       .getByRole('button', { name: 'OK (enter)' })
       .first();
-    this.cancelButton = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
+    this.cancelButtonEsc = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
     this.storageSuccess = this.mainFrame.locator('alertify-logs');
 
     this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
@@ -51,7 +51,7 @@ class FilePage {
     await this.page.goto(`${url}/${fileType}/`);
     // loading a new file takes longer than the default timeout for expect calls,
     // so we explicitly wait for it.
-    await this.fileActions.filesaved.waitFor({timeout: 90000})
+    await this.fileActions.fileSaved.waitFor({state: "visible"})
   }
 
   async newFileClick () {
@@ -131,6 +131,7 @@ class NewFileModal {
   async createFileOfType (context, fileType) {
     // For new tabs, see https://playwright.dev/docs/pages#handling-new-pages
     const pagePromise = context.waitForEvent('page');
+    await this.iconLocator(fileType).waitFor();
     await this.iconLocator(fileType).click();
     const nextPage = await pagePromise;
     return new FilePage(nextPage, this.filePage.testName, this.filePage.mobile);

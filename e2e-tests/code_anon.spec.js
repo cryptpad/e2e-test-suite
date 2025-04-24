@@ -5,70 +5,68 @@ const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
 
-let pageOne;
+let page1;
 let mobile;
 let browserstackMobile;
 let platform;
 const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
+let fileActions1
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.setTimeout(210000);
+  test.setTimeout(90000);
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
-
-  await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
-
-  await fileActions.codeeditor.waitFor();
+  await fileActions.loadFileType("code")
 });
 
 test('anon - code - input text #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
-    await fileActions.codeeditor.click();
+    await fileActions.codeEditor.click();
     await fileActions.typeTestTextCode(mobile, 'test text');
-    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: ' code - input text', status: 'passed', reason: 'Can create Code document and input text' } })}`);
+    await fileActions.toSuccess('Can create Code document and input text');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - input text', status: 'failed', reason: 'Can\'t acreate Code document and input text' } })}`);
+    await fileActions.toFailure(e, 'Can\'t acreate Code document and input text');
   }
 });
 
 test('code - file menu - history #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
-    await fileActions.codeeditor.click();
+    await fileActions.codeEditor.click();
     await fileActions.typeTestTextCode(mobile, 'test text');
-    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('test text')).toBeVisible();
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
     await fileActions.history(mobile);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').first().click();
-    await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
+    await fileActions.historyPrevFirst.click();
+    await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - file menu - history', status: 'passed', reason: 'Can view Code document history' } })}`);
+   await fileActions.toSuccess('Can view Code document history');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - file menu - history', status: 'failed', reason: 'Can\'t view Code document history' } })}`);
+    await fileActions.toFailure(e,  'Can\'t view Code document history');
   }
 });
 
 test('code - toggle toolbar #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeHidden();
-    await fileActions.toolbar.click();
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-markdown-toolbar')).toBeVisible();
+    await expect(fileActions.codeToolbar).toBeHidden();
+    await fileActions.toolbarButton.click();
+    await expect(fileActions.codeToolbar).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - toggle toolbar', status: 'passed', reason: 'Can toggle toolbar in Code document' } })}`);
+    await fileActions.toSuccess('Can toggle toolbar in Code document');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - toggle toolbar', status: 'failed', reason: 'Can\'t toggle toolbar in Code document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t toggle toolbar in Code document');
   }
 });
 
@@ -82,36 +80,37 @@ test('code - toggle preview #1367', async ({ page }) => {
 
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - code - toggle preview', status: 'passed', reason: 'Can toggle preview in Code document' } })}`);
+    await fileActions.toSuccess('Can toggle preview in Code document' );
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - code - toggle preview', status: 'failed', reason: 'Can\'t toggle preview in Code document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t toggle preview in Code document');
   }
 });
 
 test('code -  make a copy #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
-    await fileActions.codeeditor.click();
+    await fileActions.codeEditor.click();
     await fileActions.typeTestTextCode(mobile, 'test text');
 
     await expect(fileActions.codepreview.getByText('test text')).toBeVisible();
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.filecopy.click()
+      await fileActions.fileMenuItem(' Make a copy').click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/code`), { timeout: 100000 });
+    fileActions1 = new FileActions(page1);
 
     await page1.waitForTimeout(4000);
-    await page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('Test text').waitFor();
-    await expect(page1.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content').getByText('test text')).toBeVisible();
+    await fileActions1.codepreview.getByText('Test text').waitFor();
+    await expect(fileActions1.codepreview.getByText('test text')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code -  make a copy', status: 'passed', reason: 'Can make a copy' } })}`);
+    await fileActions.toSuccess('Can make a copy of Code document');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code -  make a copy', status: 'failed', reason: 'Can\'t make a copy' } })}`);
+    await fileActions.toFailure(e, 'Can\'t make a copy of Code document');
   }
 });
 
@@ -120,8 +119,7 @@ test('code - import file #1367', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
-    await fileActions.codeeditor.waitFor();
-    // // await page.waitForTimeout(10000);
+    await fileActions.codeEditor.waitFor();
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -129,16 +127,13 @@ test('code - import file #1367', async ({ page, context }) => {
     ]);
 
     await fileChooser.setFiles('testdocuments/myfile.html');
-
-    // // await page.waitForTimeout(3000);
-
-    await expect(fileActions.codeeditor.getByText('Test text here')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('Test text here')).toBeVisible();
     await expect(fileActions.codepreview.getByText('Test text here')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - import file', status: 'passed', reason: 'Can import file into Code document' } })}`);
+    await fileActions.toSuccess('Can import file into Code document');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - import file', status: 'failed', reason: 'Can\'t import file into Code document' } })}`);
+    await fileActions.toFailure(e, 'Can\'t import file into Code document');
   }
 });
 
@@ -146,11 +141,11 @@ test('code - export (md)', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
-    await fileActions.codeeditor.click();
+    await fileActions.codeEditor.click();
     await fileActions.typeTestTextCode(mobile, 'test text');
-    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('test text')).toBeVisible();
     await fileActions.export(mobile);
-    await page.frameLocator('#sbox-iframe').getByRole('textbox').fill('test code');
+    await fileActions.textbox.fill('test code');
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -158,13 +153,11 @@ test('code - export (md)', async ({ page }) => {
     ]);
 
     await download.saveAs('/tmp/test code');
-
     const readData = fs.readFileSync('/tmp/test code', 'utf8');
-    console.log(readData);
     if (readData.trim() === 'test text') {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'passed', reason: 'Can export Code document as .md' } })}`);
+      await fileActions.toSuccess('Can export Code document as .md');
     } else {
-      await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - export (md)', status: 'failed', reason: 'Can\'t export Code document as .md' } })}`);
+      await fileActions.toFailure(e, 'Can\'t export Code document as .md');
     }
   } catch (e) {
     console.log(e);
@@ -174,7 +167,7 @@ test('code - export (md)', async ({ page }) => {
 
 test('code - share at a moment in history', async ({ page, browser }) => {
   try {
-    await fileActions.codeeditor.click();
+    await fileActions.codeEditor.click();
     await page.keyboard.press('t');
     await page.keyboard.press('e');
     await page.keyboard.press('s');
@@ -184,8 +177,7 @@ test('code - share at a moment in history', async ({ page, browser }) => {
     await page.keyboard.press('e');
     await page.keyboard.press('x');
     await page.keyboard.press('t');
-    // await page.waitForTimeout(7000);
-    await expect(fileActions.codeeditor.getByText('test text')).toBeVisible();
+    await expect(fileActions.codeEditor.getByText('test text')).toBeVisible();
 
 
     let key;
@@ -196,26 +188,19 @@ test('code - share at a moment in history', async ({ page, browser }) => {
     }
     await page.keyboard.press(`${key}+a`);
     await page.keyboard.press('Backspace');
-    await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
+    await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
 
+    var clipboardText = await fileActions.getShareLink()
+    page1 = await browser.newPage();
 
-    await fileActions.share(mobile);
-    // await fileActions.shareLink.click();
-    // await page.waitForTimeout(5000);
-    await fileActions.shareCopyLink.click();
-    // await page.waitForTimeout(5000);
+    await page1.goto(`${clipboardText}`);
 
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    pageOne = await browser.newPage();
+    await page1.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
+    await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
 
-    await pageOne.goto(`${clipboardText}`);
-
-    await pageOne.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    await expect(fileActions.codeeditor.getByText('test text')).toHaveCount(0);
-
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'passed', reason: 'Can share code document at a specific moment in history' } })}`);
+    await fileActions.toSuccess('Can share code document at a specific moment in history')
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'code - share at a moment in history', status: 'failed', reason: 'Can\'t share code document at a specific moment in history' } })}`);
+    await fileActions.toFailure(e, 'Can\'t share code document at a specific moment in history' )
   }
 });
