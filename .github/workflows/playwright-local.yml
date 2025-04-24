@@ -38,10 +38,13 @@ jobs:
       - name: Install dependencies 2
         run: npm exec playwright install --with-deps --prefix e2e-test-suite
       - name: Install test reporter
-        run: npm install --save-dev playwright-ctrf-json-reporter --prefix e2e-test-suite
+        run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
       - name: Run tests
         run: npm exec playwright test homepage_anon.spec.js:37 --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
-      - name: Publish Test Summary Results
-        run: npm exec github-actions-ctrf ctrf/ctrf-report.json --prefix e2e-test-suite
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: './ctrf/*.json'
+        if: always()
