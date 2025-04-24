@@ -42,7 +42,7 @@ jobs:
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
       - name: Run tests
-        run: npm exec playwright test code_anon.spec.js:168 --project='chrome' --workers=2 --prefix e2e-test-suite
+        run: npm exec playwright test drive_anon.spec.js:121 --project='chrome' --workers=2 --prefix e2e-test-suite
         env:
           PW_URL: ${{ vars.PW_URL }} 
       - name: Publish Test Report
