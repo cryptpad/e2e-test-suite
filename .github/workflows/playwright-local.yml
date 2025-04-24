@@ -47,10 +47,15 @@ jobs:
         env:
           PW_URL: ${{ vars.PW_URL }} 
       - name: Main
-        run: ls -la
+        run: echo "hello"
+        if: always()
       - name: Main2
-        run: |
-          ls
+        if: always()
+        run: echo "hi"
+        # if: always()
+      - name: Main2
+        run: ls e2e-test-suite
+        if: always()
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         # uses: estruyf/github-actions-reporter@1

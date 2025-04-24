@@ -127,7 +127,8 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
     const page1 = await page1Promise;
 
     await page.reload();
-    await page.locator('#sbox-iframe').contentFrame().getByText('Rich text - Thu, 24 April,').waitFor()
+    await fileActions.mainFrame.waitFor()
+    await page.locator('#sbox-iframe').getByText('Rich text - Thu, 24 April,').waitFor()
 
     // await fileActions.fileTitleAllFormats('Rich text').waitFor()
     // await expect(fileActions.mainFrame.getByText('Rich text - Thu, 24 April,')).toBeVisible();
