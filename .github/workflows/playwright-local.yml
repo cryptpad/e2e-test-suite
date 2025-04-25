@@ -53,10 +53,10 @@ jobs:
           PW_URL: ${{ vars.PW_URL }}
         if: always()
 
-      - name: show files
-        working-directory: e2e-test-suite
-        run: ls
-        if: always()
+      # - name: show files
+      #   working-directory: e2e-test-suite
+      #   run: ls
+      #   if: always()
       - name: Create auth files
         working-directory: e2e-test-suite
         run: |
