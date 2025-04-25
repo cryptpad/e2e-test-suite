@@ -21,7 +21,7 @@ jobs:
       - name: Install OnlyOffice
         run: cryptpad/install-onlyoffice.sh -a 
       - name: Seed database
-        working-directory: e2e-test-suite
+        working-directory: cryptpad
         run: unzip -o database_seed.zip
         if: always()
       - name: Run local server
