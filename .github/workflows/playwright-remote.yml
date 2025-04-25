@@ -29,6 +29,7 @@ jobs:
     - name: Install dependencies 3
       run: npm exec playwright install-deps 
     - name: Install test reporter
+      run: npm install playwright-ctrf-json-reporter 
     - name: Run Playwright tests
       run: npx playwright test kanban_anon.spec.js:39 --project='chrome' --workers=2
       env: 
