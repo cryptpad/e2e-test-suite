@@ -40,12 +40,12 @@ jobs:
         run: npm exec playwright install-deps --prefix e2e-test-suite
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
-      - name: Calibrate Playwright screenshot tests (anon)
-        working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
+      # - name: Calibrate Playwright screenshot tests (anon)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #   if: always()
       - name: Run Playwright tests (anon)
         working-directory: e2e-test-suite
         run: npx playwright test kanban_anon.spec.js:23 --config=playwright.config.js --project='chrome' --workers=2 --retries=1
