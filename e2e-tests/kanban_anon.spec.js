@@ -27,10 +27,10 @@ test('kanban - new board', async ({ page }) => {
     await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).waitFor()
     await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByRole('button').click();
     // await fileActions.editNewBoard.click();
-    // await fileActions.deleteButton.click();
-    // await fileActions.areYouSure.click();
+    await fileActions.deleteButton.click();
+    await fileActions.areYouSure.click();
 
-    // await expect(fileActions.newBoard).toHaveCount(0);
+    await expect(fileActions.newBoard).toHaveCount(0);
 
     await fileActions.toSuccess('Can anonymously create Kanban board');
   } catch (e) {
