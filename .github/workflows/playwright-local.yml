@@ -14,12 +14,6 @@ jobs:
             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b database_seed
         shell: bash
-      - name: Install dependencies
-        run: npm install --prefix cryptpad
-      - name: Install components  
-        run: npm run install:components --prefix cryptpad
-      - name: Install OnlyOffice
-        run: cryptpad/install-onlyoffice.sh -a 
       - name: Seed database
         working-directory: cryptpad
         run: unzip -o database_seed.zip
@@ -29,6 +23,12 @@ jobs:
         run: |
           git checkout staging
           git branch
+      - name: Install dependencies
+        run: npm install --prefix cryptpad
+      - name: Install components  
+        run: npm run install:components --prefix cryptpad
+      - name: Install OnlyOffice
+        run: cryptpad/install-onlyoffice.sh -a 
         if: always()
       - name: Run local server
         timeout-minutes: 180

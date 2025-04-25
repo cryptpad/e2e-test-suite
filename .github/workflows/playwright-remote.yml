@@ -1,82 +1,82 @@
-name: Playwright tests - remote instance
-on:
-  repository_dispatch:
-      types: [trigger-e2e-tests]
-  push:
-    branches: [ local_testing_branch ]
+# name: Playwright tests - remote instance
+# on:
+#   repository_dispatch:
+#       types: [trigger-e2e-tests]
+#   push:
+#     branches: [ local_testing_branch ]
 
-jobs:
-  test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - uses: actions/checkout@main
-    # - name: Set up SSH key
-    #   uses: webfactory/ssh-agent@v0.9.0
-    #   with:
-    #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-    # - name: Deploy via SSH-18
-    #   run: |
-    #     ${{ secrets.SSH }}
-    - name: Install dependencies
-      run: npm ci 
-    - name: Install dependencies 2
-      run: npm exec playwright install --with-deps 
-    - name: Install dependencies 3
-      run: npm exec playwright install-deps 
-    - name: Install test reporter
-      run: npm install playwright-ctrf-json-reporter
-    - name: Calibrate Playwright screenshot tests (anon)
-      run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
-      env:
-        PW_URL: ${{ vars.PW_URL_REMOTE }}
-      if: always() 
-    - name: Run Playwright tests
-      run: npx playwright test kanban_anon.spec.js:39 --project='chrome' --workers=2
-      env: 
-        PW_URL: ${{ vars.PW_URL_REMOTE }}
-    - name: Publish Test Report (anon)
-      uses: ctrf-io/github-test-reporter@v1
-      with:
-        report-path: 'e2e-test-suite/ctrf/*.json'
-      if: always()
-    - name: Create auth files
-      working-directory: e2e-test-suite
-      run: |
-        mkdir auth
-        cd auth
-        touch mainuser.json testuser.json testuser2.json testuser3.json 
-      if: always()
-    - name: Authenticate users
-      run: |
-        npx playwright test auth --config=playwright.config.js --project='chrome' --workers=1 
-      env:
-        PW_URL: ${{ vars.PW_URL_REMOTE }}
-        MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-        TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-        TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-        TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-      if: always()
-    - name: Calibrate Playwright screenshot tests (logged in users)
-      run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
-      env:
-        PW_URL: ${{ vars.PW_URL_REMOTE }}
-      if: always()
-    - name: Run Playwright tests (logged in users)
-      run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
-      env:
-        PW_URL: ${{ vars.PW_URL_REMOTE }}
-        MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-        TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-        TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-        TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-      if: always()
-    - name: Publish Test Report (logged in users)
-      uses: ctrf-io/github-test-reporter@v1
-      with:
-        report-path: 'e2e-test-suite/ctrf/*.json'
-      if: always()
+# jobs:
+#   test:
+#     timeout-minutes: 60
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v4
+#     - uses: actions/setup-node@v4
+#       with:
+#         node-version: lts/*
+#     - uses: actions/checkout@main
+#     # - name: Set up SSH key
+#     #   uses: webfactory/ssh-agent@v0.9.0
+#     #   with:
+#     #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#     # - name: Deploy via SSH-18
+#     #   run: |
+#     #     ${{ secrets.SSH }}
+#     - name: Install dependencies
+#       run: npm ci 
+#     - name: Install dependencies 2
+#       run: npm exec playwright install --with-deps 
+#     - name: Install dependencies 3
+#       run: npm exec playwright install-deps 
+#     - name: Install test reporter
+#       run: npm install playwright-ctrf-json-reporter
+#     - name: Calibrate Playwright screenshot tests (anon)
+#       run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
+#       env:
+#         PW_URL: ${{ vars.PW_URL_REMOTE }}
+#       if: always() 
+#     - name: Run Playwright tests
+#       run: npx playwright test kanban_anon.spec.js:39 --project='chrome' --workers=2
+#       env: 
+#         PW_URL: ${{ vars.PW_URL_REMOTE }}
+#     - name: Publish Test Report (anon)
+#       uses: ctrf-io/github-test-reporter@v1
+#       with:
+#         report-path: 'e2e-test-suite/ctrf/*.json'
+#       if: always()
+#     - name: Create auth files
+#       working-directory: e2e-test-suite
+#       run: |
+#         mkdir auth
+#         cd auth
+#         touch mainuser.json testuser.json testuser2.json testuser3.json 
+#       if: always()
+#     - name: Authenticate users
+#       run: |
+#         npx playwright test auth --config=playwright.config.js --project='chrome' --workers=1 
+#       env:
+#         PW_URL: ${{ vars.PW_URL_REMOTE }}
+#         MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+#         TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+#         TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+#         TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+#       if: always()
+#     - name: Calibrate Playwright screenshot tests (logged in users)
+#       run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
+#       env:
+#         PW_URL: ${{ vars.PW_URL_REMOTE }}
+#       if: always()
+#     - name: Run Playwright tests (logged in users)
+#       run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
+#       env:
+#         PW_URL: ${{ vars.PW_URL_REMOTE }}
+#         MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+#         TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+#         TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+#         TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+#       if: always()
+#     - name: Publish Test Report (logged in users)
+#       uses: ctrf-io/github-test-reporter@v1
+#       with:
+#         report-path: 'e2e-test-suite/ctrf/*.json'
+#       if: always()
