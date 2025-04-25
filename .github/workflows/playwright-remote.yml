@@ -36,16 +36,16 @@ jobs:
         PW_URL: ${{ vars.PW_URL_REMOTE }}
       if: always() 
     - name: Run Playwright tests
-      run: npx playwright test kanban_anon.spec.js:39 --project='chrome' --workers=2
+      run: npx playwright test anon --project='chrome' --workers=2
       env: 
         PW_URL: ${{ vars.PW_URL_REMOTE }}
+      if: always()
     - name: Publish Test Report (anon)
       uses: ctrf-io/github-test-reporter@v1
       with:
         report-path: 'e2e-test-suite/ctrf/*.json'
       if: always()
     - name: Create auth files
-      working-directory: e2e-test-suite
       run: |
         mkdir auth
         cd auth
