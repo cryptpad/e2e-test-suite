@@ -26,7 +26,9 @@ jobs:
         if: always()
       - name: Checkout staging branch
         working-directory: cryptpad
-        run: git checkout staging
+        run: |
+          git checkout staging
+          git branch
         if: always()
       - name: Run local server
         timeout-minutes: 180
