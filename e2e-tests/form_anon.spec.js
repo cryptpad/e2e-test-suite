@@ -446,7 +446,7 @@ test('form - import file', async ({ page }) => {
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
-    await fileChooser.setFiles('e2e-test-suite/testdocuments/testform.json');
+    await fileChooser.setFiles('testdocuments/testform.json');
 
     await expect(fileActions.textbox).toHaveValue('What to do today?');
     await expect(fileActions.mainFrame.getByText('Surf')).toBeVisible();
