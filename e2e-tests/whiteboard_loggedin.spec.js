@@ -76,7 +76,7 @@ test('screenshot loggedin whiteboard - display history (previous author)', async
   }
 });
 
-test('whiteboard - save as and import template', async ({ page }) => {
+test('screenshot loggedin whiteboard - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
 
