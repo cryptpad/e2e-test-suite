@@ -42,8 +42,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
-const docNames = ['slide'];
+const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+// const docNames = ['slide'];
 
 
 docNames.forEach(function (name) {
