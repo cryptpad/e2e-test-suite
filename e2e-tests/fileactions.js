@@ -218,7 +218,7 @@ export class FileActions {
     //kanban
     this.addBoard = this.mainFrame.locator('#kanban-addboard')
     this.boardTitle = this.mainFrame.getByLabel('Title')
-    this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board')
+    this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByRole('button')
     this.addItem = this.mainFrame.locator('.kanban-title-button')
     this.editItem = this.mainFrame.locator('#kanban-edit')
     // this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
