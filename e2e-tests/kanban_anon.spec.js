@@ -25,7 +25,7 @@ test('kanban - new board', async ({ page }) => {
     await fileActions.addBoard.click();
     await expect(fileActions.newBoard).toBeVisible();
     await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).waitFor()
-    await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByLabel('Edit this board').click();
+    await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByRole('button').click();
     // await fileActions.editNewBoard.click();
     // await fileActions.deleteButton.click();
     // await fileActions.areYouSure.click();
