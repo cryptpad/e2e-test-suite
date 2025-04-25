@@ -222,7 +222,9 @@ export class FileActions {
     this.addItem = this.mainFrame.locator('.kanban-title-button')
     this.editItem = this.mainFrame.locator('#kanban-edit')
     // this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
-    this.editItemContent = this.mainFrame.locator('.kanban-item-text-container').locator('.kanban-edit-item')
+        // this.editItemContent = this.mainFrame.locator('.kanban-item-text-container').locator('.kanban-edit-item')
+
+    this.editItemContent = this.mainFrame.locator('.kanban-edit-item')
 
     
     this.editItemTitle = this.mainFrame.locator('.kanban-item-text')
