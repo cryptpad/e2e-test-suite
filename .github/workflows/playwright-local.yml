@@ -40,15 +40,15 @@ jobs:
         run: npm exec playwright install-deps --prefix e2e-test-suite
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
-      # - name: Calibrate Playwright screenshot tests
-      #   working-directory: e2e-test-suite
-      #   run: npx playwright test -g "screenshot" --config=playwright.config.js --project='chrome' --workers=2
-      #   env:
-      #     PW_URL: ${{ vars.PW_URL }}
-      #   if: always()
+      - name: Calibrate Playwright screenshot tests (anon)
+        working-directory: e2e-test-suite
+        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
+        env:
+          PW_URL: ${{ vars.PW_URL }}
+        if: always()
       - name: Run Playwright tests (anon)
         working-directory: e2e-test-suite
-        run: npx playwright test drive_anon.spec.js:121 --config=playwright.config.js --project='chrome' --workers=2 --retries=1
+        run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
         env:
           PW_URL: ${{ vars.PW_URL }}
         if: always()
@@ -57,48 +57,40 @@ jobs:
         with:
           report-path: 'e2e-test-suite/ctrf/*.json'
         if: always()
-
-      - name: Run Playwright tests (anon)
+      - name: Create auth files
         working-directory: e2e-test-suite
-        run: npx playwright test drive_anon.spec.js:197 --config=playwright.config.js --project='chrome' --workers=2 --retries=1
+        run: |
+          mkdir auth
+          cd auth
+          touch mainuser.json testuser.json testuser2.json testuser3.json 
+        if: always()
+      - name: Authenticate users
+        working-directory: e2e-test-suite
+        run: |
+          npx playwright test auth --config=playwright.config.js --project='chrome' --workers=1 
+        env:
+          PW_URL: ${{ vars.PW_URL }}
+          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+        if: always()
+      - name: Calibrate Playwright screenshot tests (logged in users)
+        working-directory: e2e-test-suite
+        run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
         env:
           PW_URL: ${{ vars.PW_URL }}
         if: always()
-
-      
-
-      # - name: show files
-      #   working-directory: e2e-test-suite
-      #   run: ls
-      #   if: always()
-      # - name: Create auth files
-      #   working-directory: e2e-test-suite
-      #   run: |
-      #     mkdir auth
-      #     cd auth
-      #     touch mainuser.json testuser.json testuser2.json testuser3.json 
-      #   if: always()
-      # - name: Authenticate users
-      #   working-directory: e2e-test-suite
-      #   run: |
-      #     npx playwright test auth --config=playwright.config.js --project='chrome' --workers=1 
-      #   env:
-      #     PW_URL: ${{ vars.PW_URL }}
-      #     MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-      #     TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-      #     TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-      #     TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-      #   if: always()
-      # - name: Run Playwright tests (logged in users)
-      #   working-directory: e2e-test-suite
-      #   run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=1
-      #   env:
-      #     PW_URL: ${{ vars.PW_URL }}
-      #     MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-      #     TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-      #     TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-      #     TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-      #   if: always()
+      - name: Run Playwright tests (logged in users)
+        working-directory: e2e-test-suite
+        run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
+        env:
+          PW_URL: ${{ vars.PW_URL }}
+          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+        if: always()
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         with:

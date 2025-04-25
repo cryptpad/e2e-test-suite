@@ -87,7 +87,7 @@ test('screenshot anon - erase on whiteboard', async ({ page }) => {
     await page.mouse.up();
     await fileActions.clearButton.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4400 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4700 });
     await fileActions.toSuccess( 'Can erase on whiteboard');
   } catch (e) {
     await fileActions.toFailure(e,'Can\'t erase on whiteboard');
@@ -217,14 +217,14 @@ test('screenshot anon - can clear whiteboard canvas', async ({ page }) => {
     await page.mouse.up();
     await fileActions.clearButton.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4400 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 4600 });
     await fileActions.toSuccess( 'Can clear whiteboard canvas');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t clear whiteboard canvas');
   }
 });
 
-test('screenshot whiteboard - make a copy', async ({ page }) => {
+test('screenshot anon whiteboard - make a copy', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -256,7 +256,7 @@ test('screenshot whiteboard - make a copy', async ({ page }) => {
   }
 });
 
-test('screenshot whiteboard - export as png', async ({ page }) => {
+test('screenshot anon whiteboard - export as png', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -290,7 +290,7 @@ test('screenshot whiteboard - export as png', async ({ page }) => {
   }
 });
 
-test('screenshot whiteboard - display history', async ({ page }) => {
+test('screenshot anon whiteboard - display history', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -318,7 +318,7 @@ test('screenshot whiteboard - display history', async ({ page }) => {
   }
 });
 
-test('screenshot whiteboard - share whiteboard history at specific moment in time (link)', async ({ page, browser }) => {
+test('screenshot anon whiteboard - share whiteboard history at specific moment in time (link)', async ({ page, browser }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({

@@ -105,7 +105,7 @@ test(' can access team public signing key', async ({ page }) => {
   }
 });
 
-test('(screenshot) change team avatar', async ({ page }) => {
+test('screenshot loggedin change team avatar', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 

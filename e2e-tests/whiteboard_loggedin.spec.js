@@ -23,7 +23,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-test('screenshot whiteboard - display history (previous author)', async ({ page, browser }) => {
+test('screenshot loggedin whiteboard - display history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
