@@ -5,25 +5,23 @@
     },
     "summary": {
       "tests": 1,
-      "passed": 0,
-      "failed": 1,
+      "passed": 1,
+      "failed": 0,
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1745595461031,
-      "stop": 1745595644485,
+      "start": 1745596139279,
+      "stop": 1745596176886,
       "suites": 0
     },
     "tests": [
       {
         "name": "kanban board - anon - edit list item content",
-        "status": "failed",
-        "duration": 80636,
-        "start": 1745595463,
-        "stop": 1745595544,
-        "message": "Error: page.evaluate: Target page, context or browser has been closed",
-        "trace": "Error: page.evaluate: Target page, context or browser has been closed\n    at FileActions.setStatus (/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/fileactions.js:850:21)\n    at FileActions.toFailure (/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/fileactions.js:881:16)\n    at /Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/kanban_anon.spec.js:98:23",
-        "rawStatus": "interrupted",
+        "status": "passed",
+        "duration": 19773,
+        "start": 1745596141,
+        "stop": 1745596161,
+        "rawStatus": "passed",
         "tags": [],
         "type": "e2e",
         "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/kanban_anon.spec.js",
@@ -32,9 +30,7 @@
         "steps": [],
         "suite": "chrome > kanban_anon.spec.js",
         "attachments": [],
-        "stdout": [
-          "locator.click: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().getByAltText('Edit this card').first()\u001b[22m\n\n    at \u001b[90m/Users/zuzanna/Desktop/e2e-test-suite/\u001b[39me2e-tests/kanban_anon.spec.js:89:47 {\n  [\u001b[32mSymbol(step)\u001b[39m]: {\n    stepId: \u001b[32m'pw:api@16'\u001b[39m,\n    location: {\n      file: \u001b[32m'/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/kanban_anon.spec.js'\u001b[39m,\n      line: \u001b[33m89\u001b[39m,\n      column: \u001b[33m47\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    category: \u001b[32m'pw:api'\u001b[39m,\n    title: \u001b[32m'locator.click(#sbox-iframe >> internal:control=enter-frame >> internal:attr=[alt=\"Edit this card\"i] >> nth=0)'\u001b[39m,\n    apiName: \u001b[32m'locator.click'\u001b[39m,\n    params: {\n      selector: \u001b[32m'#sbox-iframe >> internal:control=enter-frame >> internal:attr=[alt=\"Edit this card\"i] >> nth=0'\u001b[39m,\n      strict: \u001b[33mtrue\u001b[39m\n    },\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    steps: [],\n    attachmentIndices: [],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1745595544866\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: locator.click: Target page, context or browser has been closed\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().getByAltText('Edit this card').first()\\x1B[22m\\n\"\u001b[39m,\n      stack: \u001b[32m'Error: locator.click: Target page, context or browser has been closed\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().getByAltText('Edit this card').first()\\x1B[22m\\n\"\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'    at /Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/kanban_anon.spec.js:89:47'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m\n    }\n  }\n}\n"
-        ],
+        "stdout": [],
         "stderr": [],
         "extra": {
           "annotations": []

@@ -86,7 +86,7 @@ test('kanban board - anon - edit list item title', async ({ page }) => {
 test('kanban board - anon - edit list item content', async ({ page }) => {
   try {
     //here
-    await fileActions.editItemContent.first().click();
+    await fileActions.editItemContent().first().click();
     // await fileActions.editItemContent.first().click();
     await fileActions.kanbanEditor.click();
     await fileActions.kanbanEditor.type('new item content');
@@ -102,7 +102,7 @@ test('kanban board - anon - edit list item content', async ({ page }) => {
 test('kanban board - anon - add and filter by tag', async ({ page }) => {
   try {
     //here
-    await fileActions.editItemContent.first().click();
+    await fileActions.editItemContent().first().click();
     await fileActions.editKanbanTags.click();
     await fileActions.editKanbanTags.type('newtag');
     await fileActions.addButton.click();
@@ -173,7 +173,7 @@ test('kanban - make a copy', async ({ page }) => {
     await fileActions.boardTitle.fill('new title');
     await fileActions.boardTitle.press('Enter');
     //here
-    await fileActions.editItemContent.first().click();
+    await fileActions.editItemContent().first().click();
     await fileActions.kanbanEditor.click();
     await fileActions.kanbanEditor.type('new item content');
     await fileActions.closeButton.click();

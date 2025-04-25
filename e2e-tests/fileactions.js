@@ -224,7 +224,7 @@ export class FileActions {
     // this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
         // this.editItemContent = this.mainFrame.locator('.kanban-item-text-container').locator('.kanban-edit-item')
 
-    this.editItemContent = this.mainFrame.getByAltText('Edit this card')
+    // this.editItemContent = this.mainFrame.getByAltText('Edit this card')
 
     
     this.editItemTitle = this.mainFrame.locator('.kanban-item-text')
@@ -348,6 +348,11 @@ export class FileActions {
     this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user > .fa').first()
     this.movedToTrash = this.mainFrame.getByText(/^That document has been moved to the trash/, { exact: true })
     
+  }
+
+  editItemContent () {
+    return this.mainFrame.getByRole('button', { name: 'Edit this card' }).or(this.mainFrame.getByAltText('Edit this card'))
+  
   }
 
   newDriveFile (file) {
