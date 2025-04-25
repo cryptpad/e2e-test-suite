@@ -20,6 +20,10 @@ jobs:
         run: npm run install:components --prefix cryptpad
       - name: Install OnlyOffice
         run: cryptpad/install-onlyoffice.sh -a 
+      - name: Seed database
+        working-directory: e2e-test-suite
+        run: unzip -o database_seed.zip
+        if: always()
       - name: Run local server
         timeout-minutes: 180
         run: nohup npm run dev --prefix cryptpad &
@@ -48,10 +52,7 @@ jobs:
       #   env:
       #     PW_URL: ${{ vars.PW_URL }}
       #   if: always()
-      - name: Seed database
-        working-directory: e2e-test-suite
-        run: unzip -o database_seed.zip
-        if: always()
+
       - name: show files
         working-directory: e2e-test-suite
         run: ls
