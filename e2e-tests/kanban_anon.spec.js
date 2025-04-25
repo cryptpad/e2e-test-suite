@@ -42,8 +42,8 @@ test('kanban - new list item', async ({ page }) => {
     await fileActions.editItem.fill('example item');
     await fileActions.editItem.press('Enter');
     await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
-    await fileActions.editItemContent.first().waitFor()
-    await fileActions.editItemContent.first().click({force: true});
+    await fileActions.editItemContent().first().waitFor()
+    await fileActions.editItemContent().first().click({force: true});
     await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
 
