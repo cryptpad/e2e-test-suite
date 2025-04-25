@@ -40,18 +40,18 @@ jobs:
         run: npm exec playwright install-deps --prefix e2e-test-suite
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
-      # - name: Calibrate Playwright screenshot tests
-      #   working-directory: e2e-test-suite
-      #   run: npx playwright test -g "screenshot" --config=playwright.config.js --project='chrome' --workers=2
-      #   env:
-      #     PW_URL: ${{ vars.PW_URL }}
-      #   if: always()
-      # - name: Run Playwright tests (anon)
-      #   working-directory: e2e-test-suite
-      #   run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
-      #   env:
-      #     PW_URL: ${{ vars.PW_URL }}
-      #   if: always()
+      - name: Calibrate Playwright screenshot tests
+        working-directory: e2e-test-suite
+        run: npx playwright test -g "screenshot" --config=playwright.config.js --project='chrome' --workers=2
+        env:
+          PW_URL: ${{ vars.PW_URL }}
+        if: always()
+      - name: Run Playwright tests (anon)
+        working-directory: e2e-test-suite
+        run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
+        env:
+          PW_URL: ${{ vars.PW_URL }}
+        if: always()
 
       - name: show files
         working-directory: e2e-test-suite
@@ -77,7 +77,7 @@ jobs:
         if: always()
       - name: Run Playwright tests (logged in users)
         working-directory: e2e-test-suite
-        run: npx playwright test code_loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=1
+        run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=1
         env:
           PW_URL: ${{ vars.PW_URL }}
           MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
