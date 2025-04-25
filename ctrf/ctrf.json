@@ -10,17 +10,17 @@
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1745596139279,
-      "stop": 1745596176886,
+      "start": 1745596485362,
+      "stop": 1745596651213,
       "suites": 0
     },
     "tests": [
       {
-        "name": "kanban board - anon - edit list item content",
+        "name": "kanban board - anon - edit list item title",
         "status": "passed",
-        "duration": 19773,
-        "start": 1745596141,
-        "stop": 1745596161,
+        "duration": 19399,
+        "start": 1745596487,
+        "stop": 1745596507,
         "rawStatus": "passed",
         "tags": [],
         "type": "e2e",
