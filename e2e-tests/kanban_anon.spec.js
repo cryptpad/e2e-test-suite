@@ -86,12 +86,12 @@ test('kanban board - anon - edit list item title', async ({ page }) => {
 test('kanban board - anon - edit list item content', async ({ page }) => {
   try {
     //here
-    await fileActions.editItemContent.click();
+    await fileActions.editItemContent.first().click();
     // await fileActions.editItemContent.first().click();
-    // await fileActions.kanbanEditor.click();
-    // await fileActions.kanbanEditor.type('new item content');
-    // await fileActions.closeButton.click();
-    // await expect(fileActions.mainFrame.getByText('new item content')).toBeVisible();
+    await fileActions.kanbanEditor.click();
+    await fileActions.kanbanEditor.type('new item content');
+    await fileActions.closeButton.click();
+    await expect(fileActions.mainFrame.getByText('new item content')).toBeVisible();
 
     await fileActions.toSuccess('Can edit Kanban list item content');
   } catch (e) {

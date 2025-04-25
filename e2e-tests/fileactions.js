@@ -224,7 +224,7 @@ export class FileActions {
     // this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
         // this.editItemContent = this.mainFrame.locator('.kanban-item-text-container').locator('.kanban-edit-item')
 
-    this.editItemContent = this.mainFrame.locator('.kanban-edit-item')
+    this.editItemContent = this.mainFrame.getByAltText('Edit this card')
 
     
     this.editItemTitle = this.mainFrame.locator('.kanban-item-text')
