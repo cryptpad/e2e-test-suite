@@ -126,7 +126,7 @@ test('code - import file #1367', async ({ page, context }) => {
       await fileActions.importClick()
     ]);
 
-    await fileChooser.setFiles('/testdocuments/myfile.html');
+    await fileChooser.setFiles('testdocuments/myfile.html');
     await expect(fileActions.codeEditor.getByText('Test text here')).toBeVisible();
     await expect(fileActions.codepreview.getByText('Test text here')).toBeVisible();
 

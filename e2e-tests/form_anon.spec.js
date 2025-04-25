@@ -865,7 +865,6 @@ test('form - add and respond to checkbox grid question', async ({ page, context 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
-    console.log(await fileActions1.checkboxGridAnswer(5).first())
     await fileActions1.checkboxGridAnswer(5).first().waitFor()
     await fileActions1.checkboxGridAnswer(5).first().click();
     await fileActions1.checkboxGridAnswer(4).first().click();
@@ -1202,7 +1201,6 @@ test('form - export responses as .json', async ({ page, context }) => {
     const responseJSONObject = JSON.parse(fs.readFileSync('/tmp/form responses'));
     const responseJSONString = `${JSON.stringify(responseJSONObject)}`;
     const regexString = /^\{"form":{/;
-    console.log(responseJSONString)
     if (regexString.test(responseJSONString)) {
       await fileActions.toSuccess('Can export Form responses as .json');
     } else {

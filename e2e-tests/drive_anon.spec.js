@@ -172,10 +172,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 //       page1.waitUntil('load'),
 //       page1.waitUntil('domcontentloaded'),
 //       page1.waitUntil('networkidle'),
-//       console.log("KUWRA")
 //     ]).then(async () => {
-//           console.log("KUWRA!!!!!!!!!")
-
 //       await page.waitForTimeout(100); // buffer
 //       await page.reload();
 //     });
