@@ -221,12 +221,15 @@ export class FileActions {
     this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board')
     this.addItem = this.mainFrame.locator('.kanban-title-button')
     this.editItem = this.mainFrame.locator('#kanban-edit')
-    this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
+    // this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
+    this.editItemContent = this.mainFrame.locator('.kanban-edit-item')
+
+    
     this.editItemTitle = this.mainFrame.getByRole('main').getByRole('button', { name: 'Edit this card' })
     this.kanbanContainer = this.mainFrame.locator('#cp-app-kanban-content')
     this.kanbanEditor = this.mainFrame.locator('.CodeMirror-lines')
     this.newBoard = this.mainFrame.getByText('New board')
-    this.editNewBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByLabel('Edit this board')
+    this.editNewBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByRole('button')
     this.editKanbanTags = this.mainFrame.locator('#cp-kanban-edit-tags')
     this.kanbanContent = this.mainFrame.locator('#cp-app-kanban-content')
     this.clearFilter = this.mainFrame.getByRole('button', { name: ' Clear filter' })
