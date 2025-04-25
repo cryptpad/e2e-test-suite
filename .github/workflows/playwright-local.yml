@@ -39,11 +39,15 @@ jobs:
       - name: Calibrate Playwright screenshot tests
         working-directory: e2e-test-suite
         run: npx playwright test -g "screenshot" --config=playwright.config.js --project='chrome' --workers=2
+        env:
+          PW_URL: ${{ vars.PW_URL }}
+        if: always()
       - name: Run Playwright tests
         working-directory: e2e-test-suite
         run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
         env:
           PW_URL: ${{ vars.PW_URL }}
+        if: always()
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         with:
