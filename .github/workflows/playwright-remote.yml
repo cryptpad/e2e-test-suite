@@ -30,7 +30,7 @@ jobs:
       run: npm exec playwright install-deps 
     - name: Install test reporter 
       run: npm install playwright-ctrf-json-reporter
-    - name: Calibrate Playwright screenshot tests (anon)
+    - name: Calibrate Playwright screenshot tests (anon) 
       run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2 
       env:
         PW_URL: ${{ vars.PW_URL_REMOTE }}
