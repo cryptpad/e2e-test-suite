@@ -173,7 +173,7 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
 
     const userActions = new UserActions(page1);
     await userActions.login('test-user3', testUser3Password);
-    await page.waitForTimeout(3000);
+    await fileActions1.notifications.waitFor();
     await page1.goto(`${clipboardText}`);
 
     await fileActions1.mainFrame.getByText('Option 1').click();
