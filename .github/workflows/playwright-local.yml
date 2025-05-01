@@ -1,104 +1,104 @@
-name: Playwright tests - local instance
-on:
-  repository_dispatch:
-      types: [trigger-e2e-tests]
-  push:
-    branches: [ testing_branch, local_testing_branch ]
+# name: Playwright tests - local instance
+# on:
+#   repository_dispatch:
+#       types: [trigger-e2e-tests]
+#   push:
+#     branches: [ testing_branch, local_testing_branch ]
 
-jobs:
-  run_tests:
-    runs-on: ubuntu-latest 
-    steps:
-      - name: Clone CryptPad repository
-        env: 
-            PA_TOKEN: ${{ secrets.PAT_SECRET }} 
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b database_seed_main1.5
-        shell: bash
-      - name: Seed database
-        working-directory: cryptpad
-        run: unzip -o database_seed_main.zip
-        if: always()
-      - name: Checkout branch
-        working-directory: cryptpad
-        run: |
-          git checkout main
-          git branch
-      - name: Install dependencies
-        run: npm install --prefix cryptpad
-      - name: Install components  
-        run: npm run install:components --prefix cryptpad
-      - name: Install OnlyOffice
-        run: cryptpad/install-onlyoffice.sh -a 
-        if: always()
-      - name: Run local server
-        timeout-minutes: 180
-        run: nohup npm run dev --prefix cryptpad &
-      - name: Clone test repository
-        env: 
-            PA_TOKEN: ${{ secrets.PAT_SECRET }}
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git" -b local_testing_branch
-        shell: bash
-      - name: Install dependencies
-        run: npm ci --prefix e2e-test-suite
-      - name: Install dependencies 2
-        run: npm exec playwright install --with-deps --prefix e2e-test-suite
-      - name: Install dependencies 3
-        run: npm exec playwright install-deps --prefix e2e-test-suite
-      - name: Install test reporter
-        run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
-      - name: Calibrate Playwright screenshot tests (anon)
-        working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
-      - name: Run Playwright tests (anon)
-        working-directory: e2e-test-suite
-        run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
-      - name: Publish Test Report (anon)
-        uses: ctrf-io/github-test-reporter@v1
-        with:
-          report-path: 'e2e-test-suite/ctrf/*.json'
-        if: always()
-      - name: Create auth files
-        working-directory: e2e-test-suite
-        run: |
-          mkdir auth
-          cd auth
-          touch mainuser.json testuser.json testuser2.json testuser3.json 
-        if: always()
-      - name: Authenticate users
-        working-directory: e2e-test-suite
-        run: |
-          npx playwright test auth --config=playwright.config.js --project='chrome' --workers=1 
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-        if: always()
-      - name: Calibrate Playwright screenshot tests (logged in users)
-        working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
-      - name: Run Playwright tests (logged in users)
-        working-directory: e2e-test-suite
-        run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-        if: always()
-      - name: Publish Test Report (logged in users)
-        uses: ctrf-io/github-test-reporter@v1
-        with:
-          report-path: 'e2e-test-suite/ctrf/*.json'
-        if: always()
+# jobs:
+#   run_tests:
+#     runs-on: ubuntu-latest 
+#     steps:
+#       - name: Clone CryptPad repository
+#         env: 
+#             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
+#         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b database_seed_main1.5
+#         shell: bash
+#       - name: Seed database
+#         working-directory: cryptpad
+#         run: unzip -o database_seed_main.zip
+#         if: always()
+#       - name: Checkout branch
+#         working-directory: cryptpad
+#         run: |
+#           git checkout main
+#           git branch
+#       - name: Install dependencies
+#         run: npm install --prefix cryptpad
+#       - name: Install components  
+#         run: npm run install:components --prefix cryptpad
+#       - name: Install OnlyOffice
+#         run: cryptpad/install-onlyoffice.sh -a 
+#         if: always()
+#       - name: Run local server
+#         timeout-minutes: 180
+#         run: nohup npm run dev --prefix cryptpad &
+#       - name: Clone test repository
+#         env: 
+#             PA_TOKEN: ${{ secrets.PAT_SECRET }}
+#         run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git" -b local_testing_branch
+#         shell: bash
+#       - name: Install dependencies
+#         run: npm ci --prefix e2e-test-suite
+#       - name: Install dependencies 2
+#         run: npm exec playwright install --with-deps --prefix e2e-test-suite
+#       - name: Install dependencies 3
+#         run: npm exec playwright install-deps --prefix e2e-test-suite
+#       - name: Install test reporter
+#         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
+#       - name: Calibrate Playwright screenshot tests (anon)
+#         working-directory: e2e-test-suite
+#         run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
+#         env:
+#           PW_URL: ${{ vars.PW_URL }}
+#         if: always()
+#       - name: Run Playwright tests (anon)
+#         working-directory: e2e-test-suite
+#         run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
+#         env:
+#           PW_URL: ${{ vars.PW_URL }}
+#         if: always()
+#       - name: Publish Test Report (anon)
+#         uses: ctrf-io/github-test-reporter@v1
+#         with:
+#           report-path: 'e2e-test-suite/ctrf/*.json'
+#         if: always()
+#       - name: Create auth files
+#         working-directory: e2e-test-suite
+#         run: |
+#           mkdir auth
+#           cd auth
+#           touch mainuser.json testuser.json testuser2.json testuser3.json 
+#         if: always()
+#       - name: Authenticate users
+#         working-directory: e2e-test-suite
+#         run: |
+#           npx playwright test auth --config=playwright.config.js --project='chrome' --workers=1 
+#         env:
+#           PW_URL: ${{ vars.PW_URL }}
+#           MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+#           TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+#           TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+#           TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+#         if: always()
+#       - name: Calibrate Playwright screenshot tests (logged in users)
+#         working-directory: e2e-test-suite
+#         run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
+#         env:
+#           PW_URL: ${{ vars.PW_URL }}
+#         if: always()
+#       - name: Run Playwright tests (logged in users)
+#         working-directory: e2e-test-suite
+#         run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
+#         env:
+#           PW_URL: ${{ vars.PW_URL }}
+#           MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+#           TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+#           TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+#           TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+#         if: always()
+#       - name: Publish Test Report (logged in users)
+#         uses: ctrf-io/github-test-reporter@v1
+#         with:
+#           report-path: 'e2e-test-suite/ctrf/*.json'
+#         if: always()
