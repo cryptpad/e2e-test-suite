@@ -67,7 +67,7 @@ jobs:
         PW_URL: ${{ vars.PW_URL_REMOTE }}
       if: always()
     - name: Run Playwright tests (logged in users)
-      run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=3
+      run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
       env:
         PW_URL: ${{ vars.PW_URL_REMOTE }}
         MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
@@ -78,5 +78,5 @@ jobs:
     - name: Publish Test Report (logged in users)
       uses: ctrf-io/github-test-reporter@v1
       with:
-        report-path: 'e2e-test-suite/ctrf/*.json'
+        report-path: 'ctrf/*.json'
       if: always()
