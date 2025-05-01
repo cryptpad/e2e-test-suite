@@ -177,7 +177,7 @@ export class Cleanup {
           await this.fileActions.destroyItem.click();
           await this.fileActions.okButton.click();
         } else {
-          await this.fileActions.trash.click();
+          await this.fileActions.moveToTrash.click();
         }
         await this.page.waitForTimeout(1000);
         elementCount = elementCount - 1;

@@ -328,7 +328,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
     // check member can't add members or access admin panel
     await fileActions1.teamTab(/^Members$/).click();
     await expect(fileActions1.inviteMembers).toBeHidden();
-    await expect(fileActions1.teamAdmin).toHaveCount(0);
+    await expect(fileActions1.teamTab(/^Administration$/)).toHaveCount(0);
 
     // check member can send team messages
     await fileActions1.teamTab(/^Chat$/).click();
@@ -386,7 +386,7 @@ test('promote team viewer to admin', async ({ page, browser }) => {
     // check member can't add members or access admin panel
     await fileActions1.teamTab(/^Members$/).click();
     await expect(fileActions1.inviteMembers).toBeVisible();
-    await expect(fileActions1.teamAdmin).toHaveCount(0);
+    await expect(fileActions1.teamTab(/^Administration$/)).toHaveCount(0);
     await fileActions1.teamTab(/^Chat$/).click();
 
     const dateTimeStamp = new Date();

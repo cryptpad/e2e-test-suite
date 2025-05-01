@@ -2,7 +2,8 @@ const { expect } = require('@playwright/test');
 const { test, url, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password, titleDate, titleDateComma } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
-const { FileActions } = require('./fileactions.js');
+const { FileActions, NewFileModal } = require('./fileactions.js');
+const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
 let page1;
 let cleanUp;
@@ -12,7 +13,6 @@ let fileActions
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}`);
-  // await page.waitForTimeout(15000);
   let mobile = isMobile;
   let isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   userActions = new UserActions(page);
@@ -23,10 +23,10 @@ test('test-user account setup', async ({ page }) => {
   try {
     await userActions.register('test-user', mainAccountPassword);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user account setup', status: 'passed', reason: 'Can register test-user' } })}`);
+    await fileActions.toSuccess('Can register test-user');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user account setup', status: 'failed', reason: 'Can\'t register test-user' } })}`);
+    await fileActions.toFailure(e, 'Can\'t register test-user');
   }
 });
 
@@ -35,10 +35,10 @@ test('testuser account setup', async ({ page }) => {
     /// registering the account
     await userActions.register('testuser', testUserPassword);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'testuser account setup', status: 'passed', reason: 'Can register testuser' } })}`);
+    await fileActions.toSuccess('Can register testuser');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'testuser account setup', status: 'failed', reason: 'Can\'t register testuser' } })}`);
+    await fileActions.toFailure(e, 'Can\'t register testuser');
   }
 });
 
@@ -47,10 +47,10 @@ test('test-user2 account setup', async ({ page }) => {
     /// registering the account
     await userActions.register('test-user2', testUser2Password);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user2 account setup', status: 'passed', reason: 'Can register test-user2' } })}`);
+    await fileActions.toSuccess('Can register test-user2');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user2 account setup', status: 'failed', reason: 'Can\'t register test-user2' } })}`);
+    await fileActions.toFailure(e, 'Can\'t register test-user2');
   }
 });
 
@@ -59,10 +59,10 @@ test('test-user3 account setup', async ({ page }) => {
     /// registering the account
     await userActions.register('test-user3', testUser3Password);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user3 account setup', status: 'passed', reason: 'Can register test-user3' } })}`);
+    await fileActions.toSuccess('Can register test-user3');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'test-user3 account setup', status: 'failed', reason: 'Can\'t register test-user3' } })}`);
+    await fileActions.toFailure(e, 'Can\'t register test-user3');
   }
 });
 
@@ -71,26 +71,21 @@ test('create test team', async ({ page }) => {
     await userActions.login('test-user', mainAccountPassword);
 
     await page.goto(`${url}/teams`);
-    // await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().waitFor()
-    await page.frameLocator('#sbox-iframe').getByText('Available team slotNew').first().click();
+    await fileActions.newTeam.waitFor()
+    await fileActions.newTeam.click();
 
-    // await page.waitForTimeout(5000);
     await fileActions.textbox.waitFor()
     await fileActions.textbox.fill('test team');
-    const fileActions = new FileActions(page);
-
     await fileActions.createFile.click();
 
-    // await page.waitForTimeout(10000);
     await expect(page).toHaveURL(`${url}/teams/`, { timeout: 100000 });
 
-    await page.frameLocator('#sbox-iframe').getByText('tt', { exact: true }).click();
+    await fileActions.mainFrame.getByText('tt', { exact: true }).click();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test team', status: 'passed', reason: 'Can create test team' } })}`);
+    await fileActions.toSuccess('Can create test team');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test team', status: 'failed', reason: 'Can\'t create test team' } })}`);
+    await fileActions.toFailure(e, 'Can\'t create test team');
   }
 });
 
@@ -98,24 +93,22 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
   try {
     await userActions.login('testuser', testUserPassword);
     await page.goto(`${url}/profile`);
-    const fileActions = new FileActions(page);
-
     await fileActions.share(false);
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
 
     // login test-user
     const context = await browser.newContext();
     page1 = await context.newPage();
+    const fileActions1 = new FileActions(page1);
+
     const userActions2 = new UserActions(page1);
     await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
     await page1.goto(`${testuserProfileLink}`);
-    await page1.waitForTimeout(10000);
-    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
-    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
-    // await page.waitForTimeout(7000);
+    await fileActions1.contactRequest.waitFor();
+    await fileActions1.contactRequest.click();
+    await expect(fileActions1.cancelRequest).toBeVisible();
     await fileActions.notifications.waitFor()
     await fileActions.notifications.click();
     await fileActions.contactRequestNotif('test-user').waitFor();
@@ -123,16 +116,14 @@ test('link test-user and testuser as contacts', async ({ page, browser }, testIn
     await expect(fileActions.contactRequestMessage('test-user')).toBeVisible();
     await fileActions.acceptButton.waitFor();
     await fileActions.acceptButton.click();
-    // await page.waitForTimeout(5000);
 
-    // await page1.waitForTimeout(7000);
     await page1.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').getByText('testuser is one of your contacts')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'link test-user and testuser as contacts', status: 'passed', reason: 'Can link test-user and testuser as contacts' } })}`);
+    await fileActions.toSuccess('Can link test-user and testuser as contacts');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'link test-user and testuser as contacts', status: 'failed', reason: 'Can\'t link test-user and testuser as contacts' } })}`);
+    await fileActions.toFailure(e, 'Can\'t link test-user and testuser as contacts');
   }
 });
 
@@ -140,24 +131,22 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
   try {
     await userActions.login('test-user3', testUser3Password);
     await page.goto(`${url}/profile`);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' }).click();
+    await fileActions.share(false);
     const testuserProfileLink = await page.evaluate('navigator.clipboard.readText()');
 
     // login test-user
     const context = await browser.newContext();
     page1 = await context.newPage();
+    const fileActions1 = new FileActions(page1);
+
     const userActions2 = new UserActions(page1);
     await userActions2.login('test-user', mainAccountPassword);
 
     // send testuser contact request
     await page1.goto(`${testuserProfileLink}`);
-    await page1.waitForTimeout(10000);
-    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).waitFor();
-    await page1.frameLocator('#sbox-iframe').getByRole('button').filter({ hasText: 'contact request' }).click();
-    await expect(page1.frameLocator('#sbox-iframe').getByText('Contact request pending...Cancel')).toBeVisible();
-
-    // await page.waitForTimeout(7000);
-    const fileActions = new FileActions(page);
+    await fileActions1.contactRequest.waitFor();
+    await fileActions1.contactRequest.click();
+    await expect(fileActions1.cancelRequest).toBeVisible();
 
     await fileActions.notifications.waitFor()
     await fileActions.notifications.click();
@@ -166,16 +155,14 @@ test('link test-user and test-user3 as contacts', async ({ page, browser }, test
     await expect(fileActions.contactRequestMessage('test-user')).toBeVisible();
     await fileActions.acceptButton.waitFor();
     await fileActions.acceptButton.click();
-    // await page.waitForTimeout(5000);
 
-    // await page1.waitForTimeout(7000);
     await page1.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts').waitFor()
     await expect(page1.frameLocator('#sbox-iframe').getByText('test-user3 is one of your contacts')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'link test-user and test-user3 as contacts', status: 'passed', reason: 'Can link test-user and test-user3 as contacts' } })}`);
+    await fileActions.toSuccess('Can link test-user and test-user3 as contacts');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'link test-user and test-user3 as contacts', status: 'failed', reason: 'Can\'t link test-user and test-user3 as contacts' } })}`);
+    await fileActions.toFailure(e,  'Can\'t link test-user and test-user3 as contacts');
   }
 });
 
@@ -183,16 +170,11 @@ test('add test-user3 to test team', async ({ page, browser }) => {
   try {
     await userActions.login('test-user', mainAccountPassword);
     await page.goto(`${url}/teams`);
-
-    await fileActions.teamSlot.getByText('test team').waitFor();
-    // await page.waitForTimeout(2000);
-    await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
-
+    await fileActions.accessTeam()
     await fileActions.teamTab(/^Members$/).waitFor();
     await fileActions.teamTab(/^Members$/).click();
-
     await fileActions.inviteMembersButton.click();
-    await page.frameLocator('#sbox-iframe').getByRole('paragraph').getByText('test-user3').click();
+    await fileActions.mainFrame.getByRole('paragraph').getByText('test-user3').click();
     await fileActions.inviteButton.click();
 
     ///
@@ -200,25 +182,25 @@ test('add test-user3 to test team', async ({ page, browser }) => {
     page1 = await browser.newPage();
     const userActions2 = new UserActions(page1);
     await userActions2.login('test-user3', testUser3Password);
-    await page1.frameLocator('#sbox-iframe').locator('.cp-toolbar-notifications.cp-dropdown-container').click();
+    const fileActions1 = new FileActions(page1);
 
+    await fileActions1.notifications.click();
     await fileActions1.teamNotif.click({ timeout: 3000 });
-    await page1.waitForTimeout(3000);
     await expect(fileActions1.acceptButton).toBeVisible();
     await fileActions1.acceptButton.waitFor();
     const page2Promise = page1.waitForEvent('popup');
     await fileActions1.acceptButton.click();
     const page2 = await page2Promise;
+    const fileActions2 = new FileActions(page2);
 
-    await page2.waitForTimeout(6000);
-    await page2.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await fileActions2.teamSlot.getByText('test team').waitFor();
     await page2.close();
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-team-roster-member').filter({ hasText: 'test-user3' })).toBeVisible();
+    await expect(fileActions.teamMember('test-user3' )).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'add test-user3 to test team', status: 'passed', reason: 'Can add test-user3 to test team' } })}`);
+    await fileActions.toSuccess('Can add test-user3 to test team');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'add test-user3 to test team', status: 'failed', reason: 'Can\'t add test-user3 to test team' } })}`);
+    await fileActions.toFailure(e, 'Can\'t add test-user3 to test team');
   }
 });
 
@@ -236,157 +218,122 @@ test('create test files in test-user drive', async ({ page }) => {
     }
 
     await page.goto(`${url}/pad/`);
-    const fileActions = new FileActions(page);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDateComma}`)).waitFor()
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Rich text - ${titleDate}`).or(page.frameLocator('#sbox-iframe').getByPlaceholder(`Rich text - ${titleDateComma}`)).fill('test pad');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor();
+    await (new StoreModal(fileActions)).storeButton.click();
+    await fileActions.fileTitle('pad').waitFor()
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('pad').fill('test pad');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test pad')).toBeVisible();
 
     await page.goto(`${url}/sheet/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).fill('test sheet');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('sheet')).toBeVisible();
+    await fileActions.fileSaved.waitFor();
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('sheet').fill('test sheet');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test sheet')).toBeVisible();
 
     await page.goto(`${url}/code/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Code - ${titleDate}`).fill('test code');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('code')).toBeVisible();
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('code').fill('test code');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test code')).toBeVisible();
 
     await page.goto(`${url}/slide/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDate}`).or(page.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDateComma}`)).fill('test slide');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('slide')).toBeVisible();
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('slide').fill('test slide');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test slide')).toBeVisible();
 
     await page.goto(`${url}/form/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Form - ${titleDate}`).or(page.frameLocator('#sbox-iframe').getByPlaceholder(`Form - ${titleDateComma}`)).fill('test form');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('form')).toBeVisible();
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('form').fill('test form');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test form')).toBeVisible();
 
     await page.goto(`${url}/whiteboard/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(10000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').getByText('Saved').waitFor();
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).or(page.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDateComma}`)).fill('test whiteboard');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('whiteboard')).toBeVisible();
+    await fileActions.fileSaved.waitFor();
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('whiteboard').fill('test whiteboard');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test whiteboard')).toBeVisible();
 
     await page.goto(`${url}/diagram/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Diagram - ${titleDate}`).fill('test diagram');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').waitFor()
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('diagram')).toBeVisible();
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('diagram').fill('test diagram');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test diagram')).toBeVisible();
 
     await page.goto(`${url}/kanban/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).waitFor()
-    await page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Store', exact: true }).click();
-    // await page.waitForTimeout(5000);
-    await expect(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`).or(page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDateComma}`))).toBeVisible();
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).or(page.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDateComma}`)).fill('test kanban');
-    // await page.waitForTimeout(3000);
-    await page.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('kanban')).toBeVisible();
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('kanban').fill('test kanban');
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test kanban')).toBeVisible();
 
     await page.goto(`${url}/drive`);
-    // await page.waitForTimeout(5000);
-    await page.frameLocator('#sbox-iframe').getByText('test diagram').waitFor()
-    await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible();
+    await fileActions.mainFrame.getByText('test diagram').waitFor()
+    await expect(fileActions.driveContentFolder.getByText('test diagram')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test whiteboard')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test form')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test sheet')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test pad')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test code')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test slide')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test kanban')).toBeVisible();
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in test-user drive', status: 'passed', reason: 'Can create test files in test-user drive' } })}`);
+    await fileActions.toSuccess('Can create test files in test-user drive');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in test-user drive', status: 'failed', reason: 'Can\'t create test files in test-user drive' } })}`);
+    await fileActions.toFailure(e, 'Can\'t create test files in test-user drive');
   }
 });
 
@@ -399,7 +346,6 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await page.goto(`${url}/teams`);
     await fileActions.teamSlot.getByText('test team').waitFor();
     await fileActions.teamSlot.getByText('test team').click();
-    // await page.waitForTimeout(5000);
 
     cleanUp = new Cleanup(page);
     const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
@@ -407,168 +353,202 @@ test('create test files in team drive and add avatar', async ({ page }) => {
       const name = `test ${docNames[i]}`;
       await cleanUp.cleanTeamDrive(name);
     }
-    const fileActions = new FileActions(page);
 
+    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page2Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').locator('#cp-app-drive-new-ghost-dialog').getByText('Rich text').click({ timeout: 3000 });
+    await fileActions.newDriveFile('Rich text').click()
     const page2 = await page2Promise;
-    await page2.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page2.waitForTimeout(5000);
-    await expect(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDate}`).or(page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Rich text - ${titleDateComma}`))).toBeVisible();
-    await page2.waitForTimeout(3000);
-    await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page2.frameLocator('#sbox-iframe').getByPlaceholder(`Rich text - ${titleDate}`).or(page2.frameLocator('#sbox-iframe').getByPlaceholder(`Rich text - ${titleDateComma}`)).fill('test pad');
-    await page2.waitForTimeout(3000);
-    await page2.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page2.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible();
-    await page2.close();
+    const fileActions2 = new FileActions(page2);
 
-    // await page.waitForTimeout(5000);
+    await fileActions2.createFile.click();
+    await page2.waitForTimeout(5000)
+    if (await fileActions2.okButton.isVisible()) {
+      await fileActions2.okButton.click();
+    
+    }
+    await expect(fileActions2.fileTitle('pad')).toBeVisible();
+    await fileActions2.fileSaved.waitFor();
+    await fileActions2.titleEditBox.click();
+    await fileActions2.fileTitleEdit('pad').fill('test pad');
+    await fileActions2.saveTitle.waitFor();
+    await fileActions2.saveTitle.click({force: true});
+    await expect(fileActions2.mainFrame.getByText('test pad')).toBeVisible();
+    await page2.close();
+    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page3Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Sheet' }).locator('span').first().click();
+    await fileActions.newDriveFile('Sheet').click();
     const page3 = await page3Promise;
-    await page3.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page3.waitForTimeout(5000);
-    await expect(page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDate}`).or(page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Sheet - ${titleDateComma}`))).toBeVisible();
-    await page3.waitForTimeout(3000);
-    await page3.frameLocator('#sbox-iframe').getByText('Saved').waitFor();
-    await page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page3.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDate}`).or(page3.frameLocator('#sbox-iframe').getByPlaceholder(`Sheet - ${titleDateComma}`)).fill('test sheet');
-    await page3.waitForTimeout(5000);
-    await page3.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page3.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
+    const fileActions3 = new FileActions(page3);
+    await fileActions3.createFile.click();
+    await page3.waitForTimeout(5000)
+    if (await fileActions3.okButton.isVisible()) {
+      await fileActions3.okButton.click();
+    
+    }
+    await expect(fileActions3.fileTitle('sheet')).toBeVisible();
+    await fileActions3.fileSaved.waitFor();
+    await fileActions3.titleEditBox.click();
+    await fileActions3.fileTitleEdit('sheet').fill('test sheet');
+    await fileActions3.saveTitle.waitFor();
+    await fileActions3.saveTitle.click({force: true});
+    await expect(fileActions3.mainFrame.getByText('test sheet')).toBeVisible();
     await page3.close();
-
+    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page4Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Code' }).locator('span').first().click();
+    await fileActions.newDriveFile('Code').click();
     const page4 = await page4Promise;
-    await page4.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page4.waitForTimeout(5000);
-    await expect(page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDate}`).or(page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Code - ${titleDateComma}`))).toBeVisible();
-    await page4.waitForTimeout(3000);
-    await page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page4.frameLocator('#sbox-iframe').getByPlaceholder(`Code - ${titleDate}`).or(page4.frameLocator('#sbox-iframe').getByPlaceholder(`Code - ${titleDateComma}`)).fill('test code');
-    await page4.waitForTimeout(3000);
-    await page4.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page4.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible();
+    const fileActions4 = new FileActions(page4);
+    await fileActions4.createFile.click();
+    await page4.waitForTimeout(5000)
+    if (await fileActions4.okButton.isVisible()) {
+      await fileActions4.okButton.click();
+    
+    }
+    await expect(fileActions4.fileTitle('code')).toBeVisible();
+    await fileActions4.fileSaved.waitFor();
+    await fileActions4.titleEditBox.click();
+    await fileActions4.fileTitleEdit('code').fill('test code');
+    await fileActions4.saveTitle.waitFor();
+    await fileActions4.saveTitle.click({force: true});
+    await expect(fileActions4.mainFrame.getByText('test code')).toBeVisible();
     await page4.close();
-
+    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page5Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Markdown slides' }).locator('span').first().click();
+    
+    await fileActions.newDriveFile('Markdown slides').click();
     const page5 = await page5Promise;
-    await page5.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page5.waitForTimeout(5000);
-    await expect(page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDate}`).or(page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Markdown slides - ${titleDateComma}`))).toBeVisible();
-    await page5.waitForTimeout(3000);
-    await page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page5.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDate}`).or(page5.frameLocator('#sbox-iframe').getByPlaceholder(`Markdown slides - ${titleDateComma}`)).fill('test slide');
-    await page5.waitForTimeout(3000);
-    await page5.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page5.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible();
+    const fileActions5 = new FileActions(page5);
+    await fileActions5.createFile.click();
+    await page5.waitForTimeout(5000)
+    if (await fileActions5.okButton.isVisible()) {
+      await fileActions5.okButton.click();
+    
+    }
+    await expect(fileActions5.fileTitle('slide')).toBeVisible();
+    await fileActions5.fileSaved.waitFor();
+    await fileActions5.titleEditBox.click();
+    await fileActions5.fileTitleEdit('slide').fill('test slide');
+    await fileActions5.saveTitle.waitFor();
+    await fileActions5.saveTitle.click({force: true});
+    await expect(fileActions5.mainFrame.getByText('test slide')).toBeVisible();
     await page5.close();
-
+    console.log('1')
     await page.reload();
     await fileActions.teamSlot.getByText('test team').waitFor();
-    // await page.waitForTimeout(2000);
     await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
-    // await page.waitForTimeout(10000);
 
     await fileActions.driveContentFolder.getByText('New').click();
     const page6Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Form' }).locator('span').first().click();
+    await fileActions.newDriveFile('Form' ).click();
     const page6 = await page6Promise;
-    await page6.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page6.waitForTimeout(5000);
-    await expect(page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDate}`).or(page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Form - ${titleDateComma}`))).toBeVisible();
-    await page6.waitForTimeout(3000);
-    await page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page6.frameLocator('#sbox-iframe').getByPlaceholder(`Form - ${titleDate}`).or(page6.frameLocator('#sbox-iframe').getByPlaceholder(`Form - ${titleDateComma}`)).fill('test form');
-    await page6.waitForTimeout(3000);
-    await page6.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page6.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible();
+    const fileActions6 = new FileActions(page6);
+    await fileActions6.createFile.click();
+    await page6.waitForTimeout(5000)
+    if (await fileActions6.okButton.isVisible()) {
+      await fileActions6.okButton.click();
+    
+    }
+    await expect(fileActions6.fileTitle('form')).toBeVisible();
+    await fileActions6.fileSaved.waitFor();
+    await fileActions6.titleEditBox.click();
+    await fileActions6.fileTitleEdit('form').fill('test form');
+    await fileActions6.saveTitle.waitFor();
+    await fileActions6.saveTitle.click({force: true});
+    await expect(fileActions6.mainFrame.getByText('test form')).toBeVisible();
     await page6.close();
-
+    console.log('1')
     await page.reload();
     await fileActions.teamSlot.getByText('test team').waitFor();
-    // await page.waitForTimeout(2000);
     await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
-    // await page.waitForTimeout(10000);
 
     await fileActions.driveContentFolder.getByText('New').click();
     const page7Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Whiteboard' }).locator('span').first().click();
+    await fileActions.newDriveFile('Whiteboard').click();
     const page7 = await page7Promise;
-    await page7.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page7.waitForTimeout(10000);
-    await expect(page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDate}`).or(page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Whiteboard - ${titleDateComma}`))).toBeVisible();
-    await page7.waitForTimeout(3000);
-    await page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page7.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDate}`).or(page7.frameLocator('#sbox-iframe').getByPlaceholder(`Whiteboard - ${titleDateComma}`)).fill('test whiteboard');
-    await page7.waitForTimeout(3000);
-    await page7.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page7.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible();
+    const fileActions7 = new FileActions(page7);
+    await fileActions7.createFile.click();
+    await page7.waitForTimeout(5000)
+    if (await fileActions7.okButton.isVisible()) {
+      await fileActions7.okButton.click();
+    
+    }
+    await expect(fileActions7.fileTitle('whiteboard')).toBeVisible();
+    await fileActions7.fileSaved.waitFor();
+    await fileActions7.titleEditBox.click();
+    await fileActions7.fileTitleEdit('whiteboard').fill('test whiteboard');
+    await fileActions7.saveTitle.waitFor();
+    await fileActions7.saveTitle.click({force: true});
+    await expect(fileActions7.mainFrame.getByText('test whiteboard')).toBeVisible();
     await page7.close();
-
+    console.log('1')
     await page.reload();
     await fileActions.teamSlot.getByText('test team').waitFor();
-    // await page.waitForTimeout(2000);
     await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
-    // await page.waitForTimeout(10000);
 
     await fileActions.driveContentFolder.getByText('New').click();
     const page8Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Diagram' }).locator('span').first().click();
+    await fileActions.newDriveFile('Diagram').click();
     const page8 = await page8Promise;
-    await page8.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page8.waitForTimeout(5000);
-    await expect(page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDate}`).or(page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Diagram - ${titleDateComma}`))).toBeVisible();
-    await page8.waitForTimeout(3000);
-    await page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page8.frameLocator('#sbox-iframe').getByPlaceholder(`Diagram - ${titleDate}`).or(page8.frameLocator('#sbox-iframe').getByPlaceholder(`Diagram - ${titleDateComma}`)).fill('test diagram');
-    await page8.waitForTimeout(3000);
-    await page8.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page8.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible();
+    const fileActions8 = new FileActions(page8);
+    await fileActions8.createFile.click();
+    await page8.waitForTimeout(5000)
+    if (await fileActions8.okButton.isVisible()) {
+      await fileActions8.okButton.click();
+    
+    }
+    await expect(fileActions8.fileTitle('diagram')).toBeVisible();
+    await fileActions8.fileSaved.waitFor();
+    await fileActions8.titleEditBox.click();
+    await fileActions8.fileTitleEdit('diagram').fill('test diagram');
+    await fileActions8.saveTitle.waitFor();
+    await fileActions8.saveTitle.click({force: true});
+    await expect(fileActions8.mainFrame.getByText('test diagram')).toBeVisible();
     await page8.close();
-
+    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page9Promise = page.waitForEvent('popup');
-    await page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Kanban' }).locator('span').first().click();
+    await fileActions.newDriveFile('Kanban').click();
     const page9 = await page9Promise;
-    await page9.frameLocator('#sbox-iframe').getByRole('button', { name: 'Create' }).click();
-    await page9.waitForTimeout(5000);
-    await expect(page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDate}`).or(page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title').getByText(`Kanban - ${titleDateComma}`))).toBeVisible();
-    await page9.waitForTimeout(3000);
-    await page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-edit > .fa').click();
-    await page9.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDate}`).or(page9.frameLocator('#sbox-iframe').getByPlaceholder(`Kanban - ${titleDateComma}`)).fill('test kanban');
-    await page9.waitForTimeout(3000);
-    await page9.frameLocator('#sbox-iframe').locator('.cp-toolbar-title-save').click();
-    await expect(page9.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible();
+    const fileActions9 = new FileActions(page9);
+    await fileActions9.createFile.click();
+    await page9.waitForTimeout(5000)
+    if (await fileActions9.okButton.isVisible()) {
+      await fileActions9.okButton.click();
+    
+    }
+    await expect(fileActions9.fileTitle('kanban')).toBeVisible();
+    await fileActions9.fileSaved.waitFor();
+    await fileActions9.titleEditBox.click();
+    await fileActions9.fileTitleEdit('kanban').fill('test kanban');
+    await fileActions9.saveTitle.waitFor();
+    await fileActions9.saveTitle.click({force: true});
+    await expect(fileActions9.mainFrame.getByText('test kanban')).toBeVisible();
 
-    await expect(page.frameLocator('#sbox-iframe').getByText('test diagram')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test whiteboard')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test form')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test sheet')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test pad')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test code')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test slide')).toBeVisible();
-    await expect(page.frameLocator('#sbox-iframe').getByText('test kanban')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test diagram')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test whiteboard')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test form')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test sheet')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test pad')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test code')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test slide')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test kanban')).toBeVisible();
 
-    await fileActions.teamAdminTab.waitFor();
-    await fileActions.teamAdminTab.click();
+    await fileActions.teamTab(/^Administration$/).waitFor();
+    await fileActions.teamTab(/^Administration$/).click();
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.frameLocator('#sbox-iframe').getByLabel('Upload a new file to your').click();
+    await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar-empty.png');
     await fileActions.okButton.click();
-    // await page.waitForTimeout(5000);
+    await page.waitForTimeout(5000);
 
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in team drive', status: 'passed', reason: 'Can create test files in team drive' } })}`);
+    await fileActions.toSuccess( 'Can create test files in team drive');
   } catch (e) {
     console.log(e);
-    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'create test files in team drive', status: 'failed', reason: 'Can\'t create test files in team drive' } })}`);
+    await fileActions.toFailure(e, 'Can\'t create test files in team drive');
   }
 });

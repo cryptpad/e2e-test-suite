@@ -69,6 +69,7 @@ export class FileActions {
     this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
 
     this.fileName = this.mainFrame.locator('.cp-toolbar-title');
+    this.fileNameEdit = this.mainFrame.locator('.cp-toolbar-title-editable');
     this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit > .fa');
     this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
     this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
@@ -84,7 +85,7 @@ export class FileActions {
     this.shareByLink = this.mainFrame.locator('#cp-share-link-preview')
     this.shareSecureLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
     this.shareCopyLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
-    this.fileSaved = this.mainFrame.getByText('Saved');
+    this.fileSaved = this.mainFrame.locator('.cp-toolbar-spinner').getByText('Saved');
     this.deleteButton = this.mainFrame.getByRole('button', { name: 'Delete' });
     this.moveToTrash = this.mainFrame.getByText('Move to trash')
     this.passwordChangeSuccess = this.secureFrame.getByText('The password was successfully')
@@ -347,6 +348,7 @@ export class FileActions {
     this.addToAccessList = this.secureFrame.locator('.cp-share-column-mid.cp-overlay-container').locator('.btn.btn-primary.cp-access-add')
     this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user > .fa').first()
     this.movedToTrash = this.mainFrame.getByText(/^That document has been moved to the trash/, { exact: true })
+    this.lostConnection = this.mainFrame.getByText(/^Your connnection to CryptPad/)
     
   }
 
@@ -356,6 +358,7 @@ export class FileActions {
   }
 
   newDriveFile (file) {
+    return this.mainFrame.locator('#cp-app-drive-new-ghost-dialog').getByText(file)
     return this.mainFrame.getByRole('listitem').filter({ hasText: file }).locator('span').first()
   
   }
@@ -768,7 +771,8 @@ export class FileActions {
     var title = titles[0]
     var titleComma = titles[1]
     var titleTwoCommas = titles[2]
-    return this.driveContentFolder.getByText(title).or(this.driveContentFolder.getByText(titleComma)).or(this.driveContentFolder.getByText(titleTwoCommas))
+    var titleNoYear = titles[3]
+    return this.driveContentFolder.getByText(title).or(this.driveContentFolder.getByText(titleComma)).or(this.driveContentFolder.getByText(titleTwoCommas)).or(this.fileName.getByText(`${titleNoYear}`))
   }
 
   fileTitle (fileName) {
@@ -776,7 +780,17 @@ export class FileActions {
     var title = titles[0]
     var titleComma = titles[1]
     var titleTwoCommas = titles[2]
-    return this.fileName.getByText(`${title}`).or(this.fileName.getByText(`${titleComma}`)).or(this.fileName.getByText(`${titleTwoCommas}`));
+    var titleNoYear = titles[3]
+    return this.fileName.getByText(`${title}`).or(this.fileName.getByText(`${titleComma}`)).or(this.fileName.getByText(`${titleTwoCommas}`)).or(this.fileName.getByText(`${titleNoYear}`));
+  }
+
+  fileTitleEdit (fileName) {
+    var titles = this.getTitle(fileName)
+    var title = titles[0]
+    var titleComma = titles[1]
+    var titleTwoCommas = titles[2]
+    var titleNoYear = titles[3]
+    return this.mainFrame.getByPlaceholder(`${title}`).or(this.mainFrame.getByPlaceholder(`${titleComma}`)).or(this.mainFrame.getByPlaceholder(`${titleTwoCommas}`)).or(this.mainFrame.getByPlaceholder(`${titleNoYear}`));
   }
 
   driveAddMenuItem (item, first) {
@@ -873,6 +887,15 @@ export class FileActions {
    */
   async toSuccess (reason) {
     await this.setStatus('passed', reason);
+  }
+
+  iconLocator (fileType) {
+    return this
+      .mainFrame
+      .getByText(
+        this.iconName(fileType),
+        { exact: true }
+      );
   }
 
   /**

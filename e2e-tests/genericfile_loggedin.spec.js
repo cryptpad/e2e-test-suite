@@ -43,7 +43,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
-// const docNames = ['slide'];
+// const docNames = ['pad'];
 
 
 docNames.forEach(function (name) {
@@ -242,8 +242,8 @@ docNames.forEach(function (name) {
       await fileActions.filemenuClick(mobile);
       await fileActions.moveToTrash.click()
       await fileActions.okButton.click();
-
-      await expect(fileActions.movedToTrash).toBeVisible({ timeout: 10000 });
+      await fileActions.movedToTrash.waitFor()
+      // await expect(fileActions.movedToTrash).toBeVisible({ timeout: 10000 });
       await fileActions.okButton.click();
 
       await page.goto(`${url}/drive`);
@@ -439,8 +439,8 @@ docNames.forEach(function (name) {
         await expect(fileActions2.fileTitle(name)).toBeVisible();
         await expect(fileActions2.readOnly).toBeVisible();
         await page2.reload();
-        await page2.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner').waitFor();
-        await expect(page2.frameLocator('#sbox-iframe').getByText('This document was destroyed by an owner')).toBeVisible();
+        await fileActions2.mainFrame.getByText('This document was destroyed by an owner').waitFor();
+        await expect(fileActions2.mainFrame.getByText('This document was destroyed by an owner')).toBeVisible();
 
         /// /
         await fileActions.destroyedByOwner.waitFor();
