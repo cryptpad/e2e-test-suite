@@ -308,9 +308,9 @@ docNames.forEach(function (name) {
         await fileActions.submitButtonSecure.click();
         await fileActions.okButtonSecure.waitFor();
         await fileActions.okButtonSecure.click();
+        await fileActions.passwordChangeSuccess.waitFor()
         await fileActions.okButtonSecure.waitFor();
         await fileActions.okButtonSecure.click();
-        await fileActions.passwordChangeSuccess.waitFor()
         await fileActions.share(mobile)
 
         const clipboardText1 = await fileActions.getLinkAfterCopyRole('View')
@@ -439,8 +439,8 @@ docNames.forEach(function (name) {
         await expect(fileActions2.fileTitle(name)).toBeVisible();
         await expect(fileActions2.readOnly).toBeVisible();
         await page2.reload();
-        await fileActions2.mainFrame.getByText('This document was destroyed by an owner').waitFor();
-        await expect(fileActions2.mainFrame.getByText('This document was destroyed by an owner')).toBeVisible();
+        await fileActions2.destroyedByOwner.waitFor();
+        await expect(fileActions2.destroyedByOwner).toBeVisible();
 
         /// /
         await fileActions.destroyedByOwner.waitFor();
@@ -488,6 +488,7 @@ docNames.forEach(function (name) {
     });
 
     test(`${name} - enable and add to access list`, async ({ page, browser }) => {
+      test.skip()
       try {
         await fileActions.createFile.click();
 

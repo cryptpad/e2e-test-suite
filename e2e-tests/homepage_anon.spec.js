@@ -38,9 +38,9 @@ test('homepage - access log in', async ({ page }) => {
   try {
     await fileActions.loginLink.click();
     await expect(page).toHaveURL(`${url}/login/`);
-    await fileActions.toSuccess('Can acces login from homepage');
+    await fileActions.toSuccess('Can access login from homepage');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t acces login from homepage');
+    await fileActions.toFailure(e,'Can\'t access login from homepage');
   }
 });
 

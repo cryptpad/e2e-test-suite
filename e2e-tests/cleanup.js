@@ -26,8 +26,12 @@ export class Cleanup {
         } else {
           await this.fileActions.driveElementText.getByText(titles[0]).click({ button: 'right' });
         }
-        await this.fileActions.destroyItem.click();
-        await this.fileActions.okButton.click();
+        if (await this.fileActions.destroyItem.isVisible()) {
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
+        } else {
+          await this.fileActions.moveToTrash.click();
+        }
 
         await this.page.waitForTimeout(1000);
         fileCount = fileCount - 1;
@@ -41,8 +45,12 @@ export class Cleanup {
         } else {
           await this.fileActions.driveElementText.getByText(titles[2]).click({ button: 'right' });
         }
-        await this.fileActions.destroyItem.click();
-        await this.fileActions.okButton.click();
+        if (await this.fileActions.destroyItem.isVisible()) {
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
+        } else {
+          await this.fileActions.moveToTrash.click();
+        }
 
         await this.page.waitForTimeout(1000);
         fileCount1 = fileCount1 - 1;
@@ -56,11 +64,34 @@ export class Cleanup {
         } else {
           await this.fileActions.driveElementText.getByText(titles[2]).click({ button: 'right' });
         }
-        await this.fileActions.destroyItem.click();
-        await this.fileActions.okButton.click();
+        if (await this.fileActions.destroyItem.isVisible()) {
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
+        } else {
+          await this.fileActions.moveToTrash.click();
+        }
 
         await this.page.waitForTimeout(1000);
         fileCount2 = fileCount2 - 1;
+      }
+    }
+    let fileCount3 = await this.fileActions.driveElementText.getByText(titles[3]).count();
+    if (fileCount3 > 0) {
+      while (fileCount3 > 0) {
+        if (fileCount3 > 1) {
+          await this.fileActions.driveElementText.getByText(titles[0]).nth(fileCount - 1).click({ button: 'right' });
+        } else {
+          await this.fileActions.driveElementText.getByText(titles[0]).click({ button: 'right' });
+        }
+        if (await this.fileActions.destroyItem.isVisible()) {
+          await this.fileActions.destroyItem.click();
+          await this.fileActions.okButton.click();
+        } else {
+          await this.fileActions.moveToTrash.click();
+        }
+
+        await this.page.waitForTimeout(1000);
+        fileCount3 = fileCount3 - 1;
       }
     }
   }

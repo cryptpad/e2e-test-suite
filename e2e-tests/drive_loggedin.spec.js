@@ -123,8 +123,12 @@ test('drive -  recent files', async ({ page }) => {
     await fileActions.driveSideBarItem('Recent').first().click();
     await expect(fileActions.driveFileTitle('Rich text')).toBeVisible();
     await fileActions.driveFileTitle('Rich text').click({ button: 'right' });
-    await fileActions.destroy.click();
-    await fileActions.okButton.click();
+    if (await fileActions.destroyItem.isVisible()) {
+      await fileActions.destroyItem.click();
+      await fileActions.okButton.click();
+    } else {
+      await fileActions.moveToTrash.click();
+    }
 
     await fileActions.toSuccess('Can access recent files in Drive');
   } catch (e) {

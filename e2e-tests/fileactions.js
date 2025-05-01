@@ -258,7 +258,7 @@ export class FileActions {
     this.currentPassword = this.mainFrame.getByRole('textbox', { name: 'Current password' })
     this.changePassword = this.mainFrame.getByRole('button', { name: 'Change password' })
     this.cancelButton = this.mainFrame.getByRole('button').filter({ hasText: 'Cancel' })
-    this.displayName = this.mainFrame.locator('#cp-settings-displayname')
+    // this.displayName = this.mainFrame.locator('#cp-settings-displayname')
     this.saveDisplayName = this.mainFrame.locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' })
     this.newPassword = this.mainFrame.getByPlaceholder('New password', { exact: true })
     this.doneButton = this.mainFrame.getByRole('button', { name: ' Done' })
@@ -279,7 +279,9 @@ export class FileActions {
     this.confirmDisable2FA = this.mainFrame.getByRole('button', { name: 'Confirm disable 2FA' })
     this.verificationCode = this.page.getByPlaceholder('Verification code')
     this.verificationCodeFrame = this.mainFrame.getByPlaceholder('Verification code')
-    this.shareLinkButton = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
+    this.shareLinkButton = this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
+    this.shareProfileButton = this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Share' });
+
     
     // calendar 
     this.newEvent = this.mainFrame.getByRole('button', { name: 'New event' })
@@ -301,7 +303,7 @@ export class FileActions {
     this.testCalendar = this.mainFrame.getByText('test calendar')
     this.testCalendarSettings = this.mainFrame.locator('div').filter({ hasText: /^test calendar/ }).locator('.btn.btn-default.fa.fa-gear.small.cp-calendar-actions')
     this.contactList = this.mainFrame.locator('#cp-app-contacts-friendlist')
-    this.displayName =  this.mainFrame.locator('#cp-settings-displayname')
+    this.displayName = this.mainFrame.locator('#cp-settings-displayname')
 
     this.owners = this.secureFrame.locator('#cp-tab-owners')
     this.tagInput = this.mainFrame.locator('.token-input.ui-autocomplete-input')
@@ -327,7 +329,7 @@ export class FileActions {
     this.passwordConfirmation = this.mainFrame.getByRole('button', { name: 'I have written down my username and password, proceed' })
     this.passwordPlaceholder = this.page.getByPlaceholder('Password')
     this.twoFAIsActive = this.mainFrame.getByText('2FA is active')
-    this.profileDisplayName = this.mainFrame.locator('#cp-app-profile-displayname')
+    this.profileDisplayName = this.mainFrame.locator('#cp-app-profile-rightside')
     this.driveElementText = this.mainFrame.locator('.cp-app-drive-element-name-text')
     this.trash = this.mainFrame.getByText('Trash', { exact: true })
     this.removeButton = this.mainFrame.getByRole('button', { name: ' Remove' })
