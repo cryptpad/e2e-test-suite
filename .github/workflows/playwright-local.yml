@@ -16,7 +16,7 @@ jobs:
         shell: bash
       - name: Seed database
         working-directory: cryptpad
-        run: unzip -o database_seed_main.zip
+        run: unzip -o dabase_seed_main.zip
         if: always()
       - name: Checkout branch
         working-directory: cryptpad
