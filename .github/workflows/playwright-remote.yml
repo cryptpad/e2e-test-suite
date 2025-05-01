@@ -43,7 +43,7 @@ jobs:
     - name: Publish Test Report (anon)
       uses: ctrf-io/github-test-reporter@v1
       with:
-        report-path: 'e2e-test-suite/ctrf/*.json'
+        report-path: 'ctrf/*.json'
       if: always()
     - name: Create auth files
       run: |
