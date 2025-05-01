@@ -266,7 +266,7 @@ export class FileActions {
     this.continueButton2FA = this.mainFrame.getByRole('button', { name: 'Continue' })
     this.confirmPassword = this.mainFrame.getByPlaceholder('Confirm new password')
     this.contactRequest = this.mainFrame.getByRole('button').filter({ hasText: 'contact request' })
-    this.removeContact = this.mainFrame.getByRole('button', { name: ' Remove this contact' })
+    this.removeContact = this.mainFrame.getByRole('button', { name: 'Remove this contact' })
     this.cancelRequest = this.mainFrame.getByText('Contact request pending...Cancel')
     this.cancelIconButton = this.mainFrame.getByRole('button', { name: ' Cancel' })
     this.enable2FA = this.mainFrame.getByRole('button', { name: ' Enable 2FA' })

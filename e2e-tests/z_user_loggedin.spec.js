@@ -103,9 +103,9 @@ test('add and remove other user as contact', async ({ page, browser }) => {
     await fileActions1.shareProfileButton.waitFor()
     await fileActions1.shareProfileButton.click();
     const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
+
     await page.goto(`${testuser2ProfileLink}`);
     await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor()
-
     // user 1: send user request to user 2
     if (await fileActions.cancelButton.count() > 0) {
       await fileActions.cancelButton.click();

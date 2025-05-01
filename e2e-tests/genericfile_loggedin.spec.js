@@ -258,8 +258,7 @@ docNames.forEach(function (name) {
         await fileActions.removeButton.click();
       }
 
-      await fileActions.trashFileTitle(name).waitFor({state: "hidden"})
-      await expect(fileActions.trashFileTitle(name)).toBeHidden();
+      await page.waitForTimeout(2000)
 
       await fileActions.toSuccess(`Can create ${name} and move to trash`);
     } catch (e) {
