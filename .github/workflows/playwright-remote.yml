@@ -42,7 +42,7 @@ jobs:
       if: always()
     - name: Publish Test Report (anon)
       uses: ctrf-io/github-test-reporter@v1
-      with:
+      with: 
         report-path: 'ctrf/*.json'
       if: always()
     - name: Create auth files
