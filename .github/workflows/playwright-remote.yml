@@ -35,7 +35,7 @@ jobs:
       env:
         PW_URL: ${{ vars.PW_URL_REMOTE }}
       if: always() 
-    - name: Run Playwright tests
+    - name: Run Playwright tests 
       run: npx playwright test anon --project='chrome' --workers=2 --retries=1
       env: 
         PW_URL: ${{ vars.PW_URL_REMOTE }}
