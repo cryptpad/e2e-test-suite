@@ -49,7 +49,7 @@ jobs:
       run: |
         npx playwright test dbseeding --config=playwright.config.js --project='chrome' --workers=1 
       env:
-        PW_URL: ${{ vars.PW_URL }}
+        PW_URL: ${{ vars.PW_URL_REMOTE }}
         MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
         TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
         TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
