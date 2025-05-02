@@ -185,7 +185,7 @@ export class Cleanup {
         } else {
           await this.fileActions.moveToTrash.click();
         }
-        await this.page.waitForTimeout(1000);
+        await this.page.waitForTimeout(3000);
         elementCount = elementCount - 1;
       }
     }
