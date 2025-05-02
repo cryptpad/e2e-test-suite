@@ -1,0 +1,104 @@
+{
+  "results": {
+    "tool": {
+      "name": "playwright"
+    },
+    "summary": {
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "pending": 0,
+      "skipped": 0,
+      "other": 0,
+      "start": 1746184074960,
+      "stop": 1746184143607,
+      "suites": 0
+    },
+    "tests": [
+      {
+        "name": "authenticate test-user",
+        "status": "passed",
+        "duration": 18809,
+        "start": 1746184077,
+        "stop": 1746184096,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/auth.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > auth.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "authenticate testuser",
+        "status": "passed",
+        "duration": 20133,
+        "start": 1746184096,
+        "stop": 1746184117,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/auth.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > auth.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "authenticate test-user2",
+        "status": "passed",
+        "duration": 12538,
+        "start": 1746184117,
+        "stop": 1746184129,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/auth.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > auth.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "authenticate test-user3",
+        "status": "passed",
+        "duration": 13674,
+        "start": 1746184129,
+        "stop": 1746184143,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/auth.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > auth.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      }
+    ]
+  }
+}
