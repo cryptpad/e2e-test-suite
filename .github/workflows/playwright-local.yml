@@ -30,7 +30,9 @@ jobs:
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
-      - name: Install components  
+      - name: Install components 1
+        run: npm ci --prefix cryptpad
+      - name: Install components 2
         run: npm run install:components --prefix cryptpad
       - name: Install OnlyOffice
         run: cryptpad/install-onlyoffice.sh -a 
