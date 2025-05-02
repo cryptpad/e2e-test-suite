@@ -156,7 +156,7 @@ export class Cleanup {
         //   }
           await this.fileActions.destroyItem.click();
           await this.fileActions.okButton.click();
-          await this.page.waitForTimeout(1000);
+          await this.page.waitForTimeout(5000);
         //   elementCount = elementCount - 1;
         // }
       }
@@ -223,7 +223,7 @@ export class Cleanup {
     await this.fileActions.teamTab(/^Members$/).click();
 
     if (await this.fileActions.teamMemberFilter('testuser').isVisible()) {
-      await this.fileActions.removeMember('testuser').click();
+      await this.fileActions.removeMember('testuser')
       await this.fileActions.okButton.click();
     }
 
