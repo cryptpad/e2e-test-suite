@@ -89,7 +89,7 @@ jobs:
       #   if: always()
       - name: Run Playwright tests (logged in users)
         working-directory: e2e-test-suite
-        run: npx playwright test loggedin.spec--config=playwright.config.js --project='chrome' --workers=1 --retries=2
+        run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
         env:
           PW_URL: ${{ vars.PW_URL }}
           MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
