@@ -39,7 +39,7 @@ test('code - save as and import template', async ({ page }) => {
     await fileActions.saveTemplate(mobile, local);
     await fileActions.templateName.fill('example code template');
     await fileActions.okButton.click();
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(3000);
     await page.goto(`${url}/code/`);
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
