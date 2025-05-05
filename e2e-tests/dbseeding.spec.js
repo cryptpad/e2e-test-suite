@@ -217,19 +217,6 @@ test('create test files in test-user drive', async ({ page }) => {
       await cleanUp.cleanTeamDrive(name);
     }
 
-    await page.goto(`${url}/pad/`);
-    await fileActions.createFile.waitFor()
-    await fileActions.createFile.click();
-    await (new StoreModal(fileActions)).storeButton.waitFor();
-    await (new StoreModal(fileActions)).storeButton.click();
-    await fileActions.fileTitle('pad').waitFor()
-    await fileActions.titleEditBox.waitFor()
-    await fileActions.titleEditBox.click();
-    await fileActions.fileTitleEdit('pad').fill('test pad');
-    await fileActions.saveTitle.waitFor()
-    await fileActions.saveTitle.click();
-    await expect(fileActions.mainFrame.getByText('test pad')).toBeVisible();
-
     await page.goto(`${url}/sheet/`);
     await fileActions.createFile.waitFor()
     await fileActions.createFile.click();
@@ -239,9 +226,36 @@ test('create test files in test-user drive', async ({ page }) => {
     await fileActions.fileSaved.waitFor();
     await fileActions.titleEditBox.click();
     await fileActions.fileTitleEdit('sheet').fill('test sheet');
+    await fileActions.fileSaved.waitFor()
     await fileActions.saveTitle.waitFor()
     await fileActions.saveTitle.click();
     await expect(fileActions.mainFrame.getByText('test sheet')).toBeVisible();
+
+    await page.goto(`${url}/kanban/`);
+    await fileActions.createFile.waitFor()
+    await fileActions.createFile.click();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('kanban')).toBeVisible();
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('kanban').fill('test kanban');
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test kanban')).toBeVisible();
+
+    await page.goto(`${url}/pad/`);
+    await fileActions.createFile.waitFor()
+    await fileActions.createFile.click();
+    await (new StoreModal(fileActions)).storeButton.waitFor();
+    await (new StoreModal(fileActions)).storeButton.click();
+    await fileActions.fileTitle('pad').waitFor()
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('pad').fill('test pad');
+    await fileActions.fileSaved.waitFor()
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test pad')).toBeVisible();
+
 
     await page.goto(`${url}/code/`);
     await fileActions.createFile.waitFor()
@@ -252,6 +266,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await fileActions.titleEditBox.waitFor()
     await fileActions.titleEditBox.click();
     await fileActions.fileTitleEdit('code').fill('test code');
+    await fileActions.fileSaved.waitFor()
     await fileActions.saveTitle.waitFor()
     await fileActions.saveTitle.click();
     await expect(fileActions.mainFrame.getByText('test code')).toBeVisible();
@@ -265,6 +280,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await fileActions.titleEditBox.waitFor()
     await fileActions.titleEditBox.click();
     await fileActions.fileTitleEdit('slide').fill('test slide');
+    await fileActions.fileSaved.waitFor()
     await fileActions.saveTitle.waitFor()
     await fileActions.saveTitle.click();
     await expect(fileActions.mainFrame.getByText('test slide')).toBeVisible();
@@ -307,17 +323,6 @@ test('create test files in test-user drive', async ({ page }) => {
     await fileActions.saveTitle.waitFor()
     await fileActions.saveTitle.click();
     await expect(fileActions.mainFrame.getByText('test diagram')).toBeVisible();
-
-    await page.goto(`${url}/kanban/`);
-    await fileActions.createFile.waitFor()
-    await fileActions.createFile.click();
-    await (new StoreModal(fileActions)).storeButton.waitFor()
-    await (new StoreModal(fileActions)).storeButton.click();
-    await expect(fileActions.fileTitle('kanban')).toBeVisible();
-    await fileActions.titleEditBox.click();
-    await fileActions.fileTitleEdit('kanban').fill('test kanban');
-    await fileActions.saveTitle.click();
-    await expect(fileActions.mainFrame.getByText('test kanban')).toBeVisible();
 
     await page.goto(`${url}/drive`);
     await fileActions.mainFrame.getByText('test diagram').waitFor()
