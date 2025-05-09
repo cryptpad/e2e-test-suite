@@ -18,11 +18,11 @@ jobs:
         working-directory: cryptpad
         run: unzip -o database_seed.zip
         if: always()
-      - name: Clone CryptPad repository
-        env: 
-            PA_TOKEN: ${{ secrets.PAT_SECRET }} 
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" 
-        shell: bash
+      # - name: Clone CryptPad repository
+      #   env: 
+      #       PA_TOKEN: ${{ secrets.PAT_SECRET }} 
+      #   run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" 
+      #   shell: bash
       - name: Checkout branch
         working-directory: cryptpad
         run: |

@@ -4,33 +4,230 @@
       "name": "playwright"
     },
     "summary": {
-      "tests": 1,
-      "passed": 1,
-      "failed": 0,
+      "tests": 10,
+      "passed": 8,
+      "failed": 2,
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1746791464012,
-      "stop": 1746791496118,
+      "start": 1746791564274,
+      "stop": 1746791794968,
       "suites": 0
     },
     "tests": [
       {
-        "name": "loggedin - pad - create without owner",
+        "name": "loggedin - create and delete event in calendar",
         "status": "passed",
-        "duration": 26534,
-        "start": 1746791465,
-        "stop": 1746791492,
+        "duration": 14586,
+        "start": 1746791567,
+        "stop": 1746791581,
         "rawStatus": "passed",
         "tags": [],
         "type": "e2e",
-        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/genericfile_loggedin.spec.js",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
         "retries": 0,
         "flaky": false,
         "steps": [],
-        "suite": "chrome > genericfile_loggedin.spec.js",
+        "suite": "chrome > calendar_loggedin.spec.js",
         "attachments": [],
         "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create and delete repeating event in calendar",
+        "status": "passed",
+        "duration": 12503,
+        "start": 1746791582,
+        "stop": 1746791595,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create event in calendar and edit location",
+        "status": "passed",
+        "duration": 15795,
+        "start": 1746791595,
+        "stop": 1746791611,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create event in calendar and edit time",
+        "status": "passed",
+        "duration": 15602,
+        "start": 1746791611,
+        "stop": 1746791626,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create event in calendar and edit date",
+        "status": "passed",
+        "duration": 15724,
+        "start": 1746791626,
+        "stop": 1746791642,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create new calendar and edit calendar in event",
+        "status": "passed",
+        "duration": 19658,
+        "start": 1746791642,
+        "stop": 1746791662,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - code - save as and import template",
+        "status": "passed",
+        "duration": 76186,
+        "start": 1746791662,
+        "stop": 1746791738,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/code_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > code_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - code - history (previous author)",
+        "status": "failed",
+        "duration": 34344,
+        "start": 1746791738,
+        "stop": 1746791772,
+        "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveCount with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n",
+        "trace": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveCount with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n    at /Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/code_loggedin.spec.js:93:84",
+        "rawStatus": "failed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/code_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > code_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [
+          "ExpectError: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveCount with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n    at \u001b[90m/Users/zuzanna/Desktop/e2e-test-suite/\u001b[39me2e-tests/code_loggedin.spec.js:93:84 {\n  matcherResult: {\n    actual: \u001b[33m1\u001b[39m,\n    expected: \u001b[33m0\u001b[39m,\n    message: \u001b[32m'\\x1B[31mTimed out 5000ms waiting for \\x1B[39m\\x1B[2mexpect(\\x1B[22m\\x1B[31mlocator\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveCount\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m\"Locator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\n\"\u001b[39m +\n      \u001b[32m'Expected: \\x1B[32m0\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Received: \\x1B[31m1\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Call log:\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - expect.toHaveCount with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\x1B[22m\\n\"\u001b[39m +\n      \u001b[32m'\\x1B[2m    9 × locator resolved to 1 element\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m      - unexpected value \"1\"\\x1B[22m\\n'\u001b[39m,\n    name: \u001b[32m'toHaveCount'\u001b[39m,\n    pass: \u001b[33mfalse\u001b[39m,\n    log: [\n      \u001b[32m'  - expect.toHaveCount with timeout 5000ms'\u001b[39m,\n      \u001b[32m\"  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\"\u001b[39m,\n      \u001b[32m'    9 × locator resolved to 1 element'\u001b[39m,\n      \u001b[32m'      - unexpected value \"1\"'\u001b[39m\n    ],\n    timeout: \u001b[33m5000\u001b[39m\n  },\n  [\u001b[32mSymbol(step)\u001b[39m]: {\n    stepId: \u001b[32m'expect@93'\u001b[39m,\n    category: \u001b[32m'expect'\u001b[39m,\n    title: \u001b[32m'expect.toHaveCount'\u001b[39m,\n    params: \u001b[90mundefined\u001b[39m,\n    infectParentStepsWithError: \u001b[90mundefined\u001b[39m,\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    location: {\n      file: \u001b[32m'/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/code_loggedin.spec.js'\u001b[39m,\n      line: \u001b[33m93\u001b[39m,\n      column: \u001b[33m84\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    steps: [],\n    attachmentIndices: [],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1746791772631\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: \\x1B[31mTimed out 5000ms waiting for \\x1B[39m\\x1B[2mexpect(\\x1B[22m\\x1B[31mlocator\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveCount\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m\"Locator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\n\"\u001b[39m +\n        \u001b[32m'Expected: \\x1B[32m0\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[31m1\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - expect.toHaveCount with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\x1B[22m\\n\"\u001b[39m +\n        \u001b[32m'\\x1B[2m    9 × locator resolved to 1 element\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m      - unexpected value \"1\"\\x1B[22m\\n'\u001b[39m,\n      stack: \u001b[32m'Error: \\x1B[31mTimed out 5000ms waiting for \\x1B[39m\\x1B[2mexpect(\\x1B[22m\\x1B[31mlocator\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveCount\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m\"Locator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\n\"\u001b[39m +\n        \u001b[32m'Expected: \\x1B[32m0\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[31m1\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - expect.toHaveCount with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\x1B[22m\\n\"\u001b[39m +\n        \u001b[32m'\\x1B[2m    9 × locator resolved to 1 element\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m      - unexpected value \"1\"\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'    at /Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/code_loggedin.spec.js:93:84'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m,\n      matcherResult: \u001b[36m[Object]\u001b[39m\n    }\n  }\n}\n"
+        ],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - profile",
+        "status": "passed",
+        "duration": 12196,
+        "start": 1746791775,
+        "stop": 1746791787,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - contacts",
+        "status": "failed",
+        "duration": 6736,
+        "start": 1746791787,
+        "stop": 1746791794,
+        "message": "Error: page.evaluate: Target page, context or browser has been closed",
+        "trace": "Error: page.evaluate: Target page, context or browser has been closed\n    at FileActions.setStatus (/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/fileactions.js:871:21)\n    at FileActions.toFailure (/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/fileactions.js:911:16)\n    at /Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/drive_loggedin.spec.js:56:25",
+        "rawStatus": "interrupted",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [
+          "locator.waitFor: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.cp-toolbar-user-dropdown.cp-dropdown-container') to be visible\u001b[22m\n\n    at \u001b[90m/Users/zuzanna/Desktop/e2e-test-suite/\u001b[39me2e-tests/drive_loggedin.spec.js:39:35 {\n  [\u001b[32mSymbol(step)\u001b[39m]: {\n    stepId: \u001b[32m'pw:api@12'\u001b[39m,\n    location: {\n      file: \u001b[32m'/Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/drive_loggedin.spec.js'\u001b[39m,\n      line: \u001b[33m39\u001b[39m,\n      column: \u001b[33m35\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    category: \u001b[32m'pw:api'\u001b[39m,\n    title: \u001b[32m'locator.waitFor(#sbox-iframe >> internal:control=enter-frame >> .cp-toolbar-user-dropdown.cp-dropdown-container)'\u001b[39m,\n    apiName: \u001b[32m'locator.waitFor'\u001b[39m,\n    params: {\n      selector: \u001b[32m'#sbox-iframe >> internal:control=enter-frame >> .cp-toolbar-user-dropdown.cp-dropdown-container'\u001b[39m,\n      strict: \u001b[33mtrue\u001b[39m,\n      omitReturnValue: \u001b[33mtrue\u001b[39m\n    },\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    steps: [],\n    attachmentIndices: [],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1746791794473\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: locator.waitFor: Target page, context or browser has been closed\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.cp-toolbar-user-dropdown.cp-dropdown-container') to be visible\\x1B[22m\\n\"\u001b[39m,\n      stack: \u001b[32m'Error: locator.waitFor: Target page, context or browser has been closed\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.cp-toolbar-user-dropdown.cp-dropdown-container') to be visible\\x1B[22m\\n\"\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'    at /Users/zuzanna/Desktop/e2e-test-suite/e2e-tests/drive_loggedin.spec.js:39:35'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m\n    }\n  }\n}\n"
+        ],
         "stderr": [],
         "extra": {
           "annotations": []
