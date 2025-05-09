@@ -29,7 +29,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-test('slide - save as and import template', async ({ page }) => {
+test('loggedin - slide - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
     await fileActions.fileSaved.waitFor();
@@ -61,7 +61,7 @@ test('slide - save as and import template', async ({ page }) => {
   }
 });
 
-test('slide - history (previous author)', async ({ page, browser }) => {
+test('loggedin - slide - history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 

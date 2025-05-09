@@ -25,7 +25,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   fileActions = new FileActions(page);
 });
 
-test('user menu - make and delete team', async ({ page }) => {
+test('loggedin - user menu - make and delete team', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -48,7 +48,7 @@ test('user menu - make and delete team', async ({ page }) => {
   }
 });
 
-test('can change team name', async ({ page }) => {
+test('loggedin - can change team name', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -85,7 +85,7 @@ test('can change team name', async ({ page }) => {
   }
 });
 
-test(' can access team public signing key', async ({ page }) => {
+test('loggedin - can access team public signing key', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -105,7 +105,7 @@ test(' can access team public signing key', async ({ page }) => {
   }
 });
 
-test('screenshot loggedin change team avatar', async ({ page }) => {
+test('screenshot loggedin - change team avatar', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
@@ -157,7 +157,7 @@ test('screenshot loggedin change team avatar', async ({ page }) => {
   }
 });
 
-test('can download team drive', async ({ page }) => {
+test('loggedin - can download team drive', async ({ page }) => {
   test.skip()
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
@@ -220,7 +220,7 @@ test('can download team drive', async ({ page }) => {
   }
 });
 
-test('add contact to team as viewer and remove them', async ({ page, browser }) => {
+test('loggedin - add contact to team as viewer and remove them', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -299,7 +299,7 @@ test('add contact to team as viewer and remove them', async ({ page, browser }) 
 });
 
 //fixme
-test('promote team viewer to member', async ({ page, browser }) => {
+test('loggedin - promote team viewer to member', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -309,7 +309,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
     // promote viewer to member
     await fileActions.promoteTestUser3()
     if (!await fileActions.demoteTestUser3Arrow.isVisible()) {
-      await fileActions.promoteTestUser3().click();
+      await fileActions.promoteTestUser3()
     }
 
     /// log in other user
@@ -362,7 +362,7 @@ test('promote team viewer to member', async ({ page, browser }) => {
   }
 });
 
-test('promote team viewer to admin', async ({ page, browser }) => {
+test('loggedin - promote team viewer to admin', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -418,7 +418,7 @@ test('promote team viewer to admin', async ({ page, browser }) => {
   }
 });
 
-test('promote team viewer to owner', async ({ page, browser }) => {
+test('loggedin - promote team viewer to owner', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -497,7 +497,7 @@ test('promote team viewer to owner', async ({ page, browser }) => {
   }
 });
 
-test('add contact to team and contact leaves team', async ({ page, browser }) => {
+test('loggedin - add contact to team and contact leaves team', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
@@ -547,7 +547,7 @@ test('add contact to team and contact leaves team', async ({ page, browser }) =>
   }
 });
 
-test('invite contact to team and cancel', async ({ page }) => {
+test('loggedin - invite contact to team and cancel', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {

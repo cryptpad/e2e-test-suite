@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 });
 
-test('markdown - anon - input text into editor and create slide', async ({ page }) => {
+test('anon - slide - input text into editor and create slide', async ({ page }) => {
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('Test text');
@@ -33,7 +33,7 @@ test('markdown - anon - input text into editor and create slide', async ({ page 
   }
 });
 
-test('markdown - anon - create new slide', async ({ page }) => {
+test('anon - slide - create new slide', async ({ page }) => {
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('Test text');
@@ -57,7 +57,7 @@ test('markdown - anon - create new slide', async ({ page }) => {
   }
 });
 
-test('markdown - toggle toolbar', async ({ page }) => {
+test('anon - slide - toggle toolbar', async ({ page }) => {
   try {
     await fileActions.toggleTools(mobile);
     await expect(fileActions.codeToolbar).toBeVisible();
@@ -70,7 +70,7 @@ test('markdown - toggle toolbar', async ({ page }) => {
   }
 });
 
-test('markdown - toggle preview', async ({ page }) => {
+test('anon - slide - toggle preview', async ({ page }) => {
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('Test text');
@@ -111,7 +111,7 @@ test('anon - slide - make a copy', async ({ page, context }) => {
   }
 });
 
-test('slide - export (md)', async ({ page, context }) => {
+test('anon - slide - export (md)', async ({ page, context }) => {
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('Test text');
@@ -136,7 +136,7 @@ test('slide - export (md)', async ({ page, context }) => {
   }
 });
 
-test('slide - share at a moment in history', async ({ page, context }) => {
+test('anon - slide - share at a moment in history', async ({ page, context }) => {
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('One moment in history');
@@ -159,7 +159,7 @@ test('slide - share at a moment in history', async ({ page, context }) => {
   }
 });
 
-test('slide - history (previous version)', async ({ page, context }) => {
+test('anon - slide - history (previous version)', async ({ page, context }) => {
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('Test text');
@@ -174,7 +174,7 @@ test('slide - history (previous version)', async ({ page, context }) => {
   }
 });
 
-test('markdown - import file', async ({ page }) => {
+test('anon - slide - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {

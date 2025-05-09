@@ -9,15 +9,15 @@ jobs:
   run_tests:
     runs-on: ubuntu-latest 
     steps:
-      # - name: Clone CryptPad repository
-      #   env: 
-      #       PA_TOKEN: ${{ secrets.PAT_SECRET }} 
-      #   run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b database_seed_rc2025.3
-      #   shell: bash
-      # - name: Seed database
-      #   working-directory: cryptpad
-      #   run: unzip -o database_seed.zip
-      #   if: always()
+      - name: Clone CryptPad repository
+        env: 
+            PA_TOKEN: ${{ secrets.PAT_SECRET }} 
+        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b database_seed_rc2025.3
+        shell: bash
+      - name: Seed database
+        working-directory: cryptpad
+        run: unzip -o database_seed.zip
+        if: always()
       - name: Clone CryptPad repository
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
@@ -69,17 +69,18 @@ jobs:
         uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: 'e2e-test-suite/ctrf/*.json'
+          title: 'Test results - anonymous'
         if: always()
-      - name: Seed database
-        working-directory: e2e-test-suite
-        run: |
-          npx playwright test dbseeding --config=playwright.config.js --project='chrome' --workers=1 
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+      # - name: Seed database
+      #   working-directory: e2e-test-suite
+      #   run: |
+      #     npx playwright test dbseeding --config=playwright.config.js --project='chrome' --workers=1 
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #     MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+      #     TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+      #     TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+      #     TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
       - name: Create auth files
         working-directory: e2e-test-suite
         run: |
@@ -118,4 +119,5 @@ jobs:
         uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: 'e2e-test-suite/ctrf/*.json'
+          title: 'Test results - logged in users'
         if: always()

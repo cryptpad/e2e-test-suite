@@ -30,7 +30,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.click();
 });
 
-test('pad - save as and import template', async ({ page }) => {
+test('loggedin - pad - save as and import template', async ({ page }) => {
   try {
     
     await fileActions.padEditorHTML.click();
@@ -59,7 +59,7 @@ test('pad - save as and import template', async ({ page }) => {
   }
 });
 
-test('pad - history (previous author)', async ({ page, browser }) => {
+test('loggedin - pad - history (previous author)', async ({ page, browser }) => {
   try {
 
     await fileActions.padEditorHTML.click();

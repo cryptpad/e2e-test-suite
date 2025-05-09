@@ -78,7 +78,8 @@ module.exports = defineConfig({
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         locale: 'en-GB'
       }
-    }, {
+    }, 
+    {
       // name: 'playwright-firefox@latest:OSX Ventura@browserstack',
       // use: {
       //   locale: 'en-GB'

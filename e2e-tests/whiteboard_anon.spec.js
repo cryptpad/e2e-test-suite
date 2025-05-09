@@ -15,7 +15,7 @@ test.beforeEach(async ({ page, isMobile }) => {
 
 });
 
-test('screenshot anon - can draw on whiteboard (default settings)', async ({ page }) => {
+test('screenshot anon - whiteboard - can draw (default settings)', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -54,7 +54,7 @@ test('screenshot anon - can draw on whiteboard (default settings)', async ({ pag
   }
 });
 
-test('screenshot anon - erase on whiteboard', async ({ page }) => {
+test('screenshot anon - whiteboard - erase', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -94,7 +94,7 @@ test('screenshot anon - erase on whiteboard', async ({ page }) => {
   }
 });
 
-test('screenshot anon - enter text on whiteboard', async ({ page }) => {
+test('screenshot anon - whiteboard - enter text on whiteboard', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardText.click();
@@ -114,7 +114,7 @@ test('screenshot anon - enter text on whiteboard', async ({ page }) => {
   }
 });
 
-test('screenshot anon - delete selection on whiteboard', async ({ page }) => {
+test('screenshot anon - whiteboard - delete selection on whiteboard', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -147,7 +147,7 @@ test('screenshot anon - delete selection on whiteboard', async ({ page }) => {
   }
 });
 
-test('screenshot anon - can change whiteboard brush thickness', async ({ page }) => {
+test('screenshot anon - whiteboard - can change whiteboard brush thickness', async ({ page }) => {
   try {
     await fileActions.whiteBoardWidth.click();
     await fileActions.whiteBoardWidth.fill('50');
@@ -172,7 +172,7 @@ test('screenshot anon - can change whiteboard brush thickness', async ({ page })
   }
 });
 
-test('screenshot anon - can change whiteboard brush opacity', async ({ page }) => {
+test('screenshot anon - whiteboard - can change whiteboard brush opacity', async ({ page }) => {
   try {
     await fileActions.whiteBoardOpacity.click();
     await fileActions.whiteBoardOpacity.fill('0.5');
@@ -198,7 +198,7 @@ test('screenshot anon - can change whiteboard brush opacity', async ({ page }) =
   }
 });
 
-test('screenshot anon - can clear whiteboard canvas', async ({ page }) => {
+test('screenshot anon - whiteboard - can clear canvas', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -224,7 +224,7 @@ test('screenshot anon - can clear whiteboard canvas', async ({ page }) => {
   }
 });
 
-test('screenshot anon whiteboard - make a copy', async ({ page }) => {
+test('screenshot anon - whiteboard - make a copy', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -256,7 +256,7 @@ test('screenshot anon whiteboard - make a copy', async ({ page }) => {
   }
 });
 
-test('screenshot anon whiteboard - export as png', async ({ page }) => {
+test('screenshot anon - whiteboard - export as png', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -290,7 +290,7 @@ test('screenshot anon whiteboard - export as png', async ({ page }) => {
   }
 });
 
-test('screenshot anon whiteboard - display history', async ({ page }) => {
+test('screenshot anon - whiteboard - display history', async ({ page }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -318,7 +318,7 @@ test('screenshot anon whiteboard - display history', async ({ page }) => {
   }
 });
 
-test('screenshot anon whiteboard - share whiteboard history at specific moment in time (link)', async ({ page, browser }) => {
+test('screenshot anon - whiteboard - share history at specific moment in time (link)', async ({ page, browser }) => {
   try {
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({

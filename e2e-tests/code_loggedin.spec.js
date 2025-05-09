@@ -26,7 +26,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-test('code - save as and import template', async ({ page }) => {
+test('loggedin - code - save as and import template', async ({ page }) => {
   try {
 
     await fileActions.createFile.click();
@@ -59,7 +59,7 @@ test('code - save as and import template', async ({ page }) => {
   }
 });
 
-test('code - history (previous author)', async ({ page, browser }) => {
+test('loggedin - code - history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
     await fileActions.fileSaved.waitFor();

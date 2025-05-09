@@ -27,7 +27,7 @@ const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'prici
 
 
 userMenuItems.forEach(function (item) {
-  test(`drive - anon - user menu - ${item}`, async ({ page, context }) => {
+  test(`anon - drive - user menu - ${item}`, async ({ page, context }) => {
     if (item === 'pricing') {
       test.skip(url !== 'https://cryptpad.fr', 'pricing not available on dev instance');
     }
@@ -81,7 +81,7 @@ userMenuItems.forEach(function (item) {
   });
 });
 
-// test('drive - anon - erase all', async ({ page, context }) => {
+// test('anon - drive - erase all', async ({ page, context }) => {
 
 //   try {
 
@@ -118,7 +118,7 @@ userMenuItems.forEach(function (item) {
 
 // });
 
-test('drive - anon - list/grid view', async ({ page, context }) => {
+test('anon - drive - list/grid view', async ({ page, context }) => {
   try {
     await fileActions.driveadd.waitFor();
     await fileActions.driveadd.click();
@@ -158,7 +158,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
   }
 });
 
-// test('drive - anon - history', async ({ page, context }) => {
+// test('anon - drive - history', async ({ page, context }) => {
 //   try {
 //     await fileActions.driveadd.waitFor();
 //     await fileActions.driveadd.click();
@@ -194,7 +194,7 @@ test('drive - anon - list/grid view', async ({ page, context }) => {
 //   }
 // });
 
-test('drive - anon - notifications', async ({ page, context }) => {
+test('anon - drive - notifications', async ({ page, context }) => {
   try {
     await fileActions.notifications.waitFor();
     await fileActions.notifications.click();
@@ -208,7 +208,7 @@ test('drive - anon - notifications', async ({ page, context }) => {
   }
 });
 
-test('drive - anon - sign up from drive page', async ({ page, context }) => {
+test('anon - drive - sign up from drive page', async ({ page, context }) => {
   try {
     await fileActions.notLoggedIn.waitFor();
     await fileActions.registerLinkDrive.waitFor();
@@ -222,7 +222,7 @@ test('drive - anon - sign up from drive page', async ({ page, context }) => {
   }
 });
 
-test('drive - anon - log in from drive page', async ({ page, context }) => {
+test('anon - drive - log in from drive page', async ({ page, context }) => {
   try {
     await fileActions.notLoggedIn.waitFor();
     await fileActions.loginLinkDrive.waitFor();

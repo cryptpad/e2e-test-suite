@@ -31,7 +31,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-test('form - share with contact (author)', async ({ page, browser }) => {
+test('loggedin - form - share with contact (author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
@@ -69,7 +69,7 @@ test('form - share with contact (author)', async ({ page, browser }) => {
   }
 });
 
-test('form - share with contact (auditor)', async ({ page, browser }) => {
+test('loggedin - form - share with contact (auditor)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
@@ -109,7 +109,7 @@ test('form - share with contact (auditor)', async ({ page, browser }) => {
   }
 });
 
-test('form - share with contact (participant)', async ({ page, browser }) => {
+test('loggedin - form - share with contact (participant)', async ({ page, browser }) => {
   try {
 
     await fileActions.createFile.waitFor();
@@ -149,7 +149,7 @@ test('form - share with contact (participant)', async ({ page, browser }) => {
   }
 });
 
-test('form - (guest) access - blocked', async ({ page, browser }) => {
+test('loggedin - form - (guest) access - blocked', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
@@ -186,7 +186,7 @@ test('form - (guest) access - blocked', async ({ page, browser }) => {
   }
 });
 
-test('form - view history (different authors)', async ({ page, browser }) => {
+test('loggedin - form - view history (different authors)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
@@ -226,7 +226,7 @@ test('form - view history (different authors)', async ({ page, browser }) => {
   }
 });
 
-test('form - create quick scheduling poll', async ({ page, browser }) => {
+test('loggedin - form - create quick scheduling poll', async ({ page, browser }) => {
   try {
     await fileActions.mainFrame.getByText('Quick Scheduling Poll').click();
     await fileActions.createFile.click();
@@ -254,7 +254,7 @@ test('form - create quick scheduling poll', async ({ page, browser }) => {
   }
 });
 
-test('form - protect with password', async ({ page, browser }) => {
+test('loggedin - form - protect with password', async ({ page, browser }) => {
   try {
     await fileActions.creationOption('Add a password' ).click();
     await fileActions.creationPassword.fill('password');
@@ -295,7 +295,7 @@ test('form - protect with password', async ({ page, browser }) => {
   }
 });
 
-test('form - save as and import template', async ({ page }) => {
+test('loggedin - form - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
 

@@ -23,7 +23,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-test('form - submission (one time no edit)', async ({ page, context }) => {
+test('anon - form - submission (one time no edit)', async ({ page, context }) => {
   try {
     await fileActions.openFormSettings()
     await fileActions.oneTimeOnly.click();
@@ -46,7 +46,7 @@ test('form - submission (one time no edit)', async ({ page, context }) => {
   }
 });
 
-test('form - submission (multiple times no edit)', async ({ page, context }) => {
+test('anon - form - submission (multiple times no edit)', async ({ page, context }) => {
   try {
     await fileActions.openFormSettings()
     await fileActions.multipleTimes.click();
@@ -72,7 +72,7 @@ test('form - submission (multiple times no edit)', async ({ page, context }) => 
   }
 });
 
-test('form - submission (one time) - delete', async ({ page, context }) => {
+test('anon - form - submission (one time) - delete', async ({ page, context }) => {
   try {
     var clipboardText = await fileActions.publicLinkCopy()
     const page1 = await context.newPage();
@@ -96,7 +96,7 @@ test('form - submission (one time) - delete', async ({ page, context }) => {
   }
 });
 
-test('form - submission (multiple times) - delete', async ({ page, context }) => {
+test('anon - form - submission (multiple times) - delete', async ({ page, context }) => {
   try {
     await fileActions.openFormSettings()
     await fileActions.multipleTimesEdit.click();
@@ -124,7 +124,7 @@ test('form - submission (multiple times) - delete', async ({ page, context }) =>
   }
 });
 
-test('form - submission (multiple times) - edit', async ({ page, context }) => {
+test('anon - form - submission (multiple times) - edit', async ({ page, context }) => {
   try {
     await fileActions.openFormSettings()
     await fileActions.multipleTimesEdit.click();
@@ -154,7 +154,7 @@ test('form - submission (multiple times) - edit', async ({ page, context }) => {
   }
 });
 
-test('form - submission (one time) - edit', async ({ page, context }) => {
+test('anon - form - submission (one time) - edit', async ({ page, context }) => {
   try {
     var clipboardText = await fileActions.publicLinkCopy()
     const page1 = await context.newPage();
@@ -180,7 +180,7 @@ test('form - submission (one time) - edit', async ({ page, context }) => {
   }
 });
 
-test('form - share (link) - auditor', async ({ page, context }) => {
+test('anon - form - share (link) - auditor', async ({ page, context }) => {
   try {
 
     await fileActions.fileTitle('Form').waitFor();
@@ -204,7 +204,7 @@ test('form - share (link) - auditor', async ({ page, context }) => {
   }
 });
 
-test('form - share (link) - author', async ({ page, context }) => {
+test('anon - form - share (link) - author', async ({ page, context }) => {
   try {
     
     await fileActions.fileTitle('Form').waitFor();
@@ -227,7 +227,7 @@ test('form - share (link) - author', async ({ page, context }) => {
   }
 });
 
-test('form - add and respond to checkbox question', async ({ page, context }) => {
+test('anon - form - add and respond to checkbox question', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -256,7 +256,7 @@ test('form - add and respond to checkbox question', async ({ page, context }) =>
   }
 });
 
-test('form - close and open', async ({ page, context }) => {
+test('anon - form - close and open', async ({ page, context }) => {
   try {
     await fileActions.openFormSettings()
 
@@ -300,7 +300,7 @@ test('form - close and open', async ({ page, context }) => {
   }
 });
 
-test('form - set future closing date and open', async ({ page, context }) => {
+test('anon - form - set future closing date and open', async ({ page, context }) => {
   try {
     await fileActions.openFormSettings()
 
@@ -352,7 +352,7 @@ test('form - set future closing date and open', async ({ page, context }) => {
   }
 });
 
-test('form - anonymize responses', async ({ page, context }) => {
+test('anon - form - anonymize responses', async ({ page, context }) => {
   try {
     var clipboardText = await fileActions.publicLinkCopy()
 
@@ -383,7 +383,7 @@ test('form - anonymize responses', async ({ page, context }) => {
   }
 });
 
-test('form - publish responses', async ({ page, context }) => {
+test('anon - form - publish responses', async ({ page, context }) => {
   try {
     var clipboardText = await fileActions.publicLinkCopy()
 
@@ -411,7 +411,7 @@ test('form - publish responses', async ({ page, context }) => {
   }
 });
 
-test('form - view history and share at a specific moment in history', async ({ page, context }) => {
+test('anon - form - view history and share at a specific moment in history', async ({ page, context }) => {
   try {
     await fileActions.editQuestion.nth(1).waitFor();
     await fileActions.editQuestion.nth(1).click();
@@ -436,7 +436,7 @@ test('form - view history and share at a specific moment in history', async ({ p
   }
 });
 
-test('form - import file', async ({ page }) => {
+test('anon - form - import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
@@ -458,7 +458,7 @@ test('form - import file', async ({ page }) => {
   }
 });
 
-test('form - make a copy', async ({ page }) => {
+test('anon - form - make a copy', async ({ page }) => {
   try {
     await fileActions.textbox.waitFor();
     await fileActions.textbox.click();
@@ -492,7 +492,7 @@ test('form - make a copy', async ({ page }) => {
   }
 });
 
-test('form - export file', async ({ page }) => {
+test('anon - form - export file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
@@ -533,7 +533,7 @@ test('form - export file', async ({ page }) => {
   }
 });
 
-test('form - add description', async ({ page, context }) => {
+test('anon - form - add description', async ({ page, context }) => {
   try {
     await fileActions.editQuestion.first().waitFor();
     await fileActions.editQuestion.first().click();
@@ -554,7 +554,7 @@ test('form - add description', async ({ page, context }) => {
   }
 });
 
-test('form - add submission message', async ({ page, context }) => {
+test('anon - form - add submission message', async ({ page, context }) => {
   try {
     if (mobile) {
       await fileActions.mainFrame.getByRole('button', { name: 'Store', exact: true }).click();
@@ -579,7 +579,7 @@ test('form - add submission message', async ({ page, context }) => {
   }
 });
 
-test('form - anon (guest) access - allowed', async ({ page, context }) => {
+test('anon - form - anon (guest) access - allowed', async ({ page, context }) => {
   try {
     await fileActions.editQuestion.nth(1).waitFor();
     await fileActions.textbox.fill('What to do today?');
@@ -605,7 +605,7 @@ test('form - anon (guest) access - allowed', async ({ page, context }) => {
   }
 });
 
-test('form - add and respond to text question', async ({ page, context }) => {
+test('anon - form - add and respond to text question', async ({ page, context }) => {
   try {
     await fileActions.textButton.waitFor();
     await fileActions.textButton.click();
@@ -633,7 +633,7 @@ test('form - add and respond to text question', async ({ page, context }) => {
   }
 });
 
-test('form - edit response', async ({ page, context }) => {
+test('anon - form - edit response', async ({ page, context }) => {
   try {
     var clipboardText = await fileActions.publicLinkCopy()
     page1 = await context.newPage();
@@ -657,7 +657,7 @@ test('form - edit response', async ({ page, context }) => {
   }
 });
 
-test('form - delete response', async ({ page, context }) => {
+test('anon - form - delete response', async ({ page, context }) => {
   try {
     var clipboardText = await fileActions.publicLinkCopy()
     page1 = await context.newPage();
@@ -684,7 +684,7 @@ test('form - delete response', async ({ page, context }) => {
   }
 });
 
-test('form - add and respond to paragraph question', async ({ page, context }) => {
+test('anon - form - add and respond to paragraph question', async ({ page, context }) => {
   try {
     await fileActions.paragraphQuestion.waitFor();
     await fileActions.paragraphQuestion.click();
@@ -712,7 +712,7 @@ test('form - add and respond to paragraph question', async ({ page, context }) =
   }
 });
 
-test('form - add and respond to choice question (optional)', async ({ page, context }) => {
+test('anon - form - add and respond to choice question (optional)', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -745,7 +745,7 @@ test('form - add and respond to choice question (optional)', async ({ page, cont
   }
 });
 
-test('form - add and respond to choice question (required)', async ({ page, context }) => {
+test('anon - form - add and respond to choice question (required)', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -782,7 +782,7 @@ test('form - add and respond to choice question (required)', async ({ page, cont
   }
 });
 
-test('form - add and respond to choice grid question', async ({ page, context }) => {
+test('anon - form - add and respond to choice grid question', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -821,7 +821,7 @@ test('form - add and respond to choice grid question', async ({ page, context })
   }
 });
 
-test('form - add and respond to date question', async ({ page, context }) => {
+test('anon - form - add and respond to date question', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -848,7 +848,7 @@ test('form - add and respond to date question', async ({ page, context }) => {
   }
 });
 
-test('form - add and respond to checkbox grid question', async ({ page, context }) => {
+test('anon - form - add and respond to checkbox grid question', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -882,7 +882,7 @@ test('form - add and respond to checkbox grid question', async ({ page, context 
   }
 });
 
-test('form - add and respond to ordered list question (schulze method)', async ({ page, context }) => {
+test('anon - form - add and respond to ordered list question (schulze method)', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -936,7 +936,7 @@ test('form - add and respond to ordered list question (schulze method)', async (
   }
 });
 
-test('form - add and respond to ordered list question', async ({ page, context }) => {
+test('anon - form - add and respond to ordered list question', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -989,7 +989,7 @@ test('form - add and respond to ordered list question', async ({ page, context }
   }
 });
 
-test('form - add and respond to poll question', async ({ page, context }) => {
+test('anon - form - add and respond to poll question', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -1016,7 +1016,7 @@ test('form - add and respond to poll question', async ({ page, context }) => {
   }
 });
 
-test('form - add and respond to form with page break', async ({ page, context }) => {
+test('anon - form - add and respond to form with page break', async ({ page, context }) => {
   try {
     await fileActions.textbox.first().waitFor();
     await fileActions.textbox.first().click();
@@ -1043,7 +1043,7 @@ test('form - add and respond to form with page break', async ({ page, context })
   }
 });
 
-test('form - add and respond to conditional section question (OR)', async ({ page, context }) => {
+test('anon - form - add and respond to conditional section question (OR)', async ({ page, context }) => {
   try {
     await fileActions.deleteButton.first().waitFor();
     await fileActions.deleteButton.first().click();
@@ -1094,7 +1094,7 @@ test('form - add and respond to conditional section question (OR)', async ({ pag
   }
 });
 
-test('form - add and respond to conditional section question (AND)', async ({ page, context }) => {
+test('anon - form - add and respond to conditional section question (AND)', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 
@@ -1131,7 +1131,7 @@ test('form - add and respond to conditional section question (AND)', async ({ pa
   }
 });
 
-test('form - export responses as .csv', async ({ page, context }) => {
+test('anon - form - export responses as .csv', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
@@ -1171,7 +1171,7 @@ test('form - export responses as .csv', async ({ page, context }) => {
   }
 });
 
-test('form - export responses as .json', async ({ page, context }) => {
+test('anon - form - export responses as .json', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
   try {
     await fileActions.clearFormQuestions()
@@ -1211,7 +1211,7 @@ test('form - export responses as .json', async ({ page, context }) => {
   }
 });
 
-test('form - export responses (to sheet document)', async ({ page, context }) => {
+test('anon - form - export responses (to sheet document)', async ({ page, context }) => {
   try {
     await fileActions.clearFormQuestions()
 

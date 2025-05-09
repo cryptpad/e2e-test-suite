@@ -22,7 +22,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 
-test('can access public signing key', async ({ page }) => {
+test('loggedin - can access public signing key', async ({ page }) => {
   try {
     await page.goto(`${url}/drive`);
     await fileActions.drivemenu.waitFor();
@@ -46,7 +46,7 @@ test('can access public signing key', async ({ page }) => {
   }
 });
 
-test('add other user as contact and decline request', async ({ page, browser }) => {
+test('loggedin - add other user as contact and decline request', async ({ page, browser }) => {
   try {
     // get user 2 profile link
     const contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
@@ -93,7 +93,7 @@ test('add other user as contact and decline request', async ({ page, browser }) 
   }
 });
 
-test('add and remove other user as contact', async ({ page, browser }) => {
+test('loggedin - add and remove other user as contact', async ({ page, browser }) => {
   try {
     // get user 2 profile link
     contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
@@ -149,7 +149,7 @@ test('add and remove other user as contact', async ({ page, browser }) => {
   }
 });
 
-test('request and cancel to add user as contact', async ({ page, browser }) => {
+test('loggedin - request and cancel to add user as contact', async ({ page, browser }) => {
   try {
     // get user 2 profile link
     const contextOne = await browser.newContext({ storageState: 'auth/testuser2.json' });
@@ -188,7 +188,7 @@ test('request and cancel to add user as contact', async ({ page, browser }) => {
   }
 });
 
-test('chat with contacts and erase message history', async ({ page, browser }) => {
+test('loggedin - chat with contacts and erase message history', async ({ page, browser }) => {
 
   try {
     // user 1: send message
@@ -229,7 +229,7 @@ test('chat with contacts and erase message history', async ({ page, browser }) =
   }
 });
 
-test('sign up and delete account', async ({ page }) => {
+test('loggedin - sign up and delete account', async ({ page }) => {
   try {
     // log out current user
     await page.goto(`${url}/drive`);
@@ -266,7 +266,7 @@ test('sign up and delete account', async ({ page }) => {
   }
 });
 
-test('can change display name', async ({ page }) => {
+test('loggedin - can change display name', async ({ page }) => {
   try {
     await page.goto(`${url}/drive`);
 
@@ -311,7 +311,7 @@ test('can change display name', async ({ page }) => {
   }
 });
 
-test('enable 2FA login', async ({ page, context }) => {
+test('loggedin - enable 2FA login', async ({ page, context }) => {
   try {
     // access settings
     await page.goto(`${url}/drive`);
@@ -428,7 +428,7 @@ test('enable 2FA login', async ({ page, context }) => {
   }
 });
 
-test('enable 2FA login and recover account', async ({ page, context }) => {
+test('loggedin - enable 2FA login and recover account', async ({ page, context }) => {
   try {
     // access settings
     await page.goto(`${url}/drive`);
@@ -473,7 +473,6 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
       token,
       window: 1
     });
-
 
     await fileActions1.verificationCodeFrame.click();
     await fileActions1.verificationCodeFrame.fill(token);
@@ -533,7 +532,7 @@ test('enable 2FA login and recover account', async ({ page, context }) => {
 });
 
 
-test('can change password', async ({ page, browser }) => {
+test('loggedin - can change password', async ({ page, browser }) => {
   try {
     // access settings
     await page.goto(`${url}/drive`);

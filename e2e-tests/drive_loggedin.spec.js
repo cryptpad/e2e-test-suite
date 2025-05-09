@@ -34,7 +34,7 @@ const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'l
 
 
 userMenuItems.forEach(function (item) {
-  test(`drive -  user menu - ${item}`, async ({ page }) => {
+  test(`loggedin - drive -  user menu - ${item}`, async ({ page }) => {
     try {
       await fileActions.drivemenu.waitFor();
       await fileActions.drivemenu.click();
@@ -58,7 +58,7 @@ userMenuItems.forEach(function (item) {
   });
 });
 
-test('drive -  upgrade account', async ({ page }) => {
+test('loggedin - drive -  upgrade account', async ({ page }) => {
 
   var notFlagship = (url === 'https://cryptpad.fr') ? false : true
   test.skip(notFlagship, 'no option to upgrade on local dev instance');
@@ -76,7 +76,7 @@ test('drive -  upgrade account', async ({ page }) => {
   }
 });
 
-test('drive -  upload file', async ({ page }) => {
+test('loggedin - drive -  upload file', async ({ page }) => {
   try {
 
     await cleanUp.cleanUserDrive('myfile.doc');
@@ -106,7 +106,7 @@ test('drive -  upload file', async ({ page }) => {
   }
 });
 
-test('drive -  recent files', async ({ page }) => {
+test('loggedin - drive -  recent files', async ({ page }) => {
   try {
     await cleanUp.cleanUserDrive('Rich text - ');
 
@@ -136,7 +136,7 @@ test('drive -  recent files', async ({ page }) => {
   }
 });
 
-test('drive -  notifications panel', async ({ page }) => {
+test('loggedin - drive -  notifications panel', async ({ page }) => {
   try {
     await fileActions.notifications.click();
     await fileActions.notifPanel.waitFor();
@@ -152,7 +152,7 @@ test('drive -  notifications panel', async ({ page }) => {
   }
 });
 
-test('drive - filter', async ({ page }) => {
+test('loggedin - drive - filter', async ({ page }) => {
   try {
     await fileActions.mainFrame.getByText('test sheet').waitFor();
     await fileActions.mainFrame.getByText('test whiteboard').waitFor();
@@ -167,7 +167,7 @@ test('drive - filter', async ({ page }) => {
   }
 });
 
-test('drive - create link', async ({ page }) => {
+test('loggedin - drive - create link', async ({ page }) => {
   try {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanUserDrive('Cryptpad Docs');
@@ -189,7 +189,7 @@ test('drive - create link', async ({ page }) => {
   }
 });
 
-test('drive - create folder', async ({ page }) => {
+test('loggedin - drive - create folder', async ({ page }) => {
   try {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanUserDrive('My test folder');
@@ -259,7 +259,7 @@ test('drive - create folder', async ({ page }) => {
 //   }
 // });
 
-test('drive - toggle sidebar', async ({ page }) => {
+test('loggedin - drive - toggle sidebar', async ({ page }) => {
   try {
 
     await cleanUp.cleanUserDrive('my file');
@@ -284,7 +284,7 @@ test('drive - toggle sidebar', async ({ page }) => {
   }
 });
 
-test('drive - search', async ({ page }) => {
+test('loggedin - drive - search', async ({ page }) => {
   try {
     await fileActions.mainFrame.getByText('test sheet').waitFor();
     await fileActions.mainFrame.getByText('test whiteboard').waitFor();
@@ -301,7 +301,7 @@ test('drive - search', async ({ page }) => {
   }
 });
 
-test('can download drive contents', async ({ page }) => {
+test('loggedin - can download drive contents', async ({ page }) => {
 test.skip()
   try {
     const menu = fileActions.drivemenu;

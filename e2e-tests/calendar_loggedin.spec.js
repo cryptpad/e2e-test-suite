@@ -20,7 +20,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await cleanUp.cleanCalendar();
 });
 
-test('create and delete event in calendar', async ({ page }) => {
+test('loggedin - create and delete event in calendar', async ({ page }) => {
   try {
     // create event
     await fileActions.newCalendarEvent(mobile)
@@ -48,7 +48,7 @@ test('create and delete event in calendar', async ({ page }) => {
   }
 });
 
-test('create and delete repeating event in calendar', async ({ page }) => {
+test('loggedin - create and delete repeating event in calendar', async ({ page }) => {
   try {
     // create event
     await fileActions.newCalendarEvent(mobile)
@@ -87,7 +87,7 @@ test('create and delete repeating event in calendar', async ({ page }) => {
   }
 });
 
-test('create event in calendar and edit location', async ({ page }) => {
+test('loggedin - create event in calendar and edit location', async ({ page }) => {
   try {
     // create event
 
@@ -129,7 +129,7 @@ test('create event in calendar and edit location', async ({ page }) => {
   }
 });
 
-test('create event in calendar and edit time', async ({ page }) => {
+test('loggedin - create event in calendar and edit time', async ({ page }) => {
   try {
     // create event
     await fileActions.newCalendarEvent(mobile)
@@ -164,7 +164,7 @@ test('create event in calendar and edit time', async ({ page }) => {
   }
 });
 
-test('create event in calendar and edit date', async ({ page }) => {
+test('loggedin - create event in calendar and edit date', async ({ page }) => {
   try {
     // create event
     await fileActions.newCalendarEvent(mobile)
@@ -225,7 +225,7 @@ test('create event in calendar and edit date', async ({ page }) => {
   }
 });
 
-test('create new calendar and edit calendar in event', async ({ page }) => {
+test('loggedin - create new calendar and edit calendar in event', async ({ page }) => {
   try {
     let calendarCount = await fileActions.calendarSettings.count();
     if (calendarCount > 1) {

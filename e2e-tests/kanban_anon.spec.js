@@ -20,7 +20,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-test('kanban - new board', async ({ page }) => {
+test('anon - kanban -  new board', async ({ page }) => {
   try {
     await fileActions.addBoard.click();
     await expect(fileActions.newBoard).toBeVisible();
@@ -36,7 +36,7 @@ test('kanban - new board', async ({ page }) => {
   }
 });
 
-test('kanban - new list item', async ({ page }) => {
+test('anon - kanban -  new list item', async ({ page }) => {
   try {
     await fileActions.addItem.first().click();
     await fileActions.editItem.fill('example item');
@@ -55,7 +55,7 @@ test('kanban - new list item', async ({ page }) => {
   }
 });
 
-test('kanban - edit board', async ({ page }) => {
+test('anon - kanban -  edit board', async ({ page }) => {
   try {
     await fileActions.editDoneBoard.click();
     await fileActions.boardTitle.click();
@@ -69,7 +69,7 @@ test('kanban - edit board', async ({ page }) => {
   }
 });
 
-test('kanban board - anon - edit list item title', async ({ page }) => {
+test('anon - kanban board - edit list item title', async ({ page }) => {
   try {
     //here
     await fileActions.editItemTitle.first().click();
@@ -83,7 +83,7 @@ test('kanban board - anon - edit list item title', async ({ page }) => {
   }
 });
 
-test('kanban board - anon - edit list item content', async ({ page }) => {
+test('anon - kanban board - edit list item content', async ({ page }) => {
   try {
     await fileActions.editItemContent().first().click();
     await fileActions.kanbanEditor.click();
@@ -97,7 +97,7 @@ test('kanban board - anon - edit list item content', async ({ page }) => {
   }
 });
 
-test('kanban board - anon - add and filter by tag', async ({ page }) => {
+test('anon - kanban board - add and filter by tag', async ({ page }) => {
   try {
     await fileActions.editItemContent().first().click();
     await fileActions.editKanbanTags.click();
@@ -120,7 +120,7 @@ test('kanban board - anon - add and filter by tag', async ({ page }) => {
   }
 });
 
-test('kanban - view history', async ({ page }) => {
+test('anon - kanban -  view history', async ({ page }) => {
   try {
     await fileActions.editDoneBoard.waitFor()
     await fileActions.editDoneBoard.click();
@@ -139,7 +139,7 @@ test('kanban - view history', async ({ page }) => {
   }
 });
 
-test('kanban - import file', async ({ page }) => {
+test('anon - kanban -  import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
@@ -163,7 +163,7 @@ test('kanban - import file', async ({ page }) => {
   }
 });
 
-test('kanban - make a copy', async ({ page }) => {
+test('anon - kanban -  make a copy', async ({ page }) => {
   try {
     await fileActions.editDoneBoard.click();
     await fileActions.boardTitle.click();
@@ -192,7 +192,7 @@ test('kanban - make a copy', async ({ page }) => {
   }
 });
 
-test('kanban - share at a moment in history', async ({ page, context }) => {
+test('anon - kanban -  share at a moment in history', async ({ page, context }) => {
   try {
     await fileActions.addItem.first().waitFor();
     await fileActions.addItem.first().click();
@@ -220,7 +220,7 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
   }
 });
 
-// test('(screenshot) kanban - can drag boards #1372', async ({ page }) => {
+// test('(screenshot) anon - kanban -  can drag boards #1372', async ({ page }) => {
 //   test.skip();
 //   try {
 //     await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'To Do' }).hover();
@@ -231,14 +231,14 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
 
 //     await expect(page).toHaveScreenshot({ maxDiffPixels: 3500 });
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - can drag boards', status: 'passed', reason: 'Can drag Kanban boards' } })}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag boards', status: 'passed', reason: 'Can drag Kanban boards' } })}`);
 //   } catch (e) {
 //     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - can drag boards', status: 'failed', reason: 'Can\'t drag Kanban boards' } })}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag boards', status: 'failed', reason: 'Can\'t drag Kanban boards' } })}`);
 //   }
 // });
 
-// test('(screenshot) kanban - can drag items', async ({ page }) => {
+// test('(screenshot) anon - kanban -  can drag items', async ({ page }) => {
 //   test.skip();
 //   try {
 //     await fileActions.mainFrame.locator('div').filter({ hasText: /^Item 1$/ }).first().waitFor()
@@ -252,14 +252,14 @@ test('kanban - share at a moment in history', async ({ page, context }) => {
 
 //     await expect(page).toHaveScreenshot({ maxDiffPixels: 1800 });
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - can drag items', status: 'passed', reason: 'Can drag Kanban items' } })}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag items', status: 'passed', reason: 'Can drag Kanban items' } })}`);
 //   } catch (e) {
 //     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'kanban - can drag items', status: 'failed', reason: 'Can\'t drag Kanban items' } })}`);
+//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag items', status: 'failed', reason: 'Can\'t drag Kanban items' } })}`);
 //   }
 // });
 
-test('kanban - export as .json', async ({ page }) => {
+test('anon - kanban -  export as .json', async ({ page }) => {
   try {
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test kanban');

@@ -32,7 +32,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   fileActions = new FileActions(page);
   filePage = new FilePage(page, testInfo.title, isMobile);
-  const name = testInfo.title.split(' ')[0];
+  const name = testInfo.title.split(' ')[2];
   titles = fileActions.getTitle(name)
 
   cleanUp = new Cleanup(page);
@@ -47,7 +47,7 @@ const docNames = ['pad'];
 
 
 docNames.forEach(function (name) {
-  test(`${name} - create without owner`, async ({ page }) => {
+  test(`loggedin - ${name} - create without owner`, async ({ page }) => {
     try {
       
       await fileActions.creationOption('Owned document').click();
@@ -114,7 +114,7 @@ docNames.forEach(function (name) {
   //   }
   // });
 
-  test(`${name} - tag`, async ({ page }) => {
+  test(`loggedin - ${name} - tag`, async ({ page }) => {
     try {
       await fileActions.createFile.click();
       await (new StoreModal(filePage)).storeButton.click();
@@ -148,7 +148,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`${name} - edit document owners #1264`, async ({ page, browser }) => {
+  test(`loggedin - ${name} - edit document owners #1264`, async ({ page, browser }) => {
     // test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
     try {
       await fileActions.createFile.click();
@@ -208,7 +208,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`${name} - add to team drive`, async ({ page }) => {
+  test(`loggedin - ${name} - add to team drive`, async ({ page }) => {
     test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
     try {
@@ -232,7 +232,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`${name} - move to trash and empty`, async ({ page }) => {
+  test(`loggedin - ${name} - move to trash and empty`, async ({ page }) => {
     try {
       await fileActions.createFile.click();
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 });
@@ -267,7 +267,7 @@ docNames.forEach(function (name) {
   });
 
   if (name !== 'form') {
-    test(`${name} - protect with and edit password`, async ({ page, browser }) => {
+    test(`loggedin - ${name} - protect with and edit password`, async ({ page, browser }) => {
       try {
         await fileActions.creationOption('Add a password').click();
         await fileActions.creationPassword.fill('password');
@@ -331,7 +331,7 @@ docNames.forEach(function (name) {
       }
     });
 
-    test(`${name} - share with contact (to view)`, async ({ page, browser }) => {
+    test(`loggedin - ${name} - share with contact (to view)`, async ({ page, browser }) => {
       try {
         await fileActions.createFile.click();
         await fileActions.shareWithContact(/^View$/, 'test-user3');
@@ -366,7 +366,7 @@ docNames.forEach(function (name) {
       }
     });
 
-    test(`${name} - share with contact - edit #1264`, async ({ page, browser }) => {
+    test(`loggedin - ${name} - share with contact - edit #1264`, async ({ page, browser }) => {
       test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
       try {
         await fileActions.createFile.click();
@@ -415,7 +415,7 @@ docNames.forEach(function (name) {
       }
     });
 
-    test(`${name} - share with contact - view and delete`, async ({ page, browser }) => {
+    test(`loggedin - ${name} - share with contact - view and delete`, async ({ page, browser }) => {
       try {
         await fileActions.createFile.click();
         await fileActions.shareWithContact('View', 'test-user3', true);
@@ -451,7 +451,7 @@ docNames.forEach(function (name) {
       }
     });
 
-    test(`${name} - share (link) - view and delete`, async ({ page, browser }) => {
+    test(`loggedin - ${name} - share (link) - view and delete`, async ({ page, browser }) => {
       test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878')
       try {
         await fileActions.createFile.click();
@@ -486,7 +486,7 @@ docNames.forEach(function (name) {
       }
     });
 
-    test(`${name} - enable and add to access list`, async ({ page, browser }) => {
+    test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
       test.skip()
       try {
         await fileActions.createFile.click();

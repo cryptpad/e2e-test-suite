@@ -28,7 +28,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-test('kanban - save as and import template', async ({ page }) => {
+test('loggedin - kanban - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
 
@@ -62,7 +62,7 @@ test('kanban - save as and import template', async ({ page }) => {
 });
 
 if (!mobile) {
-  test('kanban - history (previous author)', async ({ page, browser }) => {
+  test('loggedin - kanban - history (previous author)', async ({ page, browser }) => {
     try {
       await fileActions.createFile.click();
 

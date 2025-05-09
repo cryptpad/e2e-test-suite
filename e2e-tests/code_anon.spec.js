@@ -37,7 +37,7 @@ test('anon - code - input text #1367', async ({ page }) => {
   }
 });
 
-test('code - file menu - history #1367', async ({ page }) => {
+test('anon - code - history #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeEditor.click();
@@ -56,7 +56,7 @@ test('code - file menu - history #1367', async ({ page }) => {
   }
 });
 
-test('code - toggle toolbar #1367', async ({ page }) => {
+test('anon - code - toggle toolbar #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await expect(fileActions.codeToolbar).toBeHidden();
@@ -70,7 +70,7 @@ test('code - toggle toolbar #1367', async ({ page }) => {
   }
 });
 
-test('code - toggle preview #1367', async ({ page }) => {
+test('anon - code - toggle preview #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.typeTestTextCode(mobile, 'test text');
@@ -87,7 +87,7 @@ test('code - toggle preview #1367', async ({ page }) => {
   }
 });
 
-test('code -  make a copy #1367', async ({ page }) => {
+test('anon - code -  make a copy #1367', async ({ page }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   try {
     await fileActions.codeEditor.click();
@@ -114,7 +114,7 @@ test('code -  make a copy #1367', async ({ page }) => {
   }
 });
 
-test('code - import file #1367', async ({ page, context }) => {
+test('anon - code - import file #1367', async ({ page, context }) => {
   test.fixme(mobile, 'mobile editor preview bug');
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
@@ -137,7 +137,7 @@ test('code - import file #1367', async ({ page, context }) => {
   }
 });
 
-test('code - export (md)', async ({ page }) => {
+test('anon - code - export (md)', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
@@ -165,7 +165,7 @@ test('code - export (md)', async ({ page }) => {
   }
 });
 
-test('code - share at a moment in history', async ({ page, browser }) => {
+test('anon - code - share at a moment in history', async ({ page, browser }) => {
   try {
     await fileActions.codeEditor.click();
     await page.keyboard.press('t');

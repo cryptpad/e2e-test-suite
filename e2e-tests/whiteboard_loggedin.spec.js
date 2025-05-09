@@ -23,7 +23,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-test('screenshot loggedin whiteboard - display history (previous author)', async ({ page, browser }) => {
+test('screenshot loggedin - whiteboard - display history (previous author)', async ({ page, browser }) => {
   try {
     await fileActions.createFile.click();
 
@@ -76,7 +76,7 @@ test('screenshot loggedin whiteboard - display history (previous author)', async
   }
 });
 
-test('screenshot loggedin whiteboard - save as and import template', async ({ page }) => {
+test('screenshot loggedin - whiteboard - save as and import template', async ({ page }) => {
   try {
     await fileActions.createFile.click();
 

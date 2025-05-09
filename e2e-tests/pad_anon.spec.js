@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await fileActions.loadFileType("pad")
 });
 
-test('pad - comment', async ({ page, context }) => {
+test('anon - pad -  comment', async ({ page, context }) => {
   try {
     await fileActions.padEditorBody.click();
 
@@ -41,7 +41,7 @@ test('pad - comment', async ({ page, context }) => {
   }
 });
 
-test('pad - create and open snapshot', async ({ page, context }) => {
+test('anon - pad -  create and open snapshot', async ({ page, context }) => {
   try {
     await fileActions.padEditorBody.click();
     await fileActions.padEditorBody.fill('TEST TEXT');
@@ -73,7 +73,7 @@ test('pad - create and open snapshot', async ({ page, context }) => {
   }
 });
 
-test('pad - history (previous version)', async ({ page, context }) => {
+test('anon - pad -  history (previous version)', async ({ page, context }) => {
   try {
     await fileActions.padEditorHTML.click();
     await fileActions.padEditorBody.fill('Test text');
@@ -89,7 +89,7 @@ test('pad - history (previous version)', async ({ page, context }) => {
   }
 });
 
-test('pad - toggle tools', async ({ page, context }) => {
+test('anon - pad -  toggle tools', async ({ page, context }) => {
   try {
 
     if (mobile) {
@@ -111,7 +111,7 @@ test('pad - toggle tools', async ({ page, context }) => {
   }
 });
 
-test('pad - import file', async ({ page }) => {
+test('anon - pad -  import file', async ({ page }) => {
   test.skip(browserstackMobile, 'browserstack mobile import incompatibility');
 
   try {
@@ -129,7 +129,7 @@ test('pad - import file', async ({ page }) => {
   }
 });
 
-test('pad - make a copy', async ({ page, context }) => {
+test('anon - pad -  make a copy', async ({ page, context }) => {
   try {
     await fileActions.padEditorBody.click();
     await fileActions.padEditorBody.fill('TEST TEXT');
@@ -152,7 +152,7 @@ test('pad - make a copy', async ({ page, context }) => {
   }
 });
 
-test('pad - export (html)', async ({ page }) => {
+test('anon - pad -  export (html)', async ({ page }) => {
   try {
     await fileActions.padEditorBody.click();
     await fileActions.padEditorBody.fill('TEST TEXT');
@@ -184,7 +184,7 @@ test('pad - export (html)', async ({ page }) => {
   }
 });
 
-test('pad - export (.doc)', async ({ page }) => {
+test('anon - pad -  export (.doc)', async ({ page }) => {
   try {
     await fileActions.padEditorBody.click();
     await fileActions.padEditorBody.fill('TEST TEXT');
@@ -220,7 +220,7 @@ test('pad - export (.doc)', async ({ page }) => {
   }
 });
 
-test('pad - export (md)', async ({ page, context }) => {
+test('anon - pad -  export (md)', async ({ page, context }) => {
   try {
     await fileActions.padEditorBody.click();
     await fileActions.padEditorBody.fill('TEST TEXT');
@@ -250,7 +250,7 @@ test('pad - export (md)', async ({ page, context }) => {
   }
 });
 
-test('pad - share at a moment in history', async ({ page, context }) => {
+test('anon - pad -  share at a moment in history', async ({ page, context }) => {
   try {
     await fileActions.padEditorBody.click();
 

@@ -13,7 +13,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test.describe('New file modal', () => {
   docTypes.forEach(function (name) {
-    test(`Explore new file modal from ${name}.`, async ({ page, context }, testInfo) => {
+    test(`anon - explore new file modal from ${name}.`, async ({ page, context }, testInfo) => {
       try {
         const fileType = name;
         // directly load a pad page and fetch its id from the url
@@ -59,7 +59,7 @@ test.describe('New file modal', () => {
 
 test.describe('Share modal', () => {
   docTypes.forEach(function (name) {
-    test(`Explore share modal from ${name}.`, async ({ page, context }, testInfo) => {
+    test(`anon - explore share modal from ${name}.`, async ({ page, context }, testInfo) => {
       try {
         const fileType = name;
         await filePage.loadFileType(fileType);
@@ -101,7 +101,7 @@ test.describe('Share modal', () => {
 
 test.describe('Chat modal', () => {
   docTypes.forEach(function (docType) {
-    test(`Explore chat modal for ${docType}`, async ({ page, context }, testInfo) => {
+    test(`anon - explore chat modal for ${docType}`, async ({ page, context }, testInfo) => {
       try {
         await filePage.loadFileType(docType);
 
@@ -136,7 +136,7 @@ test.describe('Chat modal', () => {
 
 test.describe('Change title', () => {
   docTypes.forEach(function (docType) {
-    test(`Change title for ${docType}`, async ({ page, context }, testInfo) => {
+    test(`anon - change title for ${docType}`, async ({ page, context }, testInfo) => {
       try {
         // Load a new document.
         await filePage.loadFileType(docType);
@@ -161,7 +161,7 @@ test.describe('Change title', () => {
 
 test.describe('Save/Remove ', () => {
   docTypes.forEach(function (name) {
-    test(`Save and remove for ${name}`, async ({ page, context }, testInfo) => {
+    test(`anon - save and remove for ${name}`, async ({ page, context }, testInfo) => {
       try {
         const fileType = name;
         await filePage.loadFileType(fileType);
