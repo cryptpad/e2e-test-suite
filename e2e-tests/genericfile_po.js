@@ -5,7 +5,7 @@
 const { url } = require('../fixture');
 const { FileActions } = require('./fileactions.js');
 
-exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'doc'];
 
 /**
  * A page object for a CryptPad file.
@@ -17,25 +17,17 @@ class FilePage {
     this.mobile = mobile;
     this.fileActions = new FileActions(page);
 
-    // file
+    // locators
     this.mainFrame = page.frameLocator('#sbox-iframe');
-    this.secureFrame = page.frameLocator('#sbox-secure-iframe');
-
-    this.filemenuMain = this.mainFrame.getByRole('button', { name: ' File' });
-    this.filemenuMobile = this.mainFrame.locator('.cp-toolbar-file');
     this.newFile = this.mainFrame.getByRole('menuitem', { name: 'New' }).locator('a');
     this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
-    this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
-    this.fileimport = this.mainFrame.getByRole('menuitem', { name: ' Import' }).locator('a');
-    this.filecopy = this.mainFrame.getByRole('menuitem', { name: ' Make a copy' }).locator('a');
-
-    // alertify popup
+    // this.fileMenuItem('Move to trash') = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
     this.alertMessage = this.mainFrame.locator('.alertify').locator('.msg');
     this.okButton = this.mainFrame
       .locator('.dialog')
       .getByRole('button', { name: 'OK (enter)' })
       .first();
-    this.cancelButton = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
+    this.cancelButtonEsc = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
     this.storageSuccess = this.mainFrame.locator('alertify-logs');
 
     this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
@@ -44,62 +36,10 @@ class FilePage {
     this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit > .fa');
     this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
     this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
-
-    this.closeButtonSecure = this.secureFrame.getByRole('button', { name: 'Close' });
-    this.closeButton = this.mainFrame.getByRole('button', { name: 'Close' });
-    this.okButtonSecure = this.secureFrame.getByRole('button', { name: 'OK (enter)' });
-    this.okButton = this.mainFrame.frameLocator('#sbox-iframe').getByRole('button', { name: 'OK (enter)' });
-    
-    this.historyPrev = this.mainFrame.locator('.cp-toolbar-history-previous').last();
-    this.toolbar = this.mainFrame.getByRole('button', { name: 'Tools' });
-    this.shareLink = this.mainFrame.getByRole('button', { name: ' Share' });
-    this.shareSecureLink = this.secureFrame.getByRole('button', { name: ' Share' });
-    this.shareCopyLink = this.secureFrame.getByRole('button', { name: ' Copy link' });
-    this.filesaved = this.mainFrame.getByText('Saved').nth(0);
-    this.deletebutton = this.mainFrame.getByRole('button', { name: 'Delete' });
-    // this.trash = mainFrame.getByRole('listitem').filter({ hasText: 'Move to trash' });
-    this.trash = this.mainFrame.getByText('Move to trash')
-
-    this.destroy = this.mainFrame.getByRole('listitem').filter({ hasText: 'Destroy' });
-    this.linkTab = this.secureFrame.locator('#cp-tab-link');
-    this.linkTabMobile = this.secureFrame.getByLabel('Link');
-    this.createFile = this.mainFrame.getByRole('button', { name: 'Create' });
-
-    // calendar
-    this.oneTimeLocal = this.mainFrame.getByRole('button', { name: 'One time ' })
-    this.oneTime = this.mainFrame.getByRole('button', { name: ' One time' })
-
-    // code
-    this.codeeditor = page.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll');
-    this.codepreview = page.frameLocator('#sbox-iframe').locator('#cp-app-code-preview-content');
-
-    // form
-    this.copyPublicLink = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Copy public link' });
-
-    // pad
-    this.padeditor = page.frameLocator('#sbox-iframe').frameLocator('iframe[title="Editor\\, editor1"]');
-
-    // markdown
-    this.slideeditor = page.frameLocator('#sbox-iframe').locator('.CodeMirror-code');
-
-    // login flow
-    this.login = page.locator('.login');
-    this.register = page.locator("[id='register']");
-    this.loginLink = page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Log in' });
-    this.registerLink = page.frameLocator('#sbox-iframe').getByRole('link', { name: 'Sign up' });
-
-    // drive
-    this.drivemenu = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-user-dropdown.cp-dropdown-container');
-    this.driveadd = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder span').first();
-    this.notifications = page.frameLocator('#sbox-iframe').getByLabel('Notifications');
-    this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder');
-    this.newFile = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: /^New$/ });
-    this.settings = page.frameLocator('#sbox-iframe').getByText('Settings');
-    this.driveSideMenu = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-tree');
   }
 
   filemenu () {
-    return this.mobile ? this.filemenuMobile : this.filemenuMain;
+    return this.mobile ? this.fileActions.filemenuMobile : this.fileActions.filemenu;
   }
 
   // The last part of the URL gives the ID of a CryptPad file.
@@ -111,7 +51,7 @@ class FilePage {
     await this.page.goto(`${url}/${fileType}/`);
     // loading a new file takes longer than the default timeout for expect calls,
     // so we explicitly wait for it.
-    await this.fileActions.filesaved.waitFor({timeout: 90000})
+    await this.fileActions.fileSaved.waitFor({state: "visible"})
   }
 
   async newFileClick () {
@@ -191,19 +131,33 @@ class NewFileModal {
   async createFileOfType (context, fileType) {
     // For new tabs, see https://playwright.dev/docs/pages#handling-new-pages
     const pagePromise = context.waitForEvent('page');
+    await this.iconLocator(fileType).waitFor();
     await this.iconLocator(fileType).click();
     const nextPage = await pagePromise;
     return new FilePage(nextPage, this.filePage.testName, this.filePage.mobile);
   }
 
   iconLocator (fileType) {
-    return this
+    if (fileType !== 'doc') {
+      return this
       .filePage
       .mainFrame
       .getByText(
         this.iconName(fileType),
         { exact: true }
       );
+
+    } else {
+      return this
+      .filePage
+      .mainFrame
+      .getByText(
+        this.iconName('document'),
+        { exact: true }
+      );
+
+    }
+    
   }
 
   iconName (fileType) {

@@ -1,6 +1,10 @@
 require('dotenv').config();
 const cp = require('child_process');
 const clientPlaywrightVersion = cp
+<<<<<<< HEAD
+=======
+  // .execSync('npx playwright --version')
+>>>>>>> main
   .toString()
   .trim()
   .split(' ')[1];
