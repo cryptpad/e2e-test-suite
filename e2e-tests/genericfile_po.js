@@ -5,7 +5,7 @@
 const { url } = require('../fixture');
 const { FileActions } = require('./fileactions.js');
 
-exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'doc'];
 
 /**
  * A page object for a CryptPad file.
@@ -138,13 +138,26 @@ class NewFileModal {
   }
 
   iconLocator (fileType) {
-    return this
+    if (fileType !== 'doc') {
+      return this
       .filePage
       .mainFrame
       .getByText(
         this.iconName(fileType),
         { exact: true }
       );
+
+    } else {
+      return this
+      .filePage
+      .mainFrame
+      .getByText(
+        this.iconName('document'),
+        { exact: true }
+      );
+
+    }
+    
   }
 
   iconName (fileType) {
