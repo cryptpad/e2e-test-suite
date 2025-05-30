@@ -30,7 +30,6 @@ export class FileActions {
     // drive locators
         this.passwordPlaceholderSettings = this.mainFrame.getByPlaceholder('Password', { exact: true })
 
-<<<<<<< HEAD
     // file actions
     this.filemenu = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' });
     this.filemenuMobile = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file');
@@ -45,8 +44,6 @@ export class FileActions {
     this.deletebutton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' });
     // this.trash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' });
     this.trash = page.frameLocator('#sbox-iframe').getByText('Move to trash')
-=======
->>>>>>> main
 
     this.loginLinkDrive = this.mainFrame.getByRole('link', { name: 'Log in' });
     this.registerLinkDrive = this.mainFrame.getByRole('link', { name: 'Sign up' });
@@ -361,14 +358,12 @@ export class FileActions {
     
   }
 
-<<<<<<< HEAD
   async moveToTrash() {
-      await this.trash.click()  
-=======
+      await this.trash.click()   
+  }
   newDriveFile (file) {
     return this.mainFrame.getByRole('listitem').filter({ hasText: file }).locator('span').first()
   
->>>>>>> main
   }
   
 
@@ -593,8 +588,6 @@ export class FileActions {
   
   }
 
-<<<<<<< HEAD
-=======
   async clearFormQuestions() {
     await this.deleteButton.first().waitFor();
     await this.deleteButton.first().click();
@@ -633,7 +626,6 @@ export class FileActions {
     return this.secureFrame.locator('span').filter({ hasText: templateName }).nth(1)
   
   }
->>>>>>> main
 
   async clickTags (local) {
     await this.mainFrame.getByRole('menuitem', { name: ' Tags' }).locator('a').click();
