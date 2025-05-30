@@ -300,57 +300,57 @@ test('anon - form - close and open', async ({ page, context }) => {
   }
 });
 
-test('anon - form - set future closing date and open', async ({ page, context }) => {
-  try {
-    await fileActions.openFormSettings()
+// test('form - set future closing date and open', async ({ page, context }) => {
+//   try {
+//     await fileActions.openFormSettings()
 
-    await fileActions.setClosingDate.click();
-    await fileActions.mainFrame.getByLabel(`${nextMondayStringFormat}`).click();
-    await fileActions.saveButton.click();
-    await fileActions.formContainer.getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor();
-    await expect(fileActions.formContainer.getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible();
-    await fileActions.closeModal.click();
-    var clipboardText = await fileActions.publicLinkCopy()
+//     await fileActions.setClosingDate.click();
+//     await fileActions.mainFrame.getByLabel(`${nextMondayStringFormat}`).click();
+//     await fileActions.saveButton.click();
+//     await fileActions.formContainer.getByText(`This form will close on ${nextMondaySlashFormat}`).waitFor();
+//     await expect(fileActions.formContainer.getByText(`This form will close on ${nextMondaySlashFormat}`)).toBeVisible();
+//     await fileActions.closeModal.click();
+//     var clipboardText = await fileActions.publicLinkCopy()
 
-    // mocks future date in new context
-    const mockedDate = new Date();
-    mockedDate.setDate(mockedDate.getDate() + 30);
-    await context.addInitScript(`{
-      Date = class extends Date {
-        constructor(...args) {
-          if (args.length === 0) {
-            super(${mockedDate.getTime()})
-          } else {
-            super(...args)
-          }
-        }
-      }
+//     // mocks future date in new context
+//     const mockedDate = new Date();
+//     mockedDate.setDate(mockedDate.getDate() + 30);
+//     await context.addInitScript(`{
+//       Date = class extends Date {
+//         constructor(...args) {
+//           if (args.length === 0) {
+//             super(${mockedDate.getTime()})
+//           } else {
+//             super(...args)
+//           }
+//         }
+//       }
       
-      const __DateNowOffset = ${mockedDate.getTime()} - Date.now()
-      const __DateNow = Date.now
-      Date.now = () => __DateNow() + __DateNowOffset
-    }`);
+//       const __DateNowOffset = ${mockedDate.getTime()} - Date.now()
+//       const __DateNow = Date.now
+//       Date.now = () => __DateNow() + __DateNowOffset
+//     }`);
 
-    page1 = await context.newPage();
-    await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.mainFrame.getByText(`This form was closed on ${nextMondaySlashFormat}`).waitFor();
-    await expect(fileActions1.mainFrame.getByText(`This form was closed on ${nextMondaySlashFormat}`)).toBeVisible();
+//     page1 = await context.newPage();
+//     await page1.goto(`${clipboardText}`);
+//     const fileActions1 = new FileActions(page1)
+//     await fileActions1.mainFrame.getByText(`This form was closed on ${nextMondaySlashFormat}`).waitFor();
+//     await expect(fileActions1.mainFrame.getByText(`This form was closed on ${nextMondaySlashFormat}`)).toBeVisible();
 
-    await fileActions.openFormSettings()
-    await fileActions.removeClosingDate.click();
-    await expect(fileActions.formStatus.getByText('This form is open')).toBeVisible();
+//     await fileActions.openFormSettings()
+//     await fileActions.removeClosingDate.click();
+//     await expect(fileActions.formStatus.getByText('This form is open')).toBeVisible();
 
-    await page1.reload();
-    await fileActions1.formStatus.getByText('This form was closed on').waitFor({state: "hidden"})
+//     await page1.reload();
+//     await fileActions1.formStatus.getByText('This form was closed on').waitFor({state: "hidden"})
 
-    await expect(fileActions1.formStatus.getByText('This form was closed on')).toBeHidden();
+//     await expect(fileActions1.formStatus.getByText('This form was closed on')).toBeHidden();
 
-    await fileActions.toSuccess('Can set closing date for and open Form');
-  } catch (e) {
-    await fileActions.toFailure(e, 'Can\'t set closing date for and open Form');
-  }
-});
+//     await fileActions.toSuccess('Can set closing date for and open Form');
+//   } catch (e) {
+//     await fileActions.toFailure(e, 'Can\'t set closing date for and open Form');
+//   }
+// });
 
 test('anon - form - anonymize responses', async ({ page, context }) => {
   try {

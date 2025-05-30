@@ -30,6 +30,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/drive`);
 });
 
+// const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
 const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
 
 
@@ -85,7 +86,7 @@ test('loggedin - drive -  upload file', async ({ page }) => {
     await fileActions.newFile.locator('span').first().click();
     await fileActions.driveAddMenuItem('Upload files').click();
     const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles('testdocuments/myfile.doc');
+    await fileChooser.setFiles('e2e-test-suite/testdocuments/myfile.doc');
     await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
     if (await fileActions.mainFrame.getByText('You already have an upload in progress. Cancel it and upload your new file?').count() === 1) {

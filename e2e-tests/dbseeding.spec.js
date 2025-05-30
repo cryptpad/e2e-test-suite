@@ -547,7 +547,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const fileChooserPromise = page.waitForEvent('filechooser');
     await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles('testdocuments/teamavatar-empty.png');
+    await fileChooser.setFiles('e2e-test-suite/testdocuments/teamavatar-empty.png');
     await fileActions.okButton.click();
     await page.waitForTimeout(5000);
 

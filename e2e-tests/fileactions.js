@@ -31,6 +31,20 @@ export class FileActions {
     // drive locators
         this.passwordPlaceholderSettings = this.mainFrame.getByPlaceholder('Password', { exact: true })
 
+    // file actions
+    this.filemenu = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' });
+    this.filemenuMobile = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file');
+    this.fileimport = page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import' }).locator('a');
+    this.filecopy = page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a');
+    this.historyPrev = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last();
+    this.toolbar = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Tools' });
+    this.shareLink = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
+    this.shareSecureLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
+    this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
+    this.filesaved = page.frameLocator('#sbox-iframe').getByText('Saved').nth(0);
+    this.deletebutton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' });
+    // this.trash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' });
+    this.trash = page.frameLocator('#sbox-iframe').getByText('Move to trash')
 
     this.loginLinkDrive = this.mainFrame.getByRole('link', { name: 'Log in' });
     this.registerLinkDrive = this.mainFrame.getByRole('link', { name: 'Sign up' });
@@ -354,11 +368,9 @@ export class FileActions {
     
   }
 
-  editItemContent () {
-    return this.mainFrame.getByRole('button', { name: 'Edit this card' }).or(this.mainFrame.getByAltText('Edit this card'))
-  
+  async moveToTrash() {
+      await this.trash.click()   
   }
-
   newDriveFile (file) {
     return this.mainFrame.locator('#cp-app-drive-new-ghost-dialog').getByText(file)
     return this.mainFrame.getByRole('listitem').filter({ hasText: file }).locator('span').first()
@@ -948,6 +960,19 @@ class NewFileModal {
         return 'Markdown slides';
       default:
         return `${fileType.charAt(0).toUpperCase() + fileType.slice(1)}`;
+    }
+  }
+
+  async accessTeam (mobile, local) {
+    await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').waitFor();
+    await this.page.waitForTimeout(2000);
+    await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+    console.log(await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible())
+    if (!await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible()){
+      while (!await this.page.frameLocator('#sbox-iframe').locator('div').filter({ hasText: /^Members$/ }).locator('span').first().isVisible()) {
+        await this.page.waitForTimeout(2000);
+        await this.page.frameLocator('#sbox-iframe').locator('#cp-sidebarlayout-rightside').getByText('test team').click();
+      }
     }
   }
 }

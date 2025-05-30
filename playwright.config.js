@@ -143,6 +143,29 @@ module.exports = defineConfig({
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         mobile: true
       }
+    }, {
+      name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
+      use: {
+        hasTouch: true,
+        browserName: 'chromium',
+        channel: 'chrome',
+        locale: 'en-GB',
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+        mobile: true,
+        acceptDownloads: true
+
+      }
+    }, {
+      name: 'chrome@Galaxy S9+',
+      use: {
+        ...devices['Galaxy S9+'],
+        hasTouch: true,
+        browserName: 'chromium',
+        channel: 'chrome',
+        locale: 'en-GB',
+        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+        mobile: true
+      }
     }
   ]
 });

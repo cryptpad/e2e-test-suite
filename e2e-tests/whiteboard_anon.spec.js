@@ -372,7 +372,7 @@ test('screenshot anon - whiteboard - share history at specific moment in time (l
 //     const fileChooserPromise = page.waitForEvent('filechooser');
 //     await page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Insert' }).click();
 //     const fileChooser = await fileChooserPromise;
-//     await fileChooser.setFiles('testdocuments/teamavatar-empty.png');
+//     await fileChooser.setFiles('e2e-test-suite/testdocuments/teamavatar-empty.png');
 
 //     await expect(page).toHaveScreenshot({ maxDiffPixels: 1500 });
 
