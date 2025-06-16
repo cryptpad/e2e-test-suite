@@ -16,7 +16,7 @@ jobs:
         shell: bash
       - name: Seed database
         working-directory: cryptpad
-        run: unzip -o database_seed.zip
+        run: unzip -o database_seed_2025.6.zip
         if: always()
       # - name: Clone CryptPad repository
       #   env: 
