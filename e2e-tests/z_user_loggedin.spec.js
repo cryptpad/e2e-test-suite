@@ -104,6 +104,11 @@ test('loggedin - add and remove other user as contact', async ({ page, browser }
     await fileActions1.shareProfileButton.click();
     const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
     
+    await page.goto(`${url}/drive`)
+    await fileActions.notifications.click();
+    if (await fileActions.contactDeclinedNotif('test-user2').isVisible()) {
+      await fileActions.dismissNotification.click()
+    }
     await page.goto(`${testuser2ProfileLink}`);
     await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor()
     // user 1: send user request to user 2

@@ -422,6 +422,10 @@ export class FileActions {
     return this.mainFrame.getByText(`${user} sent you a contact request`)
   }
 
+  contactDeclinedNotif (user) {
+    return this.mainFrame.getByText(`${user} declined your contact request`)
+  }
+
   memberRemovalNotification (member) {
     return this.mainFrame.getByText(`${member} will know that you removed them from the team. Are you sure?`)
   
