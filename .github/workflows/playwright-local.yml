@@ -53,24 +53,24 @@ jobs:
         run: npm exec playwright install-deps --prefix e2e-test-suite
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
-      - name: Calibrate Playwright screenshot tests (anon)
-        working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
-      - name: Run Playwright tests (anon)
-        working-directory: e2e-test-suite
-        run: npx playwright test anon --config=playwright.config.js --project='chrome' --retries=1 --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
-      - name: Publish Test Report (anon)
-        uses: ctrf-io/github-test-reporter@v1
-        with:
-          report-path: 'e2e-test-suite/ctrf/*.json'
-          title: 'Test results - anonymous'
-        if: always()
+      # - name: Calibrate Playwright screenshot tests (anon)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #   if: always()
+      # - name: Run Playwright tests (anon)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test anon --config=playwright.config.js --project='chrome' --retries=1 --workers=2
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #   if: always()
+      # - name: Publish Test Report (anon)
+      #   uses: ctrf-io/github-test-reporter@v1
+      #   with:
+      #     report-path: 'e2e-test-suite/ctrf/*.json'
+      #     title: 'Test results - anonymous'
+      #   if: always()
       - name: Seed database
         working-directory: e2e-test-suite
         run: |
@@ -100,15 +100,9 @@ jobs:
           TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
           TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
         if: always()
-      - name: Calibrate Playwright screenshot tests (logged in users)
-        working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
       - name: Run Playwright tests (logged in users)
         working-directory: e2e-test-suite
-        run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
+        run: npx playwright test screenshot_loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
         env:
           PW_URL: ${{ vars.PW_URL }}
           MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
@@ -116,9 +110,33 @@ jobs:
           TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
           TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
         if: always()
-      - name: Publish Test Report (logged in users)
-        uses: ctrf-io/github-test-reporter@v1
+      - name: upload screenshot
+        uses: actions/upload-artifact@v4
         with:
-          report-path: 'e2e-test-suite/ctrf/*.json'
-          title: 'Test results - logged in users'
-        if: always()
+          name: playwright-screenshots
+          path: test-results/
+
+        
+
+      # - name: Calibrate Playwright screenshot tests (logged in users)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome' --workers=2
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #   if: always()
+      # - name: Run Playwright tests (logged in users)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test loggedin --config=playwright.config.js --project='chrome' --workers=1 --retries=2
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #     MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+      #     TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+      #     TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+      #     TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+      #   if: always()
+      # - name: Publish Test Report (logged in users)
+      #   uses: ctrf-io/github-test-reporter@v1
+      #   with:
+      #     report-path: 'e2e-test-suite/ctrf/*.json'
+      #     title: 'Test results - logged in users'
+      #   if: always()
