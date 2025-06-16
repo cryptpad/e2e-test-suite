@@ -71,6 +71,12 @@ You can specify another OS name or run the file using BrowserStack as desired (s
 
 3. To save the authentication information for test accounts:
 
+* create the auth folder:
+
+```bash
+mkdir auth
+```
+
 * change directory to auth folder and create files to store authentication information for each test account using:
 
 ```bash
@@ -93,7 +99,7 @@ npm run clear
 in the same tab to unseed the database. 
 
 
-### Browsertack authentication and integration
+### Browserstack authentication and integration
 
 To run the test suite using BrowserStack, add username and access key to the `.env` file.
 

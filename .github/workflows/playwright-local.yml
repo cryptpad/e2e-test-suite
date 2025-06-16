@@ -26,7 +26,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.3.1-rc
+          git checkout staging
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -43,7 +43,7 @@ jobs:
       - name: Clone test repository
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }}
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git" -b local_testing_branch
+        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/e2e-test-suite.git" 
         shell: bash
       - name: Install dependencies
         run: npm ci --prefix e2e-test-suite

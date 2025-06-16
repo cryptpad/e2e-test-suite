@@ -87,6 +87,7 @@ test.describe('Share modal', () => {
         const openedFileId = openedLinkPage.fileId();
         expect(openedFileId).not.toBe(originalId);
         if (fileType !== 'form') {
+          await openedLinkPage.filemenu().waitFor()
           await expect(openedLinkPage.filemenu()).toBeVisible();
           await expect(filePage.fileName).toContainText('(Read only)');
         }

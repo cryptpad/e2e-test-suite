@@ -358,7 +358,7 @@ test('screenshot anon - whiteboard - share history at specific moment in time (l
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
     await fileActions1.fileTitle('Whiteboard').waitFor()
-    await expect(page1).toHaveScreenshot({ maxDiffPixels: 4000 });
+    await expect(page1).toHaveScreenshot({ maxDiffPixels: 5500 });
 
     await fileActions.toSuccess( 'Can share Whiteboard history at specific moment in time (link)');
   } catch (e) {

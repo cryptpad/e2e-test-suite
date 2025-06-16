@@ -103,7 +103,7 @@ test('loggedin - add and remove other user as contact', async ({ page, browser }
     await fileActions1.shareProfileButton.waitFor()
     await fileActions1.shareProfileButton.click();
     const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
-
+    
     await page.goto(`${testuser2ProfileLink}`);
     await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor()
     // user 1: send user request to user 2
@@ -551,9 +551,9 @@ test('loggedin - can change password', async ({ page, browser }) => {
     await fileActions1.currentPassword.click();
     await fileActions1.currentPassword.fill(mainAccountPassword);
     await fileActions1.newPassword.click();
-    await fileActions1.newPassword.fill('password');
+    await fileActions1.newPassword.fill('newpassword');
     await fileActions1.confirmPassword.click();
-    await fileActions1.confirmPassword.fill('password');
+    await fileActions1.confirmPassword.fill('newpassword');
     await page1.waitForTimeout(5000);
     await fileActions1.changePassword.click();
     await page1.waitForTimeout(3000);
@@ -567,7 +567,7 @@ test('loggedin - can change password', async ({ page, browser }) => {
 
     // login using new password
     const userActions1 = new UserActions(page1);
-    await userActions1.login('test-user', 'password');
+    await userActions1.login('test-user', 'newpassword');
     await page1.waitForTimeout(5000);
     await page1.reload();
     await fileActions1.drivemenu.waitFor()
@@ -584,7 +584,7 @@ test('loggedin - can change password', async ({ page, browser }) => {
     // change password back
     await fileActions2.securityPrivacy.click();
     await fileActions2.currentPassword.click();
-    await fileActions2.currentPassword.fill('password');
+    await fileActions2.currentPassword.fill('newpassword');
     await fileActions2.newPassword.click();
     await fileActions2.newPassword.fill(mainAccountPassword);
     await fileActions2.confirmPassword.click();

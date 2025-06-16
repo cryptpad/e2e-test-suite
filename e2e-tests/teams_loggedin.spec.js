@@ -119,7 +119,7 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
     const fileChooserPromise = page.waitForEvent('filechooser');
     await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles('e2e-test-suite/testdocuments/teamavatar.png');
+    await fileChooser.setFiles('testdocuments/teamavatar.png');
     await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
     await page.waitForTimeout(5000);
@@ -139,7 +139,7 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
     const fileChooserPromise1 = page.waitForEvent('filechooser');
     await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
     const fileChooser1 = await fileChooserPromise1;
-    await fileChooser1.setFiles('e2e-test-suite/testdocuments/teamavatar-empty.png');
+    await fileChooser1.setFiles('testdocuments/teamavatar-empty.png');
     await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
     await page.waitForTimeout(5000);

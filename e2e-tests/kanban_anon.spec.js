@@ -42,8 +42,8 @@ test('anon - kanban -  new list item', async ({ page }) => {
     await fileActions.editItem.fill('example item');
     await fileActions.editItem.press('Enter');
     await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
-    await fileActions.editItemContent().first().waitFor()
-    await fileActions.editItemContent().first().click({force: true});
+    await fileActions.editItemContent.first().waitFor()
+    await fileActions.editItemContent.first().click({force: true});
     await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
 
@@ -85,7 +85,7 @@ test('anon - kanban board - edit list item title', async ({ page }) => {
 
 test('anon - kanban board - edit list item content', async ({ page }) => {
   try {
-    await fileActions.editItemContent().first().click();
+    await fileActions.editItemContent.first().click();
     await fileActions.kanbanEditor.click();
     await fileActions.kanbanEditor.type('new item content');
     await fileActions.closeButton.click();
@@ -99,7 +99,7 @@ test('anon - kanban board - edit list item content', async ({ page }) => {
 
 test('anon - kanban board - add and filter by tag', async ({ page }) => {
   try {
-    await fileActions.editItemContent().first().click();
+    await fileActions.editItemContent.first().click();
     await fileActions.editKanbanTags.click();
     await fileActions.editKanbanTags.type('newtag');
     await fileActions.addButton.click();
@@ -148,7 +148,7 @@ test('anon - kanban -  import file', async ({ page }) => {
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
-    await fileChooser.setFiles('e2e-test-suite/testdocuments/testkanban.json');
+    await fileChooser.setFiles('testdocuments/testkanban.json');
 
     await expect(fileActions.mainFrame.getByText('board 1')).toBeVisible();
     await expect(fileActions.mainFrame.getByText('board two')).toBeVisible();
@@ -169,7 +169,7 @@ test('anon - kanban -  make a copy', async ({ page }) => {
     await fileActions.boardTitle.click();
     await fileActions.boardTitle.fill('new title');
     await fileActions.boardTitle.press('Enter');
-    await fileActions.editItemContent().first().click();
+    await fileActions.editItemContent.first().click();
     await fileActions.kanbanEditor.click();
     await fileActions.kanbanEditor.type('new item content');
     await fileActions.closeButton.click();

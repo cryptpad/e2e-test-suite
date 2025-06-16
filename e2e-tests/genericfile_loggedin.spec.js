@@ -42,8 +42,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-// const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
-const docNames = ['pad'];
+const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'doc', 'presentation'];
+// const docNames = ['doc'];
 
 
 docNames.forEach(function (name) {
@@ -437,6 +437,7 @@ docNames.forEach(function (name) {
         await fileActions2.fileTitle(name).waitFor()
         await expect(fileActions2.fileTitle(name)).toBeVisible();
         await expect(fileActions2.readOnly).toBeVisible();
+        await page2.waitForTimeout(1000)
         await page2.reload();
         await fileActions2.destroyedByOwner.waitFor();
         await expect(fileActions2.destroyedByOwner).toBeVisible();
@@ -475,6 +476,7 @@ docNames.forEach(function (name) {
         await fileActions1.viewAndDelete.click();
         await fileActions1.fileTitle(name).waitFor()
         await expect(fileActions1.fileTitle(name)).toBeVisible();
+        await page1.waitForTimeout(1000)
 
         await page1.reload();
         await fileActions1.destroyedByOwner.waitFor();

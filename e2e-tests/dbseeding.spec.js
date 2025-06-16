@@ -211,7 +211,7 @@ test('create test files in test-user drive', async ({ page }) => {
     await userActions.login('test-user', mainAccountPassword);
 
     cleanUp = new Cleanup(page);
-    const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+    const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'document'];
     for (const i in docNames) {
       const name = `test ${docNames[i]}`;
       await cleanUp.cleanTeamDrive(name);
@@ -324,6 +324,32 @@ test('create test files in test-user drive', async ({ page }) => {
     await fileActions.saveTitle.click();
     await expect(fileActions.mainFrame.getByText('test diagram')).toBeVisible();
 
+    await page.goto(`${url}/doc/`);
+    await fileActions.createFile.waitFor()
+    await fileActions.createFile.click();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('document')).toBeVisible();
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('document').fill('test document');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test document')).toBeVisible();
+
+    await page.goto(`${url}/presentation/`);
+    await fileActions.createFile.waitFor()
+    await fileActions.createFile.click();
+    await (new StoreModal(fileActions)).storeButton.waitFor()
+    await (new StoreModal(fileActions)).storeButton.click();
+    await expect(fileActions.fileTitle('presentation')).toBeVisible();
+    await fileActions.titleEditBox.waitFor()
+    await fileActions.titleEditBox.click();
+    await fileActions.fileTitleEdit('presentation').fill('test presentation');
+    await fileActions.saveTitle.waitFor()
+    await fileActions.saveTitle.click();
+    await expect(fileActions.mainFrame.getByText('test presentation')).toBeVisible();
+
     await page.goto(`${url}/drive`);
     await fileActions.mainFrame.getByText('test diagram').waitFor()
     await expect(fileActions.driveContentFolder.getByText('test diagram')).toBeVisible();
@@ -334,6 +360,8 @@ test('create test files in test-user drive', async ({ page }) => {
     await expect(fileActions.driveContentFolder.getByText('test code')).toBeVisible();
     await expect(fileActions.driveContentFolder.getByText('test slide')).toBeVisible();
     await expect(fileActions.driveContentFolder.getByText('test kanban')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test document')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test presentation')).toBeVisible();
 
     await fileActions.toSuccess('Can create test files in test-user drive');
   } catch (e) {
@@ -353,13 +381,12 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions.teamSlot.getByText('test team').click();
 
     cleanUp = new Cleanup(page);
-    const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram'];
+    const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'document'];
     for (const i in docNames) {
       const name = `test ${docNames[i]}`;
       await cleanUp.cleanTeamDrive(name);
     }
 
-    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page2Promise = page.waitForEvent('popup');
     await fileActions.newDriveFile('Rich text').click()
@@ -367,7 +394,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const fileActions2 = new FileActions(page2);
 
     await fileActions2.createFile.click();
-    await page2.waitForTimeout(5000)
+    await fileActions2.fileSaved.waitFor()
     if (await fileActions2.okButton.isVisible()) {
       await fileActions2.okButton.click();
     
@@ -380,14 +407,13 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions2.saveTitle.click({force: true});
     await expect(fileActions2.mainFrame.getByText('test pad')).toBeVisible();
     await page2.close();
-    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page3Promise = page.waitForEvent('popup');
     await fileActions.newDriveFile('Sheet').click();
     const page3 = await page3Promise;
     const fileActions3 = new FileActions(page3);
     await fileActions3.createFile.click();
-    await page3.waitForTimeout(5000)
+    await fileActions3.fileSaved.waitFor()
     if (await fileActions3.okButton.isVisible()) {
       await fileActions3.okButton.click();
     
@@ -400,14 +426,13 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions3.saveTitle.click({force: true});
     await expect(fileActions3.mainFrame.getByText('test sheet')).toBeVisible();
     await page3.close();
-    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page4Promise = page.waitForEvent('popup');
     await fileActions.newDriveFile('Code').click();
     const page4 = await page4Promise;
     const fileActions4 = new FileActions(page4);
     await fileActions4.createFile.click();
-    await page4.waitForTimeout(5000)
+    await fileActions4.fileSaved.waitFor()
     if (await fileActions4.okButton.isVisible()) {
       await fileActions4.okButton.click();
     
@@ -420,7 +445,6 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions4.saveTitle.click({force: true});
     await expect(fileActions4.mainFrame.getByText('test code')).toBeVisible();
     await page4.close();
-    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page5Promise = page.waitForEvent('popup');
     
@@ -428,7 +452,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page5 = await page5Promise;
     const fileActions5 = new FileActions(page5);
     await fileActions5.createFile.click();
-    await page5.waitForTimeout(5000)
+    await fileActions5.fileSaved.waitFor()
     if (await fileActions5.okButton.isVisible()) {
       await fileActions5.okButton.click();
     
@@ -441,7 +465,6 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions5.saveTitle.click({force: true});
     await expect(fileActions5.mainFrame.getByText('test slide')).toBeVisible();
     await page5.close();
-    console.log('1')
     await page.reload();
     await fileActions.teamSlot.getByText('test team').waitFor();
     await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
@@ -452,7 +475,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page6 = await page6Promise;
     const fileActions6 = new FileActions(page6);
     await fileActions6.createFile.click();
-    await page6.waitForTimeout(5000)
+    await fileActions6.fileSaved.waitFor()
     if (await fileActions6.okButton.isVisible()) {
       await fileActions6.okButton.click();
     
@@ -465,7 +488,6 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions6.saveTitle.click({force: true});
     await expect(fileActions6.mainFrame.getByText('test form')).toBeVisible();
     await page6.close();
-    console.log('1')
     await page.reload();
     await fileActions.teamSlot.getByText('test team').waitFor();
     await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
@@ -476,7 +498,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page7 = await page7Promise;
     const fileActions7 = new FileActions(page7);
     await fileActions7.createFile.click();
-    await page7.waitForTimeout(5000)
+    await fileActions7.fileSaved.waitFor()
     if (await fileActions7.okButton.isVisible()) {
       await fileActions7.okButton.click();
     
@@ -489,7 +511,6 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions7.saveTitle.click({force: true});
     await expect(fileActions7.mainFrame.getByText('test whiteboard')).toBeVisible();
     await page7.close();
-    console.log('1')
     await page.reload();
     await fileActions.teamSlot.getByText('test team').waitFor();
     await fileActions.teamSlot.getByText('test team').click({ timeout: 3000 });
@@ -500,7 +521,7 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     const page8 = await page8Promise;
     const fileActions8 = new FileActions(page8);
     await fileActions8.createFile.click();
-    await page8.waitForTimeout(5000)
+    await fileActions8.fileSaved.waitFor()
     if (await fileActions8.okButton.isVisible()) {
       await fileActions8.okButton.click();
     
@@ -513,14 +534,13 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions8.saveTitle.click({force: true});
     await expect(fileActions8.mainFrame.getByText('test diagram')).toBeVisible();
     await page8.close();
-    console.log('1')
     await fileActions.driveContentFolder.getByText('New').click();
     const page9Promise = page.waitForEvent('popup');
     await fileActions.newDriveFile('Kanban').click();
     const page9 = await page9Promise;
     const fileActions9 = new FileActions(page9);
     await fileActions9.createFile.click();
-    await page9.waitForTimeout(5000)
+    await fileActions9.fileSaved.waitFor()
     if (await fileActions9.okButton.isVisible()) {
       await fileActions9.okButton.click();
     
@@ -532,6 +552,44 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await fileActions9.saveTitle.waitFor();
     await fileActions9.saveTitle.click({force: true});
     await expect(fileActions9.mainFrame.getByText('test kanban')).toBeVisible();
+    await page9.close();
+    await fileActions.driveContentFolder.getByText('New').click();
+    const page10Promise = page.waitForEvent('popup');
+    await fileActions.newDriveFile('Presentation').click();
+    const page10 = await page10Promise;
+    const fileActions10 = new FileActions(page10);
+    await fileActions10.createFile.click();
+    await fileActions10.fileSaved.waitFor()
+    if (await fileActions10.okButton.isVisible()) {
+      await fileActions10.okButton.click();
+    
+    }
+    await expect(fileActions10.fileTitle('presentation')).toBeVisible();
+    await fileActions10.fileSaved.waitFor();
+    await fileActions10.titleEditBox.click();
+    await fileActions10.fileTitleEdit('presentation').fill('test presentation');
+    await fileActions10.saveTitle.waitFor();
+    await fileActions10.saveTitle.click({force: true});
+    await expect(fileActions10.mainFrame.getByText('test presentation')).toBeVisible();
+    await page10.close();
+    await fileActions.driveContentFolder.getByText('New').click();
+    const page11Promise = page.waitForEvent('popup');
+    await fileActions.newDriveFile('Document').click();
+    const page11 = await page11Promise;
+    const fileActions11 = new FileActions(page11);
+    await fileActions11.createFile.click();
+    await fileActions11.fileSaved.waitFor()
+    if (await fileActions11.okButton.isVisible()) {
+      await fileActions11.okButton.click();
+    
+    }
+    await expect(fileActions11.fileTitle('document')).toBeVisible();
+    await fileActions11.fileSaved.waitFor();
+    await fileActions11.titleEditBox.click();
+    await fileActions11.fileTitleEdit('document').fill('test document');
+    await fileActions11.saveTitle.waitFor();
+    await fileActions11.saveTitle.click({force: true});
+    await expect(fileActions11.mainFrame.getByText('test document')).toBeVisible();
 
     await expect(fileActions.driveContentFolder.getByText('test diagram')).toBeVisible();
     await expect(fileActions.driveContentFolder.getByText('test whiteboard')).toBeVisible();
@@ -541,13 +599,15 @@ test('create test files in team drive and add avatar', async ({ page }) => {
     await expect(fileActions.driveContentFolder.getByText('test code')).toBeVisible();
     await expect(fileActions.driveContentFolder.getByText('test slide')).toBeVisible();
     await expect(fileActions.driveContentFolder.getByText('test kanban')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test document')).toBeVisible();
+    await expect(fileActions.driveContentFolder.getByText('test presentation')).toBeVisible();
 
     await fileActions.teamTab(/^Administration$/).waitFor();
     await fileActions.teamTab(/^Administration$/).click();
     const fileChooserPromise = page.waitForEvent('filechooser');
     await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
     const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles('e2e-test-suite/testdocuments/teamavatar-empty.png');
+    await fileChooser.setFiles('testdocuments/teamavatar-empty.png');
     await fileActions.okButton.click();
     await page.waitForTimeout(5000);
 

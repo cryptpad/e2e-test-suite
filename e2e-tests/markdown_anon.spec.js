@@ -183,7 +183,7 @@ test('anon - slide - import file', async ({ page }) => {
       page.waitForEvent('filechooser'),
       await fileActions.importClick()
     ]);
-    await fileChooser.setFiles('e2e-test-suite/testdocuments/testslide.md');
+    await fileChooser.setFiles('testdocuments/testslide.md');
 
     await expect(fileActions.slideEditor.getByText('1test text2​3---4​5new text')).toBeVisible();
 

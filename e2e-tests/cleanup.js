@@ -20,6 +20,7 @@ export class Cleanup {
     await this.fileActions.drivemenu.waitFor();
     let fileCount = await this.fileActions.driveElementText.getByText(titles[0]).count();
     if (fileCount > 0) {
+      console.log("filecount", fileCount)
       while (fileCount > 0) {
         if (fileCount > 1) {
           await this.fileActions.driveElementText.getByText(titles[0]).nth(fileCount - 1).click({ button: 'right' });
@@ -43,7 +44,7 @@ export class Cleanup {
         if (fileCount1 > 1) {
           await this.fileActions.driveElementText.getByText(titles[1]).nth(fileCount1 - 1).click({ button: 'right' });
         } else {
-          await this.fileActions.driveElementText.getByText(titles[2]).click({ button: 'right' });
+          await this.fileActions.driveElementText.getByText(titles[1]).click({ button: 'right' });
         }
         if (await this.fileActions.destroyItem.isVisible()) {
           await this.fileActions.destroyItem.click();
@@ -79,9 +80,9 @@ export class Cleanup {
     if (fileCount3 > 0) {
       while (fileCount3 > 0) {
         if (fileCount3 > 1) {
-          await this.fileActions.driveElementText.getByText(titles[0]).nth(fileCount - 1).click({ button: 'right' });
+          await this.fileActions.driveElementText.getByText(titles[3]).nth(fileCount - 1).click({ button: 'right' });
         } else {
-          await this.fileActions.driveElementText.getByText(titles[0]).click({ button: 'right' });
+          await this.fileActions.driveElementText.getByText(titles[3]).click({ button: 'right' });
         }
         if (await this.fileActions.destroyItem.isVisible()) {
           await this.fileActions.destroyItem.click();

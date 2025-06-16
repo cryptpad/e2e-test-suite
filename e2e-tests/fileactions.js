@@ -23,8 +23,8 @@ export class FileActions {
     // user actions-related locators
     this.login = page.locator('.login');
     this.register = page.locator("[id='register']");
-    this.loginLink = page.getByRole('link', { name: 'Log in' });
-    this.registerLink = page.getByRole('link', { name: 'Sign up' });
+    this.loginLink = page.getByRole('button', { name: 'Log in' });
+    this.registerLink = page.getByRole('button', { name: 'Sign up' });
     this.username = page.getByPlaceholder('Username');
     this.password = page.getByPlaceholder('Password', { exact: true })
 
@@ -236,7 +236,7 @@ export class FileActions {
     this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByRole('button')
     this.addItem = this.mainFrame.locator('.kanban-title-button')
     this.editItem = this.mainFrame.locator('#kanban-edit')
-    // this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
+    this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
         // this.editItemContent = this.mainFrame.locator('.kanban-item-text-container').locator('.kanban-edit-item')
 
     // this.editItemContent = this.mainFrame.getByAltText('Edit this card')
@@ -372,7 +372,7 @@ export class FileActions {
       await this.trash.click()   
   }
   newDriveFile (file) {
-    return this.mainFrame.locator('#cp-app-drive-new-ghost-dialog').getByText(file)
+    return this.mainFrame.locator('#cp-app-drive-new-ghost-dialog').getByText(file, { exact: true })
     return this.mainFrame.getByRole('listitem').filter({ hasText: file }).locator('span').first()
   
   }
@@ -696,6 +696,10 @@ export class FileActions {
     return clipboardText
   }
 
+  homePageButton (item) {
+    return this.page.getByRole('button', { name: item }) 
+  }
+
   homePageLink (item) {
     return this.page.getByRole('link', { name: item }) 
   }
@@ -748,6 +752,8 @@ export class FileActions {
         return 'Rich text';
       case 'slide':
         return 'Markdown slides';
+      case 'doc':
+        return 'Document';
       default:
         return `${fileType.charAt(0).toUpperCase() + fileType.slice(1)}`;
     }
