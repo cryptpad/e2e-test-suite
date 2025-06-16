@@ -12,7 +12,7 @@ jobs:
       - name: Clone CryptPad repository
         env: 
             PA_TOKEN: ${{ secrets.PAT_SECRET }} 
-        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b database_seed_rc2025.3
+        run: git clone "https://"$PA_TOKEN"@github.com/cryptpad/cryptpad.git" -b 2025.6_seed
         shell: bash
       - name: Seed database
         working-directory: cryptpad
@@ -55,13 +55,13 @@ jobs:
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
       - name: Calibrate Playwright screenshot tests (anon)
         working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --workers=2
+        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' 
         env:
           PW_URL: ${{ vars.PW_URL }}
         if: always()
       - name: Run Playwright tests (anon)
         working-directory: e2e-test-suite
-        run: npx playwright test anon --config=playwright.config.js --project='chrome' --workers=2 --retries=1
+        run: npx playwright test anon --config=playwright.config.js --project='chrome' --retries=1
         env:
           PW_URL: ${{ vars.PW_URL }}
         if: always()
