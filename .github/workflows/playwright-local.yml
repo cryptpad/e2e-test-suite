@@ -3,7 +3,7 @@ on:
   repository_dispatch:
       types: [trigger-e2e-tests]
   push:
-    branches: [ testing_branch, local_testing_branch ]
+    branches: [ testing_branch, local_testing_branch, main ]
 
 jobs:
   run_tests:
