@@ -81,6 +81,7 @@ jobs:
           TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
           TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
           TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+        if: always()
       - name: Create auth files
         working-directory: e2e-test-suite
         run: |
