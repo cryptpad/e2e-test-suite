@@ -54,8 +54,8 @@ jobs:
       - name: Install test reporter
         run: npm install playwright-ctrf-json-reporter --prefix e2e-test-suite
       - name: Calibrate Playwright screenshot tests (anon)
-        # working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' --prefix e2e-test-suite
+        working-directory: e2e-test-suite
+        run: npx playwright test -g "screenshot anon" --config=playwright.config.js --project='chrome' 
         env:
           PW_URL: ${{ vars.PW_URL }}
         if: always()
