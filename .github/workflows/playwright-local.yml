@@ -6,7 +6,7 @@ on:
     branches: [ testing_branch, local_testing_branch, main ]
 
 jobs:
-  Desktop Chrome:
+  desktop-chrome:
     name: Desktop Chrome
     # run-name: Desktop Chrome
     runs-on: ubuntu-latest 
@@ -109,7 +109,7 @@ jobs:
           report-path: 'e2e-test-suite/ctrf/*.json'
           title: 'Test results - logged in users'
         if: always()
-  Desktop Firefox:
+  desktop-firefox:
     name: Desktop Firefox
     # run-name: Desktop Firefox
     runs-on: ubuntu-latest 
@@ -212,7 +212,7 @@ jobs:
           report-path: 'e2e-test-suite/ctrf/*.json'
           title: 'Test results - logged in users'
         if: always()
-  Desktop Webkit:
+  desktop-webkit:
     name: Desktop Webkit
     # run-name: Desktop Webkit
     runs-on: ubuntu-latest 
@@ -315,7 +315,7 @@ jobs:
           report-path: 'e2e-test-suite/ctrf/*.json'
           title: 'Test results - logged in users'
         if: always()
-  Mobile Chrome:
+  mobile-chrome:
     name: Mobile Chrome
     # run-name: Mobile Chrome
     runs-on: ubuntu-latest 
@@ -418,7 +418,7 @@ jobs:
           report-path: 'e2e-test-suite/ctrf/*.json'
           title: 'Test results - logged in users'
         if: always()
-  Desktop Edge:
+  desktop-edge:
     name: Desktop Edge
     # run-name: Desktop Edge
     runs-on: ubuntu-latest 
