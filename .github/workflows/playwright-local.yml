@@ -8,7 +8,7 @@ on:
 jobs:
   Desktop Chrome:
     name: Desktop Chrome
-    run-name: Desktop Chrome
+    # run-name: Desktop Chrome
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
@@ -111,7 +111,7 @@ jobs:
         if: always()
   Desktop Firefox:
     name: Desktop Firefox
-    run-name: Desktop Firefox
+    # run-name: Desktop Firefox
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
@@ -214,7 +214,7 @@ jobs:
         if: always()
   Desktop Webkit:
     name: Desktop Webkit
-    run-name: Desktop Webkit
+    # run-name: Desktop Webkit
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
@@ -317,7 +317,7 @@ jobs:
         if: always()
   Mobile Chrome:
     name: Mobile Chrome
-    run-name: Mobile Chrome
+    # run-name: Mobile Chrome
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
@@ -420,7 +420,7 @@ jobs:
         if: always()
   Desktop Edge:
     name: Desktop Edge
-    run-name: Desktop Edge
+    # run-name: Desktop Edge
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
