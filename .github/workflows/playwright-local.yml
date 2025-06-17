@@ -111,6 +111,7 @@ jobs:
         with:
           name: playwright-traces
           path: test-results
+        if: always()
       - name: Publish Test Report (logged in users)
         uses: ctrf-io/github-test-reporter@v1
         with:
