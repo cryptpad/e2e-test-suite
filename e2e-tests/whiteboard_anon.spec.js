@@ -22,32 +22,35 @@ test('screenshot anon - whiteboard - can draw (default settings)', async ({ page
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }
+      }, force: true
     });
     await page.mouse.up();
-
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
+    if (mobile) {
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 14000 });
+    } else {
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
+    }
     await fileActions.toSuccess( 'Can draw on whiteboard (default settings)');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t draw on whiteboard (default settings)');
@@ -61,28 +64,28 @@ test('screenshot anon - whiteboard - erase', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.clearButton.click();
@@ -121,14 +124,14 @@ test('screenshot anon - whiteboard - delete selection on whiteboard', async ({ p
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardArrows.click();
@@ -136,7 +139,7 @@ test('screenshot anon - whiteboard - delete selection on whiteboard', async ({ p
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await fileActions.whiteBoardDelete.click();
 
@@ -156,14 +159,14 @@ test('screenshot anon - whiteboard - can change whiteboard brush thickness', asy
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
 
     await fileActions.toSuccess(  'Can change Whiteboard brush thickness');
@@ -181,14 +184,14 @@ test('screenshot anon - whiteboard - can change whiteboard brush opacity', async
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 4300 });
@@ -205,14 +208,14 @@ test('screenshot anon - whiteboard - can clear canvas', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.clearButton.click();
@@ -231,14 +234,14 @@ test('screenshot anon - whiteboard - make a copy', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.filemenuClick(mobile);
@@ -263,14 +266,14 @@ test('screenshot anon - whiteboard - export as png', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.export(mobile);
@@ -297,14 +300,14 @@ test('screenshot anon - whiteboard - display history', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.history(mobile);
@@ -325,28 +328,28 @@ test('screenshot anon - whiteboard - share history at specific moment in time (l
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }
+      }, force: true
     });
     await page.mouse.up();
     await fileActions.history(mobile);

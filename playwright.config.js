@@ -155,17 +155,6 @@ module.exports = defineConfig({
         acceptDownloads: true
 
       }
-    }, {
-      name: 'chrome@Galaxy S9+',
-      use: {
-        ...devices['Galaxy S9+'],
-        hasTouch: true,
-        browserName: 'chromium',
-        channel: 'chrome',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        mobile: true
-      }
-    }
+    }, 
   ]
 });

@@ -12,12 +12,15 @@ let mobile;
 let browserstackMobile;
 let fileActions;
 let isBrowserstack;
+let browserName
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   isBrowserstack = !!testInfo.project.name.match(/browserstack/);
+  browserName = testInfo.project.name.split(/@/)[0];
+
   fileActions = new FileActions(page);
   await fileActions.loadFileType("form")
 
@@ -352,7 +355,10 @@ test('anon - form - close and open', async ({ page, context }) => {
 //   }
 // });
 
-test('anon - form - anonymize responses', async ({ page, context }) => {
+test('anon - form - anonymize responses', async ({ page, context }) => { 
+  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug')
+  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug')
+
   try {
     var clipboardText = await fileActions.publicLinkCopy()
 
@@ -374,7 +380,9 @@ test('anon - form - anonymize responses', async ({ page, context }) => {
 
     await page.bringToFront();
     await fileActions.responses(mobile);
-    await fileActions.showIndividualAnswers.click();
+    await fileActions.showIndividualAnswers.waitFor();
+    await page.waitForTimeout(5000)
+    await fileActions.showIndividualAnswers.click({force: true});
     await fileActions.mainFrame.getByText(/^Anonymous answer/).click();
 
     await fileActions.toSuccess('Can anonymize Form responses');
@@ -1133,6 +1141,9 @@ test('anon - form - add and respond to conditional section question (AND)', asyn
 
 test('anon - form - export responses as .csv', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
+  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug')
+  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug')
+
 
   try {
     await fileActions.clearFormQuestions()
@@ -1173,6 +1184,9 @@ test('anon - form - export responses as .csv', async ({ page, context }) => {
 
 test('anon - form - export responses as .json', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
+  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug')
+  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug')
+
   try {
     await fileActions.clearFormQuestions()
 

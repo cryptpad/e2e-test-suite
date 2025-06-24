@@ -210,3 +210,28 @@ test.describe('Save/Remove ', () => {
     });
   });
 });
+
+const onlyOffice = ['sheet', 'doc', 'presentation']
+
+
+test.describe('Test loading', () => {
+  onlyOffice.forEach(function (name) {
+    test(`anon - save and remove for ${name}`, async ({ page, context }, testInfo) => {
+      try {
+
+        const messages = [];
+        page.on('console', msg => {
+            messages.push(msg.text());
+        });
+
+        const fileType = name;
+        await filePage.loadFileType(fileType);
+        expect(messages).toContain('creating favicon');
+
+        await fileActions.toSuccess('Save/remove works well');
+      } catch (e) {
+        await fileActions.toFailure(e, 'Save/remove failed');
+      }
+    });
+  });
+});

@@ -233,21 +233,20 @@ export class FileActions {
     //kanban
     this.addBoard = this.mainFrame.locator('#kanban-addboard')
     this.boardTitle = this.mainFrame.getByLabel('Title')
-    this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByRole('button')
+    this.editDoneBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).getByLabel('Edit this board')
     this.addItem = this.mainFrame.locator('.kanban-title-button')
     this.editItem = this.mainFrame.locator('#kanban-edit')
     this.editItemContent = this.mainFrame.getByRole('button', { name: 'Edit this card' })
-        // this.editItemContent = this.mainFrame.locator('.kanban-item-text-container').locator('.kanban-edit-item')
-
-    // this.editItemContent = this.mainFrame.getByAltText('Edit this card')
 
     
     this.editItemTitle = this.mainFrame.locator('.kanban-item-text')
     this.kanbanContainer = this.mainFrame.locator('#cp-app-kanban-content')
     this.kanbanEditor = this.mainFrame.locator('.CodeMirror-lines')
     this.newBoard = this.mainFrame.getByText('New board')
-    this.editNewBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByRole('button')
+
+    this.editNewBoard = this.mainFrame.getByText('New board').getByLabel('Edit this board')
     this.editKanbanTags = this.mainFrame.locator('#cp-kanban-edit-tags')
+    this.kanbanTags = this.mainFrame.getByRole('button', { name: ' Tags' });
     this.kanbanContent = this.mainFrame.locator('#cp-app-kanban-content')
     this.clearFilter = this.mainFrame.getByRole('button', { name: ' Clear filter' })
     this.kanbanControls = this.mainFrame.locator('#cp-kanban-controls')
@@ -527,9 +526,9 @@ export class FileActions {
   async openFormSettings () {
     await this.formSettings.waitFor();
     await this.formSettings.click();
-
+    await this.page.waitForTimeout(2000)
     const visible = await this.mainFrame.getByRole('heading', { name: ' Form settings' }).locator('span').isVisible();
-
+    console.log("visible", visible)
     if (visible === false) {
       await this.formSettings.waitFor();
       await this.formSettings.click();
@@ -875,7 +874,8 @@ export class FileActions {
 
   async export (mobile) {
     await this.filemenuClick(mobile);
-    await this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').waitFor();
+    await this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').click({force: true});
   }
 
   async importTemplate (mobile, local) {

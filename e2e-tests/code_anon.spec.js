@@ -191,7 +191,7 @@ test('anon - code - share at a moment in history', async ({ page, browser }) => 
     await page.keyboard.press('Backspace');
     await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
 
-    var clipboardText = await fileActions.getShareLink()
+    var clipboardText = await fileActions.getShareLink(mobile)
     page1 = await browser.newPage();
 
     await page1.goto(`${clipboardText}`);

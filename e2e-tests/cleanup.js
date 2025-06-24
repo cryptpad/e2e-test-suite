@@ -20,7 +20,6 @@ export class Cleanup {
     await this.fileActions.drivemenu.waitFor();
     let fileCount = await this.fileActions.driveElementText.getByText(titles[0]).count();
     if (fileCount > 0) {
-      console.log("filecount", fileCount)
       while (fileCount > 0) {
         if (fileCount > 1) {
           await this.fileActions.driveElementText.getByText(titles[0]).nth(fileCount - 1).click({ button: 'right' });

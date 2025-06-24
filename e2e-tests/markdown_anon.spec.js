@@ -47,10 +47,13 @@ test('anon - slide - create new slide', async ({ page }) => {
     await page.keyboard.press('Enter');
 
     await fileActions.slideContent.filter({ hasText: 'Test text' }).click();
-    await fileActions.nextSlide.hover();
-    await fileActions.nextSlide.click();
+    if (mobile) {
+      await fileActions.slideContent.dragTo(fileActions.slideEditor);
+    } else {
+      await fileActions.nextSlide.hover();
+      await fileActions.nextSlide.click();
+    }
     await expect(fileActions.slideContent.getByText('More test text')).toBeVisible();
-
     await fileActions.toSuccess( 'Can anonymously create Markdown slides');
   } catch (e) {
     await fileActions.toFailure(e,'Can\'t anonymously create Markdown slides');

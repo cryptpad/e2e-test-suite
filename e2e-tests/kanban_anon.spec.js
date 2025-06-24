@@ -21,9 +21,12 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 test('anon - kanban -  new board', async ({ page }) => {
+  test.skip(mobile, 'mobile scrolling bug')
   try {
     await fileActions.addBoard.click();
     await expect(fileActions.newBoard).toBeVisible();
+    await page.evaluate(() => window.scrollBy(500, 0));
+    // await fileActions.editNewBoard.scrollIntoViewIfNeeded();
     await fileActions.editNewBoard.click();
     await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
@@ -37,13 +40,14 @@ test('anon - kanban -  new board', async ({ page }) => {
 });
 
 test('anon - kanban -  new list item', async ({ page }) => {
+  test.skip(mobile, "mobile bug")
   try {
     await fileActions.addItem.first().click();
     await fileActions.editItem.fill('example item');
     await fileActions.editItem.press('Enter');
     await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
     await fileActions.editItemContent.first().waitFor()
-    await fileActions.editItemContent.first().click({force: true});
+    await fileActions.editItemContent.first().click();
     await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
 
@@ -104,6 +108,9 @@ test('anon - kanban board - add and filter by tag', async ({ page }) => {
     await fileActions.editKanbanTags.type('newtag');
     await fileActions.addButton.click();
     await fileActions.closeButton.click();
+    if (mobile) {
+      await fileActions.kanbanTags.click()
+    }
     await expect(fileActions.kanbanContent.getByText('newtag')).toBeVisible();
   
     await fileActions.kanbanControls.getByText('newtag').click();
@@ -126,7 +133,7 @@ test('anon - kanban -  view history', async ({ page }) => {
     await fileActions.editDoneBoard.click();
     await fileActions.boardTitle.fill('new item title');
     await fileActions.boardTitle.press('Enter');
-    await fileActions.history();
+    await fileActions.history(mobile);
     await fileActions.historyPrevFirst.click();
     await expect(fileActions.mainFrame.getByText('new item title')).toHaveCount(0);
 

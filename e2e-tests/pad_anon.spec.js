@@ -169,7 +169,7 @@ test('anon - pad -  export (html)', async ({ page }) => {
     const readData = fs.readFileSync('/tmp/test pad', 'utf8');
 
     let expectedString;
-    if (browserName === 'playwright-firefox') {
+    if (browserName === 'playwright-firefox' | browserName === 'playwright-webkit') {
       expectedString = '<!DOCTYPEhtml><html><head><metacharset="utf-8"></head><body>TESTTEXT</body></html>';
     } else {
       expectedString = '<!DOCTYPEhtml><html><head><metacharset="utf-8"></head><body>TESTTEXT<p></p></body></html>';
@@ -177,7 +177,7 @@ test('anon - pad -  export (html)', async ({ page }) => {
     if (expectedString === readData.normalize().replace(/[\s]/g, '')) {
       await fileActions.toSuccess( 'Can export Rich Text document as .html');
     } else {
-      await fileActions.toFailure(e, 'Can\'t export Rich Text document as .html');
+      await fileActions.toFailure('Can\'t export Rich Text document as .html');
     }
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t export Rich Text document as .html');
