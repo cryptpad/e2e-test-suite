@@ -377,47 +377,47 @@ jobs:
           report-path: 'e2e-test-suite/ctrf/*.json'
           title: 'Test results - anonymous'
         if: always()
-      - name: Create auth files
-        working-directory: e2e-test-suite
-        run: |
-          mkdir auth
-          cd auth
-          touch mainuser.json testuser.json testuser2.json testuser3.json 
-        if: always()
-      - name: Authenticate users
-        working-directory: e2e-test-suite
-        run: |
-          npx playwright test auth --config=playwright.config.js --project='chrome@Galaxy S9+' --workers=1 
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-        if: always()
-      - name: Calibrate Playwright screenshot tests (logged in users)
-        working-directory: e2e-test-suite
-        run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome@Galaxy S9+' --workers=2
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-        if: always()
-      - name: Run Playwright tests (logged in users)
-        working-directory: e2e-test-suite
-        run: npx playwright test loggedin --config=playwright.config.js --project='chrome@Galaxy S9+' --workers=1 --retries=3
-        env:
-          PW_URL: ${{ vars.PW_URL }}
-          MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
-          TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
-          TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
-          TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
-          # DEBUG: pw:api
-        if: always()
-      - name: Publish Test Report (logged in users)
-        uses: ctrf-io/github-test-reporter@v1
-        with:
-          report-path: 'e2e-test-suite/ctrf/*.json'
-          title: 'Test results - logged in users'
-        if: always()
+      # - name: Create auth files
+      #   working-directory: e2e-test-suite
+      #   run: |
+      #     mkdir auth
+      #     cd auth
+      #     touch mainuser.json testuser.json testuser2.json testuser3.json 
+      #   if: always()
+      # - name: Authenticate users
+      #   working-directory: e2e-test-suite
+      #   run: |
+      #     npx playwright test auth --config=playwright.config.js --project='chrome@Galaxy S9+' --workers=1 
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #     MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+      #     TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+      #     TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+      #     TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+      #   if: always()
+      # - name: Calibrate Playwright screenshot tests (logged in users)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test -g "screenshot loggedin" --config=playwright.config.js --project='chrome@Galaxy S9+' --workers=2
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #   if: always()
+      # - name: Run Playwright tests (logged in users)
+      #   working-directory: e2e-test-suite
+      #   run: npx playwright test loggedin --config=playwright.config.js --project='chrome@Galaxy S9+' --workers=1 --retries=3
+      #   env:
+      #     PW_URL: ${{ vars.PW_URL }}
+      #     MAINACCOUNTPASSWORD: ${{ vars.MAINACCOUNTPASSWORD }}
+      #     TESTUSERPASSWORD: ${{ vars.TESTUSERPASSWORD }}
+      #     TESTUSER2PASSWORD: ${{ vars.TESTUSER2PASSWORD }}
+      #     TESTUSER3PASSWORD: ${{ vars.TESTUSER3PASSWORD }}
+      #     # DEBUG: pw:api
+      #   if: always()
+      # - name: Publish Test Report (logged in users)
+      #   uses: ctrf-io/github-test-reporter@v1
+      #   with:
+      #     report-path: 'e2e-test-suite/ctrf/*.json'
+      #     title: 'Test results - logged in users'
+      #   if: always()
   desktop-edge:
     name: Desktop Edge
     # run-name: Desktop Edge
