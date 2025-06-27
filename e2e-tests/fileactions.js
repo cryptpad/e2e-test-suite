@@ -244,7 +244,7 @@ export class FileActions {
     this.kanbanEditor = this.mainFrame.locator('.CodeMirror-lines')
     this.newBoard = this.mainFrame.getByText('New board')
 
-    this.editNewBoard = this.mainFrame.getByText('New board').getByLabel('Edit this board')
+    this.editNewBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByLabel('Edit this board')
     this.editKanbanTags = this.mainFrame.locator('#cp-kanban-edit-tags')
     this.kanbanTags = this.mainFrame.getByRole('button', { name: ' Tags' });
     this.kanbanContent = this.mainFrame.locator('#cp-app-kanban-content')

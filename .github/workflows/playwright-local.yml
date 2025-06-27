@@ -1,4 +1,4 @@
-name: Playwright tests - local instance
+name: Playwright tests - local instance - 2025.6-rc
 on:
   repository_dispatch:
       types: [trigger-e2e-tests]
@@ -8,7 +8,6 @@ on:
 jobs:
   desktop-chrome:
     name: Desktop Chrome
-    # run-name: Desktop Chrome
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
@@ -23,7 +22,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout staging
+          git checkout 2025.6-rc
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad

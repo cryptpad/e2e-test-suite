@@ -125,9 +125,8 @@ test('anon - drive - list/grid view', async ({ page, context }) => {
     const page1Promise = page.waitForEvent('popup');
     await fileActions.driveAddMenuItem('Rich text').click();
     const page1 = await page1Promise;
-
-    await page.reload();
-
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.fileSaved.waitFor()
     await fileActions.driveFileTitle('Rich text').waitFor()
 
     await page.bringToFront();
