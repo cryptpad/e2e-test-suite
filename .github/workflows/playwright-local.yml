@@ -23,7 +23,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.6-test
+          git checkout staging
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
