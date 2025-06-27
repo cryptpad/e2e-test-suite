@@ -272,7 +272,7 @@ export class FileActions {
     this.changePassword = this.mainFrame.getByRole('button', { name: 'Change password' })
     this.cancelButton = this.mainFrame.getByRole('button').filter({ hasText: 'Cancel' })
     // this.displayName = this.mainFrame.locator('#cp-settings-displayname')
-    this.saveDisplayName = this.mainFrame.locator('div').filter({ hasText: /^Display nameSave$/ }).getByRole('button', { name: 'Save' })
+    this.saveDisplayName = this.mainFrame.getByRole('button', { name: 'Save' }).first()
     this.newPassword = this.mainFrame.getByPlaceholder('New password', { exact: true })
     this.doneButton = this.mainFrame.getByRole('button', { name: ' Done' })
     this.continueButton = this.page.getByRole('button', { name: 'Continue' })
@@ -316,7 +316,7 @@ export class FileActions {
     this.testCalendar = this.mainFrame.getByText('test calendar')
     this.testCalendarSettings = this.mainFrame.locator('div').filter({ hasText: /^test calendar/ }).locator('.btn.btn-default.fa.fa-gear.small.cp-calendar-actions')
     this.contactList = this.mainFrame.locator('#cp-app-contacts-friendlist')
-    this.displayName = this.mainFrame.locator('#cp-settings-displayname')
+    this.displayName = this.mainFrame.getByRole('textbox', { name: 'Display name' })
 
     this.owners = this.secureFrame.locator('#cp-tab-owners')
     this.tagInput = this.mainFrame.locator('.token-input.ui-autocomplete-input')

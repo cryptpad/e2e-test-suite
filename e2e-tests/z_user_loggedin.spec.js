@@ -285,7 +285,7 @@ test('loggedin - can change display name', async ({ page }) => {
     const fileActions1 = new FileActions(page1);
 
     await expect(page1).toHaveURL(`${url}/settings/#account`, { timeout: 100000 });
-
+    await page1.locator('#sbox-iframe').contentFrame().locator('#cp-sidebarlayout-leftside').getByText('Profile').click();
     await fileActions1.displayName.click();
     await fileActions1.displayName.fill('test-user-new');
     await fileActions1.saveDisplayName.click();
