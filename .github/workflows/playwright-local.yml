@@ -1,7 +1,7 @@
 name: Playwright tests - local instance - 2025.6-rc
 on:
   repository_dispatch:
-      types: [trigger-e2e-tests]
+      types: [trigger-e2e-tests-staging]
   push:
     branches: [ testing_branch, local_testing_branch, main ]
 
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.6-rc
+          git checkout staging
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
