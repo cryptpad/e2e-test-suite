@@ -69,7 +69,7 @@ test('loggedin - code - history (previous author)', async ({ page, browser }) =>
     await expect(fileActions.codeEditor.getByText('Test text by test-user')).toBeVisible();
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);

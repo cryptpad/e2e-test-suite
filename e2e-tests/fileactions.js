@@ -9,7 +9,7 @@ export class FileActions {
   /**
 	* @param {import('@playwright/test').Page} page
 	*/
-  constructor (page, mobile, testName, ) {
+  constructor (page, mobile, testName) {
     this.page = page;
     this.mainFrame = page.frameLocator('#sbox-iframe');
     this.secureFrame = page.frameLocator('#sbox-secure-iframe')
@@ -299,7 +299,7 @@ export class FileActions {
     // calendar 
     this.newEvent = this.mainFrame.getByRole('button', { name: 'New event' })
     this.newEventMobile = this.mainFrame.locator('.cp-calendar-newevent')
-    this.calendarTitle =  this.mainFrame.getByPlaceholder('Title')
+    this.calendarTitle =  this.mainFrame.getByRole('textbox', { name: 'Title' })
     this.calendarTestEvent = this.mainFrame.locator('.tui-full-calendar-time-schedule-content').getByText('test event')
     this.nextWeek = this.mainFrame.getByLabel('Right')
     this.prevWeek = this.mainFrame.getByRole('button', { name: 'Left' })
@@ -318,7 +318,7 @@ export class FileActions {
     this.contactList = this.mainFrame.locator('#cp-app-contacts-friendlist')
     this.displayName = this.mainFrame.getByRole('textbox', { name: 'Display name' })
 
-    this.owners = this.secureFrame.locator('#cp-tab-owners')
+    this.owners = this.secureFrame.getByLabel('Owners')
     this.tagInput = this.mainFrame.locator('.token-input.ui-autocomplete-input')
     this.tag = this.mainFrame.getByRole('link', { name: '#testtag' })
     this.addOwner = this.secureFrame.locator('.cp-share-column-mid > .btn').nth(1)
@@ -439,13 +439,13 @@ export class FileActions {
   }
 
 
-  async shareWithContact (role, contact, destruct) {
-    await this.share(this.mobile);
+  async shareWithContact (role, contact, destruct, mobile) {
+    await this.share(mobile);
     await this.secureFrame.locator('label').filter({ hasText: role }).locator('span').first().click();
     if (destruct) {
       await this.linkRole('View once and self-destruct').click();
     }
-    await this.secureFrame.getByText('test-user3').click();
+    await this.secureFrame.getByText(contact).click();
     await this.shareSecureLink.click();
   
   }
@@ -539,7 +539,7 @@ export class FileActions {
   async newCalendarEvent (mobile) {
     if (mobile) {
       await this.newEventMobile.waitFor();
-      await this.newEventMobile.click({ force: true });
+      await this.newEventMobile.click();
     } else {
       await this.newEvent.waitFor();
       await this.newEvent.click();
@@ -665,14 +665,14 @@ export class FileActions {
     return clipboardText
   }
 
-  async getLinkAfterCopyRole (role) {
-    await this.clickLinkTab(this.mobile);
+  async getLinkAfterCopyRole (role, mobile) {
+    await this.clickLinkTab(mobile);
     await this.linkRole(role).click();
     await this.shareCopyLink.click();
     let clipboardText = await this.page.evaluate('navigator.clipboard.readText()');
     if (clipboardText === "") {
       await this.page.waitForTimeout(2000);
-      await this.clickLinkTab(this.mobile);
+      await this.clickLinkTab(mobile);
       await this.linkRole().click();
       await this.shareCopyLink.click();
       clipboardText = await this.page.evaluate(() => navigator.clipboard.readText());

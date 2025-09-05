@@ -1,7 +1,7 @@
 const { test, url, mainAccountPassword } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
 const { UserActions } = require('./useractions.js');
-const { FileActions } = require('./fileactions.js');
+const { FileActions, StoreModal } = require('./fileactions.js');
 
 const { expect } = require('@playwright/test');
 require('dotenv').config();
@@ -72,7 +72,7 @@ if (!mobile) {
       await fileActions.editItem.press('Enter');
 
       await fileActions.share(mobile);
-      const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
+      const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
       page1 = await browser.newPage();
       await page1.goto(`${clipboardText}`);
       const fileActions1 = new FileActions(page1, mobile)
@@ -87,7 +87,7 @@ if (!mobile) {
       await page1.waitForTimeout(9000);
 
       await page1.close();
-
+      await (new StoreModal(fileActions)).dismissButton.click();
       await fileActions.addItem.first().click();
       await fileActions.editItem.fill('and some more test text by test user');
       await fileActions.editItem.press('Enter');

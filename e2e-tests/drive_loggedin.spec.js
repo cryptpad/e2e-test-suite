@@ -97,7 +97,7 @@ test('loggedin - drive -  upload file', async ({ page }) => {
     await fileActions.mainFrame.getByText('Your file (myfile.doc) has been successfully uploaded and added to your').waitFor();
     await fileActions.fileUploadClose.click()
     await fileActions.driveContentFolder.getByText('myfile.doc').click({ button: 'right' });
-    await fileActions.trash.click();
+    await fileActions.moveToTrash.click();
  
     await expect(fileActions.driveContentFolder.getByText('myfile.doc')).toHaveCount(0);
 

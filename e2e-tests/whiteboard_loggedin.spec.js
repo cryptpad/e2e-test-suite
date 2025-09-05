@@ -32,19 +32,19 @@ test('screenshot loggedin - whiteboard - display history (previous author)', asy
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);
@@ -54,14 +54,14 @@ test('screenshot loggedin - whiteboard - display history (previous author)', asy
       position: {
         x: 287,
         y: 227
-      }
+      }, force: true
     });
     await page1.mouse.down();
     await fileActions1.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }
+      }, force: true
     });
     await page1.mouse.up();
 
@@ -85,14 +85,14 @@ test('screenshot loggedin - whiteboard - save as and import template', async ({ 
       position: {
         x: 175,
         y: 315
-      }
+      }, force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }
+      }, force: true
     });
     await page.mouse.up();
 

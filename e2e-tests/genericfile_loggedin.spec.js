@@ -43,7 +43,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'doc', 'presentation'];
-// const docNames = ['doc'];
+// const docNames = ['kanban'];
 
 
 docNames.forEach(function (name) {
@@ -154,7 +154,7 @@ docNames.forEach(function (name) {
       await fileActions.createFile.click();
 
       // add test-user3 as owner
-      await fileActions.filemenu.waitFor();
+      await fileActions.fileSaved.waitFor();
 
       await expect(fileActions.fileTitle(name)).toBeVisible();
       await fileActions.access(mobile);
@@ -182,7 +182,7 @@ docNames.forEach(function (name) {
       await fileActions1.acceptButton.click();
       await page2.bringToFront();
       const fileActions2 = new FileActions(page2);
-      await fileActions2.filemenu.waitFor();
+      await fileActions2.fileSaved.waitFor();
 
       await expect(fileActions2.fileTitle(name)).toBeVisible();
       await fileActions2.access(mobile);
@@ -276,7 +276,7 @@ docNames.forEach(function (name) {
         await expect(fileActions.fileTitle(name)).toBeVisible();
 
         await fileActions.share(mobile);
-        const clipboardText = await fileActions.getLinkAfterCopyRole('View')
+        const clipboardText = await fileActions.getLinkAfterCopyRole('View', mobile)
 
         if (mobile) {
           contextOne = browser;
@@ -312,7 +312,7 @@ docNames.forEach(function (name) {
         await fileActions.okButtonSecure.click();
         await fileActions.share(mobile)
 
-        const clipboardText1 = await fileActions.getLinkAfterCopyRole('View')
+        const clipboardText1 = await fileActions.getLinkAfterCopyRole('View', mobile)
 
         await page1.bringToFront();
         await page1.goto(`${clipboardText1}`);
@@ -334,7 +334,7 @@ docNames.forEach(function (name) {
     test(`loggedin - ${name} - share with contact (to view)`, async ({ page, browser }) => {
       try {
         await fileActions.createFile.click();
-        await fileActions.shareWithContact(/^View$/, 'test-user3');
+        await fileActions.shareWithContact(/^View$/, 'test-user3', false, mobile);
 
         ///
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
@@ -370,7 +370,7 @@ docNames.forEach(function (name) {
       test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
       try {
         await fileActions.createFile.click();
-        await fileActions.shareWithContact('Edit', 'test-user3');
+        await fileActions.shareWithContact('Edit', 'test-user3', false, mobile);
 
         ///
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
@@ -385,7 +385,7 @@ docNames.forEach(function (name) {
 
         const fileActions2 = new FileActions(page2);
 
-        await fileActions2.filemenu.waitFor();
+        await fileActions2.fileSaved.waitFor();
         await expect(fileActions2.fileTitle(name)).toBeVisible();
         await expect(fileActions2.readOnly).toBeHidden();
 
@@ -418,7 +418,7 @@ docNames.forEach(function (name) {
     test(`loggedin - ${name} - share with contact - view and delete`, async ({ page, browser }) => {
       try {
         await fileActions.createFile.click();
-        await fileActions.shareWithContact('View', 'test-user3', true);
+        await fileActions.shareWithContact('View', 'test-user3', true, mobile);
 
         ///
         const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
@@ -472,11 +472,13 @@ docNames.forEach(function (name) {
         const page1 = await contextOne.newPage();
         const fileActions1 = new FileActions(page1);
         await page1.goto(`${clipboardText}`);
+        await page1.waitForTimeout(10000)
+
         await fileActions1.viewAndDelete.waitFor();
         await fileActions1.viewAndDelete.click();
         await fileActions1.fileTitle(name).waitFor()
         await expect(fileActions1.fileTitle(name)).toBeVisible();
-        await page1.waitForTimeout(1000)
+        await page1.waitForTimeout(10000)
 
         await page1.reload();
         await fileActions1.destroyedByOwner.waitFor();
@@ -509,7 +511,7 @@ docNames.forEach(function (name) {
 
         // share link and attempt to access document anonymously
         await fileActions.share(mobile);
-        const clipboardText = await fileActions.getLinkAfterCopyRole('View')
+        const clipboardText = await fileActions.getLinkAfterCopyRole('View', mobile)
 
         // const context = await browser.newContext();
         page1 = await browser.newPage();

@@ -206,15 +206,28 @@ test('anon - pad -  export (.doc)', async ({ page }) => {
     let expectedString;
     if (browserName === 'playwright-firefox') {
       expectedString = "<htmlxmlns:o='urn:schemas-microsoft-com:office:office'xmlns:w='urn:schemas-microsoft-com:office:word'xmlns='http://www.w3.org/TR/REC-html40'><head><metacharset='utf-8'><title>ExportHTMLToDoc</title></head><body>TESTTEXT</body></html>";
+    } else if (browserName === 'playwright-webkit') {
+      expectedString = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>TEST TEXT</body></html>"
     } else {
       expectedString = "<htmlxmlns:o='urn:schemas-microsoft-com:office:office'xmlns:w='urn:schemas-microsoft-com:office:word'xmlns='http://www.w3.org/TR/REC-html40'><head><metacharset='utf-8'><title>ExportHTMLToDoc</title></head><body>TESTTEXT<p></p></body></html>";
     }
 
-    if (readData.trim().replace(/[\s]/g, '') === expectedString) {
-      await fileActions.toSuccess( 'Can export Rich Text document as .doc');
+    if (browserName !== 'playwright-webkit') {
+      if (readData.trim().replace(/[\s]/g, '') === expectedString) {
+        await fileActions.toSuccess( 'Can export Rich Text document as .doc');
+      } else {
+        await fileActions.toFailure('Can\'t export Rich Text document as .doc' );
+      }
     } else {
-      await fileActions.toFailure(e, 'Can\'t export Rich Text document as .doc' );
+      var normalize = str => str.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').trim();
+      if (normalize(readData) === expectedString) {
+        await fileActions.toSuccess( 'Can export Rich Text document as .doc');
+      } else {
+        await fileActions.toFailure('Can\'t export Rich Text document as .doc' );
+      }
+
     }
+
   } catch (e) {
     await fileActions.toFailure(e,'Can\'t export Rich Text document as .doc');
   }

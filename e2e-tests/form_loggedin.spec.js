@@ -195,7 +195,7 @@ test('loggedin - form - view history (different authors)', async ({ page, browse
     await fileActions.textbox.fill('text by test-user');
     await fileActions.textbox.press('Enter');
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole( /^Author$/)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Author$/, mobile)
 
     const context = await browser.newContext();
     page1 = await context.newPage();
@@ -263,7 +263,7 @@ test('loggedin - form - protect with password', async ({ page, browser }) => {
     await fileActions.share(mobile);
     await page.waitForTimeout(5000);
 
-    const clipboardText = await fileActions.getLinkAfterCopyRole('Participant')
+    const clipboardText = await fileActions.getLinkAfterCopyRole('Participant', mobile)
 
     if (mobile) {
       contextOne = browser;

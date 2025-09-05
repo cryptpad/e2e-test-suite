@@ -66,10 +66,10 @@ test('loggedin - pad - history (previous author)', async ({ page, browser }) => 
     await fileActions.padEditorBody.type('Test text by test-user');
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
 
     if (mobile) {
-      contextOne = await browser.launchBrowser({ locale: 'en-GB', permissions: ['clipboard-read', 'clipboard-write'] });
+      contextOne = browser
     } else {
       contextOne = await browser.newContext();
     }
@@ -81,15 +81,18 @@ test('loggedin - pad - history (previous author)', async ({ page, browser }) => 
     await page1.keyboard.press('Enter');
     await fileActions1.padEditorBody.type('Some more test text by anon');
     await page1.keyboard.press('Enter');
+    await page1.waitForTimeout(2000)
 
     await fileActions1.padEditorBody.type('And here is more text by anon');
     await page1.keyboard.press('Enter');
+    await page1.waitForTimeout(2000)
 
     await page.keyboard.press('Enter');
     await fileActions.padEditorBody.type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
     await fileActions.padEditorBody.type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
+    await page1.waitForTimeout(2000)
 
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();

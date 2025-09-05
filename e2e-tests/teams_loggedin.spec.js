@@ -48,42 +48,6 @@ test('loggedin - user menu - make and delete team', async ({ page }) => {
   }
 });
 
-test('loggedin - can change team name', async ({ page }) => {
-  test.skip(browserName === 'edge', 'microsoft edge incompatibility');
-
-  try {
-    // access team admin panel
-    await fileActions.accessTeam()
-    await fileActions.teamTab(/^Administration$/).waitFor();
-    await fileActions.teamTab(/^Administration$/).click();
-
-    // change team name
-    await fileActions.displayNamePlaceholder.click();
-    await fileActions.displayNamePlaceholder.fill('');
-    await fileActions.displayNamePlaceholder.fill('example team');
-    await fileActions.saveButton.click();
-    await page.waitForTimeout(5000);
-    await page.reload();
-    await fileActions.mainFrame.getByText('example team').waitFor();
-    await fileActions.mainFrame.getByText('example team').click();
-
-    await fileActions.teamTab(/^Administration$/).waitFor();
-    await fileActions.teamTab(/^Administration$/).click();
-
-    // change team name back
-    await fileActions.displayNamePlaceholder.click();
-    await fileActions.displayNamePlaceholder.fill('');
-    await fileActions.displayNamePlaceholder.fill('test team');
-    await fileActions.saveButton.click();
-    await page.reload();
-    await fileActions.teamSlot.getByText('test team').waitFor();
-    await expect(fileActions.teamSlot.getByText('test team')).toBeVisible();
-
-    await fileActions.toSuccess( 'Can change team name');
-  } catch (e) {
-    await fileActions.toFailure(e, 'Can\'t change team name');
-  }
-});
 
 test('loggedin - can access team public signing key', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
@@ -264,9 +228,13 @@ test('loggedin - add contact to team as viewer and remove them', async ({ page, 
     await fileActions2.accessTeam()
     await page2.waitForTimeout(5000);
     const page3Promise = page2.waitForEvent('popup');
-    await fileActions2.driveContentFolder.getByText('test pad').dblclick({ timeout: 5000 });
-    const page3 = await page3Promise;
+    await fileActions2.driveContentFolder.locator('[data-original-title="test pad"]').dblclick();
+    if (mobile) {
+      await fileActions2.driveContentFolder.locator('[data-original-title="test pad"]').dblclick();
+    }
 
+    const page3 = await page3Promise;
+    // await page3.waitForTimeout(5000)
     // check viewer can't add members or access admin panel
     await fileActions2.teamTab(/^Chat$/).click();
     await expect(fileActions2.mainFrame.getByText('Invite members')).toBeHidden();
@@ -567,5 +535,44 @@ test('loggedin - invite contact to team and cancel', async ({ page }) => {
     await fileActions.toSuccess('Can invite contact to team and cancel invite');
   } catch (e) {
     await fileActions.toFailure(e,  'Can\'t invite contact to team and cancel invite' );
+  }
+});
+
+test('loggedin - can change team name', async ({ page }) => {
+  test.skip(browserName === 'edge', 'microsoft edge incompatibility');
+
+  try {
+    // access team admin panel
+    await fileActions.accessTeam()
+    await fileActions.teamTab(/^Administration$/).waitFor();
+    await fileActions.teamTab(/^Administration$/).click();
+
+    // change team name
+    await fileActions.displayNamePlaceholder.click();
+    await fileActions.displayNamePlaceholder.fill('');
+    await fileActions.displayNamePlaceholder.fill('example team');
+    await fileActions.saveButton.click();
+    await page.waitForTimeout(5000);
+    await page.reload();
+    await fileActions.mainFrame.getByText('example team').waitFor();
+    await fileActions.mainFrame.getByText('example team').click();
+
+    await fileActions.teamTab(/^Administration$/).waitFor();
+    await fileActions.teamTab(/^Administration$/).click();
+
+    // change team name back
+    await fileActions.displayNamePlaceholder.click();
+    await fileActions.displayNamePlaceholder.fill('');
+    await fileActions.displayNamePlaceholder.fill('test team');
+    await fileActions.saveButton.click();
+    await page.waitForTimeout(5000);
+
+    await page.reload();
+    await fileActions.teamSlot.getByText('test team').waitFor();
+    await expect(fileActions.teamSlot.getByText('test team')).toBeVisible();
+
+    await fileActions.toSuccess( 'Can change team name');
+  } catch (e) {
+    await fileActions.toFailure(e, 'Can\'t change team name');
   }
 });

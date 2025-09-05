@@ -69,7 +69,7 @@ test('loggedin - slide - history (previous author)', async ({ page, browser }) =
     await fileActions.codeEditor.type('Test text');
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);
