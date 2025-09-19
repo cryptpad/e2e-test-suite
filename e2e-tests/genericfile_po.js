@@ -5,7 +5,8 @@
 const { url } = require('../fixture');
 const { FileActions } = require('./fileactions.js');
 
-exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'doc'];
+// exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'doc'];
+exports.docTypes = ['sheet', 'presentation', 'doc'];
 
 /**
  * A page object for a CryptPad file.

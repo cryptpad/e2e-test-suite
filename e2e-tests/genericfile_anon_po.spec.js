@@ -226,11 +226,13 @@ test.describe('Test loading', () => {
 
         const fileType = name;
         await filePage.loadFileType(fileType);
-        expect(messages).toContain('creating favicon');
+        expect(messages).toContain('OO loading');
+        expect(messages).toContain('OO ready');
 
-        await fileActions.toSuccess('Save/remove works well');
+
+        await fileActions.toSuccess('OO loads successfully');
       } catch (e) {
-        await fileActions.toFailure(e, 'Save/remove failed');
+        await fileActions.toFailure(e, 'OO loading fails');
       }
     });
   });
