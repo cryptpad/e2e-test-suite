@@ -1,4 +1,4 @@
-name: Playwright tests - local instance - 2025.6-rc
+name: Playwright tests - local instance
 on:
   repository_dispatch:
       types: [trigger-e2e-tests-staging, trigger-e2e-tests-rc, trigger-e2e-tests-test]
@@ -109,7 +109,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-chrome-test:
-    if: github.event.action == 'trigger-e2e-tests-test'
+    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
     name: Desktop Chrome - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -517,7 +517,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-firefox-test:
-    if: github.event.action == 'trigger-e2e-tests-test'
+    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
     name: Desktop Firefox - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -823,7 +823,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-webkit-test:
-    if: github.event.action == 'trigger-e2e-tests-test'
+    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
     name: Desktop Webkit - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -1129,7 +1129,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   mobile-chrome-test:
-    if: github.event.action == 'trigger-e2e-tests-test'
+    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
     name: Mobile Chrome - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -1435,7 +1435,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-edge-test:
-    if: github.event.action == 'trigger-e2e-tests-test'
+    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
     name: Desktop Edge - test branch
     runs-on: ubuntu-latest 
     steps:
