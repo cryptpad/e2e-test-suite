@@ -98,7 +98,7 @@ test('anon - code -  make a copy #1367', async ({ page }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.fileMenuItem(' Make a copy').click()
+      await fileActions.filecopy.click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/code`), { timeout: 100000 });

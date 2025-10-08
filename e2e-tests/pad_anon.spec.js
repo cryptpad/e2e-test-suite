@@ -138,7 +138,7 @@ test('anon - pad -  make a copy', async ({ page, context }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.fileMenuItem(' Make a copy').click()
+      await fileActions.fileMenuItem('Make a copy').click()
     ]);
     const fileActions1 = new FileActions(page1)
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 });

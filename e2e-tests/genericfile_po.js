@@ -5,8 +5,8 @@
 const { url } = require('../fixture');
 const { FileActions } = require('./fileactions.js');
 
-// exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'doc'];
-exports.docTypes = ['sheet', 'presentation', 'doc'];
+exports.docTypes = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'presentation', 'doc'];
+// exports.docTypes = ['sheet', 'presentation', 'doc'];
 
 /**
  * A page object for a CryptPad file.
@@ -34,7 +34,7 @@ class FilePage {
     this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
 
     this.fileName = this.mainFrame.locator('.cp-toolbar-title');
-    this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit > .fa');
+    this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit');
     this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
     this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
   }

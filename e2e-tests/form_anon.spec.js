@@ -480,11 +480,11 @@ test('anon - form - make a copy', async ({ page }) => {
     await fileActions.optionPlaceholder('Option 1').fill('Surf');
     await fileActions.optionPlaceholder('Option 2').click();
     await fileActions.optionPlaceholder('Option 2').fill('Cinema');
-    await fileActions.mainFrame.getByRole('button', { name: ' Preview form', exact: true }).click();
+    await fileActions.mainFrame.getByRole('button', { name: 'Preview form', exact: true }).click();
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.fileMenuItem(' Make a copy').click()
+      await fileActions.fileMenuItem('Make a copy').click()
     ]);
 
     const fileActions1 = new FileActions(page1)
@@ -1069,18 +1069,20 @@ test('anon - form - add and respond to conditional section question (OR)', async
     await fileActions.conditionalSection.click();
     await fileActions.orCondition.click();
     await fileActions.chooseQuestion.click();
+
     await fileActions.mainFrame.getByText('example question?').click();
     await fileActions.chooseValue.click();
     await fileActions.conditionalOption('test option one' ).click();
+
     await fileActions.orCondition.click();
     await fileActions.chooseQuestion.click();
     await fileActions.conditionalQuestion('example question?' ).click()
     await fileActions.chooseValue.click();
     await fileActions.conditionalOption('test option three' ).click();
-    await page.waitForTimeout(1000);
 
-    await fileActions.addQuestion.click();
-    await fileActions.textQuestion.click();
+    await fileActions.addQuestionInsideConditional.click();
+    await fileActions.textQuestionInsideConditional.click();
+
     await fileActions.textbox.nth(1).fill('example question two?');
     var clipboardText = await fileActions.publicLinkCopy()
     page1 = await context.newPage();
@@ -1088,6 +1090,7 @@ test('anon - form - add and respond to conditional section question (OR)', async
     const fileActions1 = new FileActions(page1)
     await fileActions1.answerOption('test option one' ).waitFor();
     await fileActions1.answerOption('test option one' ).click();
+
     await expect(fileActions1.mainFrame.getByText('example question two?')).toBeVisible();
 
     await fileActions1.answerOption('test option two' ).click();
@@ -1120,8 +1123,8 @@ test('anon - form - add and respond to conditional section question (AND)', asyn
     await fileActions.conditionalQuestion( 'example question?' ).click()
     await fileActions.chooseValue.click();
     await fileActions.conditionalOption('Option 3').click();
-    await fileActions.addQuestion.click();
-    await fileActions.textQuestion.click();
+    await fileActions.addQuestionInsideConditional.click();
+    await fileActions.textQuestionInsideConditional.click();
     await fileActions.textbox.nth(1).fill('example question two?');
     var clipboardText = await fileActions.publicLinkCopy()
     page1 = await context.newPage();

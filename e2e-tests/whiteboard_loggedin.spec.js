@@ -105,7 +105,7 @@ test('screenshot loggedin - whiteboard - save as and import template', async ({ 
     await fileActions.importTemplate(mobile);
 
     await fileActions.secureFrame.getByText('example whiteboard template').click();
-    await fileActions.whiteBoardCanvas.waitFor();
+    await fileActions.fileSaved.waitFor();
     await expect(page).toHaveScreenshot();
 
     await page.goto(`${url}/drive/`);

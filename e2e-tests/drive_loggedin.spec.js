@@ -158,7 +158,7 @@ test('loggedin - drive - filter', async ({ page }) => {
     await fileActions.mainFrame.getByText('test sheet').waitFor();
     await fileActions.mainFrame.getByText('test whiteboard').waitFor();
     await fileActions.filterDrive.click();
-    await fileActions.dropDownItem( ' Sheet' ).click()
+    await fileActions.dropDownItem( 'Sheet' ).click()
     await expect(fileActions.mainFrame.getByText('test sheet')).toBeVisible();
     await expect(fileActions.mainFrame.getByText('test whiteboard')).toHaveCount(0);
 
@@ -174,7 +174,7 @@ test('loggedin - drive - create link', async ({ page }) => {
     await cleanUp.cleanUserDrive('Cryptpad Docs');
     await fileActions.newItem.waitFor();
     await fileActions.newItem.click();
-    await fileActions.dropDownItem( ' New Link' ).click();
+    await fileActions.dropDownItem( 'New Link' ).click();
     await fileActions.mainFrame.getByPlaceholder('My link').fill('Cryptpad Docs');
     await fileActions.mainFrame.getByPlaceholder('https://example.com').fill('https://docs.cryptpad.org');
 

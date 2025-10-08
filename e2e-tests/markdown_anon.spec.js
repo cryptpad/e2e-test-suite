@@ -100,7 +100,7 @@ test('anon - slide - make a copy', async ({ page, context }) => {
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
-      await fileActions.fileMenuItem(' Make a copy').click()
+      await fileActions.fileMenuItem('Make a copy').click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/slide`), { timeout: 100000 });

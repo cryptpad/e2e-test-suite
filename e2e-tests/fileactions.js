@@ -29,22 +29,18 @@ export class FileActions {
     this.password = page.getByPlaceholder('Password', { exact: true })
 
     // drive locators
-        this.passwordPlaceholderSettings = this.mainFrame.getByPlaceholder('Password', { exact: true })
+    this.passwordPlaceholderSettings = this.mainFrame.getByPlaceholder('Password', { exact: true })
 
     // file actions
-    this.filemenu = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' File' });
-    this.filemenuMobile = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-file');
-    this.fileimport = page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Import' }).locator('a');
-    this.filecopy = page.frameLocator('#sbox-iframe').getByRole('menuitem', { name: ' Make a copy' }).locator('a');
-    this.historyPrev = page.frameLocator('#sbox-iframe').locator('.cp-toolbar-history-previous').last();
-    this.toolbar = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Tools' });
-    this.shareLink = page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
-    this.shareSecureLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
-    this.shareCopyLink = page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
-    this.filesaved = page.frameLocator('#sbox-iframe').getByText('Saved').nth(0);
-    this.deletebutton = page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Delete' });
-    // this.trash = page.frameLocator('#sbox-iframe').getByRole('listitem').filter({ hasText: 'Move to trash' });
-    this.trash = page.frameLocator('#sbox-iframe').getByText('Move to trash')
+    this.fileimport = this.mainFrame.getByRole('menuitem', { name: 'Import' }).locator('a');
+    this.filecopy = this.mainFrame.getByRole('menuitem', { name: 'Make a copy' }).locator('a');
+    this.historyPrev = this.mainFrame.locator('.cp-toolbar-history-previous').last();
+    this.toolbar = this.mainFrame.getByRole('button', { name: 'Tools' });
+    this.shareLink = this.mainFrame.getByRole('button', { name: 'Share' });
+    this.shareSecureLink = this.mainFrame.getByRole('button', { name: 'Share' });
+    this.shareCopyLink = this.mainFrame.getByRole('button', { name: 'Copy link' });
+    this.deletebutton = this.mainFrame.getByRole('button', { name: 'Delete' });
+    this.trash = this.mainFrame.getByText('Move to trash')
 
     this.loginLinkDrive = this.mainFrame.getByRole('link', { name: 'Log in' });
     this.registerLinkDrive = this.mainFrame.getByRole('link', { name: 'Sign up' });
@@ -62,16 +58,12 @@ export class FileActions {
     this.driveContentList = this.mainFrame.locator('.cp-app-drive-content-list')
     this.driveContentGrid = this.mainFrame.locator('.cp-app-drive-content-grid')
     this.eraseDrive = this.mainFrame.locator('.cp-toolbar-bottom-right').getByRole('button').nth(1)
-    this.fileUploadClose = this.mainFrame.locator('.cp-fileupload-header-close > .fa')
+    this.fileUploadClose = this.mainFrame.locator('#cp-fileupload svg').first()
     this.notifPanel = this.mainFrame.getByText('Open notifications panel')
-    this.filesButton = this.mainFrame.getByRole('button', { name: ' Files' })
+    this.filesButton = this.mainFrame.getByRole('button', { name: 'Files' })
     this.template = this.mainFrame.locator('.cp-app-drive-element-name').filter({ hasText: 'template' })
     this.cleanNotifs = this.mainFrame.locator('div').filter({ hasText: /^Notifications - All$/ }).locator('span')
 
-    // file locators
-    // this.newFile = this.mainFrame.getByRole('menuitem', { name: 'New' }).locator('a');
-    // this.storeFile = this.mainFrame.getByRole('menuitem', { name: 'Store' }).locator('a');
-    // this.trashFile = this.mainFrame.getByRole('menuitem', { name: 'Move to trash' }).locator('a');
     this.alertMessage = this.mainFrame.locator('.alertify').locator('.msg');
     this.okButton = this.mainFrame
       .locator('.dialog')
@@ -84,21 +76,18 @@ export class FileActions {
 
     this.fileName = this.mainFrame.locator('.cp-toolbar-title');
     this.fileNameEdit = this.mainFrame.locator('.cp-toolbar-title-editable');
-    this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit > .fa');
+    this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit');
     this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
     this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
 
-    this.filemenu = this.mainFrame.getByRole('button', { name: ' File' });
+    this.filemenu = this.mainFrame.getByRole('button', { name: 'File', exact: true });
     this.filemenuMobile = this.mainFrame.locator('.cp-toolbar-file');
-    // this.fileimport = this.mainFrame.getByRole('menuitem', { name: ' Import' }).locator('a');
-    // this.fileMenuItem(' Make a copy') = this.mainFrame.getByRole('menuitem', { name: ' Make a copy' }).locator('a');
     this.historyPrevFirst = this.mainFrame.locator('.cp-toolbar-history-previous').first();
     this.historyPrevLast = this.mainFrame.locator('.cp-toolbar-history-previous').last();
     this.toolbarButton = this.mainFrame.getByRole('button', { name: 'Tools' });
-    // this.shareButton = this.mainFrame.getByRole('button', { name: ' Share' });
     this.shareByLink = this.mainFrame.locator('#cp-share-link-preview')
-    this.shareSecureLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Share' });
-    this.shareCopyLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: ' Copy link' });
+    this.shareSecureLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Share' });
+    this.shareCopyLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' });
     this.fileSaved = this.mainFrame.locator('.cp-toolbar-spinner').getByText('Saved');
     this.deleteButton = this.mainFrame.getByRole('button', { name: 'Delete' });
     this.moveToTrash = this.mainFrame.getByText('Move to trash')
@@ -110,8 +99,8 @@ export class FileActions {
     this.linkTab = this.page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link');
     this.linkTabMobile = this.page.frameLocator('#sbox-secure-iframe').getByLabel('Link');
     this.createFile = this.mainFrame.getByRole('button', { name: 'Create' });
-    this.oneTimeLocal = this.mainFrame.getByRole('button', { name: 'One time ' })
-    this.oneTime = this.mainFrame.getByRole('button', { name: ' One time' })
+    this.oneTimeLocal = this.mainFrame.getByRole('button', { name: 'One time' })
+    this.oneTime = this.mainFrame.getByRole('button', { name: 'One time' })
     this.textbox = this.mainFrame.getByRole('textbox')
     this.areYouSure = this.mainFrame.getByText('Are you sure?')
     this.areYouSureButton = this.mainFrame.getByRole('button', { name: 'Are you sure?' })
@@ -121,14 +110,14 @@ export class FileActions {
     this.downloadCryptDrive = this.mainFrame.getByText('Download my CryptDrive')
     this.driveSideBar = this.mainFrame.locator('#cp-sidebarlayout-leftside')
     this.filterDrive = this.mainFrame.getByRole('button', { name: 'Filter' })
-    this.newItem = this.mainFrame.getByRole('button', { name: ' New' })
+    this.newItem = this.mainFrame.getByRole('button', { name: 'New' })
     this.newPasswordMessage = this.mainFrame.getByText(/^This document is protected with a new password/)
     this.typePassword = this.mainFrame.getByPlaceholder('Type the password here...')
     this.readOnly = this.mainFrame.getByText('Read only')
     this.destroyedByOwner = this.mainFrame.getByText('This document was destroyed by an owner')
     this.notAuthorisedToAccess = this.mainFrame.getByText(/^You are not authorized to access this document/)
     this.teamSlot = this.mainFrame.locator('#cp-sidebarlayout-rightside')
-    this.emptyTrash = this.mainFrame.getByRole('button', { name: ' Empty the trash' })
+    this.emptyTrash = this.mainFrame.getByRole('button', { name: 'Empty the trash' })
     this.teamNotif = this.mainFrame.getByText('test-user has invited you to join their team: test team')
     
 
@@ -139,7 +128,7 @@ export class FileActions {
     this.okButton = this.mainFrame.getByRole('button', { name: 'OK (enter)' });
     this.saveButton = this.mainFrame.getByRole('button', { name: 'Save' })
     this.updateButton = this.mainFrame.getByRole('button', { name: 'Update' })
-    this.addButton = this.mainFrame.getByRole('button', { name: ' Add' })
+    this.addButton = this.mainFrame.getByRole('button', { name: 'Add', exact: true })
     this.submitButton = this.mainFrame.getByRole('button', { name: 'Submit' })
     this.submitButtonSecure = this.secureFrame.getByRole('button', { name: 'Submit' })
     this.openButton = this.mainFrame.getByRole('button', { name: 'Open' })
@@ -152,73 +141,75 @@ export class FileActions {
 
     // form
     this.copyPublicLink = this.mainFrame.getByRole('button', { name: 'Copy public link' });
-    this.formSettings = this.mainFrame.getByRole('button', { name: ' Form settings' })
+    this.formSettings = this.mainFrame.getByRole('button', { name: 'Form settings' })
     this.closeModal = this.mainFrame.locator('.cp-modal-close')
     this.formOptionOne = this.mainFrame.getByText('Option 1')
     this.formOptionTwo = this.mainFrame.getByText('Option 2')
     this.answerAnon = this.mainFrame.getByText('Answer anonymously')
     this.answerAnonSpan = this.mainFrame.locator('label').filter({ hasText: 'Answer anonymously' }).locator('span').first()
-    this.editResponses = this.mainFrame.getByRole('button', { name: ' Edit my responses' })
-    this.editQuestion = this.mainFrame.getByRole('button', { name: ' Edit' })
-    this.checkbox = this.mainFrame.getByRole('button', { name: ' Checkbox' })
+    this.editResponses = this.mainFrame.getByRole('button', { name: 'Edit my responses' })
+    this.editQuestion = this.mainFrame.getByRole('button', { name: 'Edit' })
+    this.checkbox = this.mainFrame.getByRole('button', { name: 'Checkbox', exact: true })
     this.setClosingDate = this.mainFrame.getByRole('button', { name: 'Set closing date' })
-    this.noResponses = this.mainFrame.getByRole('button', { name: ' Responses (0)' })
-    this.oneResponse = this.mainFrame.getByRole('button', { name: ' Responses (1)' })
+    this.noResponses = this.mainFrame.getByRole('button', { name: 'Responses (0)' })
+    this.oneResponse = this.mainFrame.getByRole('button', { name: 'Responses (1)' })
     this.oneTimeOnly = this.mainFrame.locator('#cp-form-settings').getByText('One time only')
     this.multipleTimes = this.mainFrame.locator('#cp-form-settings').getByText('Multiple times', { exact: true })
     this.multipleTimesEdit = this.mainFrame.locator('#cp-form-settings').getByText('Multiple times and edit/delete')
-    this.submitAgain = this.mainFrame.getByRole('button', { name: ' Submit again' })
+    this.submitAgain = this.mainFrame.getByRole('button', { name: 'Submit again' })
     this.thereAreNoResponses = this.mainFrame.getByText('There are no responses')
     this.questionHere = this.mainFrame.getByText('Your question here?')
     this.publishResponses = this.mainFrame.getByRole('button', { name: 'Publish responses' })
-    this.addOption = this.mainFrame.getByRole('button', { name: ' Add option' })
+    this.addOption = this.mainFrame.getByRole('button', { name: 'Add option' })
     this.editOption = this.mainFrame.getByPlaceholder('Option 1')
-    this.textButton = this.mainFrame.getByRole('button', { name: ' Text' })
+    this.textButton = this.mainFrame.getByRole('button', { name: 'Text' })
     this.mobileTimepicker = this.mainFrame.locator('.flatpickr-am-pm')
     this.formContainer = this.mainFrame.locator('#cp-app-form-container')
     this.formEditor = this.mainFrame.locator('#cp-app-form-editor')
     this.openForm = this.mainFrame.getByRole('button', { name: 'Open', exact: true })
     this.formStatus = this.mainFrame.locator('#cp-form-settings')
-    this.conditionalSection = this.mainFrame.getByRole('button', { name: ' Conditional section' })
-    this.orCondition = this.mainFrame.getByRole('button', { name: ' Add OR condition' })
-    this.andCondition = this.mainFrame.getByRole('button', { name: ' Add AND condition' })
-    this.chooseQuestion = this.mainFrame.getByRole('button', { name: ' Choose a question' })
-    this.chooseValue = this.mainFrame.getByRole('button', { name: ' Choose a value' })
+    this.conditionalSection = this.mainFrame.getByRole('button', { name: 'Conditional section' })
+    this.orCondition = this.mainFrame.getByRole('button', { name: 'Add OR condition' })
+    this.andCondition = this.mainFrame.getByRole('button', { name: 'Add AND condition' })
+    this.chooseQuestion = this.mainFrame.getByRole('button', { name: 'Choose a question' })
+    this.chooseValue = this.mainFrame.getByRole('button', { name: 'Choose a value' })
     this.removeClosingDate = this.mainFrame.getByRole('button', { name: 'Remove closing date', exact: true })
     this.anonymizeResponses = this.mainFrame.locator('label').filter({ hasText: 'Anonymize responses' }).locator('span').first()
     this.showIndividualAnswers = this.mainFrame.getByRole('button', { name: 'Show individual answers' })
     this.oneTotalResponse = this.mainFrame.getByRole('heading', { name: 'Total responses: 1' })
     this.formTextBox = this.mainFrame.locator('#cp-app-form-container input[type="text"]')
-    this.formEditorButton = this.mainFrame.getByRole('button', { name: ' Editor' })
-    this.exportToSheet = this.mainFrame.getByRole('button', { name: ' Export to Sheet' })
-    this.pageBreak = this.mainFrame.getByRole('button', { name: ' Page break' })
+    this.formEditorButton = this.mainFrame.getByRole('button', { name: 'Editor' })
+    this.exportToSheet = this.mainFrame.getByRole('button', { name: 'Export to Sheet' })
+    this.pageBreak = this.mainFrame.getByRole('button', { name: 'Page break' })
     this.nextPage = this.mainFrame.locator('.btn.btn-secondary.cp-next')
-    this.pollCell = this.mainFrame.locator('.cp-poll-cell > i').first()
-    this.poll = this.mainFrame.getByRole('button', { name: ' Poll' })
+    this.pollCell = this.mainFrame.locator('.cp-poll-cell.cp-form-poll-choice').first()
+    this.poll = this.mainFrame.getByRole('button', { name: 'Poll' })
     this.listOption = this.mainFrame.getByText(/^\?test option/)
     this.orderedListOption = this.mainFrame.getByText(/^test option/)
     this.addQuestion = this.mainFrame.locator('.btn.cp-form-creator-inline-add').nth(2)
-    this.textQuestion = this.mainFrame.locator('.cptools.cptools-form-text').nth(2)
-    this.orderedList = this.mainFrame.getByRole('button', { name: ' Ordered list' })
-    this.paragraphQuestion = this.mainFrame.getByRole('button', { name: ' Paragraph' })
+    this.textQuestion = this.mainFrame.getByRole('button', { name: 'Text' })
+    this.addQuestionInsideConditional = this.mainFrame.locator('.cp-form-section-sortable > .cp-form-creator-add-inline > button')
+    this.textQuestionInsideConditional = this.mainFrame.locator('.cp-form-section-sortable > .cp-form-creator-add-inline > .cp-form-creator-control-inline > div > button').first()
+    this.orderedList = this.mainFrame.getByRole('button', { name: 'Ordered list' })
+    this.paragraphQuestion = this.mainFrame.getByRole('button', { name: 'Paragraph' })
     this.paragraphQuestionContent = this.mainFrame.locator('#cp-app-form-container textarea')
     this.paragraphAnswer = this.mainFrame.locator('textarea')
-    this.choiceQuestion = this.mainFrame.getByRole('button', { name: ' Choice' })
+    this.choiceQuestion = this.mainFrame.getByRole('button', { name: 'Choice', exact: true })
     this.choiceQuestionInput = this.mainFrame.locator('.cp-form-edit-block-input > input')
-    this.checkboxGridQuestion = this.mainFrame.getByRole('button', { name: ' Checkbox Grid' })
-    this.dateQuestion = this.mainFrame.getByRole('button', { name: ' Date' })
+    this.checkboxGridQuestion = this.mainFrame.getByRole('button', { name: 'Checkbox Grid' })
+    this.dateQuestion = this.mainFrame.getByRole('button', { name: 'Date' })
     this.choiceGridItem = this.mainFrame.locator('div').filter({ hasText: /^Add item$/ }).getByRole('textbox')
     this.choiceGridOption = this.mainFrame.locator('div').filter({ hasText: /^Add option$/ }).getByRole('textbox')
-    this.choiceGridQuestion = this.mainFrame.getByRole('button', { name: ' Choice Grid' })
+    this.choiceGridQuestion = this.mainFrame.getByRole('button', { name: 'Choice Grid' })
     this.requiredQuestion = this.mainFrame.locator('.cp-checkmark-label').getByText('Required').nth(0)
-    this.viewAllResponses = this.mainFrame.getByRole('button', { name: ' View all responses (1)' })
+    this.viewAllResponses = this.mainFrame.getByRole('button', { name: 'View all responses (1)' })
 
     // pad
     this.padEditor = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]')
     this.padEditorBody = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]').locator('body');
     this.padEditorHTML = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]').locator('html');
     this.padToolbar = this.mainFrame.locator('.cke_toolbox_main.cke_reset_all')
-    this.html = this.mainFrame.getByRole('button', { name: ' .html' })
+    this.html = this.mainFrame.getByRole('button', { name: '.html' })
     this.snapshots = this.mainFrame.getByText('Snapshots')
     this.newSnapshot = this.mainFrame.getByRole('button', { name: 'New snapshot' })
     this.addComment = this.mainFrame.locator('.cp-comment-bubble').locator('button')
@@ -228,7 +219,7 @@ export class FileActions {
     // markdown
     this.slideEditor = this.mainFrame.locator('.CodeMirror-code');
     this.slideContent = this.mainFrame.locator('#cp-app-slide-modal-content')
-    this.nextSlide = this.mainFrame.locator('#cp-app-slide-modal-right span')
+    this.nextSlide = this.mainFrame.locator('#cp-app-slide-modal-right').getByRole('img')
 
     //kanban
     this.addBoard = this.mainFrame.locator('#kanban-addboard')
@@ -246,18 +237,23 @@ export class FileActions {
 
     this.editNewBoard = this.mainFrame.getByRole('banner').filter({ hasText: 'New board' }).getByLabel('Edit this board')
     this.editKanbanTags = this.mainFrame.locator('#cp-kanban-edit-tags')
-    this.kanbanTags = this.mainFrame.getByRole('button', { name: ' Tags' });
+    this.kanbanTags = this.mainFrame.getByRole('button', { name: 'Tags' });
     this.kanbanContent = this.mainFrame.locator('#cp-app-kanban-content')
-    this.clearFilter = this.mainFrame.getByRole('button', { name: ' Clear filter' })
+    this.clearFilter = this.mainFrame.getByRole('button', { name: 'Clear filter' })
     this.kanbanControls = this.mainFrame.locator('#cp-kanban-controls')
 
     // teams
     this.typeMessage = this.mainFrame.getByRole('textbox', { name: 'Type a message here...' }).first()
     this.teamAddNotif = this.mainFrame.getByText('test-user has invited you to join their team: test team')
-    this.demoteTestUser3Arrow = this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-down').last()
-    this.promoteTestUser3Arrow = this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('.fa.fa-angle-double-up')
+    this.demoteTestUser3Arrow = this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('[data-original-title="Demote"]').last()
+    this.promoteTestUser3Arrow = this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('[data-original-title="Promote"]')
+    this.offerOwnershipTestUser3Arrow = this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: 'test-user3' }).locator('[data-original-title="Offer ownership"]')
+
     this.inviteMembers = this.mainFrame.getByText('Invite members')
     this.teamAdmin = this.mainFrame.getByText('Administration')
+    this.teamChat = this.mainFrame.getByText('Chat')
+    this.teamMembers = this.mainFrame.getByText('Members')
+
     this.inviteMembersButton = this.mainFrame.getByRole('button', { name: 'Invite members' })
     this.inviteButton = this.mainFrame.getByRole('button', { name: 'Invite', exact: true })
     this.leaveTeam = this.mainFrame.getByRole('button', { name: 'Leave this team' })
@@ -274,15 +270,15 @@ export class FileActions {
     // this.displayName = this.mainFrame.locator('#cp-settings-displayname')
     this.saveDisplayName = this.mainFrame.getByRole('button', { name: 'Save' }).first()
     this.newPassword = this.mainFrame.getByPlaceholder('New password', { exact: true })
-    this.doneButton = this.mainFrame.getByRole('button', { name: ' Done' })
+    this.doneButton = this.mainFrame.getByRole('button', { name: 'Done' })
     this.continueButton = this.page.getByRole('button', { name: 'Continue' })
     this.continueButton2FA = this.mainFrame.getByRole('button', { name: 'Continue' })
     this.confirmPassword = this.mainFrame.getByPlaceholder('Confirm new password')
     this.contactRequest = this.mainFrame.getByRole('button').filter({ hasText: 'contact request' })
     this.removeContact = this.mainFrame.getByRole('button', { name: 'Remove this contact' })
     this.cancelRequest = this.mainFrame.getByText('Contact request pending...Cancel')
-    this.cancelIconButton = this.mainFrame.getByRole('button', { name: ' Cancel' })
-    this.enable2FA = this.mainFrame.getByRole('button', { name: ' Enable 2FA' })
+    this.cancelIconButton = this.mainFrame.getByRole('button', { name: 'Cancel' })
+    this.enable2FA = this.mainFrame.getByRole('button', { name: 'Enable 2FA' })
     this.loadingMessage = this.mainFrame.locator('#cp-loading-message')
     this.done = this.mainFrame.locator('div').filter({ hasText: /^Done$/ }).getByRole('textbox')
     this.disable2FA = this.mainFrame.getByRole('button', { name: 'Disable 2FA' })
@@ -292,7 +288,7 @@ export class FileActions {
     this.confirmDisable2FA = this.mainFrame.getByRole('button', { name: 'Confirm disable 2FA' })
     this.verificationCode = this.page.getByPlaceholder('Verification code')
     this.verificationCodeFrame = this.mainFrame.getByPlaceholder('Verification code')
-    this.shareLinkButton = this.page.frameLocator('#sbox-iframe').getByRole('button', { name: ' Share' });
+    this.shareLinkButton = this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Share' });
     this.shareProfileButton = this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Share' });
 
     
@@ -303,18 +299,18 @@ export class FileActions {
     this.calendarTestEvent = this.mainFrame.locator('.tui-full-calendar-time-schedule-content').getByText('test event')
     this.nextWeek = this.mainFrame.getByLabel('Right')
     this.prevWeek = this.mainFrame.getByRole('button', { name: 'Left' })
-    this.editEvent = this.mainFrame.getByRole('button', { name: ' Edit' })
+    this.editEvent = this.mainFrame.getByRole('button', { name: 'Edit' })
     this.eventLocation = this.mainFrame.getByPlaceholder('Location')
     this.startDate = this.mainFrame.getByPlaceholder('Start date')
     this.endDate = this.mainFrame.getByPlaceholder('End date')
     this.calendarSlot = this.mainFrame.locator('#cp-sidebarlayout-rightside')
     this.newCalendar = this.mainFrame.getByRole('button', { name: 'New calendar' })
-    this.calendarSettings = this.mainFrame.getByLabel('Calendar Settings')
+    this.calendarSettings = this.mainFrame.locator('.btn.btn-default.small.cp-calendar-actions')
     this.myCalendar = this.mainFrame.getByRole('button', { name: 'My calendar' })
     this.remove = this.mainFrame.locator('a').filter({ hasText: 'Remove' }).nth(1)
     this.testEvent = this.mainFrame.getByText('test event')
     this.testCalendar = this.mainFrame.getByText('test calendar')
-    this.testCalendarSettings = this.mainFrame.locator('div').filter({ hasText: /^test calendar/ }).locator('.btn.btn-default.fa.fa-gear.small.cp-calendar-actions')
+    this.testCalendarSettings = this.mainFrame.locator('.btn.btn-default.small.cp-calendar-actions').nth(1)
     this.contactList = this.mainFrame.locator('#cp-app-contacts-friendlist')
     this.displayName = this.mainFrame.getByRole('textbox', { name: 'Display name' })
 
@@ -331,7 +327,7 @@ export class FileActions {
     this.clearButton = this.mainFrame.getByRole('button', { name: 'Clear' })
     this.whiteBoardText = this.mainFrame.locator('.cp-whiteboard-text')
     this.whiteBoardDelete = this.mainFrame.locator('#cp-app-whiteboard-delete')
-    this.whiteBoardArrows = this.mainFrame.locator('.btn.move.fa.fa-arrows')
+    this.whiteBoardArrows = this.mainFrame.locator('.cp-whiteboard-type > button:nth-child(2)')
     this.whiteBoardWidth = this.mainFrame.getByLabel('Width:')
     this.whiteBoardOpacity = this.mainFrame.getByLabel('Opacity:')
 
@@ -345,7 +341,7 @@ export class FileActions {
     this.profileDisplayName = this.mainFrame.locator('#cp-app-profile-rightside')
     this.driveElementText = this.mainFrame.locator('.cp-app-drive-element-name-text')
     this.trash = this.mainFrame.getByText('Trash', { exact: true })
-    this.removeButton = this.mainFrame.getByRole('button', { name: ' Remove' })
+    this.removeButton = this.mainFrame.getByRole('button', { name: 'Remove' })
 
     this.slideEditorContainer = this.mainFrame.locator('#cp-app-slide-editor')
     this.padEditorContainer = this.mainFrame.locator('#cp-app-pad-editor')
@@ -384,7 +380,7 @@ export class FileActions {
 
 
   removeOwner(user) {
-    return this.secureFrame.locator('.cp-usergrid-user.large').filter({ hasText: user }).locator('.fa.fa-times')
+    return this.secureFrame.locator('.cp-usergrid-user.large').filter({ hasText: user }).getByRole('button')
   }
 
   ownersGrid(user) {
@@ -435,7 +431,7 @@ export class FileActions {
   }
   
   removeMember (member) {
-    return this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: member }).locator('.fa.fa-times').click()
+    return this.mainFrame.locator('.cp-team-roster-member').filter({ hasText: member }).locator('[data-original-title="Kick from the team"]').click()
   }
 
 
@@ -527,7 +523,7 @@ export class FileActions {
     await this.formSettings.waitFor();
     await this.formSettings.click();
     await this.page.waitForTimeout(2000)
-    const visible = await this.mainFrame.getByRole('heading', { name: ' Form settings' }).locator('span').isVisible();
+    const visible = await this.formSettings.locator('span').isVisible();
     console.log("visible", visible)
     if (visible === false) {
       await this.formSettings.waitFor();
@@ -549,7 +545,7 @@ export class FileActions {
   async promoteTestUser3 () {
     await this.promoteTestUser3Arrow.waitFor();
     await this.promoteTestUser3Arrow.click();
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(3000);
   
   }
 
@@ -560,7 +556,7 @@ export class FileActions {
   }
 
   teamTab (item) {
-    return  this.mainFrame.locator('div').filter({ hasText: item }).locator('span').first()
+    return  this.mainFrame.locator('div').filter({ hasText: item }).first()
   
   }
 
@@ -642,14 +638,14 @@ export class FileActions {
   }
 
   async clickTags (local) {
-    await this.mainFrame.getByRole('menuitem', { name: ' Tags' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: 'Tags' }).locator('a').click();
   }
 
   async clickLinkTab (mobile) {
     if (mobile) {
-      await this.page.frameLocator('#sbox-secure-iframe').getByLabel('Link').click();
+      await this.linkTabMobile.click();
     } else {
-      await this.page.frameLocator('#sbox-secure-iframe').locator('#cp-tab-link').click();
+      await this.linkTab.click();
     }
   }
 
@@ -714,13 +710,13 @@ export class FileActions {
 
   async responses (visible) {
     if (visible) {
-      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).waitFor();
-      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).click();
+      await this.oneResponse.waitFor();
+      await this.oneResponse.click();
     } else {
       await this.page.reload();
-      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).waitFor()
+      await this.oneResponse.waitFor()
       await this.page.waitForTimeout(1000)
-      await this.mainFrame.getByRole('button', { name: ' Responses (1)' }).click();
+      await this.oneResponse.click();
     }
   }
 
@@ -839,7 +835,7 @@ export class FileActions {
   }
 
   async importClick (mobile) {
-    await this.fileMenuItem(' Import').click();
+    await this.fileMenuItem('Import').click();
   }
 
   async typeTestTextCode (mobile, string) {
@@ -863,30 +859,30 @@ export class FileActions {
     if (mobile) {
       await this.mainFrame.locator('.cp-toolar-access-button').click();
     } else {
-      await this.mainFrame.getByRole('button', { name: ' Access' }).click();
+      await this.mainFrame.getByRole('button', { name: 'Access' }).click();
     }
   }
 
   async history (mobile) {
     await this.filemenuClick(mobile);
-    await this.mainFrame.getByRole('menuitem', { name: ' History' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: 'History' }).locator('a').click();
   }
 
   async export (mobile) {
     await this.filemenuClick(mobile);
-    await this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').waitFor();
-    await this.mainFrame.getByRole('menuitem', { name: ' Export' }).locator('a').click({force: true});
+    await this.mainFrame.getByRole('menuitem', { name: 'Export' }).locator('a').waitFor();
+    await this.mainFrame.getByRole('menuitem', { name: 'Export' }).locator('a').click({force: true});
   }
 
   async importTemplate (mobile, local) {
     await this.filemenuClick(mobile);
-    await this.mainFrame.getByRole('menuitem', { name: ' Import a template' }).locator('a').waitFor()
-    await this.mainFrame.getByRole('menuitem', { name: ' Import a template' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: 'Import a template' }).locator('a').waitFor()
+    await this.mainFrame.getByRole('menuitem', { name: 'Import a template' }).locator('a').click();
   }
 
   async saveTemplate (mobile, local) {
     await this.filemenuClick(mobile);
-    await this.mainFrame.getByRole('menuitem', { name: ' Save as template' }).locator('a').click();
+    await this.mainFrame.getByRole('menuitem', { name: 'Save as template' }).locator('a').click();
   }
 
   async setStatus (status, reason) {

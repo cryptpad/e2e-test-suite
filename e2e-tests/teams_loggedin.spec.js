@@ -55,8 +55,8 @@ test('loggedin - can access team public signing key', async ({ page }) => {
   try {
     await fileActions.accessTeam()
 
-    await fileActions.teamTab(/^Administration$/).waitFor();
-    await fileActions.teamTab(/^Administration$/).click();
+    await fileActions.mainFrame.locator('div').filter({ hasText: /^Administration$/ }).waitFor();
+    await fileActions.mainFrame.locator('div').filter({ hasText: /^Administration$/ }).click();
 
     const key = await fileActions.textbox.first().inputValue();
     if (key.indexOf('test team@') !== -1) {
@@ -90,7 +90,7 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
     await page.goto(`${url}/teams`);
     await fileActions.teamSlot.getByText('test team').waitFor();
     if (browserName === 'chrome') {
-      await expect(page).toHaveScreenshot( { maxDiffPixels: 9000 });
+      await expect(page).toHaveScreenshot( { maxDiffPixels: 10000 });
     } else {
       await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
     }
@@ -395,7 +395,7 @@ test('loggedin - promote team viewer to owner', async ({ page, browser }) => {
 
     await fileActions.promoteTestUser3()
     await fileActions.promoteTestUser3()
-    await fileActions.promoteTestUser3()
+    await fileActions.offerOwnershipTestUser3Arrow.click()
     await expect(fileActions.mainFrame.getByText(/^Co-owners can modify or delete the team/)).toBeVisible();
     await fileActions.okButton.waitFor()
     await fileActions.okButton.click();

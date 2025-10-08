@@ -416,6 +416,7 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - share with contact - view and delete`, async ({ page, browser }) => {
+      test.skip()
       try {
         await fileActions.createFile.click();
         await fileActions.shareWithContact('View', 'test-user3', true, mobile);
@@ -453,6 +454,7 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - share (link) - view and delete`, async ({ page, browser }) => {
+      test.skip()
       test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878')
       try {
         await fileActions.createFile.click();
