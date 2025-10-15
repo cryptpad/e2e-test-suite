@@ -318,7 +318,7 @@ export class FileActions {
     this.tagInput = this.mainFrame.locator('.token-input.ui-autocomplete-input')
     this.tag = this.mainFrame.getByRole('link', { name: '#testtag' })
     this.addOwner = this.secureFrame.locator('.cp-share-column-mid > .btn').nth(1)
-    this.usersPanel = this.mainFrame.locator('.fa.fa-users').nth(1)
+    this.usersPanel = this.mainFrame.locator('.cp-toolbar-userlist-button').nth(0)
     this.templateName = this.mainFrame.locator('.dialog').getByRole('textbox')
     this.creationPassword = this.mainFrame.locator('#cp-creation-password-val')
     this.changePasswordInput = this.secureFrame.locator('#cp-app-prop-change-password')

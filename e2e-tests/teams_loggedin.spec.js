@@ -101,11 +101,13 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
 
     // change avatar back to original
     const fileChooserPromise1 = page.waitForEvent('filechooser');
+    // await fileActions.mainFrame.getByLabel('Upload a new file to your').waitFor();
+
     await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
     const fileChooser1 = await fileChooserPromise1;
     await fileChooser1.setFiles('testdocuments/teamavatar-empty.png');
-    await fileActions.okButton.waitFor();
-    await fileActions.okButton.click();
+    // await fileActions.okButton.waitFor();
+    // await fileActions.okButton.click();
     await page.waitForTimeout(5000);
     await page.goto(`${url}/teams`);
     await fileActions.teamSlot.getByText('test team').waitFor();
