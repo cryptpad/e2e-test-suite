@@ -7,8 +7,12 @@
     "csv-parser": "^3.2.0",
     "dotenv": "^16.0.3",
     "fast-csv": "^5.0.2",
+    "mammoth": "^1.11.0",
     "node-fetch": "^2.6.1",
     "otpauth": "^9.2.2",
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.0",
+    "pdftojson": "^0.0.3",
     "playwright-core": "1.33",
     "unzip": "^0.1.11",
     "unzipper": "^0.10.14"

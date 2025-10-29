@@ -34,7 +34,8 @@ export class FileActions {
     // file actions
     this.fileimport = this.mainFrame.getByRole('menuitem', { name: 'Import' }).locator('a');
     this.filecopy = this.mainFrame.getByRole('menuitem', { name: 'Make a copy' }).locator('a');
-    this.historyPrev = this.mainFrame.locator('.cp-toolbar-history-previous').last();
+    this.historyPrev = this.mainFrame.locator('.cp-toolbar-history-previous').first();
+    this.historyFastPrev = this.mainFrame.locator('.cp-toolbar-history-previous').last();
     this.toolbar = this.mainFrame.getByRole('button', { name: 'Tools' });
     this.shareLink = this.mainFrame.getByRole('button', { name: 'Share' });
     this.shareSecureLink = this.mainFrame.getByRole('button', { name: 'Share' });
@@ -242,6 +243,12 @@ export class FileActions {
     this.clearFilter = this.mainFrame.getByRole('button', { name: 'Clear filter' })
     this.kanbanControls = this.mainFrame.locator('#cp-kanban-controls')
 
+    this.docEditor = this.mainFrame.locator('iframe[name="frameEditor"]')
+    this.docEditorInput = this.mainFrame.frameLocator('iframe[name="frameEditor"]').locator('#area_id')
+    this.insertTab = this.mainFrame.frameLocator('iframe[name="frameEditor"]').getByRole('tab', { name: 'Insert' })
+    this.insertImg = this.mainFrame.frameLocator('iframe[name="frameEditor"]').getByRole('button', { name: 'Image', exact: true })
+    this.imgFromFile = this.mainFrame.frameLocator('iframe[name="frameEditor"]').getByText('Image from file')
+    
     // teams
     this.typeMessage = this.mainFrame.getByRole('textbox', { name: 'Type a message here...' }).first()
     this.teamAddNotif = this.mainFrame.getByText('test-user has invited you to join their team: test team')
@@ -841,7 +848,8 @@ export class FileActions {
   async typeTestTextCode (mobile, string) {
     await this.fileSaved.waitFor();
     for (let i = 0; i < string.length; i++) {
-      await this.page.keyboard.press(`${string.charAt(i)}`);
+      
+      await this.page.keyboard.press(`${string.charAt(i)}`, {delay: 100});
     }
   }
 

@@ -14,7 +14,7 @@ const caps = {
   build: 'localhost-5',
   'browserstack.username': process.env.BROWSERSTACK_USERNAME,
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
-  'browserstack.local': !!process.env.PW_URL.includes('localhost'),
+  // 'browserstack.local': !!process.env.PW_URL.includes('localhost'),
   // "browserstack.idleTimeout" : "300",
   'browserstack.playwrightVersion': clientPlaywrightVersion,
   'bstack:options': {
