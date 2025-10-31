@@ -17,6 +17,7 @@ let browserName;
 let browserstackMobile;
 let fileActions;
 let fileActions1
+let page1
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(90000);
@@ -129,5 +130,133 @@ test('anon - presentation - export (pdf)', async ({ page, context }) => {
 
   } catch (e) {
     await fileActions.toFailure(e,'Can\'t export Document as .pdf');
+  }
+});
+
+test('anon - presentation - export (pptx)', async ({ page, context }) => {
+  try {
+
+
+    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.dispatchEvent('focus');
+    await fileActions.docEditor.dispatchEvent('select');
+
+    await fileActions.typeTestTextCode(mobile, 'test text');
+
+    await fileActions.export(mobile);
+    await fileActions.textbox.fill('test presentation');
+
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      await fileActions.okButton.click()
+    ]);
+
+    await download.saveAs('/tmp/test presentation');
+    const PptxParser = require("node-pptx-parser").default;
+
+    const buffer = fs.readFileSync('/tmp/test presentation');
+    async function main() {
+        const parser = new PptxParser('/tmp/test presentation');
+        try {
+            const textContent = await parser.extractText();
+            textContent.forEach((slide) => {
+                expect(slide.text.join("\n").trim()).toEqual('test text')
+            });
+            } catch (error) {
+                console.error("Error:", error.message);
+            }
+        }
+
+    main();
+
+    await fileActions.toSuccess( 'Can export Document as .pptx');
+
+  } catch (e) {
+    await fileActions.toFailure(e,'Can\'t export Document as .pptx');
+  }
+});
+
+test('anon - presentation - history (previous version)', async ({ page, context }) => {
+  try {
+
+    await fileActions.docEditor.click();
+    await fileActions.docEditor.dispatchEvent('focus');
+    await fileActions.docEditor.dispatchEvent('select');
+
+    await fileActions.typeTestTextCode(mobile, 'test text');
+
+    await fileActions.history(mobile);
+    await fileActions.historyFastPrev.click()
+    await fileActions.fileSaved.waitFor()
+    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
+
+    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await fileActions.docEditor.click();
+
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+
+    expect(clipboardText.trim()).toEqual('');
+    
+    await fileActions.toSuccess( 'Can input text into Document');
+
+  } catch (e) {
+    await fileActions.toFailure(e,'Can\'t input text into Document');
+  }
+});
+
+test('anon - doc - history (share)', async ({ page, browser, context }) => {
+  try {
+
+    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.dispatchEvent('focus');
+    await fileActions.docEditor.dispatchEvent('select');
+
+    await fileActions.typeTestTextCode(mobile, 'test text');
+
+    await fileActions.history(mobile);
+    await fileActions.historyFastPrev.click()
+    await fileActions.fileSaved.waitFor()
+    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
+    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+
+    
+    await fileActions.docEditor.click({force: true});
+
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+    expect(clipboardText.trim()).toEqual('');
+
+    var clipboardText2 = await fileActions.getShareLink(mobile)
+    page1 = await browser.newPage();
+
+    await page1.goto(`${clipboardText2}`);
+    fileActions1 = new FileActions(page1);
+    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({timeout: 5000})
+
+    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden', timeout: 5000})
+
+    await fileActions1.docEditor.waitFor()
+
+    await fileActions1.docEditor.click({force: true});
+
+    await page1.keyboard.press('Control+A');
+    await page1.keyboard.press('Control+C');
+
+    const clipboardText3 = await page1.evaluate(() => navigator.clipboard.readText());
+
+    expect(clipboardText3.trim()).toEqual('');
+
+    
+    await fileActions.toSuccess( 'Can input text into Document');
+
+  } catch (e) {
+    await fileActions.toFailure(e,'Can\'t input text into Document');
   }
 });

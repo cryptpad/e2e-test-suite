@@ -195,9 +195,10 @@ test('anon - code - share at a moment in history', async ({ page, browser }) => 
     page1 = await browser.newPage();
 
     await page1.goto(`${clipboardText}`);
+    fileActions1 = new FileActions(page1);
 
-    await page1.frameLocator('#sbox-iframe').locator('.CodeMirror-scroll').waitFor();
-    await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
+    await fileActions1.codeEditor.waitFor();
+    await expect(fileActions1.codeEditor.getByText('test text')).toHaveCount(0);
 
     await fileActions.toSuccess('Can share code document at a specific moment in history')
   } catch (e) {

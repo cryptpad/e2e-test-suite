@@ -17,6 +17,7 @@ let browserName;
 let browserstackMobile;
 let fileActions;
 let fileActions1
+let page1
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(90000);
@@ -99,9 +100,9 @@ test('anon - doc - insert image', async ({ page, context }) => {
 
     
 
-    await fileActions.toSuccess( 'Can input text into Document');
+    await fileActions.toSuccess( 'Can insert image into Document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t insert image into Document');
   }
 });
 
@@ -118,6 +119,38 @@ test('anon - doc - history (previous version)', async ({ page, context }) => {
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
     await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
+    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+
+    await fileActions.docEditor.click({force: true});
+
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+    expect(clipboardText.trim()).toEqual('');
+    
+    await fileActions.toSuccess( 'Can browse Document history');
+
+  } catch (e) {
+    await fileActions.toFailure(e,'Can\'t browse Document history');
+  }
+});
+
+test('anon - doc - history (share)', async ({ page, browser, context }) => {
+  try {
+
+    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.dispatchEvent('focus');
+    await fileActions.docEditor.dispatchEvent('select');
+
+    await fileActions.typeTestTextCode(mobile, 'test text');
+
+    await fileActions.history(mobile);
+    await fileActions.historyFastPrev.click()
+    await fileActions.fileSaved.waitFor()
+    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
+    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
 
     
     await fileActions.docEditor.click({force: true});
@@ -128,11 +161,32 @@ test('anon - doc - history (previous version)', async ({ page, context }) => {
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
 
     expect(clipboardText.trim()).toEqual('');
+
+    var clipboardText2 = await fileActions.getShareLink(mobile)
+    page1 = await browser.newPage();
+
+    await page1.goto(`${clipboardText2}`);
+    fileActions1 = new FileActions(page1);
+    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({timeout: 5000})
+
+    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden', timeout: 5000})
+
+    await fileActions1.docEditor.waitFor()
+
+    await fileActions1.docEditor.click({force: true});
+
+    await page1.keyboard.press('Control+A');
+    await page1.keyboard.press('Control+C');
+
+    const clipboardText3 = await page1.evaluate(() => navigator.clipboard.readText());
+
+    expect(clipboardText3.trim()).toEqual('');
+
     
-    await fileActions.toSuccess( 'Can input text into Document');
+    await fileActions.toSuccess( 'Can share Document at a moment in history');
 
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t share Document at a moment in history');
   }
 });
 
@@ -159,10 +213,10 @@ test('anon - doc - export (doc)', async ({ page, context }) => {
     .then(result => {
         expect(result.value.trim()).toEqual('test text');
     })
-  await fileActions.toSuccess( 'Can export Document as .doc');
+    await fileActions.toSuccess( 'Can export Document as .doc');
 
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t export Document as .doc');
   }
 });
 
@@ -195,14 +249,14 @@ test('anon - doc - export (pdf)', async ({ page, context }) => {
     const result = await parser.getText();
     await parser.destroy();
     expect(result.text).toEqual('test text\n\n-- 1 of 1 --\n\n')
-    await fileActions.toSuccess( 'Can export Document as .pdf');
 
+    await fileActions.toSuccess( 'Can export Document as .pdf');
   } catch (e) {
     await fileActions.toFailure(e,'Can\'t export Document as .pdf');
   }
 });
 
-test('anon - doc - history (previous version 1)', async ({ page, context }) => {
+test('anon - doc - history (browse with line breaks)', async ({ page, context }) => {
   try {
 
     await fileActions.docEditor.click({force: true});
@@ -215,7 +269,8 @@ test('anon - doc - history (previous version 1)', async ({ page, context }) => {
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
     await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
-    
+    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+
     await fileActions.docEditor.click({force: true});
 
     await page.keyboard.press('Control+A');
@@ -224,9 +279,10 @@ test('anon - doc - history (previous version 1)', async ({ page, context }) => {
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
 
     expect(clipboardText.trim()).toEqual('');
-    
+
+    await fileActions.toSuccess( 'Can browse history in Document with line breaks');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t browse history in Document with line breaks');
   }
 });
 

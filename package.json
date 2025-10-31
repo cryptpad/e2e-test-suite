@@ -9,11 +9,13 @@
     "fast-csv": "^5.0.2",
     "mammoth": "^1.11.0",
     "node-fetch": "^2.6.1",
+    "node-pptx-parser": "^1.0.1",
     "otpauth": "^9.2.2",
     "pdf-parse": "^2.4.5",
     "pdf2json": "^4.0.0",
     "pdftojson": "^0.0.3",
     "playwright-core": "1.33",
+    "read-excel-file": "^6.0.1",
     "unzip": "^0.1.11",
     "unzipper": "^0.10.14"
   },

@@ -580,7 +580,7 @@ export class FileActions {
   }
 
   dropDownItem (item) {
-    return this.mainFrame.getByRole('menuitem', { name: item }).locator('a');
+    return this.mainFrame.getByRole('menuitem', { name: item, exact: true }).locator('a');
   }
 
   fileMenuItem (item) {
