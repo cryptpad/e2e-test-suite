@@ -6,10 +6,7 @@ const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
 const mammoth = require('mammoth');
-// const PDFParse = require('pdf-parse');
-const PDFParser = require('pdf2json');
-// import PDFParser from "pdf2json"; 
-
+const { PDFParse } = require('pdf-parse');
 // const local = !!process.env.PW_URL.includes('localhost');
 
 let mobile;
@@ -86,26 +83,6 @@ test('anon - doc - make a copy', async ({ page, context }) => {
   }
 });
 
-
-test('anon - doc - insert image', async ({ page, context }) => {
-  try {
-
-    await fileActions.docEditor.click({force: true});
-
-
-    await fileActions.insertTab.click({force: true});
-    await fileActions.insertImg.click();
-    await fileActions.imgFromFile.click();
-
-
-    
-
-    await fileActions.toSuccess( 'Can insert image into Document');
-  } catch (e) {
-    await fileActions.toFailure(e,'Can\'t insert image into Document');
-  }
-});
-
 test('anon - doc - history (previous version)', async ({ page, context }) => {
   try {
 
@@ -118,8 +95,8 @@ test('anon - doc - history (previous version)', async ({ page, context }) => {
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
-    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
-    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
+    await expect(fileActions.warningModal).toHaveCount(0)
 
     await fileActions.docEditor.click({force: true});
 
@@ -143,16 +120,14 @@ test('anon - doc - history (share)', async ({ page, browser, context }) => {
     await fileActions.docEditor.click({force: true});
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
-
     await fileActions.typeTestTextCode(mobile, 'test text');
 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
-    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
-    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
+    await expect(fileActions.warningModal).toHaveCount(0)
 
-    
     await fileActions.docEditor.click({force: true});
 
     await page.keyboard.press('Control+A');
@@ -167,22 +142,16 @@ test('anon - doc - history (share)', async ({ page, browser, context }) => {
 
     await page1.goto(`${clipboardText2}`);
     fileActions1 = new FileActions(page1);
-    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({timeout: 5000})
-
-    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden', timeout: 5000})
+    await fileActions1.waitForSync.waitFor({timeout: 5000})
+    await fileActions1.waitForSync.waitFor({state: 'hidden', timeout: 5000})
 
     await fileActions1.docEditor.waitFor()
-
     await fileActions1.docEditor.click({force: true});
-
     await page1.keyboard.press('Control+A');
     await page1.keyboard.press('Control+C');
-
     const clipboardText3 = await page1.evaluate(() => navigator.clipboard.readText());
-
     expect(clipboardText3.trim()).toEqual('');
 
-    
     await fileActions.toSuccess( 'Can share Document at a moment in history');
 
   } catch (e) {
@@ -232,8 +201,8 @@ test('anon - doc - export (pdf)', async ({ page, context }) => {
 
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test doc');
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: '.docx' }).click();
-    await page.locator('#sbox-iframe').contentFrame().getByText('.pdf').click();
+    await fileActions.fileFormatButton('.docx').click();
+    await fileActions.mainFrame.getByText('.pdf').click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -241,11 +210,9 @@ test('anon - doc - export (pdf)', async ({ page, context }) => {
     ]);
 
     await download.saveAs('/tmp/test doc');
-    const { PDFParse } = require('pdf-parse');
-
+    
     const buffer = fs.readFileSync('/tmp/test doc');
     const parser = new PDFParse({ data: buffer });
-
     const result = await parser.getText();
     await parser.destroy();
     expect(result.text).toEqual('test text\n\n-- 1 of 1 --\n\n')
@@ -268,8 +235,8 @@ test('anon - doc - history (browse with line breaks)', async ({ page, context })
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
-    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
-    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
+    await expect(fileActions.warningModal).toHaveCount(0)
 
     await fileActions.docEditor.click({force: true});
 

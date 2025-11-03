@@ -191,7 +191,7 @@ test('anon - pad -  export (.doc)', async ({ page }) => {
 
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test pad');
-    await fileActions.html.click();
+    await fileActions.fileFormatButton('.html').click();
     await fileActions.mainFrame.getByText('.doc').click();
 
     const [download] = await Promise.all([

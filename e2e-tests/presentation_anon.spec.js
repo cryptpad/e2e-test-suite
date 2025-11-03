@@ -5,10 +5,7 @@ const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
-const mammoth = require('mammoth');
-// const PDFParse = require('pdf-parse');
-const PDFParser = require('pdf2json');
-// import PDFParser from "pdf2json"; 
+const { PDFParse } = require('pdf-parse');
 
 // const local = !!process.env.PW_URL.includes('localhost');
 
@@ -42,22 +39,22 @@ test('anon - presentation - input text', async ({ page, context }) => {
 
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('test text');
-    await fileActions.toSuccess( 'Can input text into Document');
+    await fileActions.toSuccess( 'Can input text into Presentation');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t input text into Presentation');
   }
 });
 
 test('anon - presentation - add a slide', async ({ page, context }) => {
   try {
 
-      await page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().locator('#id-toolbar-btn-add-slide').getByRole('button').first().click();
-       const pages = await page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().locator('#status-label-pages').innerText()
-      expect(pages).toContain('Slide 2 of 2')
+    await fileActions.addSlide.click();
+    const pages = await fileActions.slideNumber.innerText()
+    expect(pages).toContain('Slide 2 of 2')
 
-    await fileActions.toSuccess( 'Can input text into Document');
+    await fileActions.toSuccess( 'Can add a slide in Presentation');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t add a slide in Presentation');
   }
 });
 
@@ -85,21 +82,19 @@ test('anon - presentation - make a copy', async ({ page, context }) => {
 
     await fileActions1.fileSaved.waitFor()
     await fileActions1.docEditor.click({force: true});
-
     await page1.keyboard.press('Control+A');
     await page1.keyboard.press('Control+C');
-
     const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText2.trim()).toContain('test text');
-    await fileActions.toSuccess( 'Can input text into Document');
+
+    await fileActions.toSuccess( 'Can make a copy of a Presentation');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t make a copy of a Presentation');
   }
 });
 
 test('anon - presentation - export (pdf)', async ({ page, context }) => {
   try {
-
 
     await fileActions.docEditor.click({force: true});
     await fileActions.docEditor.dispatchEvent('focus');
@@ -109,8 +104,8 @@ test('anon - presentation - export (pdf)', async ({ page, context }) => {
 
     await fileActions.export(mobile);
     await fileActions.textbox.fill('test presentation');
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: '.pptx' }).click();
-    await page.locator('#sbox-iframe').contentFrame().getByText('.pdf').click();
+    await fileActions.fileFormatButton('.pptx').click();
+    await fileActions.mainFrame.getByText('.pdf').click();
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
@@ -118,18 +113,16 @@ test('anon - presentation - export (pdf)', async ({ page, context }) => {
     ]);
 
     await download.saveAs('/tmp/test presentation');
-    const { PDFParse } = require('pdf-parse');
 
     const buffer = fs.readFileSync('/tmp/test presentation');
     const parser = new PDFParse({ data: buffer });
-
     const result = await parser.getText();
     await parser.destroy();
     expect(result.text).toEqual('test text\n\n-- 1 of 1 --\n\n')
-    await fileActions.toSuccess( 'Can export Document as .pdf');
 
+    await fileActions.toSuccess( 'Can export Presentation as .pdf');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Document as .pdf');
+    await fileActions.toFailure(e,'Can\'t export Presentation as .pdf');
   }
 });
 
@@ -154,25 +147,23 @@ test('anon - presentation - export (pptx)', async ({ page, context }) => {
     await download.saveAs('/tmp/test presentation');
     const PptxParser = require("node-pptx-parser").default;
 
-    const buffer = fs.readFileSync('/tmp/test presentation');
-    async function main() {
-        const parser = new PptxParser('/tmp/test presentation');
-        try {
-            const textContent = await parser.extractText();
-            textContent.forEach((slide) => {
-                expect(slide.text.join("\n").trim()).toEqual('test text')
-            });
-            } catch (error) {
-                console.error("Error:", error.message);
-            }
+    async function parse() {
+      const parser = new PptxParser('/tmp/test presentation');
+      try {
+        const textContent = await parser.extractText();
+        textContent.forEach((slide) => {
+          expect(slide.text.join("\n").trim()).toEqual('test text')
+        });
+        } catch (error) {
+          console.error(error.message);
         }
+      }
 
-    main();
+    parse();
 
-    await fileActions.toSuccess( 'Can export Document as .pptx');
-
+    await fileActions.toSuccess( 'Can export Presentation as .pptx');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Document as .pptx');
+    await fileActions.toFailure(e,'Can\'t export Presentation as .pptx');
   }
 });
 
@@ -188,27 +179,22 @@ test('anon - presentation - history (previous version)', async ({ page, context 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
-    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
 
-    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await expect(fileActions.warningModal).toHaveCount(0)
     await fileActions.docEditor.click();
-
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
-
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-
-
     expect(clipboardText.trim()).toEqual('');
-    
-    await fileActions.toSuccess( 'Can input text into Document');
 
+    await fileActions.toSuccess( 'Can browse Presentation history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t browse Presentation history');
   }
 });
 
-test('anon - doc - history (share)', async ({ page, browser, context }) => {
+test('anon - presentation - history (share)', async ({ page, browser, context }) => {
   try {
 
     await fileActions.docEditor.click({force: true});
@@ -220,43 +206,32 @@ test('anon - doc - history (share)', async ({ page, browser, context }) => {
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
-    await page.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden'})
-    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
+    await expect(fileActions.warningModal).toHaveCount(0)
 
     
     await fileActions.docEditor.click({force: true});
-
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
-
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-
     expect(clipboardText.trim()).toEqual('');
 
     var clipboardText2 = await fileActions.getShareLink(mobile)
     page1 = await browser.newPage();
-
     await page1.goto(`${clipboardText2}`);
     fileActions1 = new FileActions(page1);
-    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({timeout: 5000})
-
-    await page1.locator('#sbox-iframe').contentFrame().getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' }).waitFor({state: 'hidden', timeout: 5000})
+    await fileActions1.waitForSync.waitFor({timeout: 5000})
+    await fileActions1.waitForSync.waitFor({state: 'hidden', timeout: 5000})
 
     await fileActions1.docEditor.waitFor()
-
     await fileActions1.docEditor.click({force: true});
-
     await page1.keyboard.press('Control+A');
     await page1.keyboard.press('Control+C');
-
     const clipboardText3 = await page1.evaluate(() => navigator.clipboard.readText());
-
     expect(clipboardText3.trim()).toEqual('');
 
-    
-    await fileActions.toSuccess( 'Can input text into Document');
-
+    await fileActions.toSuccess( 'Can share Presentation at a moment in history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t share Presentation at a moment in history');
   }
 });

@@ -42,6 +42,7 @@ export class FileActions {
     this.shareCopyLink = this.mainFrame.getByRole('button', { name: 'Copy link' });
     this.deletebutton = this.mainFrame.getByRole('button', { name: 'Delete' });
     this.trash = this.mainFrame.getByText('Move to trash')
+    this.restore = this.mainFrame.getByRole('button', { name: 'Restore' })
 
     this.loginLinkDrive = this.mainFrame.getByRole('link', { name: 'Log in' });
     this.registerLinkDrive = this.mainFrame.getByRole('link', { name: 'Sign up' });
@@ -125,6 +126,8 @@ export class FileActions {
     // buttons
     this.closeButtonSecure = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Close' });
     this.closeButton = this.mainFrame.getByRole('button', { name: 'Close' });
+    this.closeSnapshots = this.mainFrame.getByRole('navigation').getByRole('button', { name: 'Close' })
+    this.closeHistory = this.mainFrame.locator('[data-original-title="Close the history"]')
     this.okButtonSecure = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'OK (enter)' });
     this.okButton = this.mainFrame.getByRole('button', { name: 'OK (enter)' });
     this.saveButton = this.mainFrame.getByRole('button', { name: 'Save' })
@@ -210,7 +213,7 @@ export class FileActions {
     this.padEditorBody = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]').locator('body');
     this.padEditorHTML = this.mainFrame.frameLocator('iframe[title="Editor\\, editor1"]').locator('html');
     this.padToolbar = this.mainFrame.locator('.cke_toolbox_main.cke_reset_all')
-    this.html = this.mainFrame.getByRole('button', { name: '.html' })
+    // this.html = this.mainFrame.getByRole('button', { name: '.html' })
     this.snapshots = this.mainFrame.getByText('Snapshots')
     this.newSnapshot = this.mainFrame.getByRole('button', { name: 'New snapshot' })
     this.addComment = this.mainFrame.locator('.cp-comment-bubble').locator('button')
@@ -243,12 +246,24 @@ export class FileActions {
     this.clearFilter = this.mainFrame.getByRole('button', { name: 'Clear filter' })
     this.kanbanControls = this.mainFrame.locator('#cp-kanban-controls')
 
+    //onlyoffice
     this.docEditor = this.mainFrame.locator('iframe[name="frameEditor"]')
-    this.docEditorInput = this.mainFrame.frameLocator('iframe[name="frameEditor"]').locator('#area_id')
-    this.insertTab = this.mainFrame.frameLocator('iframe[name="frameEditor"]').getByRole('tab', { name: 'Insert' })
-    this.insertImg = this.mainFrame.frameLocator('iframe[name="frameEditor"]').getByRole('button', { name: 'Image', exact: true })
-    this.imgFromFile = this.mainFrame.frameLocator('iframe[name="frameEditor"]').getByText('Image from file')
-    
+    this.onlyOfficeFrame = this.mainFrame.frameLocator('iframe[name="frameEditor"]')
+    this.docEditorInput = this.onlyOfficeFrame.locator('#area_id')
+    this.insertTab = this.onlyOfficeFrame.getByRole('tab', { name: 'Insert' })
+    this.insertImg = this.onlyOfficeFrame.getByRole('button', { name: 'Image', exact: true })
+    this.imgFromFile = this.onlyOfficeFrame.getByText('Image from file')
+    this.waitForSync = this.mainFrame.getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' })
+    this.warningModal = this.onlyOfficeFrame.getByText('Warning')
+    this.createSnapshot = this.mainFrame.locator('.cp-history-create-snapshot')
+    this.closeHistory = this.mainFrame.locator('[data-original-title="Close the history"]')
+    this.addSlide = this.onlyOfficeFrame.locator('#id-toolbar-btn-add-slide').getByRole('button').first()
+    this.slideNumber = this.onlyOfficeFrame.locator('#status-label-pages')
+    this.addSheet = this.onlyOfficeFrame.getByRole('button', { name: 'Add sheet' })
+    this.sheetStatus = this.onlyOfficeFrame.locator('#statusbar_bottom')
+    this.snapshotTitleOO = this.mainFrame.getByRole('textbox', { name: 'Snapshot title' })
+
+
     // teams
     this.typeMessage = this.mainFrame.getByRole('textbox', { name: 'Type a message here...' }).first()
     this.teamAddNotif = this.mainFrame.getByText('test-user has invited you to join their team: test team')
@@ -367,6 +382,7 @@ export class FileActions {
     this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user > .fa').first()
     this.movedToTrash = this.mainFrame.getByText(/^That document has been moved to the trash/, { exact: true })
     this.lostConnection = this.mainFrame.getByText(/^Your connnection to CryptPad/)
+    this.uploadFile = this.mainFrame.getByRole('button', { name: 'Upload a new file to your' })
     
   }
 
@@ -385,6 +401,9 @@ export class FileActions {
     return new NewFileModal(this);
   }
 
+  fileFormatButton (format) {
+    return this.mainFrame.getByRole('button', { name: format })
+  }
 
   removeOwner(user) {
     return this.secureFrame.locator('.cp-usergrid-user.large').filter({ hasText: user }).getByRole('button')

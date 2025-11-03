@@ -6,10 +6,6 @@ const { Cleanup } = require('./cleanup.js');
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
-const mammoth = require('mammoth');
-// const PDFParse = require('pdf-parse');
-const PDFParser = require('pdf2json');
-// import PDFParser from "pdf2json"; 
 
 // const local = !!process.env.PW_URL.includes('localhost');
 
@@ -27,23 +23,21 @@ test.beforeEach(async ({ page }, testInfo) => {
   mobile = testInfo.project.use.mobile;
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-    const template = testInfo.title.match(/import template/);
-    if (template) {
-      cleanUp = new Cleanup(page);
-      await cleanUp.cleanTemplates();
-    }
+  const template = testInfo.title.match(/import template/);
+  if (template) {
+    cleanUp = new Cleanup(page);
+    await cleanUp.cleanTemplates();
+  }
   fileActions = new FileActions(page);
   await page.goto(`${url}/doc`);
-    await fileActions.createFile.waitFor();
-    await fileActions.createFile.click();
-        await fileActions.fileSaved.waitFor();
+  await fileActions.createFile.waitFor();
+  await fileActions.createFile.click();
+  await fileActions.fileSaved.waitFor();
 
 });
 
 test('loggedin - doc - import template', async ({ page, context }) => {
   try {
-
-
     await fileActions.docEditor.click({force: true});
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
@@ -70,15 +64,16 @@ test('loggedin - doc - import template', async ({ page, context }) => {
     await fileActions.driveContentFolder.getByText('example doc template').click({ button: 'right' });
     await fileActions.destroyItem.click();
     await fileActions.okButton.click();
-    await expect(page.frameLocator('#sbox-secure-iframe').getByText('example template')).toHaveCount(0);
+    await expect(fileActions.secureFrame.getByText('example template')).toHaveCount(0);
     
+    await fileActions.toSuccess('Can create and import template into Document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Document');
+    await fileActions.toFailure(e,'Can\'t create and import template into Document');
   }
 });
 
 
-test('loggedin - document - snapshot', async ({ page, context }) => {
+test('loggedin - document - snapshot (history)', async ({ page, context }) => {
   try {
 
     await fileActions.docEditor.click();
@@ -88,34 +83,153 @@ test('loggedin - document - snapshot', async ({ page, context }) => {
     await fileActions.typeTestTextCode(mobile, 'test text');
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
-    await expect(page.locator('#sbox-iframe').contentFrame().locator('iframe[name="frameEditor"]').contentFrame().getByText('Warning')).toHaveCount(0)
+    await expect(fileActions.warningModal).toHaveCount(0)
 
-    await page.locator('#sbox-iframe').contentFrame().locator('.cp-history-create-snapshot').click();
-    await page.locator('#sbox-iframe').contentFrame().getByRole('textbox', { name: 'Snapshot title' }).fill('test snapshot');
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: 'New snapshot' }).click();
-    await page.locator('#sbox-iframe').contentFrame().getByRole('navigation').getByRole('button', { name: 'Close' }).click()
-    await page.locator('#sbox-iframe').contentFrame().locator('[data-original-title="Close the history"]').click()
+    await fileActions.createSnapshot.click();
+    await fileActions.snapshotTitle.waitFor();
+    await fileActions.snapshotTitle.fill('test snapshot');
+    await fileActions.newSnapshot.waitFor();
+    await fileActions.newSnapshot.click();
+    await fileActions.closeSnapshots.waitFor();
+    await fileActions.closeSnapshots.click();
+    await fileActions.closeHistory.click()
     await fileActions.fileSaved.waitFor()
 
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: 'File' }).click();
-    await page.locator('#sbox-iframe').contentFrame().getByRole('menuitem', { name: 'Snapshots' }).locator('a').click();
-    await page.locator('#sbox-iframe').contentFrame().getByText('test snapshot').hover();
+    await fileActions.filemenuClick(mobile);
+    await fileActions.snapshots.waitFor();
+    await fileActions.snapshots.click();
+    await fileActions.mainFrame.getByText('test snapshot').hover();
 
-    await page.locator('#sbox-iframe').contentFrame().getByRole('button', { name: 'Open' }).click();
     const page1Promise = page.waitForEvent('popup');
+    await fileActions.openButton.click();
     const page1 = await page1Promise;
-    await page1.locator('#sbox-iframe').contentFrame().getByText('You are currently viewing a').click();
-    await fileActions.docEditor.click();
-
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Control+C');
-
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    const fileActions1 = new FileActions(page1)
+    await fileActions1.docEditor.click();
+    await page1.keyboard.press('Control+A');
+    await page1.keyboard.press('Control+C');
+    const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toEqual('');
     
-    await fileActions.toSuccess( 'Can create and load Presentation snapshots');
+    await fileActions.toSuccess( 'Can create and load Document history snapshots');
 
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and load Presentation snapshots');
+    await fileActions.toFailure(e,'Can\'t create and load Document history snapshots');
+  }
+});
+
+test('loggedin - doc - insert image', async ({ page, context }) => {
+  try {
+
+    await expect(page).toHaveScreenshot( { maxDiffPixels: 6000 });
+
+    await fileActions.insertTab.click({force: true});
+    await fileActions.insertImg.click();
+    await fileActions.imgFromFile.click();
+
+    const fileChooserPromise = page.waitForEvent('filechooser');
+    await fileActions.uploadFile.click()
+
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles('testdocuments/teamavatar.png');
+
+    await fileChooser.setFiles('testdocuments/test sheet.xlsx');
+    await fileActions.okButtonSecure.click();
+    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor()
+    await page.waitForTimeout(3000)
+    await expect(page).toHaveScreenshot( { maxDiffPixels: 6000 });
+
+    await fileActions.toSuccess( 'Can insert image into Document');
+  } catch (e) {
+    await fileActions.toFailure(e,'Can\'t insert image into Document');
+  }
+});
+
+test('loggedin - presentation - history (restore)', async ({ page, context }) => {
+  try {
+
+    await fileActions.docEditor.click();
+    await fileActions.docEditor.dispatchEvent('focus');
+    await fileActions.docEditor.dispatchEvent('select');
+
+    await fileActions.typeTestTextCode(mobile, 'test text');
+
+    await fileActions.history(mobile);
+    await fileActions.historyFastPrev.click()
+    await fileActions.fileSaved.waitFor()
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
+    await expect(fileActions.warningModal).toHaveCount(0)
+
+    await fileActions.docEditor.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.trim()).toEqual('');
+    await fileActions.restore.click();
+    await fileActions.okButton.click();
+
+    await fileActions.fileSaved.waitFor()
+    await fileActions.waitForSync.waitFor({state: 'hidden'})
+    await expect(fileActions.warningModal).toHaveCount(0)
+
+    await fileActions.docEditor.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText2.trim()).toEqual('');
+    
+    await fileActions.toSuccess( 'Can restore history in Presentation document');
+  } catch (e) {
+    await fileActions.toFailure(e,'Can\'t restore history in Presentation document');
+  }
+});
+
+test('loggedin - doc - import file (doc)', async ({ page, context }) => {
+  try {
+    
+    await fileActions.filemenuClick(mobile);
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      await fileActions.importClick()
+    ]);
+
+    await fileChooser.setFiles('testdocuments/test doc.docx');
+    await fileActions.okButton.click()
+    await fileActions.fileSaved.waitFor();
+    await page.waitForTimeout(3000)
+    await fileActions.docEditor.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.trim()).toContain('test text');
+
+    await fileActions.toSuccess('Can import .xlsx file into Sheet document');
+  } catch (e) {
+    console.log(e);
+    await fileActions.toFailure(e, 'Can\'t import .xlsx file into Sheet document');
+  }
+});
+
+test('loggedin - doc - import file (odt)', async ({ page, context }) => {
+  try {
+    
+    await fileActions.filemenuClick(mobile);
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      await fileActions.importClick()
+    ]);
+
+    await fileChooser.setFiles('testdocuments/test doc.odt');
+    await fileActions.okButton.click()
+    await fileActions.fileSaved.waitFor();
+    await fileActions.docEditor.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.trim()).toContain('test text');
+
+    await fileActions.toSuccess('Can import .xlsx file into Sheet document');
+  } catch (e) {
+    console.log(e);
+    await fileActions.toFailure(e, 'Can\'t import .xlsx file into Sheet document');
   }
 });

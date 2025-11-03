@@ -81,7 +81,7 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
 
     // upload new avatar
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await fileActions.mainFrame.getByLabel('Upload a new file to your').click();
+    await fileActions.uploadFile.click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
     await fileActions.okButton.waitFor();
