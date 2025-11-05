@@ -34,12 +34,7 @@ For tests that rely on being logged in to user accounts (drive, sharing, collabo
 
 This environment is kept constant and replicable between tests, i.e. if as part of a test a document is created and added to the user's drive, it must be deleted before the test is run again. To ensure this in case of code malfunction or test failure, there are several cleanup scripts in `cleanup.js` integrated into the test files, which run in order to return the test environment to its base state. However, there may be situations in which these do not work as expected, and one may be required to manually intervene in the test environment.
 
-#### Seeding the database
-
-> :exclamation:
-> The setup, authentication and teardown scripts **must** be run on Chromium as we have found it to be the most stable browser for this process and least likely to result in failures or errors. It can also be run on either OSX or Windows, but **not** on a mobile device.
-
-1. Set passwords for the following test accounts:
+The tests for logged-in users require passwords to use with test accounts. You will need to set passwords for the following test accounts:
 
     * test-user
     * testuser
@@ -55,8 +50,29 @@ TESTUSER2PASSWORD = ""
 TESTUSER3PASSWORD = ""
 ```
 
-They will be used by the script that creates accounts in the next step.
+If you seed the database using the 'Extracting data' method (recommended) (see below), you will need to set them to the passwords already contained in the data seed (i.e. "password" for each of the test users). If you choose to seed the database by running the seeding script, you can set the passwords to a string of your choosing.
 
+#### Seeding the database
+
+> :information_source:
+> It is recommended that you run tests against a repository specifically dedicated for this purpose to enable easily wiping and seeding test data.
+
+There are two ways to seed the database. One is running a Playwright file which creates the user accounts, files etc. required for the tests through UI interactions with CryptPad. This is time-consuming and prone to error, and thus seeding the database through expanding a .zip file, containing "ready-made" user data, is recommended instead. Instructions for both are provided below.
+
+0. Run `npm run clear` in your dedicated test CryptPad repo to erase existing user and file data.
+
+##### Extract data from database seed file
+
+1. In your CryptPad repo, check out branch `2025.6_seed`
+2. Extract the user data using `unzip database_seed_2025.6.zip`
+3. Checkout the branch you wish to run tests against
+
+
+##### Running the seeding script
+> :exclamation:
+> The setup, authentication and teardown scripts **must** be run on Chromium as we have found it to be the most stable browser for this process and least likely to result in failures or errors. It can also be run on either OSX or Windows, but **not** on a mobile device.
+
+0. Make sure you have set the passwords for each of the test users with the use of environment variables (see above)
 
 1. Set up the test environment:
 
@@ -68,35 +84,36 @@ npx playwright test dbseeding --workers=1 --project='chrome'
 
 You can specify another OS name or run the file using BrowserStack as desired (see [Running tests](## Running Tests)).
 
+A database teardown script is not included because CryptPad does not allow the re-creation of accounts (i.e. deleting an account and creating a new one with the same username and password). If running on a local instance, stop and run: 
 
-3. To save the authentication information for test accounts:
+```bash
+npm run clear
+```
+in the same tab to unseed the database.
 
-* create the auth folder:
+##### Authenticating users
+
+Once the database is seeded, you will need to store the authentication information for test accounts.
+
+1. Create the auth folder:
 
 ```bash
 mkdir auth
 ```
 
-* change directory to auth folder and create files to store authentication information for each test account using:
+2. Change directory to auth folder and create files to store authentication information for each test account using:
 
 ```bash
 cd auth
 touch mainuser.json testuser.json testuser2.json testuser3.json
 ```
 
-* then change back to project root directory and run the auth script using: 
+3. Change back to project root directory and run the auth script using: 
 
 ```bash
 cd ..
 npx playwright test auth --workers=1 --project='chrome'
-```
-
-A database teardown script is not included because CryptPad does not allow the re-creation of accounts (i.e. deleting an account and creating a new one with the same username and password). If running on a local instance, stop and run: 
-
-```bash
-npm run clear
-```
-in the same tab to unseed the database. 
+``` 
 
 
 ### Browserstack authentication and integration
@@ -132,9 +149,6 @@ To run the tests using BrowserStack, add the desired OS and `@BrowserStack` (for
 
 > :exclamation:
 > It is strongly recommended that the tests be run over a strong and stable internet connection, **especially** when using BrowserStack. Tests run over slow connections will often time out and fail or hang indefinitely. 
-
-> :information_source:
-> If running tests against a local instance, it is recommended that you run it from a repository specifically dedicated for tests to enable wiping test data using `npm run clear` in the CryptPad repo. 
 
 0. If running tests for the first time on your chosen browser/OS combination, run:
 
