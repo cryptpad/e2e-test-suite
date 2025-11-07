@@ -109,7 +109,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-chrome-test:
-    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
+    if: github.event.action == 'trigger-e2e-tests-test'
     name: Desktop Chrome - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -125,7 +125,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-test
+          git checkout 2025.12-test
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -227,7 +227,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-rc
+          git checkout 2025.12-rc
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -431,7 +431,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-rc
+          git checkout 2025.12-rc
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -517,7 +517,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-firefox-test:
-    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
+    if: github.event.action == 'trigger-e2e-tests-test' 
     name: Desktop Firefox - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -533,7 +533,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-test
+          git checkout 2025.12-test
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -737,7 +737,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-rc
+          git checkout 2025.12-rc
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -823,7 +823,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-webkit-test:
-    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
+    if: github.event.action == 'trigger-e2e-tests-test' 
     name: Desktop Webkit - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -839,7 +839,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-test
+          git checkout 2025.12-test
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -1043,7 +1043,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-rc
+          git checkout 2025.12-rc
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -1129,7 +1129,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   mobile-chrome-test:
-    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
+    if: github.event.action == 'trigger-e2e-tests-test' 
     name: Mobile Chrome - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -1145,7 +1145,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-test
+          git checkout 2025.12-test
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -1349,7 +1349,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-rc
+          git checkout 2025.12-rc
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
@@ -1435,7 +1435,7 @@ jobs:
           title: 'Test results - logged in users'
         if: always()
   desktop-edge-test:
-    if: github.event.action == 'trigger-e2e-tests-test' || github.event_name == 'push'
+    if: github.event.action == 'trigger-e2e-tests-test' 
     name: Desktop Edge - test branch
     runs-on: ubuntu-latest 
     steps:
@@ -1451,7 +1451,7 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
-          git checkout 2025.9-test
+          git checkout 2025.12-test
           git branch
       - name: Install dependencies
         run: npm install --prefix cryptpad
