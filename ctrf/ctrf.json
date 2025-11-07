@@ -5,32 +5,42 @@
     },
     "summary": {
       "tests": 1,
-      "passed": 1,
-      "failed": 0,
+      "passed": 0,
+      "failed": 1,
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1762180365134,
-      "stop": 1762180376725,
+      "start": 1762515308071,
+      "stop": 1762515339891,
       "suites": 0
     },
     "tests": [
       {
-        "name": "loggedin - doc - import file (odt)",
-        "status": "passed",
-        "duration": 11018,
-        "start": 1762180365,
-        "stop": 1762180376,
-        "rawStatus": "passed",
+        "name": "loggedin - presentation - import template",
+        "status": "failed",
+        "duration": 5095,
+        "start": 1762515334,
+        "stop": 1762515339,
+        "message": "Error: page.waitForTimeout: Target page, context or browser has been closed",
+        "trace": "Error: page.waitForTimeout: Target page, context or browser has been closed\n    at Cleanup.cleanTemplates (/home/zuzanna/e2e-test-suite/e2e-tests/cleanup.js:163:27)\n    at /home/zuzanna/e2e-test-suite/e2e-tests/presentation_loggedin.spec.js:29:5",
+        "rawStatus": "interrupted",
         "tags": [],
         "type": "e2e",
-        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
-        "retries": 0,
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/presentation_loggedin.spec.js",
+        "retries": 1,
         "flaky": false,
         "steps": [],
-        "suite": "chrome > doc_loggedin.spec.js",
-        "attachments": [],
-        "stdout": [],
+        "suite": "chrome@Galaxy S9+ > presentation_loggedin.spec.js",
+        "attachments": [
+          {
+            "name": "trace",
+            "contentType": "application/zip",
+            "path": "/home/zuzanna/e2e-test-suite/test-results/presentation_loggedin-logg-86d45-sentation---import-template-chrome-Galaxy-S9--retry1/trace.zip"
+          }
+        ],
+        "stdout": [
+          "\u001b[33m1\u001b[39m\n"
+        ],
         "stderr": [],
         "extra": {
           "annotations": []

@@ -74,7 +74,7 @@ export class FileActions {
     this.cancelButtonEsc = this.mainFrame.getByRole('button', { name: 'Cancel (esc)' });
     this.storageSuccess = this.mainFrame.locator('alertify-logs');
 
-    this.shareButton = this.mainFrame.getByRole('button', { name: 'Share' });
+    this.shareButton = this.mainFrame.getByRole('button').filter({ hasText: 'Share' })
 
     this.fileName = this.mainFrame.locator('.cp-toolbar-title');
     this.fileNameEdit = this.mainFrame.locator('.cp-toolbar-title-editable');
@@ -198,7 +198,7 @@ export class FileActions {
     this.paragraphQuestion = this.mainFrame.getByRole('button', { name: 'Paragraph' })
     this.paragraphQuestionContent = this.mainFrame.locator('#cp-app-form-container textarea')
     this.paragraphAnswer = this.mainFrame.locator('textarea')
-    this.choiceQuestion = this.mainFrame.getByRole('button', { name: 'Choice', exact: true })
+    this.choiceQuestion = this.mainFrame.locator('button').filter({ hasText: /^Choice$/ })
     this.choiceQuestionInput = this.mainFrame.locator('.cp-form-edit-block-input > input')
     this.checkboxGridQuestion = this.mainFrame.getByRole('button', { name: 'Checkbox Grid' })
     this.dateQuestion = this.mainFrame.getByRole('button', { name: 'Date' })
@@ -252,7 +252,7 @@ export class FileActions {
     this.docEditorInput = this.onlyOfficeFrame.locator('#area_id')
     this.insertTab = this.onlyOfficeFrame.getByRole('tab', { name: 'Insert' })
     this.insertImg = this.onlyOfficeFrame.getByRole('button', { name: 'Image', exact: true })
-    this.imgFromFile = this.onlyOfficeFrame.getByText('Image from file')
+    this.imgFromFile = this.onlyOfficeFrame.getByLabel('Insert', { exact: true }).getByText('Image from file')
     this.waitForSync = this.mainFrame.getByRole('paragraph').filter({ hasText: 'syncing changes, please wait' })
     this.warningModal = this.onlyOfficeFrame.getByText('Warning')
     this.createSnapshot = this.mainFrame.locator('.cp-history-create-snapshot')
@@ -382,7 +382,7 @@ export class FileActions {
     this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user > .fa').first()
     this.movedToTrash = this.mainFrame.getByText(/^That document has been moved to the trash/, { exact: true })
     this.lostConnection = this.mainFrame.getByText(/^Your connnection to CryptPad/)
-    this.uploadFile = this.mainFrame.getByRole('button', { name: 'Upload a new file to your' })
+    this.uploadFile = this.secureFrame.getByRole('button', { name: 'Upload a new file to your' })
     
   }
 
@@ -677,6 +677,7 @@ export class FileActions {
 
   async getLinkAfterCopy () {
     let clipboardText = await this.page.evaluate('navigator.clipboard.readText()');
+    await this.page.waitForTimeout(1000)
     if (clipboardText === "") {
       await this.share(this.mobile);
       await this.clickLinkTab(this.mobile);
@@ -844,7 +845,8 @@ export class FileActions {
 
   async togglePreview (mobile) {
     if (mobile) {
-      await this.mainFrame.locator('.cp-toolbar-rightside-button').locator('.fa.fa-eye').click();
+      await this.mainFrame.getByRole('button').filter({ hasText: 'Preview' }).click();
+
     } else {
       await this.mainFrame.getByRole('button', { name: 'Preview' }).click();
     }
@@ -873,13 +875,13 @@ export class FileActions {
   }
 
   async share (mobile) {
-    if (mobile) {
-      await this.mainFrame.locator('.cp-toolar-share-button').waitFor()
-      await this.mainFrame.locator('.cp-toolar-share-button').click();
-    } else {
+    // if (mobile) {
+    //   await this.mainFrame.locator('.cp-toolar-share-button').waitFor()
+    //   await this.mainFrame.locator('.cp-toolar-share-button').click();
+    // } else {
       await this.shareButton.waitFor()
       await this.shareButton.click();
-    }
+    // }
   }
 
   async access (mobile) {

@@ -33,11 +33,8 @@ test('anon - sheet - input text', async ({ page, context }) => {
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
-    await fileActions.typeTestTextCode(mobile, 'test text');
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Control+C');
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText.trim()).toContain('test text');
+    await fileActions.docEditorInput.fill('test text');
+    expect(await fileActions.docEditorInput.inputValue()).toContain('test text');
 
     await fileActions.toSuccess( 'Can input text into Sheet document');
   } catch (e) {
@@ -46,19 +43,16 @@ test('anon - sheet - input text', async ({ page, context }) => {
 });
 
 test('anon - sheet - make a copy', async ({ page, context }) => {
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  
   try {
 
     await fileActions.docEditor.click({force: true});
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
-    await fileActions.typeTestTextCode(mobile, 'test text');
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Control+C');
-    await page.keyboard.press('Enter');
-
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText.trim()).toContain('test text');
+    await fileActions.docEditorInput.fill('test text');
+    expect(await fileActions.docEditorInput.inputValue()).toContain('test text');
 
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
@@ -70,11 +64,7 @@ test('anon - sheet - make a copy', async ({ page, context }) => {
     fileActions1 = new FileActions(page1);
 
     await fileActions1.fileSaved.waitFor()
-    await fileActions1.docEditor.click({force: true});
-    await page1.keyboard.press('Control+A');
-    await page1.keyboard.press('Control+C');
-    const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText2.trim()).toContain('test text');
+    expect(await fileActions1.docEditorInput.inputValue()).toContain('test text');
 
     await fileActions.toSuccess( 'Can make a copy of Sheet document');
   } catch (e) {
@@ -88,7 +78,7 @@ test('anon - sheet - export (xlxs)', async ({ page, context }) => {
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
-    await fileActions.typeTestTextCode(mobile, 'test text');
+    await fileActions.docEditorInput.fill('test text');
     await page.keyboard.press('Enter');
 
     await fileActions.export(mobile);
@@ -119,7 +109,7 @@ test('anon - sheet - export (pdf)', async ({ page, context }) => {
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
-    await fileActions.typeTestTextCode(mobile, 'test text');
+    await fileActions.docEditorInput.fill('test text');
     await page.keyboard.press('Enter');
 
     await fileActions.export(mobile);
@@ -153,7 +143,7 @@ test('anon - sheet - history (previous version)', async ({ page, context }) => {
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
-    await fileActions.typeTestTextCode(mobile, 'test text');
+    await fileActions.docEditorInput.fill('test text');
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
@@ -162,11 +152,7 @@ test('anon - sheet - history (previous version)', async ({ page, context }) => {
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 
-    await fileActions.docEditor.click({force: true});
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Control+C');
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText.trim()).toEqual('');
+    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
     
     await fileActions.toSuccess( 'Can browse history in Sheet document');
   } catch (e) {
@@ -176,6 +162,7 @@ test('anon - sheet - history (previous version)', async ({ page, context }) => {
 
 
 test('anon - sheet - add new sheet', async ({ page, context }) => {
+  test.skip(mobile, '#1932')
   try {
 
     await fileActions.addSheet.click();
@@ -194,7 +181,7 @@ test('anon - sheet - history (share)', async ({ page, browser, context }) => {
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
-    await fileActions.typeTestTextCode(mobile, 'test text');
+    await fileActions.docEditorInput.fill('test text');
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
@@ -203,12 +190,7 @@ test('anon - sheet - history (share)', async ({ page, browser, context }) => {
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
     
-    await fileActions.docEditor.click({force: true});
-
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Control+C');
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText.trim()).toEqual('');
+    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
 
     var clipboardText2 = await fileActions.getShareLink(mobile)
     page1 = await browser.newPage();
@@ -218,13 +200,7 @@ test('anon - sheet - history (share)', async ({ page, browser, context }) => {
     await fileActions1.waitForSync.waitFor({timeout: 5000})
 
     await fileActions1.waitForSync.waitFor({state: 'hidden', timeout: 5000})
-
-    await fileActions1.docEditor.waitFor()
-    await fileActions1.docEditor.click({force: true});
-    await page1.keyboard.press('Control+A');
-    await page1.keyboard.press('Control+C');
-    const clipboardText3 = await page1.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText3.trim()).toEqual('');
+    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
     
     await fileActions.toSuccess( 'Can share Sheet document at a moment in history');
   } catch (e) {

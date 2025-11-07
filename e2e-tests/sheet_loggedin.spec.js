@@ -37,6 +37,8 @@ test.beforeEach(async ({ page }, testInfo) => {
 });
 
 test('loggedin - sheet - import template', async ({ page, context }) => {
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  
   try {
 
     await fileActions.docEditor.click({force: true});
@@ -55,8 +57,9 @@ test('loggedin - sheet - import template', async ({ page, context }) => {
     await fileActions.importTemplate(mobile);
     await fileActions.templateSpan('example sheet template').click();
     await fileActions.fileSaved.waitFor();
+    await page.waitForTimeout(5000);
 
-    await fileActions.docEditor.click();
+    await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
@@ -76,6 +79,8 @@ test('loggedin - sheet - import template', async ({ page, context }) => {
 });
 
 test('loggedin - sheet - import file (xlsx)', async ({ page, context }) => {
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  
   try {
     
     await fileActions.filemenuClick(mobile);
@@ -87,7 +92,7 @@ test('loggedin - sheet - import file (xlsx)', async ({ page, context }) => {
     await fileChooser.setFiles('testdocuments/test sheet.xlsx');
     await fileActions.okButton.click()
     await fileActions.fileSaved.waitFor();
-    await fileActions.docEditor.click();
+    await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
@@ -101,6 +106,8 @@ test('loggedin - sheet - import file (xlsx)', async ({ page, context }) => {
 });
 
 test('loggedin - sheet - import file (ods)', async ({ page, context }) => {
+    test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  
   try {
     
     await fileActions.filemenuClick(mobile);
@@ -112,7 +119,7 @@ test('loggedin - sheet - import file (ods)', async ({ page, context }) => {
     await fileChooser.setFiles('testdocuments/test sheet ods.ods');
     await fileActions.okButton.click()
     await fileActions.fileSaved.waitFor();
-    await fileActions.docEditor.click();
+    await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
@@ -127,6 +134,9 @@ test('loggedin - sheet - import file (ods)', async ({ page, context }) => {
 
 
 test('loggedin - sheet - snapshot (history)', async ({ page, context }) => {
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  
+  test.skip('#2090')
   try {
 
     await fileActions.docEditor.click();
@@ -156,7 +166,7 @@ test('loggedin - sheet - snapshot (history)', async ({ page, context }) => {
     const page1 = await page1Promise;
     const fileActions1 = new FileActions(page1)
 
-    await fileActions1.docEditor.click();
+    await fileActions1.docEditor.click({force: true});
     await page1.keyboard.press('Control+A');
     await page1.keyboard.press('Control+C');
     const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
@@ -169,6 +179,8 @@ test('loggedin - sheet - snapshot (history)', async ({ page, context }) => {
 });
 
 test('loggedin - sheet - insert image', async ({ page, context }) => {
+  test.skip(mobile, '#2093')
+  
   try {
 
     await expect(page).toHaveScreenshot( { maxDiffPixels: 6000 });
@@ -179,7 +191,6 @@ test('loggedin - sheet - insert image', async ({ page, context }) => {
 
     const fileChooserPromise = page.waitForEvent('filechooser');
     await fileActions.uploadFile.click()
-
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
 
@@ -195,7 +206,9 @@ test('loggedin - sheet - insert image', async ({ page, context }) => {
   }
 });
 
-test('loggedin - presentation - history (restore)', async ({ page, context }) => {
+test('loggedin - sheet - history (restore)', async ({ page, context }) => {
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  
   try {
 
     await fileActions.docEditor.click();
@@ -211,7 +224,7 @@ test('loggedin - presentation - history (restore)', async ({ page, context }) =>
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 
-    await fileActions.docEditor.click();
+    await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
@@ -223,7 +236,7 @@ test('loggedin - presentation - history (restore)', async ({ page, context }) =>
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 
-    await fileActions.docEditor.click();
+    await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());

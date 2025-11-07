@@ -136,6 +136,7 @@ export class Cleanup {
     await this.fileActions.drivemenu.waitFor();
     if (await this.fileActions.driveSideBarItem('Templates').first().isVisible()) {
       await this.fileActions.driveSideBarItem('Templates').first().click();
+      // await this.page.evaluate("window.scrollBy(0, 100000)")
 
       let elementCount = await this.fileActions.template.count();
       if (elementCount > 0) {
@@ -147,18 +148,21 @@ export class Cleanup {
         }
         await this.page.keyboard.press(`${key}+a`);
         await this.fileActions.template.first().click({ button: 'right' });
-        // while (elementCount > 0) {
-        //   if (elementCount > 1) {
-        //     await this.fileActions.template.nth(elementCount - 1).click({ button: 'right' });
-        //   } else {
-        //     await
-        //      this.fileActions.template.click({ button: 'right' });
-        //   }
+        console.log(elementCount)
+        while (elementCount > 0) {
+          if (elementCount > 1) {
+            console.log("here", elementCount, elementCount > 1)
+            await this.fileActions.template.nth(elementCount - 1).click({ button: 'right' });
+          } 
+          // else {
+          //   await
+          //    this.fileActions.template.click({ button: 'right'});
+          // }
           await this.fileActions.destroyItem.click();
           await this.fileActions.okButton.click();
           await this.page.waitForTimeout(5000);
-        //   elementCount = elementCount - 1;
-        // }
+          elementCount = elementCount - 1;
+        }
       }
     }
 

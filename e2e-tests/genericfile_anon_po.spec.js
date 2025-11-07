@@ -77,6 +77,8 @@ test.describe('Share modal', () => {
         await shareModal.viewToggle(fileType).click();
         await shareModal.copyButton.click();
         const actualForViewing = await shareModal.getLinkAfterCopy();
+        console.log('act', actualForViewing)
+        console.log('orig', originalId)
         expect(actualForViewing).not.toBe(originalId);
         expect(actualForViewing).toContain('view');
 

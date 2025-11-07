@@ -23,7 +23,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
-// const userMenuItems = ['pricing']
+// const userMenuItems = ['log in']
 
 
 userMenuItems.forEach(function (item) {
