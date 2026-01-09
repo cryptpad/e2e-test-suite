@@ -123,7 +123,7 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
   }
 });
 
-test('loggedin - doc - insert image', async ({ page, context }) => {
+test('screenshot loggedin - doc - insert image', async ({ page, context }) => {
   test.skip(mobile, '#2093')
 
   try {

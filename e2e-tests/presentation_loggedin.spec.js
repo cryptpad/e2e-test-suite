@@ -215,7 +215,7 @@ test('loggedin - presentation - import file (pptx)', async ({ page, context }) =
   }
 });
 
-test('loggedin - presentation - insert image', async ({ page, context }) => {
+test('screenshot loggedin - presentation - insert image', async ({ page, context }) => {
     test.skip(mobile, '#2093')
   
   try {

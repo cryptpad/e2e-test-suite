@@ -289,10 +289,14 @@ test('loggedin - can change display name', async ({ page }) => {
     await fileActions1.displayName.click();
     await fileActions1.displayName.fill('test-user-new');
     await fileActions1.saveDisplayName.click();
+    await page1.waitForTimeout(1000);
+
     await page1.goto(`${url}/settings/#account`);
     await fileActions1.drivemenu.click();
 
     await expect(fileActions1.mainFrame.getByText('Display name: test-user-new')).toBeVisible();
+    await page1.waitForTimeout(1000);
+
     await fileActions1.displayName.click();
     await fileActions1.displayName.fill('test-user');
     await fileActions1.saveDisplayName.click();

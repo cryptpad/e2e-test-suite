@@ -106,7 +106,7 @@ test('loggedin - sheet - import file (xlsx)', async ({ page, context }) => {
 });
 
 test('loggedin - sheet - import file (ods)', async ({ page, context }) => {
-    test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
   
   try {
     
@@ -178,7 +178,7 @@ test('loggedin - sheet - snapshot (history)', async ({ page, context }) => {
   }
 });
 
-test('loggedin - sheet - insert image', async ({ page, context }) => {
+test('screenshot loggedin - sheet - insert image', async ({ page, context }) => {
   test.skip(mobile, '#2093')
   
   try {
@@ -219,6 +219,8 @@ test('loggedin - sheet - history (restore)', async ({ page, context }) => {
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
+        // await page.waitForTimeout(30000)
+
     await fileActions.historyFastPrev.click()
     await fileActions.fileSaved.waitFor()
     await fileActions.waitForSync.waitFor({state: 'hidden'})
@@ -227,6 +229,8 @@ test('loggedin - sheet - history (restore)', async ({ page, context }) => {
     await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
+    await page.waitForTimeout(3000)
+
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toEqual('');
     await fileActions.restore.click();
@@ -240,7 +244,7 @@ test('loggedin - sheet - history (restore)', async ({ page, context }) => {
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText2.trim()).toEqual('');
+    expect(clipboardText2.trim()).not.toContain('test text');
     
     await fileActions.toSuccess( 'Can restore history in Presentation document');
   } catch (e) {

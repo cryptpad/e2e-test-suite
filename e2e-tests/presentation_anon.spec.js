@@ -79,7 +79,11 @@ test('anon - presentation - make a copy', async ({ page, context }) => {
     fileActions1 = new FileActions(page1);
 
     await fileActions1.fileSaved.waitFor()
-    expect(await fileActions.docEditorInput.inputValue()).toContain('test text')
+    await fileActions1.docEditor.click({force: true});
+    await page1.keyboard.press('Control+A');
+    await page1.keyboard.press('Control+C');
+    const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.trim()).toContain('test text');
 
     await fileActions.toSuccess( 'Can make a copy of a Presentation');
   } catch (e) {

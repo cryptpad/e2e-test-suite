@@ -382,7 +382,7 @@ export class FileActions {
     this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user > .fa').first()
     this.movedToTrash = this.mainFrame.getByText(/^That document has been moved to the trash/, { exact: true })
     this.lostConnection = this.mainFrame.getByText(/^Your connnection to CryptPad/)
-    this.uploadFile = this.secureFrame.getByRole('button', { name: 'Upload a new file to your' })
+    this.uploadFile = this.mainFrame.getByRole('button', { name: 'Upload a new file to your' })
     
   }
 

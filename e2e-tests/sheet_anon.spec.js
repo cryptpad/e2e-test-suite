@@ -52,7 +52,9 @@ test('anon - sheet - make a copy', async ({ page, context }) => {
     await fileActions.docEditor.dispatchEvent('select');
 
     await fileActions.docEditorInput.fill('test text');
+
     expect(await fileActions.docEditorInput.inputValue()).toContain('test text');
+    await page.keyboard.press('Enter');
 
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
@@ -64,7 +66,11 @@ test('anon - sheet - make a copy', async ({ page, context }) => {
     fileActions1 = new FileActions(page1);
 
     await fileActions1.fileSaved.waitFor()
-    expect(await fileActions1.docEditorInput.inputValue()).toContain('test text');
+    await fileActions1.docEditor.click({force: true});
+    await page1.keyboard.press('Control+A');
+    await page1.keyboard.press('Control+C');
+    const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.trim()).toContain('test text');
 
     await fileActions.toSuccess( 'Can make a copy of Sheet document');
   } catch (e) {
