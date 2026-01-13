@@ -10,27 +10,30 @@
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1767883064259,
-      "stop": 1767883082958,
+      "start": 1768306419444,
+      "stop": 1768306470601,
       "suites": 0
     },
     "tests": [
       {
-        "name": "screenshot loggedin - change team avatar",
+        "name": "loggedin - sheet - import template",
         "status": "passed",
-        "duration": 17966,
-        "start": 1767883064,
-        "stop": 1767883082,
+        "duration": 49240,
+        "start": 1768306420,
+        "stop": 1768306469,
         "rawStatus": "passed",
         "tags": [],
         "type": "e2e",
-        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/teams_loggedin.spec.js",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/sheet_loggedin.spec.js",
         "retries": 0,
         "flaky": false,
         "steps": [],
-        "suite": "chrome > teams_loggedin.spec.js",
+        "suite": "playwright-firefox > sheet_loggedin.spec.js",
         "attachments": [],
-        "stdout": [],
+        "stdout": [
+          "\u001b[33m1\u001b[39m\n",
+          "\u001b[33mfalse\u001b[39m\n"
+        ],
         "stderr": [],
         "extra": {
           "annotations": []

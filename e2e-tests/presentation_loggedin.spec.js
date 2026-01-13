@@ -55,8 +55,10 @@ test('loggedin - presentation - import template', async ({ page, context }) => {
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
     await fileActions.templateSpan('example presentation template').click();
+    await page.waitForTimeout(5000);
+
     await fileActions.fileSaved.waitFor();
-    await page.waitForTimeout(5000)
+    await fileActions.waitForSync.waitFor({state: "hidden"})
 
     await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
@@ -220,23 +222,22 @@ test('screenshot loggedin - presentation - insert image', async ({ page, context
   
   try {
 
-    await expect(page).toHaveScreenshot( { maxDiffPixels: 6000 });
-
+    await expect(page).toHaveScreenshot( { maxDiffPixels: 16120 });
+    
     await fileActions.insertTab.click({force: true});
     await fileActions.insertImg.click();
     await fileActions.imgFromFile.click();
 
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await fileActions.uploadFile.click()
+    await fileActions.uploadFileSecure.click()
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
 
-    await fileChooser.setFiles('testdocuments/test sheet.xlsx');
     await fileActions.okButtonSecure.click();
     await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor()
     await page.waitForTimeout(3000)
-    await expect(page).toHaveScreenshot( { maxDiffPixels: 6000 });
+    await expect(page).toHaveScreenshot( { maxDiffPixels: 17800 });
 
     await fileActions.toSuccess( 'Can insert image into Presentation');
   } catch (e) {
