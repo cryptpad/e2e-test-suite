@@ -91,6 +91,8 @@ export class FileActions {
     this.shareSecureLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Share' });
     this.shareCopyLink = this.page.frameLocator('#sbox-secure-iframe').getByRole('button', { name: 'Copy link' });
     this.fileSaved = this.mainFrame.locator('.cp-toolbar-spinner').getByText('Saved');
+    this.fileHistory = this.mainFrame.locator('.cp-toolbar-spinner').getByText('History');
+
     this.deleteButton = this.mainFrame.getByRole('button', { name: 'Delete' });
     this.moveToTrash = this.mainFrame.getByText('Move to trash')
     this.passwordChangeSuccess = this.secureFrame.getByText('The password was successfully')
@@ -379,7 +381,7 @@ export class FileActions {
     this.accessList = this.secureFrame.locator('span').filter({ hasText: 'List' }).first()
     this.enableAccessList = this.secureFrame.locator('label').filter({ hasText: 'Enable access list' }).locator('span').first()
     this.addToAccessList = this.secureFrame.locator('.cp-share-column-mid.cp-overlay-container').locator('.btn.btn-primary.cp-access-add')
-    this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user > .fa').first()
+    this.removeFromAccessList = this.secureFrame.locator('.cp-usergrid-user').getByRole('button').first()
     this.movedToTrash = this.mainFrame.getByText(/^That document has been moved to the trash/, { exact: true })
     this.lostConnection = this.mainFrame.getByText(/^Your connnection to CryptPad/)
     this.uploadFile = this.mainFrame.getByRole('button', { name: 'Upload a new file to your' })
@@ -547,10 +549,13 @@ export class FileActions {
 
 
   async openFormSettings () {
+        await this.page.waitForTimeout(4000)
+
     await this.formSettings.waitFor();
     await this.formSettings.click();
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForTimeout(4000)
     const visible = await this.formSettings.locator('span').isVisible();
+    
     console.log("visible", visible)
     if (visible === false) {
       await this.formSettings.waitFor();

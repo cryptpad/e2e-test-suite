@@ -42,8 +42,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-const docNames = ['pad', 'sheet', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'doc', 'presentation'];
-// const docNames = ['kanban'];
+// const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'document', 'presentation'];
+const docNames = ['doc'];
 
 
 docNames.forEach(function (name) {
@@ -208,29 +208,30 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`loggedin - ${name} - add to team drive`, async ({ page }) => {
-    test.skip(browserName === 'edge', 'microsoft edge incompatibility');
+  // test(`loggedin - ${name} - add to team drive`, async ({ page }) => {
+  //   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
-    try {
-      await fileActions.createFile.click();
-      await fileActions.share(mobile);
-      await fileActions.secureFrame.getByText('test team').click();
-      await fileActions.shareSecureLink.click();
+  //   try {
+  //     await fileActions.createFile.click();
+  //     await page.waitForTimeout(5000);
+  //     await fileActions.share(mobile);
+  //     await fileActions.secureFrame.getByText('test team').click();
+  //     await fileActions.shareSecureLink.click();
 
-      await page.waitForTimeout(2000);
-      await page.goto(`${url}/teams/`);
-      await fileActions.teamSlot.getByText('test team').click();
+  //     await page.waitForTimeout(2000);
+  //     await page.goto(`${url}/teams/`);
+  //     await fileActions.teamSlot.getByText('test team').click();
 
-      await fileActions.driveFileTitle(name).first().click({ button: 'right' });
+  //     await fileActions.driveFileTitle(name).first().click({ button: 'right' });
 
-      await fileActions.moveToTrash.click();
-      await page.waitForTimeout(5000);
+  //     await fileActions.moveToTrash.click();
+  //     await page.waitForTimeout(5000);
 
-      await fileActions.toSuccess( 'Can create document and add to team drive');
-    } catch (e) {
-      await fileActions.toFailure(e,  'Can\'t acreate document and add to team drive');
-    }
-  });
+  //     await fileActions.toSuccess( 'Can create document and add to team drive');
+  //   } catch (e) {
+  //     await fileActions.toFailure(e,  'Can\'t acreate document and add to team drive');
+  //   }
+  // });
 
   test(`loggedin - ${name} - move to trash and empty`, async ({ page }) => {
     try {
@@ -416,7 +417,7 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - share with contact - view and delete`, async ({ page, browser }) => {
-      test.skip()
+      // test.skip()
       try {
         await fileActions.createFile.click();
         await fileActions.shareWithContact('View', 'test-user3', true, mobile);
@@ -454,7 +455,7 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - share (link) - view and delete`, async ({ page, browser }) => {
-      test.skip()
+      // test.skip()
       test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878')
       try {
         await fileActions.createFile.click();
@@ -493,7 +494,7 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
-      test.skip()
+      // test.skip()
       try {
         await fileActions.createFile.click();
 

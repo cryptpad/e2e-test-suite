@@ -120,7 +120,10 @@ test.describe('Chat modal', () => {
         await chatModal.enterText(chatMessage);
 
         // Now a request for help appears in the corner overlapping with chat.
-        await filePage.dismissHelpRequest();
+        if (await filePage.notNow.isVisible()) {
+          await filePage.dismissHelpRequest();
+        }
+        
 
         // With the popup gone we can verify the visibility of the message.
         await expect(chatModal.chatPane).toHaveText(new RegExp('.*' + chatMessage));

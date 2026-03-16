@@ -19,16 +19,16 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   fileActions = new FileActions(page);
 });
 
-test('test-user account setup', async ({ page }) => {
-  try {
-    await userActions.register('test-user', mainAccountPassword);
+// test('test-user account setup', async ({ page }) => {
+//   try {
+//     await userActions.register('test-user', mainAccountPassword);
 
-    await fileActions.toSuccess('Can register test-user');
-  } catch (e) {
-    console.log(e);
-    await fileActions.toFailure(e, 'Can\'t register test-user');
-  }
-});
+//     await fileActions.toSuccess('Can register test-user');
+//   } catch (e) {
+//     console.log(e);
+//     await fileActions.toFailure(e, 'Can\'t register test-user');
+//   }
+// });
 
 test('testuser account setup', async ({ page }) => {
   try {

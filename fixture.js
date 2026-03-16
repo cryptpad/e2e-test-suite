@@ -124,7 +124,7 @@ exports.mainAccountPassword = process.env.MAINACCOUNTPASSWORD;
 exports.testUserPassword = process.env.TESTUSERPASSWORD;
 exports.testUser2Password = process.env.TESTUSER2PASSWORD;
 exports.testUser3Password = process.env.TESTUSER3PASSWORD;
-
+console.log(process.env.TESTUSER2PASSWORD)
 const date = new Date();
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

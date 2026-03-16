@@ -37,6 +37,7 @@ class FilePage {
     this.titleEditBox = this.mainFrame.locator('.cp-toolbar-title-edit');
     this.titleInput = this.mainFrame.locator('.cp-toolbar-title').locator('input');
     this.saveTitle = this.mainFrame.locator('.cp-toolbar-title-save');
+    this.notNow = this.mainFrame.getByRole('button', { name: 'Not now', exact: true });
   }
 
   filemenu () {
@@ -69,7 +70,6 @@ class FilePage {
   }
 
   async dismissHelpRequest () {
-    const notNow = this.mainFrame.getByRole('button', { name: 'Not now', exact: true });
     await notNow.click();
   }
 

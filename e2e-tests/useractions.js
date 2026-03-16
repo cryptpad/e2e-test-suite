@@ -15,10 +15,11 @@ export class UserActions {
   }
 
   async login (username, password) {
+    console.log(username, password)
     await this.page.goto(`${url}/login`);
     await this.page.getByPlaceholder('Username').fill(username);
     await this.page.waitForTimeout(1000);
-    await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
+    await this.page.getByRole('textbox', { name: 'Password' }).fill('password');
 
     await this.loginButton.waitFor();
     await this.loginButton.click();
@@ -53,6 +54,9 @@ export class UserActions {
     await expect(hashing).toBeVisible({ timeout: 200000 });
 
     await this.page.waitForTimeout(20000);
+      await this.page.getByRole('button', { name: 'Continue for free' }).click();
+    await this.page.waitForTimeout(20000);
+
     await this.page.waitForURL(`${url}/drive/#`);
   }
 }

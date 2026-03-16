@@ -86,12 +86,23 @@ test('anon - doc - history (previous version)', async ({ page, context }) => {
     await fileActions.docEditorInput.fill('test text');
 
     await fileActions.history(mobile);
+    await page.waitForTimeout(1000)
+
     await fileActions.historyFastPrev.click()
-    await fileActions.fileSaved.waitFor()
+    await page.waitForTimeout(1000)
+
+    await fileActions.fileHistory.waitFor()
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 
-    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
+    await fileActions.docEditorInput.waitFor()
+    await fileActions.docEditorInput.click({force: true});
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Control+C');
+    await page.waitForTimeout(1000)
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.trim()).toEqual('');
     
     await fileActions.toSuccess( 'Can browse Document history');
 
@@ -109,8 +120,11 @@ test('anon - doc - history (share)', async ({ page, browser, context }) => {
     await fileActions.docEditorInput.fill('test text');
 
     await fileActions.history(mobile);
+    await page.waitForTimeout(1000)
     await fileActions.historyFastPrev.click()
-    await fileActions.fileSaved.waitFor()
+    await page.waitForTimeout(1000)
+
+    await fileActions.fileHistory.waitFor()
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 
@@ -122,7 +136,7 @@ test('anon - doc - history (share)', async ({ page, browser, context }) => {
     await page1.goto(`${clipboardText2}`);
     fileActions1 = new FileActions(page1);
     await fileActions1.waitForSync.waitFor({timeout: 5000})
-    await fileActions1.waitForSync.waitFor({state: 'hidden', timeout: 5000})
+    await fileActions1.waitForSync.waitFor({state: 'hidden'})
 
     await fileActions1.docEditor.waitFor()
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
