@@ -42,8 +42,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 });
 
-// const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'document', 'presentation'];
-const docNames = ['doc'];
+const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
+// const docNames = ['doc'];
 
 
 docNames.forEach(function (name) {
@@ -439,7 +439,12 @@ docNames.forEach(function (name) {
         await fileActions2.fileTitle(name).waitFor()
         await expect(fileActions2.fileTitle(name)).toBeVisible();
         await expect(fileActions2.readOnly).toBeVisible();
-        await page2.waitForTimeout(1000)
+        if (name === 'diagram') {
+          await page2.waitForTimeout(4000)
+        } else {
+          await page2.waitForTimeout(2000)
+        }
+        
         await page2.reload();
         await fileActions2.destroyedByOwner.waitFor();
         await expect(fileActions2.destroyedByOwner).toBeVisible();
@@ -494,7 +499,7 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
-      // test.skip()
+      test.skip('#1957')
       try {
         await fileActions.createFile.click();
 

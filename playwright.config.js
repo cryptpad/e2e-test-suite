@@ -76,7 +76,8 @@ module.exports = defineConfig({
       name: 'chrome',
       use: {
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        locale: 'en-GB'
+        locale: 'en-GB',
+        channel: 'chromium'
       }
     }, 
     {

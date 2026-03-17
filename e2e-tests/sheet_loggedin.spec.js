@@ -221,10 +221,9 @@ test('loggedin - sheet - history (restore)', async ({ page, context }) => {
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
-        // await page.waitForTimeout(30000)
 
     await fileActions.historyFastPrev.click()
-    await fileActions.fileSaved.waitFor()
+    await fileActions.fileHistory.waitFor()
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 

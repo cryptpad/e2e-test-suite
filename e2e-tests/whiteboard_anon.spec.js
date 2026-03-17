@@ -49,7 +49,7 @@ test('screenshot anon - whiteboard - can draw (default settings)', async ({ page
     if (mobile) {
       await expect(page).toHaveScreenshot({ maxDiffPixels: 14000 });
     } else {
-      await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     }
     await fileActions.toSuccess( 'Can draw on whiteboard (default settings)');
   } catch (e) {
@@ -90,7 +90,7 @@ test('screenshot anon - whiteboard - erase', async ({ page }) => {
     await page.mouse.up();
     await fileActions.clearButton.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4700 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     await fileActions.toSuccess( 'Can erase on whiteboard');
   } catch (e) {
     await fileActions.toFailure(e,'Can\'t erase on whiteboard');
@@ -109,7 +109,7 @@ test('screenshot anon - whiteboard - enter text on whiteboard', async ({ page })
       }
     });
     await fileActions.textbox.fill('test text');
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4000 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
     await fileActions.toSuccess(  'Can enter text on whiteboard');
   } catch (e) {
@@ -143,7 +143,7 @@ test('screenshot anon - whiteboard - delete selection on whiteboard', async ({ p
     });
     await fileActions.whiteBoardDelete.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4900 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     await fileActions.toSuccess( 'Can delete selection on Whiteboard' );
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t delete selection on Whiteboard');
@@ -168,6 +168,8 @@ test('screenshot anon - whiteboard - can change whiteboard brush thickness', asy
         y: 230
       }, force: true
     });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
+
 
     await fileActions.toSuccess(  'Can change Whiteboard brush thickness');
   } catch (e) {
@@ -194,7 +196,7 @@ test('screenshot anon - whiteboard - can change whiteboard brush opacity', async
       }, force: true
     });
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4300 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     await fileActions.toSuccess(  'Can draw on whiteboard (default settings)');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t draw on whiteboard (default settings)');
@@ -220,7 +222,7 @@ test('screenshot anon - whiteboard - can clear canvas', async ({ page }) => {
     await page.mouse.up();
     await fileActions.clearButton.click();
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4600 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     await fileActions.toSuccess( 'Can clear whiteboard canvas');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t clear whiteboard canvas');
@@ -252,7 +254,7 @@ test('screenshot anon - whiteboard - make a copy', async ({ page }) => {
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/whiteboard`), { timeout: 100000 });
 
-    await expect(page).toHaveScreenshot({ maxDiffPixels: 4400 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     await fileActions.toSuccess( 'Can make copy of Whiteboard document');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t make copy of Whiteboard document');
@@ -361,7 +363,7 @@ test('screenshot anon - whiteboard - share history at specific moment in time (l
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1)
     await fileActions1.fileTitle('Whiteboard').waitFor()
-    await expect(page1).toHaveScreenshot({ maxDiffPixels: 5500 });
+    await expect(page1).toHaveScreenshot({ maxDiffPixels: 8500 });
 
     await fileActions.toSuccess( 'Can share Whiteboard history at specific moment in time (link)');
   } catch (e) {

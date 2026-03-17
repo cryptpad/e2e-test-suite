@@ -154,7 +154,7 @@ test('anon - sheet - history (previous version)', async ({ page, context }) => {
 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
-    await fileActions.fileSaved.waitFor()
+    await fileActions.fileHistory.waitFor()
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
 
@@ -192,7 +192,7 @@ test('anon - sheet - history (share)', async ({ page, browser, context }) => {
 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click()
-    await fileActions.fileSaved.waitFor()
+    await fileActions.fileHistory.waitFor()
     await fileActions.waitForSync.waitFor({state: 'hidden'})
     await expect(fileActions.warningModal).toHaveCount(0)
     
