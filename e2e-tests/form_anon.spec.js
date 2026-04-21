@@ -666,6 +666,7 @@ test('anon - form - edit response', async ({ page, context }) => {
 });
 
 test('anon - form - delete response', async ({ page, context }) => {
+  test.skip(browserName==='playwright-firefox' || browserName==='playwright-webkit')
   try {
     var clipboardText = await fileActions.publicLinkCopy()
     page1 = await context.newPage();

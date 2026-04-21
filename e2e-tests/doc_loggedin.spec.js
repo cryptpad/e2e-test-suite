@@ -58,7 +58,11 @@ test('loggedin - doc - import template', async ({ page, context }) => {
     await page.waitForTimeout(5000);
 
     await fileActions.fileSaved.waitFor();
-    await fileActions.waitForSync.waitFor({state: "hidden"})
+    await fileActions.waitForSync.waitFor({state: "hidden"});
+
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
 
     await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
@@ -197,6 +201,9 @@ test('loggedin - doc - import file (doc)', async ({ page, context }) => {
     await fileChooser.setFiles('testdocuments/test doc.docx');
     await fileActions.okButton.click()
     await fileActions.fileSaved.waitFor();
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
@@ -224,6 +231,9 @@ test('loggedin - doc - import file (odt)', async ({ page, context }) => {
     await fileChooser.setFiles('testdocuments/test doc.odt');
     await fileActions.okButton.click()
     await fileActions.fileSaved.waitFor();
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions.docEditor.click({force: true});
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');

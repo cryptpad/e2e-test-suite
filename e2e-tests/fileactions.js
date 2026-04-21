@@ -20,6 +20,10 @@ export class FileActions {
     this.titleDateTwoCommas = titleDateTwoCommas
     this.titleDateNoYear = titleDateNoYear
 
+    this.storePane = this.mainFrame.locator('.cp-corner-container');
+    this.dismissButton = this.storePane.getByRole('button', { name: 'Don\'t store', exact: true });
+    this.storeButton = this.storePane.getByRole('button', { name: 'Store', exact: true });
+
     // user actions-related locators
     this.login = page.locator('.login');
     this.register = page.locator("[id='register']");
@@ -157,7 +161,7 @@ export class FileActions {
     this.editQuestion = this.mainFrame.getByRole('button', { name: 'Edit' })
     this.checkbox = this.mainFrame.getByRole('button', { name: 'Checkbox', exact: true })
     this.setClosingDate = this.mainFrame.getByRole('button', { name: 'Set closing date' })
-    this.noResponses = this.mainFrame.getByRole('button', { name: 'Responses (0)' })
+    // this.noResponses = this.mainFrame.getByRole('button', { name: 'Responses (0)' })
     this.oneResponse = this.mainFrame.getByRole('button', { name: 'Responses (1)' })
     this.oneTimeOnly = this.mainFrame.locator('#cp-form-settings').getByText('One time only')
     this.multipleTimes = this.mainFrame.locator('#cp-form-settings').getByText('Multiple times', { exact: true })
@@ -184,7 +188,7 @@ export class FileActions {
     this.showIndividualAnswers = this.mainFrame.getByRole('button', { name: 'Show individual answers' })
     this.oneTotalResponse = this.mainFrame.getByRole('heading', { name: 'Total responses: 1' })
     this.formTextBox = this.mainFrame.locator('#cp-app-form-container input[type="text"]')
-    this.formEditorButton = this.mainFrame.getByRole('button', { name: 'Editor' })
+    // this.formEditorButton = this.mainFrame.getByRole('button', { name: 'Editor' })
     this.exportToSheet = this.mainFrame.getByRole('button', { name: 'Export to Sheet' })
     this.pageBreak = this.mainFrame.getByRole('button', { name: 'Page break' })
     this.nextPage = this.mainFrame.locator('.btn.btn-secondary.cp-next')
@@ -402,6 +406,14 @@ export class FileActions {
   async newFileClick () {
     await this.newFile.click();
     return new NewFileModal(this);
+  }
+
+  noResponses () {
+    return this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Responses (0)' })
+  }
+
+  formEditorButton () {
+    return this.page.frameLocator('#sbox-iframe').getByRole('button', { name: 'Editor' })
   }
 
   fileFormatButton (format) {

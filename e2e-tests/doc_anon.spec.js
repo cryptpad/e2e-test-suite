@@ -63,7 +63,10 @@ test('anon - doc - make a copy', async ({ page, context }) => {
     await expect(page1).toHaveURL(new RegExp(`^${url}/doc`), { timeout: 100000 });
     fileActions1 = new FileActions(page1);
 
-    await fileActions1.fileSaved.waitFor()
+    await fileActions1.fileSaved.waitFor();
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions1.docEditor.click({force: true});
     await page1.keyboard.press('Control+A');
     await page1.keyboard.press('Control+C');

@@ -3,6 +3,7 @@ const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 const { Cleanup } = require('./cleanup.js');
 
+
 const fs = require('fs');
 require('dotenv').config();
 const os = require('os');
@@ -29,6 +30,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     await cleanUp.cleanTemplates();
   }
   fileActions = new FileActions(page);
+  
   await page.goto(`${url}/sheet`);
   await fileActions.createFile.waitFor();
   await fileActions.createFile.click();
@@ -60,11 +62,19 @@ test('loggedin - sheet - import template', async ({ page, context }) => {
 
     await fileActions.fileSaved.waitFor();
     await fileActions.waitForSync.waitFor({state: "hidden"})
-
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions.docEditor.click({force: true});
+    await page.waitForTimeout(1000)
     await page.keyboard.press('Control+A');
+    await page.waitForTimeout(1000)
     await page.keyboard.press('Control+C');
+    await page.waitForTimeout(1000)
+
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    await page1.waitForTimeout(1000)
+
     expect(clipboardText.trim()).toContain('example template content');
 
     await page.goto(`${url}/drive/`);
@@ -94,9 +104,16 @@ test('loggedin - sheet - import file (xlsx)', async ({ page, context }) => {
     await fileChooser.setFiles('testdocuments/test sheet.xlsx');
     await fileActions.okButton.click()
     await fileActions.fileSaved.waitFor();
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions.docEditor.click({force: true});
+    await page.waitForTimeout(1000)
     await page.keyboard.press('Control+A');
+    await page.waitForTimeout(1000)
     await page.keyboard.press('Control+C');
+    await page.waitForTimeout(1000)
+
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('test text');
 
@@ -121,9 +138,16 @@ test('loggedin - sheet - import file (ods)', async ({ page, context }) => {
     await fileChooser.setFiles('testdocuments/test sheet ods.ods');
     await fileActions.okButton.click()
     await fileActions.fileSaved.waitFor();
+    if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions.docEditor.click({force: true});
+    await page.waitForTimeout(1000)
     await page.keyboard.press('Control+A');
+    await page.waitForTimeout(1000)
     await page.keyboard.press('Control+C');
+    await page.waitForTimeout(1000)
+
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('test text');
 

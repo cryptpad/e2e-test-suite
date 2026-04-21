@@ -66,11 +66,21 @@ test('anon - sheet - make a copy', async ({ page, context }) => {
     fileActions1 = new FileActions(page1);
 
     await fileActions1.fileSaved.waitFor()
+    await page1.waitForTimeout(1000)
+      if ( await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click()
+    }
     await fileActions1.docEditor.click({force: true});
+    await page1.waitForTimeout(1000)
+
     await page1.keyboard.press('Control+A');
+    await page1.waitForTimeout(1000)
     await page1.keyboard.press('Control+C');
+    await page1.waitForTimeout(1000)
+
     const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('test text');
+
 
     await fileActions.toSuccess( 'Can make a copy of Sheet document');
   } catch (e) {
