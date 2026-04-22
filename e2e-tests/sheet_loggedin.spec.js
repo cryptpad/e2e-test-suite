@@ -73,7 +73,7 @@ test('loggedin - sheet - import template', async ({ page, context }) => {
     await page.waitForTimeout(1000)
 
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    await page1.waitForTimeout(1000)
+    await page.waitForTimeout(1000);
 
     expect(clipboardText.trim()).toContain('example template content');
 
