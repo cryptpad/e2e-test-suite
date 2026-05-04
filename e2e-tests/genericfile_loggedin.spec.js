@@ -31,8 +31,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
-// const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
-const docNames = [ 'code',  'kanban'];
+const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
+// const docNames = [ 'code',  'kanban'];
 
 docNames.forEach(function (name) {
   test(`loggedin - ${name} - create without owner`, async ({ page }) => {
