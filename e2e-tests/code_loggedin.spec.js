@@ -1,7 +1,6 @@
-const { test, url, mainAccountPassword } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
-const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
@@ -28,7 +27,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test('loggedin - code - save as and import template', async ({ page }) => {
   try {
-
     await fileActions.createFile.click();
     await fileActions.fileSaved.waitFor();
     await fileActions.codeEditor.waitFor();
@@ -44,7 +42,7 @@ test('loggedin - code - save as and import template', async ({ page }) => {
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
     await fileActions.templateSpan('example code template').click();
-    await fileActions.codeEditor.getByText('example template content').waitFor()
+    await fileActions.codeEditor.getByText('example template content').waitFor();
     await expect(fileActions.codeEditor.getByText('example template content')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
@@ -69,7 +67,7 @@ test('loggedin - code - history (previous author)', async ({ page, browser }) =>
     await expect(fileActions.codeEditor.getByText('Test text by test-user')).toBeVisible();
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile);
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);
@@ -94,7 +92,7 @@ test('loggedin - code - history (previous author)', async ({ page, browser }) =>
 
     await expect(fileActions.slideEditor.getByText('Test text by test-user')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create code document and view history (previous author)' );
+    await fileActions.toSuccess('Can create code document and view history (previous author)');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create code document and view history (previous author)');
   }

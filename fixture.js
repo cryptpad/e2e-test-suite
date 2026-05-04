@@ -134,7 +134,7 @@ const month = months[date.getMonth()];
 exports.titleDateNoYear = `${weekday}, ${month} ${date.getDate()},`;
 exports.titleDateTwoCommas = `${weekday}, ${date.getDate()} ${month}, ${date.getFullYear()}`;
 exports.titleDateComma = `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
-exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}` || `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
+exports.titleDate = `${weekday} ${date.getDate()} ${month} ${date.getFullYear()}` || `${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`;
 
 const setTimeZone = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' });
 const now = new Date(setTimeZone);

@@ -3,15 +3,15 @@ const { expect } = require('@playwright/test');
 const AxeBuilder = require('@axe-core/playwright');
 const fs = require('fs');
 require('dotenv').config();
-const os = require('os');
-
-let page1;
-let mobile;
-let browserstackMobile;
-let platform;
-const local = !!process.env.PW_URL.includes('localhost');
+const { FileActions } = require('./fileactions.js');
 
 let results = '';
+let fileActions;
+
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
+  test.setTimeout(90000);
+  fileActions = new FileActions(page);
+});
 
 test('settings - accessibility', async ({ page }, testInfo) => {
   try {
@@ -145,7 +145,7 @@ test('teams (admin) - accessibility', async ({ page }, testInfo) => {
   }
 });
 
-test.afterAll(async ({ }) => {
+test.afterAll(async () => {
   const resultsString = '' + results;
   fs.writeFile('accessibilityresults_loggedin.md', resultsString, function (err) {
     if (err) {

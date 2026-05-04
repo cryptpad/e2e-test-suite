@@ -2,9 +2,9 @@ const { url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 
 export class UserActions {
-  /**
-	* @param {import('@playwright/test').Page} page
-	*/
+/**
+* @param {import('@playwright/test').Page} page
+*/
   constructor (page) {
     this.page = page;
 
@@ -15,7 +15,6 @@ export class UserActions {
   }
 
   async login (username, password) {
-    console.log(username, password)
     await this.page.goto(`${url}/login`);
     await this.page.getByPlaceholder('Username').fill(username);
     await this.page.waitForTimeout(1000);
@@ -24,10 +23,10 @@ export class UserActions {
     await this.loginButton.waitFor();
     await this.loginButton.click();
     await expect(this.page).toHaveURL(`${url}/drive/#`, { timeout: 100000 });
-    if (!await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).isVisible({timeout: 10000})) {
-      await this.page.reload()
+    if (!await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).isVisible({ timeout: 10000 })) {
+      await this.page.reload();
     }
-    await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).waitFor()
+    await this.page.frameLocator('#sbox-iframe').getByText('CryptDrive', { exact: true }).waitFor();
   }
 
   async register (username, password) {
@@ -36,9 +35,8 @@ export class UserActions {
     await this.page.getByPlaceholder('Username').fill(username);
     await this.page.getByPlaceholder('Password', { exact: true }).fill(password);
     await this.page.getByPlaceholder('Confirm your password', { exact: true }).fill(password);
-    await this.page.waitForTimeout(3000)
+    await this.page.waitForTimeout(3000);
     await this.registerButton.waitFor();
-    
 
     if (await this.page.locator('#userForm span').nth(2).isVisible()) {
       await this.page.locator('#userForm span').nth(2).click();
@@ -58,7 +56,6 @@ export class UserActions {
       await this.page.getByRole('button', { name: 'Continue for free' }).click();
       await this.page.waitForTimeout(20000);
     }
-      
 
     await this.page.waitForURL(`${url}/drive/#`);
   }

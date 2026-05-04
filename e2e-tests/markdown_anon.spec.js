@@ -1,11 +1,9 @@
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-const { FileActions, StoreModal } = require('./fileactions.js');
+const { FileActions } = require('./fileactions.js');
 
 const fs = require('fs');
 require('dotenv').config();
-
-const local = !!process.env.PW_URL.includes('localhost');
 
 let mobile;
 let browserstackMobile;
@@ -16,8 +14,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   mobile = testInfo.project.use.mobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   fileActions = new FileActions(page);
-  await fileActions.loadFileType("slide")
-
+  await fileActions.loadFileType('slide');
 });
 
 test('anon - slide - input text into editor and create slide', async ({ page }) => {
@@ -27,9 +24,9 @@ test('anon - slide - input text into editor and create slide', async ({ page }) 
     await expect(fileActions.slideEditor.getByText('Test text')).toBeVisible();
     await expect(fileActions.slideContent.getByText('Test text')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can anonymously create Markdown slides' );
+    await fileActions.toSuccess('Can anonymously create Markdown slides');
   } catch (e) {
-   await fileActions.toFailure(e,'Can\'t anonymously create Markdown slides' );
+    await fileActions.toFailure(e, 'Can\'t anonymously create Markdown slides');
   }
 });
 
@@ -54,9 +51,9 @@ test('anon - slide - create new slide', async ({ page }) => {
       await fileActions.nextSlide.click();
     }
     await expect(fileActions.slideContent.getByText('More test text')).toBeVisible();
-    await fileActions.toSuccess( 'Can anonymously create Markdown slides');
+    await fileActions.toSuccess('Can anonymously create Markdown slides');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create Markdown slides');
+    await fileActions.toFailure(e, 'Can\'t anonymously create Markdown slides');
   }
 });
 
@@ -69,7 +66,7 @@ test('anon - slide - toggle toolbar', async ({ page }) => {
 
     await fileActions.toSuccess('Can input ');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create Markdown slides');
+    await fileActions.toFailure(e, 'Can\'t anonymously create Markdown slides');
   }
 });
 
@@ -88,7 +85,7 @@ test('anon - slide - toggle preview', async ({ page }) => {
 
     await fileActions.toSuccess('Can anonymously create Markdown slides');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create Markdown slides');
+    await fileActions.toFailure(e, 'Can\'t anonymously create Markdown slides');
   }
 });
 
@@ -104,13 +101,13 @@ test('anon - slide - make a copy', async ({ page, context }) => {
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/slide`), { timeout: 100000 });
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.codeEditor.getByText('Test text').waitFor();
     await expect(fileActions1.codeEditor.getByText('Test text')).toBeVisible();
 
     await fileActions.toSuccess('Can\'t create a copy of a Markdown document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create a copy of a Markdown document');
+    await fileActions.toFailure(e, 'Can\'t create a copy of a Markdown document');
   }
 });
 
@@ -130,12 +127,12 @@ test('anon - slide - export (md)', async ({ page, context }) => {
 
     const readData = fs.readFileSync('/tmp/test markdown', 'utf8');
     if (readData.trim() === 'Test text') {
-      await fileActions.toSuccess( 'Can export Markdown document as .md');
+      await fileActions.toSuccess('Can export Markdown document as .md');
     } else {
-      await fileActions.toFailure(e, 'Can\'t export Markdown document as .md' );
+      await fileActions.toFailure('Can\'t export Markdown document as .md');
     }
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Markdown document as .md');
+    await fileActions.toFailure(e, 'Can\'t export Markdown document as .md');
   }
 });
 
@@ -143,20 +140,20 @@ test('anon - slide - share at a moment in history', async ({ page, context }) =>
   try {
     await fileActions.slideEditor.click();
     await fileActions.slideEditor.type('One moment in history');
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(3000);
     await fileActions.slideEditor.fill('');
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();
     await fileActions.historyPrevLast.click();
 
-    var clipboardText = await fileActions.getShareLink()
+    const clipboardText = await fileActions.getShareLink();
 
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await expect(fileActions1.codeEditor.getByText('One moment in history')).toBeHidden();
 
-    await fileActions.toSuccess( 'Can share Markdown at a specific moment in history');
+    await fileActions.toSuccess('Can share Markdown at a specific moment in history');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t share Markdown at a specific moment in history');
   }
@@ -190,7 +187,7 @@ test('anon - slide - import file', async ({ page }) => {
 
     await expect(fileActions.slideEditor.getByText('1test text2​3---4​5new text')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can import file into Slide document');
+    await fileActions.toSuccess('Can import file into Slide document');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t import file into Slide document');
   }

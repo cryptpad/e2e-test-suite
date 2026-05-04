@@ -1,7 +1,6 @@
-const { test, url, mainAccountPassword } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
-const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
 const fs = require('fs');
@@ -42,27 +41,26 @@ test('loggedin - user menu - make and delete team', async ({ page }) => {
     await page.waitForTimeout(3000);
     await expect(fileActions.mainFrame.getByText('example team', { exact: true })).toHaveCount(0);
 
-    await fileActions.toSuccess( 'Can create a team');
+    await fileActions.toSuccess('Can create a team');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t create a team' );
+    await fileActions.toFailure('Can\'t create a team');
   }
 });
-
 
 test('loggedin - can access team public signing key', async ({ page }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
   try {
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
 
     await fileActions.mainFrame.locator('div').filter({ hasText: /^Administration$/ }).waitFor();
     await fileActions.mainFrame.locator('div').filter({ hasText: /^Administration$/ }).click();
 
     const key = await fileActions.textbox.first().inputValue();
     if (key.indexOf('test team@') !== -1) {
-      await fileActions.toSuccess( 'Can access team public signing key');
+      await fileActions.toSuccess('Can access team public signing key');
     } else {
-      await fileActions.toFailure(e,  'Can\'t access team public signing key');
+      await fileActions.toFailure('Can\'t access team public signing key');
     }
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t access team public signing key');
@@ -75,14 +73,14 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
 
   try {
     // access team administration panel
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
     await fileActions.teamTab(/^Administration$/).waitFor();
     await fileActions.teamTab(/^Administration$/).click();
 
     // upload new avatar
 
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await fileActions.uploadFile.click({force: true});
+    await fileActions.uploadFile.click({ force: true });
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
     await fileActions.okButton.waitFor();
@@ -91,12 +89,12 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
     await page.goto(`${url}/teams`);
     await fileActions.teamSlot.getByText('test team').waitFor();
     if (browserName === 'chrome') {
-      await expect(page).toHaveScreenshot( { maxDiffPixels: 10000 });
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 10000 });
     } else {
-      await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 100 });
     }
 
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
     await fileActions.teamTab(/^Administration$/).waitFor();
     await fileActions.teamTab(/^Administration$/).click();
 
@@ -112,24 +110,24 @@ test('screenshot loggedin - change team avatar', async ({ page }) => {
     await page.goto(`${url}/teams`);
     await fileActions.teamSlot.getByText('test team').waitFor();
     if (browserName === 'chrome') {
-      await expect(page).toHaveScreenshot( { maxDiffPixels: 9000 });
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 9000 });
     } else {
-      await expect(page).toHaveScreenshot( { maxDiffPixels: 100 });
+      await expect(page).toHaveScreenshot({ maxDiffPixels: 100 });
     }
 
-    await fileActions.toSuccess( 'Can change team avatar');
+    await fileActions.toSuccess('Can change team avatar');
   } catch (e) {
-    await fileActions.toFailure(e, 'Can\'t change team avatar' );
+    await fileActions.toFailure(e, 'Can\'t change team avatar');
   }
 });
 
 test('loggedin - can download team drive', async ({ page }) => {
-  test.skip()
+  test.skip();
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
 
   try {
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
 
     // access administration panel
     await fileActions.teamTab(/^Administration$/).waitFor();
@@ -177,12 +175,12 @@ test('loggedin - can download team drive', async ({ page }) => {
     }
     const files = await compareFiles();
     if (files) {
-      await fileActions.toSuccess( 'Can download team drive contents');
+      await fileActions.toSuccess('Can download team drive contents');
     } else {
       await fileActions.toFailure('Can\'t download team drive contents');
     }
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t download team drive contents');
+    await fileActions.toFailure(e, 'Can\'t download team drive contents');
   }
 });
 
@@ -221,13 +219,13 @@ test('loggedin - add contact to team as viewer and remove them', async ({ page, 
     const page2 = await page2Promise;
 
     await page.reload();
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
     await fileActions.teamTab(/^Members$/).waitFor();
     await fileActions.teamTab(/^Members$/).click();
     await expect(fileActions.teamMember('testuser')).toBeVisible({ timeout: 100000 });
 
-    const fileActions2 = new FileActions(page2)
-    await fileActions2.accessTeam()
+    const fileActions2 = new FileActions(page2);
+    await fileActions2.accessTeam();
     await page2.waitForTimeout(5000);
     const page3Promise = page2.waitForEvent('popup');
     await fileActions2.driveContentFolder.locator('[data-original-title="test pad"]').dblclick();
@@ -249,7 +247,7 @@ test('loggedin - add contact to team as viewer and remove them', async ({ page, 
 
     await page2.close();
     await page.bringToFront();
-    await fileActions.removeMember('testuser')
+    await fileActions.removeMember('testuser');
     await expect(fileActions.memberRemovalNotification('testuser')).toBeVisible();
     await fileActions.okButton.click();
     await expect(fileActions.teamMemberContainer('testuser')).toBeHidden({ timeout: 3000 });
@@ -264,11 +262,11 @@ test('loggedin - add contact to team as viewer and remove them', async ({ page, 
 
     await fileActions.toSuccess('Can add contact to team as viewer and remove them');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t add contact to team as viewer and remove them' );
+    await fileActions.toFailure(e, 'Can\'t add contact to team as viewer and remove them');
   }
 });
 
-//fixme
+// fixme
 test('loggedin - promote team viewer to member', async ({ page, browser }) => {
   test.skip(browserName === 'edge', 'microsoft edge incompatibility');
 
@@ -277,9 +275,9 @@ test('loggedin - promote team viewer to member', async ({ page, browser }) => {
     await cleanUp.cleanTeamMembership();
 
     // promote viewer to member
-    await fileActions.promoteTestUser3()
+    await fileActions.promoteTestUser3();
     if (!await fileActions.demoteTestUser3Arrow.isVisible()) {
-      await fileActions.promoteTestUser3()
+      await fileActions.promoteTestUser3();
     }
 
     /// log in other user
@@ -287,8 +285,8 @@ test('loggedin - promote team viewer to member', async ({ page, browser }) => {
     page1 = await context.newPage();
     const fileActions1 = new FileActions(page1);
     await page1.goto(`${url}/teams`);
-    await fileActions1.accessTeam()
-    await fileActions1.driveContentFolder.getByText('test pad').waitFor()
+    await fileActions1.accessTeam();
+    await fileActions1.driveContentFolder.getByText('test pad').waitFor();
     const page2Promise = page1.waitForEvent('popup');
     await fileActions1.driveContentFolder.getByText('test pad').dblclick();
     await fileActions1.driveContentFolder.getByText('test pad').dblclick();
@@ -315,7 +313,7 @@ test('loggedin - promote team viewer to member', async ({ page, browser }) => {
     await page1.close();
 
     await page.reload();
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
     // check messages sent by member are visible to team
     await fileActions.teamTab(/^Chat$/).click();
     await expect(fileActions.mainFrame.getByText(`hello at ${dateTimeStamp}`)).toBeVisible();
@@ -324,11 +322,11 @@ test('loggedin - promote team viewer to member', async ({ page, browser }) => {
     await fileActions.teamTab(/^Members$/).waitFor();
     await fileActions.teamTab(/^Members$/).click();
     await expect(fileActions.teamMember('test-user3')).toBeVisible({ timeout: 5000 });
-    await fileActions.demoteTestUser3()
+    await fileActions.demoteTestUser3();
 
-    await fileActions.toSuccess( 'Can promote team viewer to member and demote them');
+    await fileActions.toSuccess('Can promote team viewer to member and demote them');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t promote team viewer to member and demote them');
+    await fileActions.toFailure(e, 'Can\'t promote team viewer to member and demote them');
   }
 });
 
@@ -339,15 +337,15 @@ test('loggedin - promote team viewer to admin', async ({ page, browser }) => {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanTeamMembership();
 
-    await fileActions.promoteTestUser3()
-    await fileActions.promoteTestUser3()
+    await fileActions.promoteTestUser3();
+    await fileActions.promoteTestUser3();
 
     /// log in other user
     const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
     page1 = await context.newPage();
     const fileActions1 = new FileActions(page1);
     await page1.goto(`${url}/teams`);
-    await fileActions1.accessTeam()
+    await fileActions1.accessTeam();
     const page2Promise = page1.waitForEvent('popup');
     await fileActions1.driveContentFolder.getByText('test pad').dblclick({ timeout: 5000 });
     const page2 = await page2Promise;
@@ -371,7 +369,7 @@ test('loggedin - promote team viewer to admin', async ({ page, browser }) => {
     await page1.close();
 
     await page.reload();
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
 
     await fileActions.teamTab(/^Chat$/).click();
     await expect(fileActions.mainFrame.getByText(`hello at ${dateTimeStamp}`)).toBeVisible();
@@ -379,12 +377,12 @@ test('loggedin - promote team viewer to admin', async ({ page, browser }) => {
     await fileActions.teamTab(/^Members$/).waitFor();
     await fileActions.teamTab(/^Members$/).click();
     await expect(fileActions.teamMember('test-user3')).toBeVisible({ timeout: 5000 });
-    await fileActions.demoteTestUser3()
-    await fileActions.demoteTestUser3()
+    await fileActions.demoteTestUser3();
+    await fileActions.demoteTestUser3();
 
-    await fileActions.toSuccess( 'Can promote team viewer to admin and demote them');
+    await fileActions.toSuccess('Can promote team viewer to admin and demote them');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t promote team viewer to admin and demote them');
+    await fileActions.toFailure(e, 'Can\'t promote team viewer to admin and demote them');
   }
 });
 
@@ -395,11 +393,11 @@ test('loggedin - promote team viewer to owner', async ({ page, browser }) => {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanTeamMembership();
 
-    await fileActions.promoteTestUser3()
-    await fileActions.promoteTestUser3()
-    await fileActions.offerOwnershipTestUser3Arrow.click()
+    await fileActions.promoteTestUser3();
+    await fileActions.promoteTestUser3();
+    await fileActions.offerOwnershipTestUser3Arrow.click();
     await expect(fileActions.mainFrame.getByText(/^Co-owners can modify or delete the team/)).toBeVisible();
-    await fileActions.okButton.waitFor()
+    await fileActions.okButton.waitFor();
     await fileActions.okButton.click();
 
     // user 2: log in
@@ -417,10 +415,10 @@ test('loggedin - promote team viewer to owner', async ({ page, browser }) => {
     await fileActions1.acceptButton.click();
     await page.waitForTimeout(2000);
     await page1.goto(`${url}/teams`);
-    await fileActions1.accessTeam()
+    await fileActions1.accessTeam();
 
     // user 2: check team docs are editable for new owner
-    await fileActions1.driveContentFolder.getByText('test pad').waitFor()
+    await fileActions1.driveContentFolder.getByText('test pad').waitFor();
     const page2Promise = page1.waitForEvent('popup');
     await fileActions1.driveContentFolder.getByText('test pad').dblclick({ timeout: 5000 });
     const page2 = await page2Promise;
@@ -445,25 +443,25 @@ test('loggedin - promote team viewer to owner', async ({ page, browser }) => {
     await fileActions.teamTab(/^Chat$/).click();
     await expect(fileActions.mainFrame.getByText(`hello at ${dateTimeStamp}`)).toBeVisible();
     await page.reload();
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
 
     await fileActions.teamTab(/^Members$/).waitFor();
     await fileActions.teamTab(/^Members$/).click();
     await expect(fileActions.teamMember('test-user3')).toBeVisible({ timeout: 5000 });
-    await fileActions.demoteTestUser3()
-    await fileActions.demoteTestUser3()
-    await fileActions.demoteTestUser3()
+    await fileActions.demoteTestUser3();
+    await fileActions.demoteTestUser3();
+    await fileActions.demoteTestUser3();
 
     await page1.reload();
     await fileActions1.notifications.waitFor();
     await fileActions1.notifications.click();
 
-    expect(page1.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').first()).toBeVisible()
+    expect(page1.frameLocator('#sbox-iframe').getByText('test-user has removed your ownership of test team').first()).toBeVisible();
     await page1.frameLocator('#sbox-iframe').locator('.cp-notification-dismiss').first().click();
 
-    await fileActions.toSuccess('Can add contact to team as owner and demote them' );
+    await fileActions.toSuccess('Can add contact to team as owner and demote them');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t add contact to team as owner and demote them');
+    await fileActions.toFailure(e, 'Can\'t add contact to team as owner and demote them');
   }
 });
 
@@ -498,7 +496,7 @@ test('loggedin - add contact to team and contact leaves team', async ({ page, br
     await fileActions1.acceptButton.click();
     const page2 = await page2Promise;
     const fileActions2 = new FileActions(page2);
-    await fileActions2.accessTeam()
+    await fileActions2.accessTeam();
     await fileActions2.teamTab(/^Chat$/).click();
     await fileActions2.teamTab(/^Members$/).click();
 
@@ -511,7 +509,7 @@ test('loggedin - add contact to team and contact leaves team', async ({ page, br
 
     await expect(fileActions.teamMemberFilter('testuser')).toHaveCount(0);
 
-    await fileActions.toSuccess( 'Can add contact to team and contact can leave team');
+    await fileActions.toSuccess('Can add contact to team and contact can leave team');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t add contact to team / contact can\'t leave team');
   }
@@ -529,14 +527,14 @@ test('loggedin - invite contact to team and cancel', async ({ page }) => {
     await fileActions.inviteButton.click();
     await fileActions.mainFrame.getByText('tetestuser', { exact: true }).waitFor();
     await expect(fileActions.mainFrame.getByText('tetestuser', { exact: true })).toBeVisible();
-    await fileActions.removeMember('testuser')
+    await fileActions.removeMember('testuser');
     await expect(fileActions.memberRemovalNotification('testuser')).toBeVisible();
     await fileActions.okButton.click();
     await expect(fileActions.teamMember('testuser')).toBeHidden({ timeout: 100000 });
 
     await fileActions.toSuccess('Can invite contact to team and cancel invite');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t invite contact to team and cancel invite' );
+    await fileActions.toFailure(e, 'Can\'t invite contact to team and cancel invite');
   }
 });
 
@@ -545,7 +543,7 @@ test('loggedin - can change team name', async ({ page }) => {
 
   try {
     // access team admin panel
-    await fileActions.accessTeam()
+    await fileActions.accessTeam();
     await fileActions.teamTab(/^Administration$/).waitFor();
     await fileActions.teamTab(/^Administration$/).click();
 
@@ -573,7 +571,7 @@ test('loggedin - can change team name', async ({ page }) => {
     await fileActions.teamSlot.getByText('test team').waitFor();
     await expect(fileActions.teamSlot.getByText('test team')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can change team name');
+    await fileActions.toSuccess('Can change team name');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t change team name');
   }

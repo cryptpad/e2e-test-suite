@@ -47,6 +47,7 @@ exports.BS_LOCAL_ARGS = {
 };
 
 // Patching the capabilities dynamically according to the project name.
+/* eslint-disable camelcase */
 exports.patchCaps = (name, title) => {
   const combination = name.split(/@browserstack/)[0];
   const [browerCaps, osCaps] = combination.split(/:/);
@@ -62,9 +63,10 @@ exports.patchCaps = (name, title) => {
   caps.title = title;
   caps.firefox_user_prefs = { 'dom.events.asyncClipboard.readText': true, 'dom.events.testing.asyncClipboard': true };
 };
+/* eslint-enable camelcase */
 
 exports.getCdpEndpoint = (name, title) => {
-  patchCaps(name, title);
+  exports.patchCaps(name, title);
   const cdpUrl = `wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify(caps))}`;
   return cdpUrl;
 };

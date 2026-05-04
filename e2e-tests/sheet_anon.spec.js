@@ -1,53 +1,42 @@
-
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
-const os = require('os');
 const { PDFParse } = require('pdf-parse');
 
-// const local = !!process.env.PW_URL.includes('localhost');
-
 let mobile;
-let browserName;
-let browserstackMobile;
 let fileActions;
-let fileActions1
-let page1
+let fileActions1;
+let page1;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
+  mobile = isMobile;
   test.setTimeout(90000);
-
-  mobile = testInfo.project.use.mobile;
-  browserName = testInfo.project.name.split(/@/)[0];
-  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   fileActions = new FileActions(page);
-  await fileActions.loadFileType("sheet")
+  await fileActions.loadFileType('sheet');
 });
 
 test('anon - sheet - input text', async ({ page, context }) => {
   try {
-
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
     await fileActions.docEditorInput.fill('test text');
     expect(await fileActions.docEditorInput.inputValue()).toContain('test text');
 
-    await fileActions.toSuccess( 'Can input text into Sheet document');
+    await fileActions.toSuccess('Can input text into Sheet document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t input text into Sheet document');
+    await fileActions.toFailure(e, 'Can\'t input text into Sheet document');
   }
 });
 
 test('anon - sheet - make a copy', async ({ page, context }) => {
-  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
-  
-  try {
+  // test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content');
 
-    await fileActions.docEditor.click({force: true});
+  try {
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
@@ -58,39 +47,38 @@ test('anon - sheet - make a copy', async ({ page, context }) => {
 
     await fileActions.filemenuClick(mobile);
     const [page1] = await Promise.all([
-        page.waitForEvent('popup'),
-        await fileActions.filecopy.click()
+      page.waitForEvent('popup'),
+      await fileActions.filecopy.click()
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/sheet`), { timeout: 100000 });
     fileActions1 = new FileActions(page1);
 
-    await fileActions1.fileSaved.waitFor()
-    await page1.waitForTimeout(1000)
-      if ( await fileActions.dismissButton.isVisible()) {
-      await fileActions.dismissButton.click()
+    await fileActions1.fileSaved.waitFor();
+    await page1.waitForTimeout(1000);
+    if (await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click();
     }
-    await fileActions1.docEditor.click({force: true});
-    await page1.waitForTimeout(1000)
+    await fileActions1.docEditor.click({ force: true });
+    await page1.waitForTimeout(1000);
 
     await page1.keyboard.press('Control+A');
-    await page1.waitForTimeout(1000)
+    await page1.waitForTimeout(1000);
     await page1.keyboard.press('Control+C');
-    await page1.waitForTimeout(1000)
+    await page1.waitForTimeout(1000);
 
     const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('test text');
 
-
-    await fileActions.toSuccess( 'Can make a copy of Sheet document');
+    await fileActions.toSuccess('Can make a copy of Sheet document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t make a copy of Sheet document');
+    await fileActions.toFailure(e, 'Can\'t make a copy of Sheet document');
   }
 });
 
 test('anon - sheet - export (xlxs)', async ({ page, context }) => {
   try {
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
@@ -106,22 +94,22 @@ test('anon - sheet - export (xlxs)', async ({ page, context }) => {
     ]);
 
     await download.saveAs('/tmp/test sheet');
-    const readXlsxFile = require('read-excel-file/node')
+    const readXlsxFile = require('read-excel-file/node');
 
     readXlsxFile('/tmp/test sheet').then((rows) => {
-      var contains = rows.flat().includes('test text')
-      expect(contains).toBeTruthy()
-    })
+      const contains = rows.flat().includes('test text');
+      expect(contains).toBeTruthy();
+    });
 
-    await fileActions.toSuccess( 'Can export Sheet as .xlxs');
+    await fileActions.toSuccess('Can export Sheet as .xlxs');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Sheet as .xlxs');
+    await fileActions.toFailure(e, 'Can\'t export Sheet as .xlxs');
   }
 });
 
 test('anon - sheet - export (pdf)', async ({ page, context }) => {
   try {
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
@@ -144,18 +132,17 @@ test('anon - sheet - export (pdf)', async ({ page, context }) => {
 
     const result = await parser.getText();
     await parser.destroy();
-    expect(result.text).toEqual('test text\n\n-- 1 of 1 --\n\n')
+    expect(result.text).toEqual('test text\n\n-- 1 of 1 --\n\n');
 
-    await fileActions.toSuccess( 'Can export Sheet as .pdf');
+    await fileActions.toSuccess('Can export Sheet as .pdf');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Sheet as .pdf');
+    await fileActions.toFailure(e, 'Can\'t export Sheet as .pdf');
   }
 });
 
 test('anon - sheet - history (previous version)', async ({ page, context }) => {
   try {
-
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
@@ -163,37 +150,34 @@ test('anon - sheet - history (previous version)', async ({ page, context }) => {
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
-    await fileActions.historyFastPrev.click()
-    await fileActions.fileHistory.waitFor()
-    await fileActions.waitForSync.waitFor({state: 'hidden'})
-    await expect(fileActions.warningModal).toHaveCount(0)
+    await fileActions.historyFastPrev.click();
+    await fileActions.fileHistory.waitFor();
+    await fileActions.waitForSync.waitFor({ state: 'hidden' });
+    await expect(fileActions.warningModal).toHaveCount(0);
 
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
-    
-    await fileActions.toSuccess( 'Can browse history in Sheet document');
+
+    await fileActions.toSuccess('Can browse history in Sheet document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t browse history in Sheet document');
+    await fileActions.toFailure(e, 'Can\'t browse history in Sheet document');
   }
 });
 
-
 test('anon - sheet - add new sheet', async ({ page, context }) => {
-  test.skip(mobile, '#1932')
+  test.skip(mobile, '#1932');
   try {
-
     await fileActions.addSheet.click();
-    await expect(fileActions.sheetStatus.getByText('Sheet2')).toBeVisible()
+    await expect(fileActions.sheetStatus.getByText('Sheet2')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can add new sheet in Sheet document');
+    await fileActions.toSuccess('Can add new sheet in Sheet document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t add new sheet in Sheet document');
+    await fileActions.toFailure(e, 'Can\'t add new sheet in Sheet document');
   }
 });
 
 test('anon - sheet - history (share)', async ({ page, browser, context }) => {
   try {
-
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
@@ -201,27 +185,25 @@ test('anon - sheet - history (share)', async ({ page, browser, context }) => {
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
-    await fileActions.historyFastPrev.click()
-    await fileActions.fileHistory.waitFor()
-    await fileActions.waitForSync.waitFor({state: 'hidden'})
-    await expect(fileActions.warningModal).toHaveCount(0)
-    
+    await fileActions.historyFastPrev.click();
+    await fileActions.fileHistory.waitFor();
+    await fileActions.waitForSync.waitFor({ state: 'hidden' });
+    await expect(fileActions.warningModal).toHaveCount(0);
+
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
 
-    var clipboardText2 = await fileActions.getShareLink(mobile)
+    const clipboardText2 = await fileActions.getShareLink(mobile);
     page1 = await browser.newPage();
 
     await page1.goto(`${clipboardText2}`);
     fileActions1 = new FileActions(page1);
-    await fileActions1.waitForSync.waitFor({timeout: 5000})
+    await fileActions1.waitForSync.waitFor({ timeout: 5000 });
 
-    await fileActions1.waitForSync.waitFor({state: 'hidden', timeout: 5000})
+    await fileActions1.waitForSync.waitFor({ state: 'hidden', timeout: 5000 });
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
-    
-    await fileActions.toSuccess( 'Can share Sheet document at a moment in history');
+
+    await fileActions.toSuccess('Can share Sheet document at a moment in history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t share Sheet document at a moment in historyt');
+    await fileActions.toFailure(e, 'Can\'t share Sheet document at a moment in historyt');
   }
 });
-
-

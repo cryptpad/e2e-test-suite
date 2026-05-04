@@ -5,8 +5,6 @@ const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 
-const local = !!process.env.PW_URL.includes('localhost');
-
 let mobile;
 let browserName;
 let browserstackMobile;
@@ -19,7 +17,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   browserName = testInfo.project.name.split(/@/)[0];
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   fileActions = new FileActions(page);
-  await fileActions.loadFileType("pad")
+  await fileActions.loadFileType('pad');
 });
 
 test('anon - pad -  comment', async ({ page, context }) => {
@@ -35,9 +33,9 @@ test('anon - pad -  comment', async ({ page, context }) => {
     await fileActions.submitButton.click();
     await expect(fileActions.mainFrame.getByText('Test comment', { exact: true })).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create comment in Rich Text document');
+    await fileActions.toSuccess('Can create comment in Rich Text document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create comment in Rich Text document');
+    await fileActions.toFailure(e, 'Can\'t create comment in Rich Text document');
   }
 });
 
@@ -83,31 +81,30 @@ test('anon - pad -  history (previous version)', async ({ page, context }) => {
     await fileActions.historyPrevLast.click();
     await expect(fileActions.mainFrame.getByText('Test text')).toHaveCount(0);
 
-    await fileActions.toSuccess( 'Can create Rich Text document and view history (previous version)');
+    await fileActions.toSuccess('Can create Rich Text document and view history (previous version)');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create Rich Text document and view history (previous version)');
+    await fileActions.toFailure(e, 'Can\'t create Rich Text document and view history (previous version)');
   }
 });
 
 test('anon - pad -  toggle tools', async ({ page, context }) => {
   try {
-
     if (mobile) {
       await expect(fileActions.padToolbar).toBeHidden();
-      await fileActions.toggleTools(mobile)
+      await fileActions.toggleTools(mobile);
       await expect(fileActions.padToolbar).toBeVisible();
-      await fileActions.toggleTools(mobile)
+      await fileActions.toggleTools(mobile);
       await expect(fileActions.padToolbar).toBeHidden();
     } else {
       await fileActions.padToolbar.waitFor();
       await expect(fileActions.padToolbar).toBeVisible();
-      await fileActions.toggleTools(mobile)
+      await fileActions.toggleTools(mobile);
       await expect(fileActions.padToolbar).toBeHidden();
     }
 
-    await fileActions.toSuccess( 'Can toggle Tools in Rich Text document');
+    await fileActions.toSuccess('Can toggle Tools in Rich Text document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t toggle Tools in Rich Text document');
+    await fileActions.toFailure(e, 'Can\'t toggle Tools in Rich Text document');
   }
 });
 
@@ -123,7 +120,7 @@ test('anon - pad -  import file', async ({ page }) => {
     await fileChooser.setFiles('testdocuments/myfile.html');
     await expect(fileActions.padEditor.getByText('Test text here')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can import file into Rich Text document');
+    await fileActions.toSuccess('Can import file into Rich Text document');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t import file into Rich Text document');
   }
@@ -140,13 +137,13 @@ test('anon - pad -  make a copy', async ({ page, context }) => {
       page.waitForEvent('popup'),
       await fileActions.fileMenuItem('Make a copy').click()
     ]);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await expect(page1).toHaveURL(new RegExp(`^${url}/pad`), { timeout: 100000 });
     await page1.waitForTimeout(5000);
     await fileActions1.padEditor.getByText('TEST TEXT').waitFor();
     await expect(fileActions1.padEditor.getByText('TEST TEXT')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can\'t make copy of Rich Text document');
+    await fileActions.toSuccess('Can\'t make copy of Rich Text document');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t make copy of Rich Text document');
   }
@@ -175,7 +172,7 @@ test('anon - pad -  export (html)', async ({ page }) => {
       expectedString = '<!DOCTYPEhtml><html><head><metacharset="utf-8"></head><body>TESTTEXT<p></p></body></html>';
     }
     if (expectedString === readData.normalize().replace(/[\s]/g, '')) {
-      await fileActions.toSuccess( 'Can export Rich Text document as .html');
+      await fileActions.toSuccess('Can export Rich Text document as .html');
     } else {
       await fileActions.toFailure('Can\'t export Rich Text document as .html');
     }
@@ -207,29 +204,27 @@ test('anon - pad -  export (.doc)', async ({ page }) => {
     if (browserName === 'playwright-firefox') {
       expectedString = "<htmlxmlns:o='urn:schemas-microsoft-com:office:office'xmlns:w='urn:schemas-microsoft-com:office:word'xmlns='http://www.w3.org/TR/REC-html40'><head><metacharset='utf-8'><title>ExportHTMLToDoc</title></head><body>TESTTEXT</body></html>";
     } else if (browserName === 'playwright-webkit') {
-      expectedString = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>TEST TEXT</body></html>"
+      expectedString = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>TEST TEXT</body></html>";
     } else {
       expectedString = "<htmlxmlns:o='urn:schemas-microsoft-com:office:office'xmlns:w='urn:schemas-microsoft-com:office:word'xmlns='http://www.w3.org/TR/REC-html40'><head><metacharset='utf-8'><title>ExportHTMLToDoc</title></head><body>TESTTEXT<p></p></body></html>";
     }
 
     if (browserName !== 'playwright-webkit') {
       if (readData.trim().replace(/[\s]/g, '') === expectedString) {
-        await fileActions.toSuccess( 'Can export Rich Text document as .doc');
+        await fileActions.toSuccess('Can export Rich Text document as .doc');
       } else {
-        await fileActions.toFailure('Can\'t export Rich Text document as .doc' );
+        await fileActions.toFailure('Can\'t export Rich Text document as .doc');
       }
     } else {
-      var normalize = str => str.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').trim();
+      const normalize = str => str.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').trim();
       if (normalize(readData) === expectedString) {
-        await fileActions.toSuccess( 'Can export Rich Text document as .doc');
+        await fileActions.toSuccess('Can export Rich Text document as .doc');
       } else {
-        await fileActions.toFailure('Can\'t export Rich Text document as .doc' );
+        await fileActions.toFailure('Can\'t export Rich Text document as .doc');
       }
-
     }
-
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Rich Text document as .doc');
+    await fileActions.toFailure(e, 'Can\'t export Rich Text document as .doc');
   }
 });
 
@@ -256,10 +251,10 @@ test('anon - pad -  export (md)', async ({ page, context }) => {
     if (expectedString === readData.trim()) {
       await fileActions.toSuccess('Can export Rich Text document as .md');
     } else {
-      await fileActions.toFailure(e, 'Can\'t export Rich Text document as .md');
+      await fileActions.toFailure('Can\'t export Rich Text document as .md');
     }
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Rich Text document as .md');
+    await fileActions.toFailure(e, 'Can\'t export Rich Text document as .md');
   }
 });
 
@@ -274,24 +269,24 @@ test('anon - pad -  share at a moment in history', async ({ page, context }) => 
 
     await page.waitForTimeout(1000);
     await expect(fileActions.padEditor.getByText('One moment in history')).toBeVisible();
-    
+
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();
     await fileActions.historyPrevLast.click();
 
     await expect(fileActions.padEditor.getByText('One moment in history')).toBeHidden();
 
-    var clipboardText = await fileActions.getShareLink()
+    const clipboardText = await fileActions.getShareLink();
 
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
 
-    await fileActions1.fileTitle('Rich text').waitFor()
+    await fileActions1.fileTitle('Rich text').waitFor();
     await expect(fileActions1.padEditor.getByText('One moment in history')).toBeHidden();
 
-    await fileActions.toSuccess( 'Can share Rich Text at a specific moment in history');
+    await fileActions.toSuccess('Can share Rich Text at a specific moment in history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can share Rich Text at a specific moment in history');
+    await fileActions.toFailure(e, 'Can share Rich Text at a specific moment in history');
   }
 });

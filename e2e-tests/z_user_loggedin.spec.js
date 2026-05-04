@@ -5,7 +5,6 @@ const os = require('os');
 const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
-let mobile;
 let contextOne;
 let page1;
 let platform;
@@ -14,13 +13,10 @@ let userActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
-
-  mobile = isMobile;
   platform = os.platform();
   userActions = new UserActions(page);
   fileActions = new FileActions(page);
 });
-
 
 test('loggedin - can access public signing key', async ({ page }) => {
   try {
@@ -39,10 +35,10 @@ test('loggedin - can access public signing key', async ({ page }) => {
     if (key.indexOf('test-user@') !== -1) {
       await fileActions.toSuccess('Can access public signing key');
     } else {
-      await fileActions.toFailure(e,  'Can\'t access public signing key');
+      await fileActions.toFailure('Can\'t access public signing key');
     }
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t access public signing key' );
+    await fileActions.toFailure(e, 'Can\'t access public signing key');
   }
 });
 
@@ -57,7 +53,7 @@ test('loggedin - add other user as contact and decline request', async ({ page, 
     await fileActions1.shareProfileButton.click();
     const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
     await page.goto(`${testuser2ProfileLink}`);
-    await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor()
+    await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor();
 
     // user 1: send user request to user 2
     if (await fileActions.cancelIconButton.count() > 0) {
@@ -100,17 +96,17 @@ test('loggedin - add and remove other user as contact', async ({ page, browser }
     page1 = await contextOne.newPage();
     await page1.goto(`${url}/profile`);
     const fileActions1 = new FileActions(page1);
-    await fileActions1.shareProfileButton.waitFor()
+    await fileActions1.shareProfileButton.waitFor();
     await fileActions1.shareProfileButton.click();
     const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
-    
-    await page.goto(`${url}/drive`)
+
+    await page.goto(`${url}/drive`);
     await fileActions.notifications.click();
     if (await fileActions.contactDeclinedNotif('test-user2').isVisible()) {
-      await fileActions.dismissNotification.click()
+      await fileActions.dismissNotification.click();
     }
     await page.goto(`${testuser2ProfileLink}`);
-    await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor()
+    await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor();
     // user 1: send user request to user 2
     if (await fileActions.cancelButton.count() > 0) {
       await fileActions.cancelButton.click();
@@ -137,7 +133,7 @@ test('loggedin - add and remove other user as contact', async ({ page, browser }
 
     // user 1: remove contact
     await page.goto(`${url}/drive/`);
-    await fileActions.notifications.waitFor()
+    await fileActions.notifications.waitFor();
     await fileActions.notifications.click();
     await fileActions.contactRequestAccepted('test-user2').waitFor();
     await expect(fileActions.contactRequestAccepted('test-user2')).toBeVisible();
@@ -148,7 +144,7 @@ test('loggedin - add and remove other user as contact', async ({ page, browser }
     await fileActions.okButton.click();
     await expect(fileActions.contactRequest).toBeVisible();
 
-    await fileActions.toSuccess( 'Can add and remove other user as contact');
+    await fileActions.toSuccess('Can add and remove other user as contact');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t add and remove other user as contact');
   }
@@ -161,12 +157,12 @@ test('loggedin - request and cancel to add user as contact', async ({ page, brow
     page1 = await contextOne.newPage();
     await page1.goto(`${url}/profile`);
     const fileActions1 = new FileActions(page1);
-    await fileActions1.shareProfileButton.waitFor()
+    await fileActions1.shareProfileButton.waitFor();
     await fileActions1.shareProfileButton.click();
     const testuser2ProfileLink = await page1.evaluate('navigator.clipboard.readText()');
     await page.bringToFront();
     await page.goto(`${testuser2ProfileLink}`);
-    await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor()
+    await fileActions.profileDisplayName.getByText('test-user2', { exact: true }).waitFor();
 
     // user 1: send user request to user 2
     if (await fileActions.cancelButton.count() > 0) {
@@ -187,14 +183,13 @@ test('loggedin - request and cancel to add user as contact', async ({ page, brow
     await fileActions.okButton.click();
     await expect(fileActions.contactRequest).toBeVisible();
 
-    await fileActions.toSuccess( 'Can request to add user as contact and cancel request');
+    await fileActions.toSuccess('Can request to add user as contact and cancel request');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t request to add user as contact and cancel request' );
+    await fileActions.toFailure(e, 'Can\'t request to add user as contact and cancel request');
   }
 });
 
 test('loggedin - chat with contacts and erase message history', async ({ page, browser }) => {
-
   try {
     // user 1: send message
     await page.goto(`${url}/contacts/`);
@@ -228,9 +223,9 @@ test('loggedin - chat with contacts and erase message history', async ({ page, b
     await expect(page.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0);
     await expect(fileActions1.mainFrame.getByText('hello')).toHaveCount(0);
 
-    await fileActions.toSuccess( 'Can chat with contacts and erase chat history ');
+    await fileActions.toSuccess('Can chat with contacts and erase chat history ');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t chat with contacts and erase chat history');
+    await fileActions.toFailure(e, 'Can\'t chat with contacts and erase chat history');
   }
 });
 
@@ -238,7 +233,7 @@ test('loggedin - sign up and delete account', async ({ page }) => {
   try {
     // log out current user
     await page.goto(`${url}/drive`);
-    await fileActions.drivemenu.waitFor()
+    await fileActions.drivemenu.waitFor();
     await fileActions.drivemenu.click();
     await fileActions.driveMenuItem(/^Log out$/).click({ timeout: 2000 });
     await expect(page).toHaveURL(`${url}`, { timeout: 100000 });
@@ -262,12 +257,12 @@ test('loggedin - sign up and delete account', async ({ page }) => {
     await fileActions1.currentPassword.fill(password);
     await fileActions1.mainFrame.getByText('Delete your account').click();
     await fileActions1.areYouSure.click();
-    await fileActions1.mainFrame.getByText(/Your user account is now deleted/).waitFor()
+    await fileActions1.mainFrame.getByText(/Your user account is now deleted/).waitFor();
     await expect(fileActions1.mainFrame.getByText(/Your user account is now deleted/)).toBeVisible();
 
     await fileActions.toSuccess('Can sign up and delete account');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t sign up and delete account');
+    await fileActions.toFailure(e, 'Can\'t sign up and delete account');
   }
 });
 
@@ -302,11 +297,10 @@ test('loggedin - can change display name', async ({ page }) => {
     await fileActions1.saveDisplayName.click();
     await page1.waitForTimeout(1000);
     await fileActions1.drivemenu.click();
-    await fileActions1.mainFrame.getByText('Display name: test-user').waitFor()
+    await fileActions1.mainFrame.getByText('Display name: test-user').waitFor();
     await expect(fileActions1.mainFrame.getByText('Display name: test-user-new')).toBeHidden();
 
-
-    await fileActions.toSuccess( 'Can change display name');
+    await fileActions.toSuccess('Can change display name');
   } catch (e) {
   // in case of test failure, change display name back to original
     await page.goto(`${url}/settings/#account`);
@@ -316,7 +310,7 @@ test('loggedin - can change display name', async ({ page }) => {
       await fileActions.saveDisplayName.click();
       await page.goto(`${url}/settings/#account`);
     }
-    await fileActions.toFailure(e,  'Can\'t change display name');
+    await fileActions.toFailure(e, 'Can\'t change display name');
   }
 });
 
@@ -361,24 +355,24 @@ test('loggedin - enable 2FA login', async ({ page, context }) => {
     const token = totp.generate();
 
     // checks validity of generated token
-    const delta = totp.validate({
-      token,
-      window: 1
-    });
+    // const delta = totp.validate({
+    //   token,
+    //   window: 1
+    // });
 
     await fileActions1.verificationCodeFrame.click();
     await fileActions1.verificationCodeFrame.fill(token);
     await fileActions1.enable2FA.click();
-    await fileActions1.twoFAIsActive.waitFor()
+    await fileActions1.twoFAIsActive.waitFor();
     await expect(fileActions1.twoFAIsActive).toBeVisible();
 
     // log out and log back in
     await fileActions1.drivemenu.click();
-    await fileActions1.driveMenuItem(/^Log out$/ ).click();
+    await fileActions1.driveMenuItem(/^Log out$/).click();
 
     await fileActions1.loginLink.click();
     const userActions1 = new UserActions(page1);
-    await fileActions1.username.waitFor()
+    await fileActions1.username.waitFor();
     await fileActions1.username.fill('test-user');
     await fileActions1.password.fill(mainAccountPassword);
 
@@ -386,16 +380,16 @@ test('loggedin - enable 2FA login', async ({ page, context }) => {
     await userActions1.loginButton.click();
 
     // use 2FA to log in
-    await page1.getByText('This account is protected').waitFor({timeout: 20000})
+    await page1.getByText('This account is protected').waitFor({ timeout: 20000 });
     await expect(page1.getByText('This account is protected')).toBeVisible();
 
     const token1 = totp.generate();
 
     // checks validity of generated token
-    const delta1 = totp.validate({
-      token: token1,
-      window: 1
-    });
+    // const delta1 = totp.validate({
+    //   token: token1,
+    //   window: 1
+    // });
 
     await fileActions1.verificationCode.click();
     await fileActions1.verificationCode.fill(token1);
@@ -404,9 +398,9 @@ test('loggedin - enable 2FA login', async ({ page, context }) => {
     await page1.reload();
 
     // disable 2FA
-    await fileActions1.drivemenu.waitFor()
+    await fileActions1.drivemenu.waitFor();
     await fileActions1.drivemenu.click();
-    await fileActions1.settings.waitFor()
+    await fileActions1.settings.waitFor();
     const pagePromise2 = page1.waitForEvent('popup');
     await fileActions1.settings.click();
     const page2 = await pagePromise2;
@@ -423,15 +417,15 @@ test('loggedin - enable 2FA login', async ({ page, context }) => {
     const token2 = totp.generate();
 
     // checks validity of generated token
-    const delta2 = totp.validate({
-      token: token2,
-      window: 1
-    });
+    // const delta2 = totp.validate({
+    //   token: token2,
+    //   window: 1
+    // });
     await fileActions2.verificationCodeFrame.fill(token2);
     await fileActions2.confirmDisable2FA.click();
     await expect(fileActions2.begin2FASetup).toBeVisible();
 
-    await fileActions.toSuccess( 'Can enable 2FA login');
+    await fileActions.toSuccess('Can enable 2FA login');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t enable 2FA login');
   }
@@ -478,23 +472,23 @@ test('loggedin - enable 2FA login and recover account', async ({ page, context }
     const token = totp.generate();
 
     // checks validity of generated token
-    const delta = totp.validate({
-      token,
-      window: 1
-    });
+    // const delta = totp.validate({
+    //   token,
+    //   window: 1
+    // });
 
     await fileActions1.verificationCodeFrame.click();
     await fileActions1.verificationCodeFrame.fill(token);
     await fileActions1.enable2FA.click();
-    await fileActions1.twoFAIsActive.waitFor()
+    await fileActions1.twoFAIsActive.waitFor();
     await expect(fileActions1.twoFAIsActive).toBeVisible();
 
     // log out and log back in
     await fileActions1.drivemenu.click();
-    await fileActions1.driveMenuItem(/^Log out$/ ).click();
+    await fileActions1.driveMenuItem(/^Log out$/).click();
     await fileActions1.loginLink.click();
     const userActions1 = new UserActions(page1);
-    await fileActions1.username.waitFor()
+    await fileActions1.username.waitFor();
     await fileActions1.username.fill('test-user');
     await fileActions1.password.fill(mainAccountPassword);
 
@@ -503,7 +497,7 @@ test('loggedin - enable 2FA login and recover account', async ({ page, context }
     if (await userActions1.loginButton.isVisible()) {
       await userActions1.loginButton.click();
     }
-    await page1.getByText('This account is protected').waitFor()
+    await page1.getByText('This account is protected').waitFor();
     await expect(page1.getByText('This account is protected')).toBeVisible();
 
     await fileActions1.recoverAccount.click();
@@ -517,16 +511,10 @@ test('loggedin - enable 2FA login and recover account', async ({ page, context }
     await page1.getByText('Forgot recovery code').click();
     await page1.getByRole('button', { name: 'Copy to clipboard' }).click();
     await page1.waitForTimeout(2000);
-    const recoveryInfo = await page1.evaluate('navigator.clipboard.readText()');
 
-    const actualJSONString = JSON.stringify(recoveryInfo);
-
-    const testRecoveryInfo = '"intent":"Disable TOTP"';
-
-    console.log(actualJSONString.includes(testRecoveryInfo));
-
-    console.log('actualJSONString', actualJSONString);
-    console.log('testRecoveryInfo', testRecoveryInfo);
+    // const recoveryInfo = await page1.evaluate('navigator.clipboard.readText()');
+    // const actualJSONString = JSON.stringify(recoveryInfo);
+    // const testRecoveryInfo = '"intent":"Disable TOTP"';
 
     await page1.getByPlaceholder('Recovery code').click();
     await page1.getByPlaceholder('Recovery code').fill(recoveryCode);
@@ -536,10 +524,9 @@ test('loggedin - enable 2FA login and recover account', async ({ page, context }
 
     await fileActions.toSuccess('Can enable 2FA login');
   } catch (e) {
-    await fileActions.toFailure(e, 'Can\'t enable 2FA login' );
+    await fileActions.toFailure(e, 'Can\'t enable 2FA login');
   }
 });
-
 
 test('loggedin - can change password', async ({ page, browser }) => {
   try {
@@ -571,7 +558,7 @@ test('loggedin - can change password', async ({ page, browser }) => {
     await fileActions1.currentPassword.waitFor();
     await expect(fileActions1.currentPassword).toBeVisible();
     await fileActions1.drivemenu.click();
-    await fileActions1.driveMenuItem(/^Log out$/ ).click();
+    await fileActions1.driveMenuItem(/^Log out$/).click();
     await expect(page1).toHaveURL(`${url}`, { timeout: 100000 });
 
     // login using new password
@@ -579,7 +566,7 @@ test('loggedin - can change password', async ({ page, browser }) => {
     await userActions1.login('test-user', 'newpassword');
     await page1.waitForTimeout(5000);
     await page1.reload();
-    await fileActions1.drivemenu.waitFor()
+    await fileActions1.drivemenu.waitFor();
 
     await fileActions1.drivemenu.click();
     await expect(fileActions1.settings).toBeVisible();
@@ -602,10 +589,10 @@ test('loggedin - can change password', async ({ page, browser }) => {
     await fileActions2.passwordConfirmation.waitFor();
     await fileActions2.passwordConfirmation.click();
 
-    await fileActions2.passwordChanged.waitFor({state: "hidden"})
+    await fileActions2.passwordChanged.waitFor({ state: 'hidden' });
 
     await fileActions.toSuccess('Can change password');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t change password');
+    await fileActions.toFailure(e, 'Can\'t change password');
   }
 });

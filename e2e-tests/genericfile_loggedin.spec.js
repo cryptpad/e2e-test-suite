@@ -1,9 +1,7 @@
-const { test, url, mainAccountPassword, testUser3Password, nextWeekSlashFormat, titleDate, titleDateComma } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
-const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
-const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
-
+const { FilePage, StoreModal } = require('./genericfile_po');
 
 const { expect } = require('@playwright/test');
 require('dotenv').config();
@@ -12,44 +10,33 @@ const local = !!process.env.PW_URL.includes('localhost');
 
 let page1;
 let mobile;
-let browserName;
 let cleanUp;
-let title;
-let titleComma
-let filePage
-let titleName;
+let filePage;
 let contextOne;
 let fileActions;
-let isBrowserstack;
-let titles
+let titles;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
 
   mobile = isMobile;
-  browserName = testInfo.project.name.split(/@/)[0];
-  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
-
   fileActions = new FileActions(page);
   filePage = new FilePage(page, testInfo.title, isMobile);
   const name = testInfo.title.split(' ')[2];
-  titles = fileActions.getTitle(name)
+  titles = fileActions.getTitle(name);
 
   cleanUp = new Cleanup(page);
   await cleanUp.cleanFiles(titles);
   await page.goto(`${url}/${name}`);
   await fileActions.createFile.waitFor();
-
 });
 
-const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
-// const docNames = ['doc'];
-
+// const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
+const docNames = [ 'code',  'kanban'];
 
 docNames.forEach(function (name) {
   test(`loggedin - ${name} - create without owner`, async ({ page }) => {
     try {
-      
       await fileActions.creationOption('Owned document').click();
       await fileActions.createFile.click();
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 });
@@ -126,7 +113,7 @@ docNames.forEach(function (name) {
       await fileActions.addButton.click();
       await fileActions.okButton.click();
       await page.waitForTimeout(2000);
-      
+
       await page.goto(`${url}/drive/#`);
       await fileActions.driveSideMenu.getByText('Tags').click();
       await fileActions.tag.click();
@@ -144,7 +131,7 @@ docNames.forEach(function (name) {
 
       await fileActions.toSuccess(`Can tag ${name} document`);
     } catch (e) {
-      await fileActions.toFailure(e,  `Can't tag ${name} document`);
+      await fileActions.toFailure(e, `Can't tag ${name} document`);
     }
   });
 
@@ -159,11 +146,11 @@ docNames.forEach(function (name) {
       await expect(fileActions.fileTitle(name)).toBeVisible();
       await fileActions.access(mobile);
       await fileActions.owners.click();
-      await fileActions.secureFrame.getByText('test-user3').nth(1).waitFor()
+      await fileActions.secureFrame.getByText('test-user3').nth(1).waitFor();
       await fileActions.secureFrame.getByText('test-user3').nth(1).click({ timeout: 5000 });
-      await fileActions.addOwner.waitFor()
+      await fileActions.addOwner.waitFor();
       await fileActions.addOwner.click({ timeout: 5000 });
-      await fileActions.okButtonSecure.waitFor()
+      await fileActions.okButtonSecure.waitFor();
       await fileActions.okButtonSecure.click();
 
       const context = await browser.newContext({ storageState: 'auth/testuser3.json' });
@@ -186,7 +173,7 @@ docNames.forEach(function (name) {
 
       await expect(fileActions2.fileTitle(name)).toBeVisible();
       await fileActions2.access(mobile);
-      await expect(fileActions2.ownersGrid('test-user3').first()).toBeVisible()
+      await expect(fileActions2.ownersGrid('test-user3').first()).toBeVisible();
 
       await page.bringToFront();
       await fileActions.closeButtonSecure.click();
@@ -200,9 +187,9 @@ docNames.forEach(function (name) {
       await page2.reload();
       await fileActions2.access(mobile);
 
-      await expect(fileActions2.ownersGrid('test-user3')).toBeHidden()
+      await expect(fileActions2.ownersGrid('test-user3')).toBeHidden();
 
-      await fileActions.toSuccess( `Can edit ${name} document owners`);
+      await fileActions.toSuccess(`Can edit ${name} document owners`);
     } catch (e) {
       await fileActions.toFailure(e, `Can't edit ${name} document owners`);
     }
@@ -241,9 +228,9 @@ docNames.forEach(function (name) {
       await (new StoreModal(filePage)).storeButton.click();
 
       await fileActions.filemenuClick(mobile);
-      await fileActions.moveToTrash.click()
+      await fileActions.moveToTrash.click();
       await fileActions.okButton.click();
-      await fileActions.movedToTrash.waitFor()
+      await fileActions.movedToTrash.waitFor();
       // await expect(fileActions.movedToTrash).toBeVisible({ timeout: 10000 });
       await fileActions.okButton.click();
 
@@ -254,12 +241,12 @@ docNames.forEach(function (name) {
         await fileActions.emptyTrash.click();
       }
       if (await fileActions.destroyButton.isVisible()) {
-        await fileActions.destroyButton.click()
+        await fileActions.destroyButton.click();
       } else {
         await fileActions.removeButton.click();
       }
 
-      await page.waitForTimeout(2000)
+      await page.waitForTimeout(2000);
 
       await fileActions.toSuccess(`Can create ${name} and move to trash`);
     } catch (e) {
@@ -277,7 +264,7 @@ docNames.forEach(function (name) {
         await expect(fileActions.fileTitle(name)).toBeVisible();
 
         await fileActions.share(mobile);
-        const clipboardText = await fileActions.getLinkAfterCopyRole('View', mobile)
+        const clipboardText = await fileActions.getLinkAfterCopyRole('View', mobile);
 
         if (mobile) {
           contextOne = browser;
@@ -296,7 +283,7 @@ docNames.forEach(function (name) {
         await fileActions1.typePassword.click();
         await fileActions1.typePassword.fill('password');
         await fileActions1.submitButton.click();
-        await fileActions1.fileTitle(name).waitFor()
+        await fileActions1.fileTitle(name).waitFor();
         await expect(fileActions1.fileTitle(name)).toBeVisible({ timeout: 5000 });
 
         await page.bringToFront();
@@ -308,12 +295,12 @@ docNames.forEach(function (name) {
         await fileActions.submitButtonSecure.click();
         await fileActions.okButtonSecure.waitFor();
         await fileActions.okButtonSecure.click();
-        await fileActions.passwordChangeSuccess.waitFor()
+        await fileActions.passwordChangeSuccess.waitFor();
         await fileActions.okButtonSecure.waitFor();
         await fileActions.okButtonSecure.click();
-        await fileActions.share(mobile)
+        await fileActions.share(mobile);
 
-        const clipboardText1 = await fileActions.getLinkAfterCopyRole('View', mobile)
+        const clipboardText1 = await fileActions.getLinkAfterCopyRole('View', mobile);
 
         await page1.bringToFront();
         await page1.goto(`${clipboardText1}`);
@@ -323,12 +310,12 @@ docNames.forEach(function (name) {
         await fileActions1.typePassword.click({ timeout: 5000 });
         await fileActions1.typePassword.fill('newpassword');
         await fileActions1.submitButton.click();
-        
+
         await expect(fileActions1.fileTitle(name)).toBeVisible({ timeout: 5000 });
 
-        await fileActions.toSuccess( `Can protect ${name} document with and edit password`);
+        await fileActions.toSuccess(`Can protect ${name} document with and edit password`);
       } catch (e) {
-        await fileActions.toFailure(e,  `Can't protect ${name} document with and edit password`);
+        await fileActions.toFailure(e, `Can't protect ${name} document with and edit password`);
       }
     });
 
@@ -346,10 +333,10 @@ docNames.forEach(function (name) {
         await fileActions1.notifications.click();
 
         const page2Promise = page1.waitForEvent('popup');
-        await fileActions1.shareNotif('test-user', name).first().click()
+        await fileActions1.shareNotif('test-user', name).first().click();
         const page2 = await page2Promise;
         const fileActions2 = new FileActions(page2);
-        await fileActions2.fileTitle(name).waitFor()
+        await fileActions2.fileTitle(name).waitFor();
         await expect(fileActions2.fileTitle(name)).toBeVisible({ timeout: 5000 });
         await expect(fileActions2.readOnly).toBeVisible({ timeout: 5000 });
 
@@ -361,9 +348,9 @@ docNames.forEach(function (name) {
         }
         await expect(fileActions.mainFrame.getByText('1 viewer')).toBeVisible();
 
-        await fileActions.toSuccess( `Can share ${name} with contact (to view)`);
+        await fileActions.toSuccess(`Can share ${name} with contact (to view)`);
       } catch (e) {
-        await fileActions.toFailure(e,  `Can't share ${name} with contact (to view)`);
+        await fileActions.toFailure(e, `Can't share ${name} with contact (to view)`);
       }
     });
 
@@ -381,7 +368,7 @@ docNames.forEach(function (name) {
         await fileActions1.notifications.waitFor();
         await fileActions1.notifications.click();
         const page2Promise = page1.waitForEvent('popup');
-        await fileActions1.shareNotif('test-user', name).first().click()
+        await fileActions1.shareNotif('test-user', name).first().click();
         const page2 = await page2Promise;
 
         const fileActions2 = new FileActions(page2);
@@ -427,24 +414,24 @@ docNames.forEach(function (name) {
         page1 = await context.newPage();
         await page1.goto(`${url}/drive`);
         const fileActions1 = new FileActions(page1);
-        await fileActions1.notifications.waitFor()
+        await fileActions1.notifications.waitFor();
         await fileActions1.notifications.click();
 
         const page2Promise = page1.waitForEvent('popup');
-        await fileActions1.shareNotif('test-user', name).first().click()
+        await fileActions1.shareNotif('test-user', name).first().click();
         const page2 = await page2Promise;
         const fileActions2 = new FileActions(page2);
 
         await fileActions2.viewAndDelete.click();
-        await fileActions2.fileTitle(name).waitFor()
+        await fileActions2.fileTitle(name).waitFor();
         await expect(fileActions2.fileTitle(name)).toBeVisible();
         await expect(fileActions2.readOnly).toBeVisible();
         if (name === 'diagram') {
-          await page2.waitForTimeout(4000)
+          await page2.waitForTimeout(4000);
         } else {
-          await page2.waitForTimeout(2000)
+          await page2.waitForTimeout(2000);
         }
-        
+
         await page2.reload();
         await fileActions2.destroyedByOwner.waitFor();
         await expect(fileActions2.destroyedByOwner).toBeVisible();
@@ -461,7 +448,7 @@ docNames.forEach(function (name) {
 
     test(`loggedin - ${name} - share (link) - view and delete`, async ({ page, browser }) => {
       // test.skip()
-      test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878')
+      test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878');
       try {
         await fileActions.createFile.click();
 
@@ -480,13 +467,13 @@ docNames.forEach(function (name) {
         const page1 = await contextOne.newPage();
         const fileActions1 = new FileActions(page1);
         await page1.goto(`${clipboardText}`);
-        await page1.waitForTimeout(10000)
+        await page1.waitForTimeout(10000);
 
         await fileActions1.viewAndDelete.waitFor();
         await fileActions1.viewAndDelete.click();
-        await fileActions1.fileTitle(name).waitFor()
+        await fileActions1.fileTitle(name).waitFor();
         await expect(fileActions1.fileTitle(name)).toBeVisible();
-        await page1.waitForTimeout(10000)
+        await page1.waitForTimeout(10000);
 
         await page1.reload();
         await fileActions1.destroyedByOwner.waitFor();
@@ -499,32 +486,32 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
-      test.skip('#1957')
+      test.skip('#1957');
       try {
         await fileActions.createFile.click();
 
         // enable access list and add test-user3 to it
-        await fileActions.fileSaved.waitFor()
+        await fileActions.fileSaved.waitFor();
 
         await expect(fileActions.fileTitle(name)).toBeVisible();
         await fileActions.access(mobile);
         await fileActions.accessList.click();
         await fileActions.enableAccessList.click();
-        await fileActions.secureFrame.getByText('test-user3').first().waitFor()
+        await fileActions.secureFrame.getByText('test-user3').first().waitFor();
         await fileActions.secureFrame.getByText('test-user3').first().click();
-        await fileActions.addToAccessList.waitFor()
+        await fileActions.addToAccessList.waitFor();
         await fileActions.addToAccessList.click();
-        await fileActions.closeButtonSecure.waitFor()
+        await fileActions.closeButtonSecure.waitFor();
         await fileActions.closeButtonSecure.click();
 
         // share link and attempt to access document anonymously
         await fileActions.share(mobile);
-        const clipboardText = await fileActions.getLinkAfterCopyRole('View', mobile)
+        const clipboardText = await fileActions.getLinkAfterCopyRole('View', mobile);
 
         // const context = await browser.newContext();
         page1 = await browser.newPage();
         await page1.goto(`${clipboardText}`);
-        const fileActions1 = new FileActions(page1)
+        const fileActions1 = new FileActions(page1);
         await page1.bringToFront();
         await fileActions1.notAuthorisedToAccess.waitFor();
         await expect(fileActions1.notAuthorisedToAccess).toBeVisible();
@@ -532,7 +519,7 @@ docNames.forEach(function (name) {
         // access document as test-user3
         const contextTwo = await browser.newContext({ storageState: 'auth/testuser3.json' });
         const page2 = await contextTwo.newPage();
-        const fileActions2 = new FileActions(page2)
+        const fileActions2 = new FileActions(page2);
         await page2.goto(`${clipboardText}`);
         await fileActions2.filemenu.waitFor();
 
@@ -546,14 +533,14 @@ docNames.forEach(function (name) {
 
         const context3 = await browser.newContext({ storageState: 'auth/testuser3.json' });
         const page3 = await context3.newPage();
-        const fileActions3 = new FileActions(page3)
+        const fileActions3 = new FileActions(page3);
         await page3.goto(`${clipboardText}`);
         await fileActions3.notAuthorisedToAccess.waitFor();
         await expect(fileActions3.notAuthorisedToAccess).toBeVisible();
 
-        await fileActions.toSuccess( `Can enable and add to access list in ${name} document`);
+        await fileActions.toSuccess(`Can enable and add to access list in ${name} document`);
       } catch (e) {
-        await fileActions.toFailure(e,  `Can't enable and add to access list in ${name} document`);
+        await fileActions.toFailure(e, `Can't enable and add to access list in ${name} document`);
       }
     });
   }

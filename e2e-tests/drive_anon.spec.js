@@ -1,30 +1,21 @@
-const { test, url, titleDate, titleDateComma } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
-const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 
-
-const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let fileActions;
-let isBrowserstack;
-let filePage
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   mobile = isMobile;
-  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   test.setTimeout(90000);
   mobile = isMobile;
   await page.goto(`${url}/drive`);
   fileActions = new FileActions(page);
-  filePage = new FilePage(page);
-
 });
 
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
 // const userMenuItems = ['documentation']
-
 
 userMenuItems.forEach(function (item) {
   test(`anon - drive - user menu - ${item}`, async ({ page, context }) => {
@@ -35,24 +26,24 @@ userMenuItems.forEach(function (item) {
       await fileActions.drivemenu.waitFor();
       await fileActions.drivemenu.click();
       if (item === 'about') {
-        await fileActions.driveMenuItem(item, true).click()
+        await fileActions.driveMenuItem(item, true).click();
         if (url === 'https://cryptpad.fr') {
           await expect(fileActions.mainFrame.getByText('CryptPad.fr is the official instance of the open-source CryptPad project. It is ')).toBeVisible();
         } else {
           await expect(fileActions.mainFrame.getByText('This is an independent community instance of CryptPad')).toBeVisible();
         }
       } else if (item === 'log in') {
-        await fileActions.driveMenuItem(item, true).click()
+        await fileActions.driveMenuItem(item, true).click();
         await expect(page).toHaveURL(new RegExp(`^${url}/login/`), { timeout: 100000 });
       } else if (item === 'sign up') {
-        await fileActions.driveMenuItem(item, true).click()
+        await fileActions.driveMenuItem(item, true).click();
         await expect(page).toHaveURL(new RegExp(`^${url}/register/`), { timeout: 100000 });
       } else {
         const pagePromise = page.waitForEvent('popup');
         if (item === 'documentation') {
-          await fileActions.driveMenuItem(item, true).click()
+          await fileActions.driveMenuItem(item, true).click();
         } else {
-          await fileActions.driveMenuItem(item).click()
+          await fileActions.driveMenuItem(item).click();
         }
         const page1 = await pagePromise;
         if (item === 'home page') {
@@ -61,7 +52,6 @@ userMenuItems.forEach(function (item) {
           await expect(page1).toHaveURL(`${url}/features.html`, { timeout: 100000 });
         } else if (item === 'donate') {
           page.once('dialog', dialog => {
-            console.log(`Dialog message: ${dialog.message()}`);
             dialog.accept().catch(() => {});
           });
           await expect(page1).toHaveURL(/#https%3A%2F%2Fopencollective.com%2Fcryptpad%2F$/, { timeout: 100000 });
@@ -76,7 +66,7 @@ userMenuItems.forEach(function (item) {
 
       await fileActions.toSuccess(`Can anonymously navigate to Drive and access ${item}`);
     } catch (e) {
-      await fileActions.toFailure(e,`Can't anonymously navigate to Drive and access ${item}`);
+      await fileActions.toFailure(e, `Can't anonymously navigate to Drive and access ${item}`);
     }
   });
 });
@@ -126,8 +116,8 @@ test('anon - drive - list/grid view', async ({ page, context }) => {
     await fileActions.driveAddMenuItem('Rich text').click();
     const page1 = await page1Promise;
     const fileActions1 = new FileActions(page1);
-    await fileActions1.fileSaved.waitFor()
-    await fileActions.driveFileTitle('Rich text').waitFor()
+    await fileActions1.fileSaved.waitFor();
+    await fileActions.driveFileTitle('Rich text').waitFor();
 
     await page.bringToFront();
     await fileActions.changeDriveView.click();
@@ -153,7 +143,7 @@ test('anon - drive - list/grid view', async ({ page, context }) => {
     await fileActions.toSuccess('Can anonymously navigate to Drive and change the view to list/grid');
   } catch (e) {
     console.log(e);
-    await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and change the view to list/grid' );
+    await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and change the view to list/grid');
   }
 });
 
@@ -214,10 +204,10 @@ test('anon - drive - sign up from drive page', async ({ page, context }) => {
     await fileActions.registerLinkDrive.click();
     await expect(page).toHaveURL(`${url}/register/`, { timeout: 100000 });
 
-   await fileActions.toSuccess('Can anonymously navigate to Drive and find link to sign up');
+    await fileActions.toSuccess('Can anonymously navigate to Drive and find link to sign up');
   } catch (e) {
     console.log(e);
-   await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and find link to sign up');
+    await fileActions.toFailure(e, 'Can\'t anonymously navigate to Drive and find link to sign up');
   }
 });
 

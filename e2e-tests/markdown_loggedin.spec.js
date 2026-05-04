@@ -1,12 +1,9 @@
-const { test, url, mainAccountPassword } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
-const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
-
-const local = !!process.env.PW_URL.includes('localhost');
 
 let page1;
 let mobile;
@@ -46,7 +43,7 @@ test('loggedin - slide - save as and import template', async ({ page }) => {
     await fileActions.createFile.click();
     await fileActions.importTemplate(mobile);
 
-    await fileActions.secureFrame.getByText( 'example markdown template').click();
+    await fileActions.secureFrame.getByText('example markdown template').click();
     await expect(fileActions.codeEditor.getByText('Test text')).toBeVisible();
 
     await page.goto(`${url}/drive/`);
@@ -54,8 +51,8 @@ test('loggedin - slide - save as and import template', async ({ page }) => {
     await fileActions.driveContentFolder.getByText('example markdown template').click({ button: 'right' });
     await fileActions.destroyItem.click();
     await fileActions.okButton.click();
-    await expect(fileActions.secureFrame.getByText( 'example markdown template')).toHaveCount(0);
-    await fileActions.toSuccess( 'Can save and use Rich Text document as template' );
+    await expect(fileActions.secureFrame.getByText('example markdown template')).toHaveCount(0);
+    await fileActions.toSuccess('Can save and use Rich Text document as template');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t save and use Rich Text document as template');
   }
@@ -69,11 +66,11 @@ test('loggedin - slide - history (previous author)', async ({ page, browser }) =
     await fileActions.codeEditor.type('Test text');
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile);
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1, mobile)
+    const fileActions1 = new FileActions(page1, mobile);
 
     await fileActions1.slideEditor.click();
     await page1.keyboard.press('Enter');
@@ -99,8 +96,8 @@ test('loggedin - slide - history (previous author)', async ({ page, browser }) =
     await expect(fileActions.codeEditor.getByText('Some more test text by anon')).toBeVisible();
     await expect(fileActions.codeEditor.getByText('And here is more text by anon')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create Rich Text document and view history (previous author)');
+    await fileActions.toSuccess('Can create Rich Text document and view history (previous author)');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t create Rich Text document and view history (previous author)');
+    await fileActions.toFailure(e, 'Can\'t create Rich Text document and view history (previous author)');
   }
 });

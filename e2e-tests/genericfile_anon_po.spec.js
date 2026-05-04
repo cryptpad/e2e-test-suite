@@ -3,12 +3,12 @@ const { FilePage, StoreModal, docTypes } = require('./genericfile_po');
 const { FileActions } = require('./fileactions.js');
 
 let filePage;
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(60000);
   filePage = new FilePage(page, testInfo.title, isMobile);
-  fileActions = new FileActions(page, testInfo.title, isMobile)
+  fileActions = new FileActions(page, testInfo.title, isMobile);
 });
 
 test.describe('New file modal', () => {
@@ -43,7 +43,7 @@ test.describe('New file modal', () => {
 
         // In the modal, click icon for file type to create a new one in a new browser tab.
         const nextPadPage = await newFileModal.createFileOfType(context, fileType);
-        await nextPadPage.filemenu().waitFor()
+        await nextPadPage.filemenu().waitFor();
         await expect(nextPadPage.filemenu()).toBeVisible();
         // Ensure this is indeed a new pad, and not just the same we previously had.
         const secondPad = nextPadPage.fileId();
@@ -77,8 +77,6 @@ test.describe('Share modal', () => {
         await shareModal.viewToggle(fileType).click();
         await shareModal.copyButton.click();
         const actualForViewing = await shareModal.getLinkAfterCopy();
-        console.log('act', actualForViewing)
-        console.log('orig', originalId)
         expect(actualForViewing).not.toBe(originalId);
         expect(actualForViewing).toContain('view');
 
@@ -89,7 +87,7 @@ test.describe('Share modal', () => {
         const openedFileId = openedLinkPage.fileId();
         expect(openedFileId).not.toBe(originalId);
         if (fileType !== 'form') {
-          await openedLinkPage.filemenu().waitFor()
+          await openedLinkPage.filemenu().waitFor();
           await expect(openedLinkPage.filemenu()).toBeVisible();
           await expect(filePage.fileName).toContainText('(Read only)');
         }
@@ -123,7 +121,6 @@ test.describe('Chat modal', () => {
         if (await filePage.notNow.isVisible()) {
           await filePage.dismissHelpRequest();
         }
-        
 
         // With the popup gone we can verify the visibility of the message.
         await expect(chatModal.chatPane).toHaveText(new RegExp('.*' + chatMessage));
@@ -181,8 +178,6 @@ test.describe('Save/Remove ', () => {
         )).toBeVisible();
         await filePage.okButton.click();
 
-        
-
         // First store the document.
         await (new StoreModal(filePage)).storeButton.click();
         await filePage.mainFrame.getByText(
@@ -216,24 +211,21 @@ test.describe('Save/Remove ', () => {
   });
 });
 
-const onlyOffice = ['sheet', 'doc', 'presentation']
-
+const onlyOffice = ['sheet', 'doc', 'presentation'];
 
 test.describe('Test loading', () => {
   onlyOffice.forEach(function (name) {
     test(`anon - save and remove for ${name}`, async ({ page, context }, testInfo) => {
       try {
-
         const messages = [];
         page.on('console', msg => {
-            messages.push(msg.text());
+          messages.push(msg.text());
         });
 
         const fileType = name;
         await filePage.loadFileType(fileType);
         expect(messages).toContain('OO loading');
         expect(messages).toContain('OO ready');
-
 
         await fileActions.toSuccess('OO loads successfully');
       } catch (e) {

@@ -1,12 +1,10 @@
-const { test, url, mainAccountPassword, weekday, dateTodayDashFormat, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat } = require('../fixture.js');
+const { test, url, weekday, dateTodaySlashFormat, nextMondayDashFormat, nextMondaySlashFormat, nextMondayStringFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
-const { UserActions } = require('./useractions.js');
 const { Cleanup } = require('./cleanup.js');
 const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
 
-const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let fileActions;
 let cleanUp;
@@ -23,12 +21,12 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 test('loggedin - create and delete event in calendar', async ({ page }) => {
   try {
     // create event
-    await fileActions.newCalendarEvent(mobile)
+    await fileActions.newCalendarEvent(mobile);
 
-    await fileActions.setEventTitle()
+    await fileActions.setEventTitle();
     await fileActions.eventLocation.fill('test location');
 
-    await fileActions.setHour('20', '00', '30')
+    await fileActions.setHour('20', '00', '30');
     await fileActions.saveButton.click();
 
     // delete
@@ -36,12 +34,12 @@ test('loggedin - create and delete event in calendar', async ({ page }) => {
     await expect(fileActions.mainFrame.getByText(`${dateTodaySlashFormat} 20:00 - 20:30`)).toBeVisible();
     await fileActions.deleteButton.click();
     await fileActions.areYouSureButton.click();
-    await fileActions.calendarTestEvent.nth(0).waitFor({ state: "hidden" }) 
-    await fileActions.calendarTestEvent.nth(0).waitFor({ state: "hidden" }) 
+    await fileActions.calendarTestEvent.nth(0).waitFor({ state: 'hidden' });
+    await fileActions.calendarTestEvent.nth(0).waitFor({ state: 'hidden' });
     await expect(fileActions.calendarTestEvent.nth(0)).toBeHidden();
     await expect(fileActions.calendarTestEvent.nth(1)).toBeHidden();
 
-    await fileActions.toSuccess( 'Can create and delete event in calendar');
+    await fileActions.toSuccess('Can create and delete event in calendar');
   } catch (e) {
     console.log(e);
     await fileActions.toFailure(e, 'Can\'t create and delete event in calendar');
@@ -51,16 +49,16 @@ test('loggedin - create and delete event in calendar', async ({ page }) => {
 test('loggedin - create and delete repeating event in calendar', async ({ page }) => {
   try {
     // create event
-    await fileActions.newCalendarEvent(mobile)
-    await fileActions.setEventTitle()
+    await fileActions.newCalendarEvent(mobile);
+    await fileActions.setEventTitle();
     await fileActions.eventLocation.fill('test location');
 
     // make repeating
-    await fileActions.oneTimeClick()
+    await fileActions.oneTimeClick();
     await fileActions.mainFrame.getByText(`Weekly on ${weekday}`).click();
 
     // set date and time
-    await fileActions.setHour('20', '00', '30')
+    await fileActions.setHour('20', '00', '30');
     await fileActions.saveButton.click();
 
     // check if repeats next week
@@ -83,7 +81,7 @@ test('loggedin - create and delete repeating event in calendar', async ({ page }
     await fileActions.toSuccess('Can create and delete repeating event in calendar');
   } catch (e) {
     console.log(e);
-    await fileActions.toFailure(e, 'Can\'t create and delete repeating event in calendar' );
+    await fileActions.toFailure(e, 'Can\'t create and delete repeating event in calendar');
   }
 });
 
@@ -91,12 +89,12 @@ test('loggedin - create event in calendar and edit location', async ({ page }) =
   try {
     // create event
 
-    await fileActions.newCalendarEvent(mobile)
-    await fileActions.setEventTitle()
+    await fileActions.newCalendarEvent(mobile);
+    await fileActions.setEventTitle();
     await fileActions.eventLocation.fill('test location');
 
     // set date
-    await fileActions.setHour('20', '00', '30')
+    await fileActions.setHour('20', '00', '30');
 
     // set location
     await fileActions.eventLocation.click();
@@ -122,7 +120,7 @@ test('loggedin - create event in calendar and edit location', async ({ page }) =
     await expect(fileActions.calendarTestEvent.nth(0)).toBeHidden();
     await expect(fileActions.calendarTestEvent.nth(1)).toBeHidden();
 
-    await fileActions.toSuccess( 'Can create event in calendar and edit location');
+    await fileActions.toSuccess('Can create event in calendar and edit location');
   } catch (e) {
     console.log(e);
     await fileActions.toFailure(e, 'Can\'t create event in calendar and edit location');
@@ -132,18 +130,18 @@ test('loggedin - create event in calendar and edit location', async ({ page }) =
 test('loggedin - create event in calendar and edit time', async ({ page }) => {
   try {
     // create event
-    await fileActions.newCalendarEvent(mobile)
-    await fileActions.setEventTitle()
+    await fileActions.newCalendarEvent(mobile);
+    await fileActions.setEventTitle();
     await fileActions.eventLocation.fill('test location');
 
     // set date
-    await fileActions.setHour('20', '00', '30')
+    await fileActions.setHour('20', '00', '30');
     await fileActions.saveButton.click();
 
     // edit time
     await fileActions.calendarTestEvent.first().click();
     await fileActions.editEvent.click();
-    await fileActions.setHour('20', '15', '30')
+    await fileActions.setHour('20', '15', '30');
     await page.waitForTimeout(2000);
     await fileActions.updateButton.click();
 
@@ -157,7 +155,7 @@ test('loggedin - create event in calendar and edit time', async ({ page }) => {
     await fileActions.areYouSureButton.click();
     await expect(fileActions.testEvent.first()).toBeHidden();
 
-    await fileActions.toSuccess( 'Can create event in calendar and edit time');
+    await fileActions.toSuccess('Can create event in calendar and edit time');
   } catch (e) {
     console.log(e);
     await fileActions.toFailure(e, 'Can\'t create event in calendar and edit time');
@@ -167,15 +165,15 @@ test('loggedin - create event in calendar and edit time', async ({ page }) => {
 test('loggedin - create event in calendar and edit date', async ({ page }) => {
   try {
     // create event
-    await fileActions.newCalendarEvent(mobile)
-    await fileActions.setEventTitle()
+    await fileActions.newCalendarEvent(mobile);
+    await fileActions.setEventTitle();
     await fileActions.eventLocation.fill('test location');
 
     // set time
-    await fileActions.setHour('20', '00', '30')
+    await fileActions.setHour('20', '00', '30');
     await fileActions.saveButton.click();
 
-    //edit date
+    // edit date
     await fileActions.calendarTestEvent.first().click({ timeout: 10000 });
     await fileActions.editEvent.click();
 
@@ -218,10 +216,10 @@ test('loggedin - create event in calendar and edit date', async ({ page }) => {
     await fileActions.areYouSureButton.click();
     await expect(fileActions.calendarTestEvent.first()).toBeHidden();
 
-    await fileActions.toSuccess( 'Can create event in calendar and edit date');
+    await fileActions.toSuccess('Can create event in calendar and edit date');
   } catch (e) {
     console.log(e);
-    await fileActions.toFailure(e,  'Can\'t create event in calendar and edit date');
+    await fileActions.toFailure(e, 'Can\'t create event in calendar and edit date');
   }
 });
 
@@ -248,8 +246,8 @@ test('loggedin - create new calendar and edit calendar in event', async ({ page 
     await fileActions.saveButton.click();
 
     // create event as part of calendar
-    await fileActions.newCalendarEvent(mobile)
-    await fileActions.setEventTitle()
+    await fileActions.newCalendarEvent(mobile);
+    await fileActions.setEventTitle();
     await fileActions.saveButton.click();
 
     await fileActions.testEvent.nth(1).click();
@@ -278,6 +276,6 @@ test('loggedin - create new calendar and edit calendar in event', async ({ page 
     await fileActions.toSuccess('Can create new calendar and edit calendar in event');
   } catch (e) {
     console.log(e);
-    await fileActions.toFailure(e,  'Can\'t create new calendar and edit calendar in event');
+    await fileActions.toFailure(e, 'Can\'t create new calendar and edit calendar in event');
   }
 });

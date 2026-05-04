@@ -2,7 +2,6 @@ const { url } = require('../fixture.js');
 const { FileActions } = require('./fileactions.js');
 const os = require('os');
 
-
 export class Cleanup {
   /**
    * @param {import('@playwright/test').Page} page
@@ -10,9 +9,8 @@ export class Cleanup {
   constructor (page) {
     this.page = page;
     this.driveContentFolder = page.frameLocator('#sbox-iframe').locator('#cp-app-drive-content-folder');
-    this.fileActions = new FileActions(this.page)
+    this.fileActions = new FileActions(this.page);
     this.platform = os.platform();
-
   }
 
   async cleanFiles (titles) {
@@ -148,12 +146,10 @@ export class Cleanup {
         }
         await this.page.keyboard.press(`${key}+a`);
         await this.fileActions.template.first().click({ button: 'right' });
-        console.log(elementCount)
         while (elementCount > 0) {
           if (elementCount > 1) {
-            console.log("here", elementCount, elementCount > 1)
             await this.fileActions.template.nth(elementCount - 1).click({ button: 'right' });
-          } 
+          }
           // else {
           //   await
           //    this.fileActions.template.click({ button: 'right'});
@@ -165,7 +161,6 @@ export class Cleanup {
         }
       }
     }
-
   }
 
   /**
@@ -222,17 +217,17 @@ export class Cleanup {
 
   async cleanTeamMembership () {
     await this.page.goto(`${url}/teams`);
-    await this.fileActions.accessTeam()
+    await this.fileActions.accessTeam();
     await this.fileActions.teamTab(/^Members$/).waitFor();
     await this.fileActions.teamTab(/^Members$/).click();
 
     if (await this.fileActions.teamMemberFilter('testuser').isVisible()) {
-      await this.fileActions.removeMember('testuser')
+      await this.fileActions.removeMember('testuser');
       await this.fileActions.okButton.click();
     }
 
     if (await this.fileActions.demoteTestUser3Arrow.isVisible()) {
-      await this.fileActions.demoteTestUser3()
+      await this.fileActions.demoteTestUser3();
       await this.page.waitForTimeout(1000);
       if (await this.fileActions.demoteTestUser3Arrow.isVisible()) {
         await this.fileActions.demoteTestUser3();
@@ -241,7 +236,6 @@ export class Cleanup {
           await this.fileActions.demoteTestUser3();
           await this.page.waitForTimeout(1000);
         }
-        
       }
     }
   }

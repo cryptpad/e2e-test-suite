@@ -1,12 +1,9 @@
-const { test, url, mainAccountPassword } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { Cleanup } = require('./cleanup.js');
-const { UserActions } = require('./useractions.js');
 const { FileActions } = require('./fileactions.js');
 
 require('dotenv').config();
-
-const local = !!process.env.PW_URL.includes('localhost');
 
 let page1;
 let mobile;
@@ -32,7 +29,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
 test('loggedin - pad - save as and import template', async ({ page }) => {
   try {
-    
     await fileActions.padEditorHTML.click();
     await fileActions.padEditorBody.fill('example template content');
     await fileActions.saveTemplate(mobile);
@@ -53,46 +49,45 @@ test('loggedin - pad - save as and import template', async ({ page }) => {
     await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-secure-iframe').getByText('example pad template')).toHaveCount(0);
 
-    await fileActions.toSuccess( 'Can save and use Rich Text document as template');
+    await fileActions.toSuccess('Can save and use Rich Text document as template');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t save and use Rich Text document as template');
+    await fileActions.toFailure(e, 'Can\'t save and use Rich Text document as template');
   }
 });
 
 test('loggedin - pad - history (previous author)', async ({ page, browser }) => {
   try {
-
     await fileActions.padEditorHTML.click();
     await fileActions.padEditorBody.type('Test text by test-user');
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile);
 
     if (mobile) {
-      contextOne = browser
+      contextOne = browser;
     } else {
       contextOne = await browser.newContext();
     }
     page1 = await contextOne.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
-    await fileActions1.padEditorBody.waitFor()
+    await fileActions1.padEditorBody.waitFor();
     await fileActions1.padEditorBody.click();
     await page1.keyboard.press('Enter');
     await fileActions1.padEditorBody.type('Some more test text by anon');
     await page1.keyboard.press('Enter');
-    await page1.waitForTimeout(2000)
+    await page1.waitForTimeout(2000);
 
     await fileActions1.padEditorBody.type('And here is more text by anon');
     await page1.keyboard.press('Enter');
-    await page1.waitForTimeout(2000)
+    await page1.waitForTimeout(2000);
 
     await page.keyboard.press('Enter');
     await fileActions.padEditorBody.type('And yet more test text by test-user too!');
     await page.keyboard.press('Enter');
     await fileActions.padEditorBody.type('Here is even more test text by test-user!');
     await page.keyboard.press('Enter');
-    await page1.waitForTimeout(2000)
+    await page1.waitForTimeout(2000);
 
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();

@@ -53,7 +53,7 @@ class FilePage {
     await this.page.goto(`${url}/${fileType}/`);
     // loading a new file takes longer than the default timeout for expect calls,
     // so we explicitly wait for it.
-    await this.fileActions.fileSaved.waitFor({state: "visible"})
+    await this.fileActions.fileSaved.waitFor({ state: 'visible' });
   }
 
   async newFileClick () {
@@ -70,7 +70,7 @@ class FilePage {
   }
 
   async dismissHelpRequest () {
-    await notNow.click();
+    await this.notNow.click();
   }
 
   async chatButtonClick () {
@@ -141,24 +141,21 @@ class NewFileModal {
   iconLocator (fileType) {
     if (fileType !== 'doc') {
       return this
-      .filePage
-      .mainFrame
-      .getByText(
-        this.iconName(fileType),
-        { exact: true }
-      );
-
+        .filePage
+        .mainFrame
+        .getByText(
+          this.iconName(fileType),
+          { exact: true }
+        );
     } else {
       return this
-      .filePage
-      .mainFrame
-      .getByText(
-        this.iconName('document'),
-        { exact: true }
-      );
-
+        .filePage
+        .mainFrame
+        .getByText(
+          this.iconName('document'),
+          { exact: true }
+        );
     }
-    
   }
 
   iconName (fileType) {

@@ -1,23 +1,15 @@
 const { test, url } = require('../fixture.js');
-const { expect } = require('@playwright/test');
 const AxeBuilder = require('@axe-core/playwright');
 const fs = require('fs');
 require('dotenv').config();
-const os = require('os');
 const { FileActions } = require('./fileactions.js');
 
-let page1;
 let mobile;
-let browserstackMobile;
-let platform;
-const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
   mobile = isMobile;
-  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-  platform = os.platform();
   fileActions = new FileActions(page);
 });
 
@@ -485,7 +477,7 @@ test('project website - accessibility', async ({ page }, testInfo) => {
   }
 });
 
-test.afterAll(async ({ }) => {
+test.afterAll(async () => {
   const resultsString = '' + results;
   fs.writeFile('accessibilityresults_anon.md', resultsString, function (err) {
     if (err) {

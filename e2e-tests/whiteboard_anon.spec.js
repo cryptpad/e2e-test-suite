@@ -2,17 +2,17 @@ const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
+const { StoreModal } = require('./genericfile_po.js');
+
 
 let page1;
-const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let fileActions;
 
 test.beforeEach(async ({ page, isMobile }) => {
   fileActions = new FileActions(page);
   mobile = isMobile;
-  await fileActions.loadFileType("whiteboard")
-
+  await fileActions.loadFileType('whiteboard');
 });
 
 test('screenshot anon - whiteboard - can draw (default settings)', async ({ page }) => {
@@ -22,36 +22,44 @@ test('screenshot anon - whiteboard - can draw (default settings)', async ({ page
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
+    
     if (mobile) {
       await expect(page).toHaveScreenshot({ maxDiffPixels: 14000 });
     } else {
       await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     }
-    await fileActions.toSuccess( 'Can draw on whiteboard (default settings)');
+    await fileActions.toSuccess('Can draw on whiteboard (default settings)');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t draw on whiteboard (default settings)');
   }
@@ -64,36 +72,43 @@ test('screenshot anon - whiteboard - erase', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.clearButton.click();
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
-    await fileActions.toSuccess( 'Can erase on whiteboard');
+    await fileActions.toSuccess('Can erase on whiteboard');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t erase on whiteboard');
+    await fileActions.toFailure(e, 'Can\'t erase on whiteboard');
   }
 });
 
@@ -109,9 +124,12 @@ test('screenshot anon - whiteboard - enter text on whiteboard', async ({ page })
       }
     });
     await fileActions.textbox.fill('test text');
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
     // await expect(page.frameLocator('#sbox-iframe').getByText('test text')).toBeVisible();
-    await fileActions.toSuccess(  'Can enter text on whiteboard');
+    await fileActions.toSuccess('Can enter text on whiteboard');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t enter text on whiteboard');
   }
@@ -124,14 +142,16 @@ test('screenshot anon - whiteboard - delete selection on whiteboard', async ({ p
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardArrows.click();
@@ -139,12 +159,15 @@ test('screenshot anon - whiteboard - delete selection on whiteboard', async ({ p
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await fileActions.whiteBoardDelete.click();
-
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
-    await fileActions.toSuccess( 'Can delete selection on Whiteboard' );
+    await fileActions.toSuccess('Can delete selection on Whiteboard');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t delete selection on Whiteboard');
   }
@@ -159,19 +182,23 @@ test('screenshot anon - whiteboard - can change whiteboard brush thickness', asy
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
 
-
-    await fileActions.toSuccess(  'Can change Whiteboard brush thickness');
+    await fileActions.toSuccess('Can change Whiteboard brush thickness');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t change Whiteboard brush thickness');
   }
@@ -186,18 +213,23 @@ test('screenshot anon - whiteboard - can change whiteboard brush opacity', async
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
-    await fileActions.toSuccess(  'Can draw on whiteboard (default settings)');
+    await fileActions.toSuccess('Can draw on whiteboard (default settings)');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t draw on whiteboard (default settings)');
   }
@@ -210,20 +242,25 @@ test('screenshot anon - whiteboard - can clear canvas', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.clearButton.click();
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
 
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
-    await fileActions.toSuccess( 'Can clear whiteboard canvas');
+    await fileActions.toSuccess('Can clear whiteboard canvas');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t clear whiteboard canvas');
   }
@@ -236,14 +273,16 @@ test('screenshot anon - whiteboard - make a copy', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.filemenuClick(mobile);
@@ -253,9 +292,11 @@ test('screenshot anon - whiteboard - make a copy', async ({ page }) => {
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/whiteboard`), { timeout: 100000 });
-
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
     await expect(page).toHaveScreenshot({ maxDiffPixels: 8500 });
-    await fileActions.toSuccess( 'Can make copy of Whiteboard document');
+    await fileActions.toSuccess('Can make copy of Whiteboard document');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t make copy of Whiteboard document');
   }
@@ -268,14 +309,16 @@ test('screenshot anon - whiteboard - export as png', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.export(mobile);
@@ -289,7 +332,7 @@ test('screenshot anon - whiteboard - export as png', async ({ page }) => {
     await download.saveAs('/tmp/test whiteboard');
     expect(download.suggestedFilename()).toBe('test whiteboard.png');
 
-    await fileActions.toSuccess(  'Can export Whiteboard as png');
+    await fileActions.toSuccess('Can export Whiteboard as png');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t export Whiteboard as png');
   }
@@ -302,24 +345,29 @@ test('screenshot anon - whiteboard - display history', async ({ page }) => {
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();
     await fileActions.historyPrevLast.click();
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
     await expect(page).toHaveScreenshot({ maxDiffPixels: 7000 });
 
-    await fileActions.toSuccess( 'Can display Whiteboard history');
+    await fileActions.toSuccess('Can display Whiteboard history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t display Whiteboard history');
+    await fileActions.toFailure(e, 'Can\'t display Whiteboard history');
   }
 });
 
@@ -330,44 +378,51 @@ test('screenshot anon - whiteboard - share history at specific moment in time (l
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();
-    var clipboardText = await fileActions.getShareLink()
+    const clipboardText = await fileActions.getShareLink();
 
     page1 = await browser.newPage();
 
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.fileTitle('Whiteboard').waitFor()
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.fileTitle('Whiteboard').waitFor();
+    if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
+      await (new StoreModal(fileActions)).dismissButton.click();
+    }
     await expect(page1).toHaveScreenshot({ maxDiffPixels: 8500 });
 
-    await fileActions.toSuccess( 'Can share Whiteboard history at specific moment in time (link)');
+    await fileActions.toSuccess('Can share Whiteboard history at specific moment in time (link)');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t share Whiteboard history at specific moment in time (link)');
+    await fileActions.toFailure(e, 'Can\'t share Whiteboard history at specific moment in time (link)');
   }
 });
 

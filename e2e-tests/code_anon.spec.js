@@ -1,4 +1,3 @@
-
 const { test, url } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
@@ -10,9 +9,8 @@ let page1;
 let mobile;
 let browserstackMobile;
 let platform;
-const local = !!process.env.PW_URL.includes('localhost');
 let fileActions;
-let fileActions1
+let fileActions1;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
@@ -20,7 +18,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   platform = os.platform();
   fileActions = new FileActions(page);
-  await fileActions.loadFileType("code")
+  await fileActions.loadFileType('code');
 });
 
 test('anon - code - input text #1367', async ({ page }) => {
@@ -50,10 +48,10 @@ test('anon - code - history #1367', async ({ page }) => {
     await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
-   await fileActions.toSuccess('Can view Code document history');
+    await fileActions.toSuccess('Can view Code document history');
   } catch (e) {
     console.log(e);
-    await fileActions.toFailure(e,  'Can\'t view Code document history');
+    await fileActions.toFailure(e, 'Can\'t view Code document history');
   }
 });
 
@@ -81,7 +79,7 @@ test('anon - code - toggle preview #1367', async ({ page }) => {
 
     await expect(fileActions.codepreview.getByText('test text')).toBeHidden();
 
-    await fileActions.toSuccess('Can toggle preview in Code document' );
+    await fileActions.toSuccess('Can toggle preview in Code document');
   } catch (e) {
     console.log(e);
     await fileActions.toFailure(e, 'Can\'t toggle preview in Code document');
@@ -158,7 +156,7 @@ test('anon - code - export (md)', async ({ page }) => {
     if (readData.trim() === 'test text') {
       await fileActions.toSuccess('Can export Code document as .md');
     } else {
-      await fileActions.toFailure(e, 'Can\'t export Code document as .md');
+      await fileActions.toFailure('Can\'t export Code document as .md');
     }
   } catch (e) {
     console.log(e);
@@ -180,7 +178,6 @@ test('anon - code - share at a moment in history', async ({ page, browser }) => 
     await page.keyboard.press('t');
     await expect(fileActions.codeEditor.getByText('test text')).toBeVisible();
 
-
     let key;
     if (platform === 'darwin') {
       key = 'Meta';
@@ -191,7 +188,7 @@ test('anon - code - share at a moment in history', async ({ page, browser }) => 
     await page.keyboard.press('Backspace');
     await expect(fileActions.codeEditor.getByText('test text')).toHaveCount(0);
 
-    var clipboardText = await fileActions.getShareLink(mobile)
+    const clipboardText = await fileActions.getShareLink(mobile);
     page1 = await browser.newPage();
 
     await page1.goto(`${clipboardText}`);
@@ -200,9 +197,9 @@ test('anon - code - share at a moment in history', async ({ page, browser }) => 
     await fileActions1.codeEditor.waitFor();
     await expect(fileActions1.codeEditor.getByText('test text')).toHaveCount(0);
 
-    await fileActions.toSuccess('Can share code document at a specific moment in history')
+    await fileActions.toSuccess('Can share code document at a specific moment in history');
   } catch (e) {
     console.log(e);
-    await fileActions.toFailure(e, 'Can\'t share code document at a specific moment in history' )
+    await fileActions.toFailure(e, 'Can\'t share code document at a specific moment in history');
   }
 });

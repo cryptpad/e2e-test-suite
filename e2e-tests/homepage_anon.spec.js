@@ -4,7 +4,7 @@ require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
 const local = !!process.env.PW_URL.includes('localhost');
-let fileActions
+let fileActions;
 
 test.beforeEach(async ({ page }) => {
   test.setTimeout(60000);
@@ -17,7 +17,7 @@ test('anon - home page - title', async ({ page }) => {
     if (url === 'https://cryptpad.fr') {
       await expect(page).toHaveTitle('CryptPad: Collaboration suite, encrypted and open-source');
     }
-    await fileActions.toSuccess( 'Can navigate to home page');
+    await fileActions.toSuccess('Can navigate to home page');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t navigate to home page');
   }
@@ -28,7 +28,7 @@ test('anon - homepage - access sign up', async ({ page }) => {
     await fileActions.registerLink.waitFor();
     await fileActions.registerLink.click();
     await expect(page).toHaveURL(`${url}/register/`);
-    await fileActions.toSuccess( 'Can access sign up from homepage');
+    await fileActions.toSuccess('Can access sign up from homepage');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t access sign up from homepage');
   }
@@ -40,7 +40,7 @@ test('anon - homepage - access log in', async ({ page }) => {
     await expect(page).toHaveURL(`${url}/login/`);
     await fileActions.toSuccess('Can access login from homepage');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t access login from homepage');
+    await fileActions.toFailure(e, 'Can\'t access login from homepage');
   }
 });
 
@@ -48,14 +48,14 @@ test('anon - home page - features', async ({ page }) => {
   test.skip(url !== 'https://cryptpad.fr' && url !== 'http://localhost:3000', 'pricing not available on dev instance');
   try {
     if (!local) {
-      await fileActions.homePageButton('Pricing' ).waitFor();
-      await fileActions.homePageButton('Pricing' ).click();
+      await fileActions.homePageButton('Pricing').waitFor();
+      await fileActions.homePageButton('Pricing').click();
     } else {
-      await fileActions.homePageButton('Features' ).waitFor();
-      await fileActions.homePageButton('Features' ).click();
+      await fileActions.homePageButton('Features').waitFor();
+      await fileActions.homePageButton('Features').click();
     }
     await expect(page).toHaveURL(`${url}/features.html`);
-    await fileActions.toSuccess( 'Can navigate from home page to features page');
+    await fileActions.toSuccess('Can navigate from home page to features page');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t navigate from home page to features page');
   }
@@ -63,21 +63,21 @@ test('anon - home page - features', async ({ page }) => {
 
 test('anon - home page - documentation', async ({ page }) => {
   try {
-    await fileActions.homePageLink('Documentation' ).waitFor();
-    await fileActions.homePageLink('Documentation' ).click();
+    await fileActions.homePageLink('Documentation').waitFor();
+    await fileActions.homePageLink('Documentation').click();
     await expect(page).toHaveURL('https://docs.cryptpad.org/en/');
-    await fileActions.toSuccess( 'Can navigate from home page to documentation' );
+    await fileActions.toSuccess('Can navigate from home page to documentation');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t navigate from home page to documentation');
+    await fileActions.toFailure(e, 'Can\'t navigate from home page to documentation');
   }
 });
 
 test('anon - home page - contact', async ({ page }) => {
   try {
-    await fileActions.homePageLink('Contact' ).waitFor();
-    await fileActions.homePageLink('Contact' ).click();
+    await fileActions.homePageLink('Contact').waitFor();
+    await fileActions.homePageLink('Contact').click();
     await expect(page).toHaveURL(new RegExp(`^${url}/contact`));
-    await fileActions.toSuccess( 'Can navigate from home page to contact page');
+    await fileActions.toSuccess('Can navigate from home page to contact page');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t navigate from home page to contact page');
   }
@@ -85,12 +85,12 @@ test('anon - home page - contact', async ({ page }) => {
 
 test('anon - home page - project website', async ({ page }) => {
   try {
-    await fileActions.homePageButton('Project website' ).waitFor();
+    await fileActions.homePageButton('Project website').waitFor();
     const pagePromise = page.waitForEvent('popup');
-    await fileActions.homePageButton('Project website' ).click();
+    await fileActions.homePageButton('Project website').click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL('https://cryptpad.org');
-    await fileActions.toSuccess( 'Can navigate from home page to project website');
+    await fileActions.toSuccess('Can navigate from home page to project website');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t navigate from home page to project website');
   }
@@ -98,12 +98,12 @@ test('anon - home page - project website', async ({ page }) => {
 
 test('anon - home page - donate', async ({ page }) => {
   try {
-    await fileActions.homePageButton('Donate' ).waitFor();
+    await fileActions.homePageButton('Donate').waitFor();
     const pagePromise = page.waitForEvent('popup');
-    await fileActions.homePageButton('Donate' ).click();
+    await fileActions.homePageButton('Donate').click();
     const page1 = await pagePromise;
     await expect(page1).toHaveURL('https://opencollective.com/cryptpad/contribute?hostname=opencollective.com');
-    await fileActions.toSuccess( 'Can navigate from home page to donation website');
+    await fileActions.toSuccess('Can navigate from home page to donation website');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t navigate from home page to donation website');
   }
@@ -115,7 +115,7 @@ test('anon - home page - translation', async ({ page }) => {
       await page.getByLabel('Select a language').selectOption('fr');
       await expect(page.getByText('Instance officielle de CryptPad, suite collaborative chiffrée de bout en bout')).toBeVisible();
     }
-    await fileActions.toSuccess( 'Can change site language from homepage');
+    await fileActions.toSuccess('Can change site language from homepage');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t change site language from homepage');
   }
@@ -124,10 +124,10 @@ test('anon - home page - translation', async ({ page }) => {
 if (url.toString() === 'https://cryptpad.fr') {
   test('anon - home page - privacy policy', async ({ page }) => {
     try {
-      await fileActions.homePageButton('Privacy Policy' ).waitFor();
-      await fileActions.homePageButton('Privacy Policy' ).click();
+      await fileActions.homePageButton('Privacy Policy').waitFor();
+      await fileActions.homePageButton('Privacy Policy').click();
       await expect(page).toHaveURL('https://cryptpad.fr/pad/#/2/pad/view/GcNjAWmK6YDB3EO2IipRZ0fUe89j43Ryqeb4fjkjehE/');
-      await fileActions.toSuccess( 'Can navigate from home page to privacy policy');
+      await fileActions.toSuccess('Can navigate from home page to privacy policy');
     } catch (e) {
       await fileActions.toFailure(e, 'Can\'t navigate from home page to privacy policy');
     }
@@ -138,9 +138,9 @@ if (url.toString() === 'https://cryptpad.fr') {
       await fileActions.homePageButton('Terms of Service').waitFor();
       await fileActions.homePageButton('Terms of Service').click();
       await expect(page).toHaveURL('https://cryptpad.fr/code/#/2/code/view/j18D9zbfY98cwWPGHPv91vllEYOy0tCGk1gCD5UOzlk/present/');
-      await fileActions.toSuccess( 'Can navigate from home page to TOS');
+      await fileActions.toSuccess('Can navigate from home page to TOS');
     } catch (e) {
-      await fileActions.toFailure(e,'Can\'t navigate from home page to TOS');
+      await fileActions.toFailure(e, 'Can\'t navigate from home page to TOS');
     }
   });
 }

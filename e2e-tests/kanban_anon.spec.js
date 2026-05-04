@@ -5,8 +5,6 @@ const { FileActions } = require('./fileactions.js');
 const fs = require('fs');
 require('dotenv').config();
 
-const local = !!process.env.PW_URL.includes('localhost');
-
 let mobile;
 let browserstackMobile;
 let fileActions;
@@ -16,12 +14,11 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   fileActions = new FileActions(page);
-  await fileActions.loadFileType("kanban")
-
+  await fileActions.loadFileType('kanban');
 });
 
 test('anon - kanban -  new board', async ({ page }) => {
-  test.skip(mobile, 'mobile scrolling bug')
+  test.skip(mobile, 'mobile scrolling bug');
   try {
     await fileActions.addBoard.click();
     await expect(fileActions.newBoard).toBeVisible();
@@ -35,25 +32,25 @@ test('anon - kanban -  new board', async ({ page }) => {
 
     await fileActions.toSuccess('Can anonymously create Kanban board');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create Kanban board');
+    await fileActions.toFailure(e, 'Can\'t anonymously create Kanban board');
   }
 });
 
 test('anon - kanban -  new list item', async ({ page }) => {
-  test.skip(mobile, "mobile bug")
+  test.skip(mobile, 'mobile bug');
   try {
     await fileActions.addItem.first().click();
     await fileActions.editItem.fill('example item');
     await fileActions.editItem.press('Enter');
     await expect(fileActions.mainFrame.getByText('example item')).toBeVisible();
-    await fileActions.editItemContent.first().waitFor()
+    await fileActions.editItemContent.first().waitFor();
     await fileActions.editItemContent.first().click();
     await fileActions.deleteButton.click();
     await fileActions.areYouSure.click();
 
     await expect(fileActions.mainFrame.getByText('example item')).toHaveCount(0);
 
-    await fileActions.toSuccess( 'Can create list item in Kanban board');
+    await fileActions.toSuccess('Can create list item in Kanban board');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create list item in Kanban board');
   }
@@ -67,7 +64,7 @@ test('anon - kanban -  edit board', async ({ page }) => {
     await fileActions.boardTitle.press('Enter');
     await expect(fileActions.mainFrame.getByText('new title')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can edit Kanban board');
+    await fileActions.toSuccess('Can edit Kanban board');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t edit Kanban board');
   }
@@ -75,7 +72,7 @@ test('anon - kanban -  edit board', async ({ page }) => {
 
 test('anon - kanban board - edit list item title', async ({ page }) => {
   try {
-    //here
+    // here
     await fileActions.editItemTitle.first().click();
     await fileActions.editItemTitle.locator('#kanban-edit').first().fill('new item title');
     await fileActions.editItemTitle.locator('#kanban-edit').first().press('Enter');
@@ -83,7 +80,7 @@ test('anon - kanban board - edit list item title', async ({ page }) => {
 
     await fileActions.toSuccess('Can edit Kanban list item title');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t edit Kanban list item title');
+    await fileActions.toFailure(e, 'Can\'t edit Kanban list item title');
   }
 });
 
@@ -97,7 +94,7 @@ test('anon - kanban board - edit list item content', async ({ page }) => {
 
     await fileActions.toSuccess('Can edit Kanban list item content');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t edit Kanban list item content');
+    await fileActions.toFailure(e, 'Can\'t edit Kanban list item content');
   }
 });
 
@@ -109,10 +106,10 @@ test('anon - kanban board - add and filter by tag', async ({ page }) => {
     await fileActions.addButton.click();
     await fileActions.closeButton.click();
     if (mobile) {
-      await fileActions.kanbanTags.click()
+      await fileActions.kanbanTags.click();
     }
     await expect(fileActions.kanbanContent.getByText('newtag')).toBeVisible();
-  
+
     await fileActions.kanbanControls.getByText('newtag').click();
     await expect(fileActions.mainFrame.getByText('Item 1')).toBeVisible();
     await expect(fileActions.mainFrame.getByText('Item 2')).toBeHidden();
@@ -121,7 +118,7 @@ test('anon - kanban board - add and filter by tag', async ({ page }) => {
     await expect(fileActions.mainFrame.getByText('Item 1')).toBeVisible();
     await expect(fileActions.mainFrame.getByText('Item 2')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can add and filter by tag in Kanban board');
+    await fileActions.toSuccess('Can add and filter by tag in Kanban board');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t add and filter by tag in Kanban board');
   }
@@ -129,7 +126,7 @@ test('anon - kanban board - add and filter by tag', async ({ page }) => {
 
 test('anon - kanban -  view history', async ({ page }) => {
   try {
-    await fileActions.editDoneBoard.waitFor()
+    await fileActions.editDoneBoard.waitFor();
     await fileActions.editDoneBoard.click();
     await fileActions.boardTitle.fill('new item title');
     await fileActions.boardTitle.press('Enter');
@@ -140,9 +137,9 @@ test('anon - kanban -  view history', async ({ page }) => {
     await fileActions.closeButton.click();
     await expect(fileActions.mainFrame.getByText('new item title')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can view Kanban history');
+    await fileActions.toSuccess('Can view Kanban history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t view Kanban history');
+    await fileActions.toFailure(e, 'Can\'t view Kanban history');
   }
 });
 
@@ -166,7 +163,7 @@ test('anon - kanban -  import file', async ({ page }) => {
 
     await fileActions.toSuccess('Can import file into Kanban document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t import file into Kanban document');
+    await fileActions.toFailure(e, 'Can\'t import file into Kanban document');
   }
 });
 
@@ -188,14 +185,14 @@ test('anon - kanban -  make a copy', async ({ page }) => {
     ]);
 
     await expect(page1).toHaveURL(new RegExp(`^${url}/kanban`), { timeout: 100000 });
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.mainFrame.getByText('new title').waitFor();
     await expect(fileActions1.mainFrame.getByText('new title')).toBeVisible();
     await expect(fileActions1.mainFrame.getByText('new item content')).toBeVisible();
 
     await fileActions.toSuccess('Can create a copy of Kanban document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create a copy of Kanban document');
+    await fileActions.toFailure(e, 'Can\'t create a copy of Kanban document');
   }
 });
 
@@ -214,16 +211,16 @@ test('anon - kanban -  share at a moment in history', async ({ page, context }) 
 
     await expect(fileActions.mainFrame.getByText('One moment in history')).toBeHidden();
 
-    var clipboardText = await fileActions.getShareLink()
+    const clipboardText = await fileActions.getShareLink();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.fileTitle('Kanban').waitFor()
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.fileTitle('Kanban').waitFor();
     await expect(fileActions1.mainFrame.getByText('One moment in history')).toBeHidden();
 
-    await fileActions.toSuccess( 'Can share Kanban at a specific moment in history');
+    await fileActions.toSuccess('Can share Kanban at a specific moment in history');
   } catch (e) {
-    await fileActions.toFailure(e,'Can share Kanban at a specific moment in history');
+    await fileActions.toFailure(e, 'Can share Kanban at a specific moment in history');
   }
 });
 
@@ -283,11 +280,11 @@ test('anon - kanban -  export as .json', async ({ page }) => {
     const expectedString = JSON.stringify({ list: [11, 12, 13], data: { 11: { id: 11, title: 'To Do', item: [1, 2] }, 12: { id: 12, title: 'In progress', item: [] }, 13: { id: 13, title: 'Done', item: [] } }, items: { 1: { id: 1, title: 'Item 1' }, 2: { id: 2, title: 'Item 2' } } });
 
     if (expectedString === kanbanJSONString) {
-      await fileActions.toSuccess( 'Can export Kanban document as .json');
+      await fileActions.toSuccess('Can export Kanban document as .json');
     } else {
-      await fileActions.toFailure(e, 'Can\'t export Kanban document as .json');
+      await fileActions.toFailure('Can\'t export Kanban document as .json');
     }
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Kanban document as .json');
+    await fileActions.toFailure(e, 'Can\'t export Kanban document as .json');
   }
 });

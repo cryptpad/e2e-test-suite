@@ -44,9 +44,9 @@ module.exports = defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html'], 
+  reporter: [['html'],
   // ['@estruyf/github-actions-reporter']
-  ['playwright-ctrf-json-reporter', { outputFile: 'ctrf.json' }],
+    ['playwright-ctrf-json-reporter', { outputFile: 'ctrf.json' }]
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -79,7 +79,7 @@ module.exports = defineConfig({
         locale: 'en-GB',
         channel: 'chromium'
       }
-    }, 
+    },
     {
       // name: 'playwright-firefox@latest:OSX Ventura@browserstack',
       // use: {
@@ -139,23 +139,23 @@ module.exports = defineConfig({
         ...devices['Galaxy S9+'],
         hasTouch: true,
         browserName: 'chromium',
-        channel: 'chrome',
+        // channel: 'chrome',
         locale: 'en-GB',
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         mobile: true
       }
-    }, {
-      name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
-      use: {
-        hasTouch: true,
-        browserName: 'chromium',
-        channel: 'chrome',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        mobile: true,
-        acceptDownloads: true
+    // }, {
+    //   name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
+    //   use: {
+    //     hasTouch: true,
+    //     browserName: 'chromium',
+    //     channel: 'chrome',
+    //     locale: 'en-GB',
+    //     permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+    //     mobile: true,
+    //     acceptDownloads: true
 
-      }
-    }, 
+    //   }
+    }
   ]
 });

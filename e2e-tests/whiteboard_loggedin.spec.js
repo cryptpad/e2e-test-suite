@@ -5,7 +5,6 @@ const { Cleanup } = require('./cleanup.js');
 const { FileActions } = require('./fileactions.js');
 
 let page1;
-const local = !!process.env.PW_URL.includes('localhost');
 let mobile;
 let cleanUp;
 let fileActions;
@@ -32,36 +31,40 @@ test('screenshot loggedin - whiteboard - display history (previous author)', asy
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
 
     await fileActions.share(mobile);
-    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
+    const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile);
 
     page1 = await browser.newPage();
     await page1.goto(`${clipboardText}`);
-    await fileActions1.whiteBoardCanvas.waitFor()
     const fileActions1 = new FileActions(page1);
+    await fileActions1.whiteBoardCanvas.waitFor();
     await fileActions1.whiteBoardCanvas.hover({
       position: {
         x: 287,
         y: 227
-      }, force: true
+      },
+      force: true
     });
     await page1.mouse.down();
     await fileActions1.whiteBoardCanvas.hover({
       position: {
         x: 286,
         y: 314
-      }, force: true
+      },
+      force: true
     });
     await page1.mouse.up();
 
@@ -85,14 +88,16 @@ test('screenshot loggedin - whiteboard - save as and import template', async ({ 
       position: {
         x: 175,
         y: 315
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.down();
     await fileActions.whiteBoardCanvas.hover({
       position: {
         x: 174,
         y: 230
-      }, force: true
+      },
+      force: true
     });
     await page.mouse.up();
 

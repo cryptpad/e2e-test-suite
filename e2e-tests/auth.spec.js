@@ -1,5 +1,5 @@
-import { test as setup, expect } from '@playwright/test';
-const { url, mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
+import { test as setup } from '@playwright/test';
+const { mainAccountPassword, testUserPassword, testUser2Password, testUser3Password } = require('../fixture.js');
 const { UserActions } = require('./useractions.js');
 
 const authFileMainAccount = 'auth/mainuser.json';

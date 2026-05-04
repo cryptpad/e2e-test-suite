@@ -1,12 +1,11 @@
-const { test, url, mainAccountPassword } = require('../fixture.js');
+const { test, url } = require('../fixture.js');
 const { Cleanup } = require('./cleanup.js');
-const { UserActions } = require('./useractions.js');
-const { FileActions, StoreModal } = require('./fileactions.js');
+const { FileActions } = require('./fileactions.js');
+const { StoreModal } = require('./genericfile_po.js');
+
 
 const { expect } = require('@playwright/test');
 require('dotenv').config();
-
-const local = !!process.env.PW_URL.includes('localhost');
 
 let page1;
 let mobile;
@@ -55,9 +54,9 @@ test('loggedin - kanban - save as and import template', async ({ page }) => {
     await fileActions.destroyItem.click();
     await fileActions.okButton.click();
     await expect(fileActions.mainFrame.getByText('example kanban template')).toHaveCount(0);
-    await fileActions.toSuccess( 'Can save and use Kanban document as template');
+    await fileActions.toSuccess('Can save and use Kanban document as template');
   } catch (e) {
-    await fileActions.toFailure(e,  'Can\'t save and use Kanban document as template');
+    await fileActions.toFailure(e, 'Can\'t save and use Kanban document as template');
   }
 });
 
@@ -72,10 +71,10 @@ if (!mobile) {
       await fileActions.editItem.press('Enter');
 
       await fileActions.share(mobile);
-      const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile)
+      const clipboardText = await fileActions.getLinkAfterCopyRole(/^Edit$/, mobile);
       page1 = await browser.newPage();
       await page1.goto(`${clipboardText}`);
-      const fileActions1 = new FileActions(page1, mobile)
+      const fileActions1 = new FileActions(page1, mobile);
 
       await fileActions1.addItem.first().click();
       await fileActions1.editItem.fill('some test text by anon');
@@ -101,7 +100,7 @@ if (!mobile) {
 
       await expect(fileActions.mainFrame.getByText('and some more text by test user here')).toHaveCount(0);
 
-      await fileActions.toSuccess( 'Can create Kanban document and view history (previous author)');
+      await fileActions.toSuccess('Can create Kanban document and view history (previous author)');
     } catch (e) {
       await fileActions.toFailure(e, 'Can\'t create Kanban document and view history (previous author)');
     }

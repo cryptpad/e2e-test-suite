@@ -3,29 +3,18 @@ const { expect } = require('@playwright/test');
 const { FileActions } = require('./fileactions.js');
 const { Cleanup } = require('./cleanup.js');
 
-const fs = require('fs');
 require('dotenv').config();
-const os = require('os');
-
-// const local = !!process.env.PW_URL.includes('localhost');
 
 let mobile;
-let browserName;
-let browserstackMobile;
 let fileActions;
-let fileActions1
 let cleanUp;
-
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.setTimeout(90000);
 
   mobile = testInfo.project.use.mobile;
-  browserName = testInfo.project.name.split(/@/)[0];
-  browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
   const template = testInfo.title.match(/import template/);
   if (template) {
-    console.log("cleanup")
     cleanUp = new Cleanup(page);
     await cleanUp.cleanTemplates();
   }
@@ -34,14 +23,13 @@ test.beforeEach(async ({ page }, testInfo) => {
   await fileActions.createFile.waitFor();
   await fileActions.createFile.click();
   await fileActions.fileSaved.waitFor();
-
 });
 
 test('loggedin - doc - import template', async ({ page, context }) => {
-  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
-  
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content');
+
   try {
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
@@ -58,13 +46,13 @@ test('loggedin - doc - import template', async ({ page, context }) => {
     await page.waitForTimeout(5000);
 
     await fileActions.fileSaved.waitFor();
-    await fileActions.waitForSync.waitFor({state: "hidden"});
+    await fileActions.waitForSync.waitFor({ state: 'hidden' });
 
-    if ( await fileActions.dismissButton.isVisible()) {
-      await fileActions.dismissButton.click()
+    if (await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click();
     }
 
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());
@@ -76,26 +64,24 @@ test('loggedin - doc - import template', async ({ page, context }) => {
     await fileActions.destroyItem.click();
     await fileActions.okButton.click();
     await expect(fileActions.secureFrame.getByText('example template')).toHaveCount(0);
-    
+
     await fileActions.toSuccess('Can create and import template into Document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and import template into Document');
+    await fileActions.toFailure(e, 'Can\'t create and import template into Document');
   }
 });
 
-
 test('loggedin - document - snapshot (history)', async ({ page, context }) => {
-  test.skip('#2090')
+  test.skip('#2090');
   try {
-
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
 
     await fileActions.docEditorInput.fill('test text');
     await fileActions.history(mobile);
-    await fileActions.historyFastPrev.click()
-    await expect(fileActions.warningModal).toHaveCount(0)
+    await fileActions.historyFastPrev.click();
+    await expect(fileActions.warningModal).toHaveCount(0);
 
     await fileActions.createSnapshot.click();
     await fileActions.snapshotTitle.waitFor();
@@ -104,8 +90,8 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
     await fileActions.newSnapshot.click();
     await fileActions.closeSnapshots.waitFor();
     await fileActions.closeSnapshots.click();
-    await fileActions.closeHistory.click()
-    await fileActions.fileSaved.waitFor()
+    await fileActions.closeHistory.click();
+    await fileActions.fileSaved.waitFor();
 
     await fileActions.filemenuClick(mobile);
     await fileActions.snapshots.waitFor();
@@ -115,51 +101,49 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
     const page1Promise = page.waitForEvent('popup');
     await fileActions.openButton.click();
     const page1 = await page1Promise;
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.docEditor.click({force: true});
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.docEditor.click({ force: true });
     await page1.keyboard.press('Control+A');
     await page1.keyboard.press('Control+C');
     const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('example template content');
-    
-    await fileActions.toSuccess( 'Can create and load Document history snapshots');
 
+    await fileActions.toSuccess('Can create and load Document history snapshots');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and load Document history snapshots');
+    await fileActions.toFailure(e, 'Can\'t create and load Document history snapshots');
   }
 });
 
 test('screenshot loggedin - doc - insert image', async ({ page, context }) => {
-  test.skip(mobile, '#2093')
+  test.skip(mobile, '#2093');
 
   try {
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 16120 });
 
-    await expect(page).toHaveScreenshot( { maxDiffPixels: 16120 });
-
-    await fileActions.insertTab.click({force: true});
+    await fileActions.insertTab.click({ force: true });
     await fileActions.insertImg.click();
     await fileActions.imgFromFile.click();
 
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await fileActions.uploadFileSecure.click()
+    await fileActions.uploadFileSecure.click();
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles('testdocuments/teamavatar.png');
 
     await fileActions.okButtonSecure.click();
-    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor()
-    await page.waitForTimeout(3000)
-    await expect(page).toHaveScreenshot( { maxDiffPixels: 16760 });
+    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor();
+    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor({state: 'hidden'});
+    await page.waitForTimeout(3000);
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 16760 });
 
-    await fileActions.toSuccess( 'Can insert image into Document');
+    await fileActions.toSuccess('Can insert image into Document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t insert image into Document');
+    await fileActions.toFailure(e, 'Can\'t insert image into Document');
   }
 });
 
 test('loggedin - doc - history (restore)', async ({ page, context }) => {
   try {
-
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');
     await fileActions.docEditor.dispatchEvent('select');
@@ -167,31 +151,30 @@ test('loggedin - doc - history (restore)', async ({ page, context }) => {
     await fileActions.docEditorInput.fill('test text');
 
     await fileActions.history(mobile);
-    await fileActions.historyFastPrev.click()
-    await fileActions.fileHistory.waitFor()
-    await fileActions.waitForSync.waitFor({state: 'hidden'})
-    await expect(fileActions.warningModal).toHaveCount(0)
+    await fileActions.historyFastPrev.click();
+    await fileActions.fileHistory.waitFor();
+    await fileActions.waitForSync.waitFor({ state: 'hidden' });
+    await expect(fileActions.warningModal).toHaveCount(0);
 
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
     await fileActions.restore.click();
     await fileActions.okButton.click();
 
-    await fileActions.fileSaved.waitFor()
-    await fileActions.waitForSync.waitFor({state: 'hidden'})
-    await expect(fileActions.warningModal).toHaveCount(0)
+    await fileActions.fileSaved.waitFor();
+    await fileActions.waitForSync.waitFor({ state: 'hidden' });
+    await expect(fileActions.warningModal).toHaveCount(0);
 
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
-    
-    await fileActions.toSuccess( 'Can restore history in Presentation document');
+
+    await fileActions.toSuccess('Can restore history in Presentation document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t restore history in Presentation document');
+    await fileActions.toFailure(e, 'Can\'t restore history in Presentation document');
   }
 });
 
 test('loggedin - doc - import file (doc)', async ({ page, context }) => {
-  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content');
   try {
-    
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -199,12 +182,12 @@ test('loggedin - doc - import file (doc)', async ({ page, context }) => {
     ]);
 
     await fileChooser.setFiles('testdocuments/test doc.docx');
-    await fileActions.okButton.click()
+    await fileActions.okButton.click();
     await fileActions.fileSaved.waitFor();
-    if ( await fileActions.dismissButton.isVisible()) {
-      await fileActions.dismissButton.click()
+    if (await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click();
     }
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
@@ -218,10 +201,9 @@ test('loggedin - doc - import file (doc)', async ({ page, context }) => {
 });
 
 test('loggedin - doc - import file (odt)', async ({ page, context }) => {
-  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content')
+  test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content');
 
   try {
-    
     await fileActions.filemenuClick(mobile);
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -229,12 +211,12 @@ test('loggedin - doc - import file (odt)', async ({ page, context }) => {
     ]);
 
     await fileChooser.setFiles('testdocuments/test doc.odt');
-    await fileActions.okButton.click()
+    await fileActions.okButton.click();
     await fileActions.fileSaved.waitFor();
-    if ( await fileActions.dismissButton.isVisible()) {
-      await fileActions.dismissButton.click()
+    if (await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click();
     }
-    await fileActions.docEditor.click({force: true});
+    await fileActions.docEditor.click({ force: true });
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Control+C');
     const clipboardText = await page.evaluate(() => navigator.clipboard.readText());

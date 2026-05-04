@@ -1,40 +1,35 @@
-const { test, url, dateTodayDashFormat, dateTodaySlashFormat, nextMondaySlashFormat, minutes, hours, todayStringFormat, nextMondayStringFormat, titleDate, titleDateComma } = require('../fixture.js');
+const { test, url, dateTodayDashFormat, dateTodaySlashFormat, minutes, hours, todayStringFormat } = require('../fixture.js');
 const { expect } = require('@playwright/test');
 const fs = require('fs');
 
 require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 
-const local = !!process.env.PW_URL.includes('localhost');
-
 let page1;
 let mobile;
 let browserstackMobile;
 let fileActions;
-let isBrowserstack;
-let browserName
+let browserName;
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
   mobile = isMobile;
   browserstackMobile = testInfo.project.name.match(/browserstack-mobile/);
-  isBrowserstack = !!testInfo.project.name.match(/browserstack/);
   browserName = testInfo.project.name.split(/@/)[0];
 
   fileActions = new FileActions(page);
-  await fileActions.loadFileType("form")
-
+  await fileActions.loadFileType('form');
 });
 
 test('anon - form - submission (one time no edit)', async ({ page, context }) => {
   try {
-    await fileActions.openFormSettings()
+    await fileActions.openFormSettings();
     await fileActions.oneTimeOnly.click();
     await fileActions.closeModal.click();
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
     await fileActions1.answerAnon.click();
@@ -51,14 +46,14 @@ test('anon - form - submission (one time no edit)', async ({ page, context }) =>
 
 test('anon - form - submission (multiple times no edit)', async ({ page, context }) => {
   try {
-    await fileActions.openFormSettings()
+    await fileActions.openFormSettings();
     await fileActions.multipleTimes.click();
     await fileActions.closeModal.click();
 
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
@@ -77,11 +72,11 @@ test('anon - form - submission (multiple times no edit)', async ({ page, context
 
 test('anon - form - submission (one time) - delete', async ({ page, context }) => {
   try {
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.formOptionOne.waitFor()
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
     await fileActions1.answerAnon.click();
     await fileActions1.submitButton.click();
@@ -95,20 +90,20 @@ test('anon - form - submission (one time) - delete', async ({ page, context }) =
 
     await fileActions.toSuccess('Can anonymously create form with one time submission - delete');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create form with one time submission - delete');
+    await fileActions.toFailure(e, 'Can\'t anonymously create form with one time submission - delete');
   }
 });
 
 test('anon - form - submission (multiple times) - delete', async ({ page, context }) => {
   try {
-    await fileActions.openFormSettings()
+    await fileActions.openFormSettings();
     await fileActions.multipleTimesEdit.click();
     await fileActions.closeModal.click();
 
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formOptionOne.click();
     await fileActions1.answerAnon.click();
@@ -123,22 +118,22 @@ test('anon - form - submission (multiple times) - delete', async ({ page, contex
 
     await fileActions.toSuccess('Can anonymously create form with multiple submissions - delete');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create form with multiple submissions - delete');
+    await fileActions.toFailure(e, 'Can\'t anonymously create form with multiple submissions - delete');
   }
 });
 
 test('anon - form - submission (multiple times) - edit', async ({ page, context }) => {
   try {
-    await fileActions.openFormSettings()
+    await fileActions.openFormSettings();
     await fileActions.multipleTimesEdit.click();
     await fileActions.closeModal.click();
 
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    
-    await fileActions1.formOptionOne.waitFor()
+    const fileActions1 = new FileActions(page1);
+
+    await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
     await fileActions1.answerAnon.click();
     await fileActions1.submitButton.click();
@@ -151,7 +146,7 @@ test('anon - form - submission (multiple times) - edit', async ({ page, context 
 
     await expect(fileActions1.submitAgain).toBeVisible();
 
-    await fileActions.toSuccess( 'Can anonymously create form with multiple submissions - edit');
+    await fileActions.toSuccess('Can anonymously create form with multiple submissions - edit');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t anonymously create form with multiple submissions - edit');
   }
@@ -159,10 +154,10 @@ test('anon - form - submission (multiple times) - edit', async ({ page, context 
 
 test('anon - form - submission (one time) - edit', async ({ page, context }) => {
   try {
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formOptionOne.click();
     await fileActions1.answerAnon.click();
@@ -185,16 +180,15 @@ test('anon - form - submission (one time) - edit', async ({ page, context }) => 
 
 test('anon - form - share (link) - auditor', async ({ page, context }) => {
   try {
-
     await fileActions.fileTitle('Form').waitFor();
     await fileActions.share(mobile);
-    await fileActions.linkRole( /^Auditor$/ ).click();
-    await fileActions.shareCopyLink.click()
-    var clipboardText = await page.evaluate('navigator.clipboard.readText()');
+    await fileActions.linkRole(/^Auditor$/).click();
+    await fileActions.shareCopyLink.click();
+    const clipboardText = await page.evaluate('navigator.clipboard.readText()');
     const page1 = await context.newPage();
-    await page1.waitForTimeout(2000)
+    await page1.waitForTimeout(2000);
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.fileTitle('Form').waitFor();
     await expect(fileActions1.fileTitle('Form')).toBeVisible();
@@ -209,15 +203,14 @@ test('anon - form - share (link) - auditor', async ({ page, context }) => {
 
 test('anon - form - share (link) - author', async ({ page, context }) => {
   try {
-    
     await fileActions.fileTitle('Form').waitFor();
 
     await fileActions.getShareLink(mobile);
 
-    var clipboardText = await fileActions.getLinkAfterCopy()
+    const clipboardText = await fileActions.getLinkAfterCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.fileTitle('Form').waitFor();
     await expect(fileActions1.fileTitle('Form')).toBeVisible();
@@ -226,13 +219,13 @@ test('anon - form - share (link) - author', async ({ page, context }) => {
 
     await fileActions.toSuccess('Can anonymously create form and share link (author)');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t anonymously create form and share link (author)');
+    await fileActions.toFailure(e, 'Can\'t anonymously create form and share link (author)');
   }
 });
 
 test('anon - form - add and respond to checkbox question', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
     await fileActions.textbox.fill('What box do you choose?');
@@ -240,13 +233,13 @@ test('anon - form - add and respond to checkbox question', async ({ page, contex
     await fileActions.textbox.nth(1).fill('box1');
     await fileActions.textbox.nth(2).fill('box2');
     await fileActions.textbox.nth(3).fill('box3');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
-    await fileActions1.answerOption( 'box2' ).waitFor();
-    await fileActions1.answerOption( 'box2' ).click();
+    await fileActions1.answerOption('box2').waitFor();
+    await fileActions1.answerOption('box2').click();
     await fileActions1.answerAnon.click();
     await fileActions1.submitButton.click();
     await page1.waitForTimeout(5000);
@@ -255,13 +248,13 @@ test('anon - form - add and respond to checkbox question', async ({ page, contex
 
     await fileActions.toSuccess('Can create and answer checkbox question in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer checkbox question in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and answer checkbox question in a Form');
   }
 });
 
 test('anon - form - close and open', async ({ page, context }) => {
   try {
-    await fileActions.openFormSettings()
+    await fileActions.openFormSettings();
 
     await fileActions.setClosingDate.click();
     await fileActions.mainFrame.getByLabel(`${todayStringFormat}`).click();
@@ -279,25 +272,25 @@ test('anon - form - close and open', async ({ page, context }) => {
 
     await expect(fileActions.formContainer.getByText(`This form was closed on ${dateTodaySlashFormat}`)).toBeVisible();
 
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.questionHere.waitFor();
     await expect(fileActions1.questionHere).toBeVisible();
     await expect(fileActions1.mainFrame.getByText(`This form was closed on ${dateTodaySlashFormat}`)).toBeVisible();
     await expect(fileActions1.submitButton).toBeHidden();
 
-    await fileActions.openFormSettings()
+    await fileActions.openFormSettings();
     await fileActions.openForm.click();
     await expect(fileActions.formContainer.getByText('This form is open')).toBeVisible();
 
     await page1.reload();
     await page1.bringToFront();
-    await fileActions1.submitButton.waitFor()
+    await fileActions1.submitButton.waitFor();
     await expect(fileActions1.submitButton).toBeVisible();
 
-    await fileActions.toSuccess( 'Can close and open Form' );
+    await fileActions.toSuccess('Can close and open Form');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t close and open Form');
   }
@@ -328,7 +321,7 @@ test('anon - form - close and open', async ({ page, context }) => {
 //           }
 //         }
 //       }
-      
+
 //       const __DateNowOffset = ${mockedDate.getTime()} - Date.now()
 //       const __DateNow = Date.now
 //       Date.now = () => __DateNow() + __DateNowOffset
@@ -355,16 +348,16 @@ test('anon - form - close and open', async ({ page, context }) => {
 //   }
 // });
 
-test('anon - form - anonymize responses', async ({ page, context }) => { 
-  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug')
-  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug')
+test('anon - form - anonymize responses', async ({ page, context }) => {
+  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug');
+  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug');
 
   try {
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.mainFrame.getByText('Please choose how you would like to answer this form:').waitFor();
     await expect(fileActions1.mainFrame.getByText('Please choose how you would like to answer this form:')).toBeVisible();
 
@@ -381,8 +374,8 @@ test('anon - form - anonymize responses', async ({ page, context }) => {
     await page.bringToFront();
     await fileActions.responses(mobile);
     await fileActions.showIndividualAnswers.waitFor();
-    await page.waitForTimeout(5000)
-    await fileActions.showIndividualAnswers.click({force: true});
+    await page.waitForTimeout(5000);
+    await fileActions.showIndividualAnswers.click({ force: true });
     await fileActions.mainFrame.getByText(/^Anonymous answer/).click();
 
     await fileActions.toSuccess('Can anonymize Form responses');
@@ -393,11 +386,11 @@ test('anon - form - anonymize responses', async ({ page, context }) => {
 
 test('anon - form - publish responses', async ({ page, context }) => {
   try {
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
@@ -409,11 +402,11 @@ test('anon - form - publish responses', async ({ page, context }) => {
     await fileActions.publishResponses.click();
     await fileActions.okButton.click();
 
-    await fileActions1.viewAllResponses.waitFor()
+    await fileActions1.viewAllResponses.waitFor();
     await fileActions1.viewAllResponses.click();
     await fileActions1.mainFrame.getByText(/Your question here\?Option 11 Option 20/).click();
 
-    await fileActions.toSuccess( 'Can publish Form responses');
+    await fileActions.toSuccess('Can publish Form responses');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t publish Form responses');
   }
@@ -429,12 +422,12 @@ test('anon - form - view history and share at a specific moment in history', asy
 
     await fileActions.history(mobile);
     await fileActions.historyPrevLast.click();
-    await expect(fileActions.mainFrame.getByText('new option')).toHaveCount(0);    
+    await expect(fileActions.mainFrame.getByText('new option')).toHaveCount(0);
 
-    const clipboardText = await fileActions.getShareLink()
+    const clipboardText = await fileActions.getShareLink();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await expect(fileActions1.mainFrame.getByText('new option')).toHaveCount(0);
 
@@ -474,8 +467,6 @@ test('anon - form - make a copy', async ({ page }) => {
     await page.keyboard.press('Enter');
 
     await fileActions.editQuestion.nth(1).click();
-    // console.log(fileActions.optionPlaceholder('Option 1'))
-    // console.log(await fileActions.optionPlaceholder('Option 1'))
     await fileActions.optionPlaceholder('Option 1').click();
     await fileActions.optionPlaceholder('Option 1').fill('Surf');
     await fileActions.optionPlaceholder('Option 2').click();
@@ -487,14 +478,14 @@ test('anon - form - make a copy', async ({ page }) => {
       await fileActions.fileMenuItem('Make a copy').click()
     ]);
 
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.textbox.waitFor();
 
     await expect(fileActions1.textbox).toHaveValue('What to do today?');
     await expect(fileActions1.mainFrame.getByText('Surf')).toBeVisible();
     await expect(fileActions1.mainFrame.getByText('Cinema')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create a copy of a Form');
+    await fileActions.toSuccess('Can create a copy of a Form');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create a copy of a Form');
   }
@@ -532,9 +523,9 @@ test('anon - form - export file', async ({ page }) => {
 
     const testFormJSONString = /^{"form":{"1":{"type":"md","opts":{"text":"example text"}},"2":{"type":"radio","opts":{"values":\[{"uid":"([a-z0-9]{10,11})","v":"test option one"},{"uid":"([a-z0-9]{10,11})","v":"test option two"},{"uid":"([a-z0-9]{10,11})","v":"test option three"}]},"q":"example question\?"}},"order":\["1","2"],"version":1}$/;
     if (testFormJSONString.test(actualFormJSONString)) {
-      await fileActions.toSuccess( 'Can create and export a Form into a .json');
+      await fileActions.toSuccess('Can create and export a Form into a .json');
     } else {
-      await fileActions.toFailure(e, 'Can\'t create and export a Form into a .json');
+      await fileActions.toFailure('Can\'t create and export a Form into a .json');
     }
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create and export a Form into a .json');
@@ -547,10 +538,10 @@ test('anon - form - add description', async ({ page, context }) => {
     await fileActions.editQuestion.first().click();
     await fileActions.mainFrame.locator('span').filter({ hasText: 'Your text here' }).click();
     await fileActions.mainFrame.locator('span').filter({ hasText: 'Your text here' }).fill('New description');
-     var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.mainFrame.getByText('New description').waitFor();
 
@@ -571,17 +562,17 @@ test('anon - form - add submission message', async ({ page, context }) => {
     await fileActions.mainFrame.getByRole('button', { name: 'Add submit message' }).click();
 
     await fileActions.mainFrame.locator('pre').nth(1).fill('Thank you for submitting your answer!');
-     var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.formOptionOne.waitFor();
 
     await fileActions1.formOptionOne.click();
     await fileActions1.answerAnonSpan.click();
     await fileActions1.submitButton.click();
     await expect(fileActions1.mainFrame.getByText('Thank you for submitting your answer!')).toBeVisible();
-    await fileActions.toSuccess( 'Can create Form with a submission message');
+    await fileActions.toSuccess('Can create Form with a submission message');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create Form with a submission message');
   }
@@ -594,10 +585,10 @@ test('anon - form - anon (guest) access - allowed', async ({ page, context }) =>
     await fileActions.editQuestion.nth(1).click();
     await fileActions.optionPlaceholder('Option 1').fill('sleep');
     await fileActions.optionPlaceholder('Option 2').fill('eat');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.answerAnonSpan.waitFor();
 
     await fileActions1.answerAnonSpan.click();
@@ -607,7 +598,7 @@ test('anon - form - anon (guest) access - allowed', async ({ page, context }) =>
     await expect(fileActions.oneTotalResponse).toBeVisible();
     await fileActions.showIndividualAnswers.click();
     await expect(fileActions.mainFrame.getByText(/^Anonymous answer/)).toBeVisible();
-    await fileActions.toSuccess( 'Can create and answer question with permitted guest access in a Form');
+    await fileActions.toSuccess('Can create and answer question with permitted guest access in a Form');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create and answer question with permitted guest access in a Form');
   }
@@ -619,10 +610,10 @@ test('anon - form - add and respond to text question', async ({ page, context })
     await fileActions.textButton.click();
     await fileActions.textbox.nth(1).click();
     await fileActions.textbox.nth(1).fill('What is your name?');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.formTextBox.waitFor();
 
     await fileActions1.formTextBox.click();
@@ -643,10 +634,10 @@ test('anon - form - add and respond to text question', async ({ page, context })
 
 test('anon - form - edit response', async ({ page, context }) => {
   try {
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
@@ -666,12 +657,12 @@ test('anon - form - edit response', async ({ page, context }) => {
 });
 
 test('anon - form - delete response', async ({ page, context }) => {
-  test.skip(browserName==='playwright-firefox' || browserName==='playwright-webkit')
+  test.skip(browserName === 'playwright-firefox' || browserName === 'playwright-webkit');
   try {
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formOptionOne.waitFor();
     await fileActions1.formOptionOne.click();
@@ -689,7 +680,7 @@ test('anon - form - delete response', async ({ page, context }) => {
 
     await fileActions.toSuccess('Can edit response in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t edit response in a Form');
+    await fileActions.toFailure(e, 'Can\'t edit response in a Form');
   }
 });
 
@@ -699,10 +690,10 @@ test('anon - form - add and respond to paragraph question', async ({ page, conte
     await fileActions.paragraphQuestion.click();
     await fileActions.paragraphQuestionContent.click();
     await fileActions.paragraphQuestionContent.fill('Tell me about yourself');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.paragraphAnswer.waitFor();
 
@@ -715,15 +706,15 @@ test('anon - form - add and respond to paragraph question', async ({ page, conte
     await fileActions.responses(await fileActions.oneResponse.isVisible());
     await expect(fileActions.formContainer.getByText('I am a guest')).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create and answer paragraph question in a Form');
+    await fileActions.toSuccess('Can create and answer paragraph question in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer paragraph question in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and answer paragraph question in a Form');
   }
 });
 
 test('anon - form - add and respond to choice question (optional)', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.choiceQuestion.click();
     await fileActions.textbox.fill('What is your choice?');
@@ -736,12 +727,12 @@ test('anon - form - add and respond to choice question (optional)', async ({ pag
     await fileActions.addOption.click();
     await fileActions.choiceQuestionInput.nth(2).click();
     await fileActions.choiceQuestionInput.nth(2).fill('test option three');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.answerOption('test option one' ).waitFor();
-    await fileActions1.answerOption('test option one' ).click();
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.answerOption('test option one').waitFor();
+    await fileActions1.answerOption('test option one').click();
     await fileActions1.answerAnonSpan.click();
     await fileActions1.submitButton.click();
     await page1.waitForTimeout(3000);
@@ -750,13 +741,13 @@ test('anon - form - add and respond to choice question (optional)', async ({ pag
 
     await fileActions.toSuccess('Can create and answer choice question (optional) in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer choice question (optional) in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and answer choice question (optional) in a Form');
   }
 });
 
 test('anon - form - add and respond to choice question (required)', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.choiceQuestion.click();
     await fileActions.textbox.fill('What is your choice?');
@@ -771,14 +762,14 @@ test('anon - form - add and respond to choice question (required)', async ({ pag
     await fileActions.choiceQuestionInput.nth(2).click();
     await fileActions.choiceQuestionInput.nth(2).fill('test option three');
     await fileActions.requiredQuestion.click();
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.mainFrame.getByText('The following questions require an answer:Question 1.').waitFor();
     await expect(fileActions1.mainFrame.getByText('The following questions require an answer:Question 1.')).toBeVisible();
     await expect(fileActions1.submitButton).toBeDisabled();
-    await fileActions1.answerOption('test option one' ).click();
+    await fileActions1.answerOption('test option one').click();
     await fileActions1.answerAnonSpan.click();
     await fileActions1.submitButton.click();
 
@@ -787,13 +778,13 @@ test('anon - form - add and respond to choice question (required)', async ({ pag
 
     await fileActions.toSuccess('Can create and answer choice question (required) in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer choice question (required) in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and answer choice question (required) in a Form');
   }
 });
 
 test('anon - form - add and respond to choice grid question', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.choiceGridQuestion.click();
     await fileActions.textbox.click();
@@ -805,12 +796,12 @@ test('anon - form - add and respond to choice grid question', async ({ page, con
     await fileActions.choiceGridOption.first().fill('Choice1');
     await fileActions.choiceGridItem.nth(1).fill('Particular');
     await fileActions.choiceGridOption.nth(1).fill('Choice2');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
-    await fileActions1.choiceGridAnswer(/^GeneralGeneral$/ ).first().waitFor();
+    await fileActions1.choiceGridAnswer(/^GeneralGeneral$/).first().waitFor();
     await fileActions1.choiceGridAnswer(/^GeneralGeneral$/).first().click();
     await page1.waitForTimeout(1000);
     await fileActions1.choiceGridAnswer(/^ParticularParticular$/).nth(2).click();
@@ -832,14 +823,14 @@ test('anon - form - add and respond to choice grid question', async ({ page, con
 
 test('anon - form - add and respond to date question', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.dateQuestion.click();
     await fileActions.textbox.first().fill('What is today\'s date?');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
 
     await fileActions1.formTextBox.waitFor();
     await fileActions1.formTextBox.click();
@@ -851,7 +842,7 @@ test('anon - form - add and respond to date question', async ({ page, context })
     await fileActions.mainFrame.getByText(`${dateTodayDashFormat}`).waitFor();
     await expect(fileActions.mainFrame.getByText(`${dateTodayDashFormat}`)).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create and answer date question in a Form');
+    await fileActions.toSuccess('Can create and answer date question in a Form');
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create and answer date question in a Form');
   }
@@ -859,7 +850,7 @@ test('anon - form - add and respond to date question', async ({ page, context })
 
 test('anon - form - add and respond to checkbox grid question', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.checkboxGridQuestion.click();
     await fileActions.textbox.fill('Which checkbox grid do you choose?');
@@ -870,11 +861,11 @@ test('anon - form - add and respond to checkbox grid question', async ({ page, c
     await fileActions.choiceGridOption.first().fill('Box1');
     await fileActions.choiceGridOption.nth(1).fill('Box2');
     await fileActions.choiceGridOption.nth(2).fill('Box3');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.checkboxGridAnswer(5).first().waitFor()
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.checkboxGridAnswer(5).first().waitFor();
     await fileActions1.checkboxGridAnswer(5).first().click();
     await fileActions1.checkboxGridAnswer(4).first().click();
     await fileActions1.checkboxGridAnswer(4).nth(1).click();
@@ -887,13 +878,13 @@ test('anon - form - add and respond to checkbox grid question', async ({ page, c
 
     await fileActions.toSuccess('Can create and answer checkbox grid question in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer checkbox grid question in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and answer checkbox grid question in a Form');
   }
 });
 
 test('anon - form - add and respond to ordered list question (schulze method)', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.orderedList.click();
     await fileActions.textbox.fill('What is your preference?');
@@ -903,10 +894,10 @@ test('anon - form - add and respond to ordered list question (schulze method)', 
     await fileActions.addOption.click();
     await fileActions.optionPlaceholder('New option').fill('test option 3');
 
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.listOption.first().waitFor();
     const firstOption = await fileActions1.listOption.first().textContent();
     const thirdOption = await fileActions1.listOption.nth(2).textContent();
@@ -936,9 +927,9 @@ test('anon - form - add and respond to ordered list question (schulze method)', 
     const results = await fileActions.mainFrame.locator('.cp-form-creator-results-content').textContent();
 
     if (expectedAnswerRegex.test(results)) {
-      await fileActions.toSuccess( 'Can create and answer ordered list question in a Form');
+      await fileActions.toSuccess('Can create and answer ordered list question in a Form');
     } else {
-      await fileActions.toFailure(e, 'Can\'t create and answer ordered list question in a Form');
+      await fileActions.toFailure('Can\'t create and answer ordered list question in a Form');
     }
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create and answer ordered list question in a Form');
@@ -947,7 +938,7 @@ test('anon - form - add and respond to ordered list question (schulze method)', 
 
 test('anon - form - add and respond to ordered list question', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.orderedList.click();
     await fileActions.textbox.fill('What is your preference?');
@@ -957,10 +948,10 @@ test('anon - form - add and respond to ordered list question', async ({ page, co
     await fileActions.addOption.click();
     await fileActions.optionPlaceholder('New option').fill('test option 3');
 
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.listOption.first().waitFor();
     const firstOption = await fileActions1.listOption.first().textContent();
     const thirdOption = await fileActions1.listOption.nth(2).textContent();
@@ -991,7 +982,7 @@ test('anon - form - add and respond to ordered list question', async ({ page, co
     if (expectedAnswerRegex.test(results)) {
       await fileActions.toSuccess('Can create and answer ordered list question in a Form');
     } else {
-      await fileActions.toFailure(e, 'Can\'t create and answer ordered list question in a Form');
+      await fileActions.toFailure('Can\'t create and answer ordered list question in a Form');
     }
   } catch (e) {
     await fileActions.toFailure(e, 'Can\'t create and answer ordered list question in a Form');
@@ -1000,7 +991,7 @@ test('anon - form - add and respond to ordered list question', async ({ page, co
 
 test('anon - form - add and respond to poll question', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.poll.click();
     await fileActions.textbox.fill('What do you want to do?');
@@ -1008,10 +999,10 @@ test('anon - form - add and respond to poll question', async ({ page, context })
     await fileActions.textbox.first().fill('Hiking');
     await fileActions.textbox.nth(1).fill('Yoga');
     await fileActions.textbox.nth(2).fill('Campfire');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.pollCell.waitFor();
     await fileActions1.pollCell.click();
     await fileActions1.answerAnonSpan.click();
@@ -1019,9 +1010,9 @@ test('anon - form - add and respond to poll question', async ({ page, context })
     await fileActions.responses(await fileActions.oneResponse.isVisible());
     await expect(fileActions.mainFrame.getByText(/Total1\(0\)0\(0\)/)).toBeVisible();
 
-    await fileActions.toSuccess( 'Can create and answer poll question in a Form');
+    await fileActions.toSuccess('Can create and answer poll question in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer poll question in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and answer poll question in a Form');
   }
 });
 
@@ -1035,10 +1026,10 @@ test('anon - form - add and respond to form with page break', async ({ page, con
     await fileActions.textButton.click();
     await fileActions.textbox.nth(1).click();
     await fileActions.textbox.nth(1).fill('Question two');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.mainFrame.getByText('Question one').waitFor();
     await expect(fileActions1.mainFrame.getByText('Question one')).toBeVisible();
     await expect(fileActions1.mainFrame.getByText('Question two')).toBeHidden();
@@ -1048,7 +1039,7 @@ test('anon - form - add and respond to form with page break', async ({ page, con
 
     await fileActions.toSuccess('Can create and answer Form with a page break');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and answer Form with a page break');
+    await fileActions.toFailure(e, 'Can\'t create and answer Form with a page break');
   }
 });
 
@@ -1073,42 +1064,42 @@ test('anon - form - add and respond to conditional section question (OR)', async
 
     await fileActions.mainFrame.getByText('example question?').click();
     await fileActions.chooseValue.click();
-    await fileActions.conditionalOption('test option one' ).click();
+    await fileActions.conditionalOption('test option one').click();
 
     await fileActions.orCondition.click();
     await fileActions.chooseQuestion.click();
-    await fileActions.conditionalQuestion('example question?' ).click()
+    await fileActions.conditionalQuestion('example question?').click();
     await fileActions.chooseValue.click();
-    await fileActions.conditionalOption('test option three' ).click();
+    await fileActions.conditionalOption('test option three').click();
 
     await fileActions.addQuestionInsideConditional.click();
     await fileActions.textQuestionInsideConditional.click();
 
     await fileActions.textbox.nth(1).fill('example question two?');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
-    await fileActions1.answerOption('test option one' ).waitFor();
-    await fileActions1.answerOption('test option one' ).click();
+    const fileActions1 = new FileActions(page1);
+    await fileActions1.answerOption('test option one').waitFor();
+    await fileActions1.answerOption('test option one').click();
 
     await expect(fileActions1.mainFrame.getByText('example question two?')).toBeVisible();
 
-    await fileActions1.answerOption('test option two' ).click();
+    await fileActions1.answerOption('test option two').click();
     await expect(fileActions1.mainFrame.getByText('example question two?')).toBeHidden();
 
-    await fileActions1.answerOption('test option three' ).click();
+    await fileActions1.answerOption('test option three').click();
     await expect(fileActions1.mainFrame.getByText('example question two?')).toBeVisible();
 
     await fileActions.toSuccess('Can create and respond to conditional section question (OR) in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and respond to conditional section question (OR) in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and respond to conditional section question (OR) in a Form');
   }
 });
 
 test('anon - form - add and respond to conditional section question (AND)', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
     await fileActions.textbox.fill('example question?');
@@ -1121,48 +1112,45 @@ test('anon - form - add and respond to conditional section question (AND)', asyn
     await fileActions.conditionalOption('Option 1').click();
     await fileActions.andCondition.click();
     await fileActions.chooseQuestion.click();
-    await fileActions.conditionalQuestion( 'example question?' ).click()
+    await fileActions.conditionalQuestion('example question?').click();
     await fileActions.chooseValue.click();
     await fileActions.conditionalOption('Option 3').click();
     await fileActions.addQuestionInsideConditional.click();
     await fileActions.textQuestionInsideConditional.click();
     await fileActions.textbox.nth(1).fill('example question two?');
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.answerOption('Option 1').waitFor();
     await fileActions1.answerOption('Option 1').click();
     await expect(fileActions1.mainFrame.getByText('example question two?')).toBeHidden();
-    await fileActions1.answerOption( 'Option 3' ).click();
+    await fileActions1.answerOption('Option 3').click();
     await expect(fileActions1.mainFrame.getByText('example question two?')).toBeVisible();
 
     await fileActions.toSuccess('Can create and respond to conditional section question (AND) in a Form');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t create and respond to conditional section question (AND) in a Form');
+    await fileActions.toFailure(e, 'Can\'t create and respond to conditional section question (AND) in a Form');
   }
 });
 
 test('anon - form - export responses as .csv', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
-  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug')
-  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug')
-
+  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug');
+  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug');
 
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.answerOption('Option 1').waitFor();
     await fileActions1.answerOption('Option 1').click();
     await fileActions1.answerAnon.click();
     await fileActions1.submitButton.click();
-    const UTChours = new Date().getUTCHours();
-    const UTCminutes = new Date().getUTCMinutes();
 
     await fileActions.responses(await fileActions.oneResponse.isVisible());
     await fileActions.export(mobile);
@@ -1174,38 +1162,35 @@ test('anon - form - export responses as .csv', async ({ page, context }) => {
     ]);
     await download.saveAs('/tmp/form responses');
     const csv = fs.readFileSync('/tmp/form responses', 'utf8').toString().replace(/\s|\\n?/g, '');
-    const regexString = new RegExp(/^{"form":{/);
+    const regexString = /^{"form":{/;
 
     if (regexString.test(csv)) {
       await fileActions.toSuccess('Can export Form reponses as .csv');
     } else {
-      await fileActions.toFailure(e, 'Can\'texport Form reponses as .csv');
+      await fileActions.toFailure('Can\'texport Form reponses as .csv');
     }
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Form reponses as .csv');
+    await fileActions.toFailure(e, 'Can\'t export Form reponses as .csv');
   }
 });
 
 test('anon - form - export responses as .json', async ({ page, context }) => {
   test.skip(browserstackMobile, 'browserstack mobile download incompatibility');
-  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug')
-  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug')
+  test.skip(browserName === 'playwright-firefox', 'playwright firefox bug');
+  test.skip(browserName === 'playwright-webkit', 'playwright webkit bug');
 
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.answerOption('Option 1').waitFor();
     await fileActions1.answerOption('Option 1').click();
     await fileActions1.answerAnon.click();
     await fileActions1.submitButton.click();
-
-    const UTChours = new Date().getUTCHours();
-    const UTCminutes = new Date().getUTCMinutes();
 
     await fileActions.responses(await fileActions.oneResponse.isVisible());
     await fileActions.export(mobile);
@@ -1225,20 +1210,20 @@ test('anon - form - export responses as .json', async ({ page, context }) => {
       await fileActions.toFailure('Can\'t export Form responses as .json');
     }
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Form responses as .json');
+    await fileActions.toFailure(e, 'Can\'t export Form responses as .json');
   }
 });
 
 test('anon - form - export responses (to sheet document)', async ({ page, context }) => {
   try {
-    await fileActions.clearFormQuestions()
+    await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
-    var clipboardText = await fileActions.publicLinkCopy()
+    const clipboardText = await fileActions.publicLinkCopy();
 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
-    const fileActions1 = new FileActions(page1)
+    const fileActions1 = new FileActions(page1);
     await fileActions1.answerOption('Option 1').waitFor();
     await fileActions1.answerOption('Option 1').click();
     await fileActions1.answerAnon.click();
@@ -1253,6 +1238,6 @@ test('anon - form - export responses (to sheet document)', async ({ page, contex
 
     await fileActions.toSuccess('Can export Form responses to Sheet document');
   } catch (e) {
-    await fileActions.toFailure(e,'Can\'t export Form reponses to Sheet document');
+    await fileActions.toFailure(e, 'Can\'t export Form reponses to Sheet document');
   }
 });
