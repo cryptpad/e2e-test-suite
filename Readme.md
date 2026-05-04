@@ -118,12 +118,13 @@ npx playwright test auth --workers=1 --project='chrome'
 
 ### Browserstack authentication and integration
 
-To run the test suite using BrowserStack, add username and access key to the `.env` file.
+To run the test suite using BrowserStack, add username and access key, as well as a `BROWSERSTACK` variable set to `true`, to the `.env` file.
 
 ```
 BrowserStack_USERNAME=""
 BrowserStack_ACCESS_KEY=""
-```
+BROWSERSTACK=true
+``
 
 ## Running tests
 

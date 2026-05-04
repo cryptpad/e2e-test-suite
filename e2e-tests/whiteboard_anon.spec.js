@@ -4,7 +4,6 @@ require('dotenv').config();
 const { FileActions } = require('./fileactions.js');
 const { StoreModal } = require('./genericfile_po.js');
 
-
 let page1;
 let mobile;
 let fileActions;
@@ -53,7 +52,7 @@ test('screenshot anon - whiteboard - can draw (default settings)', async ({ page
     if (await (new StoreModal(fileActions)).dismissButton.isVisible()) {
       await (new StoreModal(fileActions)).dismissButton.click();
     }
-    
+
     if (mobile) {
       await expect(page).toHaveScreenshot({ maxDiffPixels: 14000 });
     } else {

@@ -191,6 +191,9 @@ test('screenshot loggedin - sheet - insert image', async ({ page, context }) => 
   test.skip(mobile, '#2093');
 
   try {
+    if (await fileActions.dismissButton.isVisible()) {
+      await fileActions.dismissButton.click();
+    }
     await expect(page).toHaveScreenshot({ maxDiffPixels: 16120 });
 
     await fileActions.insertTab.click({ force: true });
@@ -206,6 +209,8 @@ test('screenshot loggedin - sheet - insert image', async ({ page, context }) => 
     await fileActions.okButtonSecure.click();
     await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor();
     await page.waitForTimeout(3000);
+    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor({ state: 'hidden' });
+
     await expect(page).toHaveScreenshot({ maxDiffPixels: 17160 });
 
     await fileActions.toSuccess('Can insert image into Sheet');

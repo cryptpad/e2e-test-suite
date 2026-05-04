@@ -132,7 +132,7 @@ test('screenshot loggedin - doc - insert image', async ({ page, context }) => {
 
     await fileActions.okButtonSecure.click();
     await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor();
-    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor({state: 'hidden'});
+    await fileActions.mainFrame.getByText('Your file (teamavatar.png)').waitFor({ state: 'hidden' });
     await page.waitForTimeout(3000);
     await expect(page).toHaveScreenshot({ maxDiffPixels: 16760 });
 
