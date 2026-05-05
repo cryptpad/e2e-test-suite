@@ -136,7 +136,7 @@ export class FileActions {
     this.okButton = this.mainFrame.getByRole('button', { name: 'OK (enter)' });
     this.saveButton = this.mainFrame.getByRole('button', { name: 'Save' });
     this.updateButton = this.mainFrame.getByRole('button', { name: 'Update' });
-    this.addButton = this.mainFrame.getByRole('button', { name: 'Add', exact: true });
+    this.addButton = this.mainFrame.getByRole('alertdialog').getByRole('button', { name: 'Add' });
     this.submitButton = this.mainFrame.getByRole('button', { name: 'Submit' });
     this.submitButtonSecure = this.secureFrame.getByRole('button', { name: 'Submit' });
     this.openButton = this.mainFrame.getByRole('button', { name: 'Open' });
@@ -179,7 +179,7 @@ export class FileActions {
     this.conditionalSection = this.mainFrame.getByRole('button', { name: 'Conditional section' });
     this.orCondition = this.mainFrame.getByRole('button', { name: 'Add OR condition' });
     this.andCondition = this.mainFrame.getByRole('button', { name: 'Add AND condition' });
-    this.chooseQuestion = this.mainFrame.getByRole('button', { name: 'Choose a question' });
+    this.chooseQuestion = this.mainFrame.locator('button').filter({ hasText: 'Choose a question' });
     this.chooseValue = this.mainFrame.getByRole('button', { name: 'Choose a value' });
     this.removeClosingDate = this.mainFrame.getByRole('button', { name: 'Remove closing date', exact: true });
     this.anonymizeResponses = this.mainFrame.locator('label').filter({ hasText: 'Anonymize responses' }).locator('span').first();
@@ -415,8 +415,8 @@ export class FileActions {
     return this.mainFrame.getByText(`${user} declined your contact request`);
   }
 
-  cleanChatHistory (user) {
-    return this.mainFrame.locator('#cp-app-contacts-messaging div').filter({ hasText: user }).locator('span').nth(4);
+  cleanChatHistory () {
+    return this.mainFrame.getByRole('button', { name: 'Clean the chat history' });
   }
 
   contactRequestAccepted (user) {

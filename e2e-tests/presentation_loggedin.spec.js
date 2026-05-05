@@ -9,13 +9,14 @@ let mobile;
 let fileActions;
 let cleanUp;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.setTimeout(90000);
   const template = testInfo.title.match(/import template/);
   if (template) {
     cleanUp = new Cleanup(page);
     await cleanUp.cleanTemplates();
   }
+  mobile = isMobile;
   fileActions = new FileActions(page);
   await page.goto(`${url}/presentation`);
   await fileActions.createFile.waitFor();

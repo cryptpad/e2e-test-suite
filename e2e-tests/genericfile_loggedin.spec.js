@@ -31,6 +31,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await fileActions.createFile.waitFor();
 });
 
+// const docNames = ['form'];
 const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
 
 docNames.forEach(function (name) {

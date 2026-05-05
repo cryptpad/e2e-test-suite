@@ -4,15 +4,43 @@
       "name": "playwright"
     },
     "summary": {
-      "tests": 0,
+      "tests": 1,
       "passed": 0,
       "failed": 0,
       "pending": 0,
-      "skipped": 0,
+      "skipped": 1,
       "other": 0,
-      "start": 1777896865098,
-      "stop": 1777896865113
+      "start": 1777975441887,
+      "stop": 1777975449649,
+      "suites": 0
     },
-    "tests": []
+    "tests": [
+      {
+        "name": "loggedin - presentation - import template",
+        "status": "skipped",
+        "duration": 7074,
+        "start": 1777975442,
+        "stop": 1777975449,
+        "rawStatus": "skipped",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/presentation_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome@Galaxy S9+ > presentation_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": [
+            {
+              "type": "skip",
+              "description": "mobile incompatibility with evaluating 2nd window text content"
+            }
+          ]
+        }
+      }
+    ]
   }
 }

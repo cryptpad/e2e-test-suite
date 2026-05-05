@@ -15,7 +15,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 });
 
 const userMenuItems = ['settings', 'documentation', 'about', 'home page', 'pricing', 'donate', 'log in', 'sign up'];
-// const userMenuItems = ['documentation']
+// const userMenuItems = ['settings']
 
 userMenuItems.forEach(function (item) {
   test(`anon - drive - user menu - ${item}`, async ({ page, context }) => {

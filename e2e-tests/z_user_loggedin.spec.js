@@ -197,7 +197,7 @@ test('loggedin - chat with contacts and erase message history', async ({ page, b
     await fileActions.contactList.getByText('testuser').click();
 
     if (await page.frameLocator('#sbox-iframe').getByText('hello').count() > 0) {
-      await fileActions.cleanChatHistory(/^tetestuser$/).click();
+      await fileActions.cleanChatHistory().click();
       await fileActions.okButton.click();
     }
     await fileActions.typeMessage.click();
@@ -218,7 +218,7 @@ test('loggedin - chat with contacts and erase message history', async ({ page, b
 
     // user 1: view user 2's message and erase message history
     await expect(page.frameLocator('#sbox-iframe').getByText('hello to you too!')).toBeVisible();
-    await fileActions.cleanChatHistory(/^tetestuser$/).click();
+    await fileActions.cleanChatHistory().click();
     await fileActions.okButton.click();
     await expect(page.frameLocator('#sbox-iframe').getByText('hello')).toHaveCount(0);
     await expect(fileActions1.mainFrame.getByText('hello')).toHaveCount(0);
