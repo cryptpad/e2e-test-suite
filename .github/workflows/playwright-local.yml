@@ -7,7 +7,7 @@ on:
 
 jobs:
   desktop-chrome-test-testsuiteupdate:
-    if: github.event.action == 'push'
+    if: github.event_name == 'push'
     name: Desktop Chrome - test branch
     runs-on: ubuntu-latest 
     steps:
