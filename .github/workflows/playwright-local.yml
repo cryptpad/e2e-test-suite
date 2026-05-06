@@ -6,7 +6,7 @@ on:
     branches: [ testing_branch, local_testing_branch, main ]
 
 jobs:
-  desktop-chrome-test:
+  desktop-chrome-test-testsuiteupdate:
     if: github.event.action == 'push'
     name: Desktop Chrome - test branch
     runs-on: ubuntu-latest 
