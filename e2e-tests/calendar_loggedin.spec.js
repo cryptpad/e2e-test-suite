@@ -16,6 +16,12 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   fileActions = new FileActions(page, mobile);
   cleanUp = new Cleanup(page);
   await cleanUp.cleanCalendar();
+  
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
+  
+
 });
 
 test('loggedin - create and delete event in calendar', async ({ page }) => {

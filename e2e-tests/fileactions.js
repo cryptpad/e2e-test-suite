@@ -22,6 +22,7 @@ export class FileActions {
     this.storePane = this.mainFrame.locator('.cp-corner-container');
     this.dismissButton = this.storePane.getByRole('button', { name: 'Don\'t store', exact: true });
     this.storeButton = this.storePane.getByRole('button', { name: 'Store', exact: true });
+    this.dismissFunding = this.mainFrame.getByRole('button', { name: 'Don\'t show again' })
 
     // user actions-related locators
     this.login = page.locator('.login');

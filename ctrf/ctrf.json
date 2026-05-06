@@ -4,31 +4,487 @@
       "name": "playwright"
     },
     "summary": {
-      "tests": 1,
-      "passed": 0,
-      "failed": 0,
+      "tests": 37,
+      "passed": 28,
+      "failed": 6,
       "pending": 0,
-      "skipped": 1,
+      "skipped": 3,
       "other": 0,
-      "start": 1777975441887,
-      "stop": 1777975449649,
+      "start": 1778061195842,
+      "stop": 1778061747161,
       "suites": 0
     },
     "tests": [
       {
-        "name": "loggedin - presentation - import template",
-        "status": "skipped",
-        "duration": 7074,
-        "start": 1777975442,
-        "stop": 1777975449,
-        "rawStatus": "skipped",
+        "name": "loggedin - create and delete event in calendar",
+        "status": "passed",
+        "duration": 8563,
+        "start": 1778061196,
+        "stop": 1778061205,
+        "rawStatus": "passed",
         "tags": [],
         "type": "e2e",
-        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/presentation_loggedin.spec.js",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
         "retries": 0,
         "flaky": false,
         "steps": [],
-        "suite": "chrome@Galaxy S9+ > presentation_loggedin.spec.js",
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create and delete repeating event in calendar",
+        "status": "passed",
+        "duration": 8584,
+        "start": 1778061205,
+        "stop": 1778061214,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create event in calendar and edit location",
+        "status": "passed",
+        "duration": 10100,
+        "start": 1778061214,
+        "stop": 1778061224,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create event in calendar and edit time",
+        "status": "passed",
+        "duration": 11667,
+        "start": 1778061224,
+        "stop": 1778061236,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create event in calendar and edit date",
+        "status": "passed",
+        "duration": 10926,
+        "start": 1778061236,
+        "stop": 1778061247,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - create new calendar and edit calendar in event",
+        "status": "passed",
+        "duration": 9924,
+        "start": 1778061247,
+        "stop": 1778061257,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/calendar_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > calendar_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - code - save as and import template",
+        "status": "passed",
+        "duration": 25059,
+        "start": 1778061257,
+        "stop": 1778061282,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/code_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > code_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - code - history (previous author)",
+        "status": "failed",
+        "duration": 28754,
+        "start": 1778061282,
+        "stop": 1778061311,
+        "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveCount with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n",
+        "trace": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveCount with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n    at /home/zuzanna/e2e-test-suite/e2e-tests/code_loggedin.spec.js:91:84",
+        "rawStatus": "failed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/code_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > code_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [
+          "ExpectError: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveCount with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\u001b[22m\n\u001b[2m    9 × locator resolved to 1 element\u001b[22m\n\u001b[2m      - unexpected value \"1\"\u001b[22m\n\n    at \u001b[90m/home/zuzanna/e2e-test-suite/\u001b[39me2e-tests/code_loggedin.spec.js:91:84 {\n  matcherResult: {\n    actual: \u001b[33m1\u001b[39m,\n    expected: \u001b[33m0\u001b[39m,\n    message: \u001b[32m'\\x1B[31mTimed out 5000ms waiting for \\x1B[39m\\x1B[2mexpect(\\x1B[22m\\x1B[31mlocator\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveCount\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m\"Locator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\n\"\u001b[39m +\n      \u001b[32m'Expected: \\x1B[32m0\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Received: \\x1B[31m1\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Call log:\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - expect.toHaveCount with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\x1B[22m\\n\"\u001b[39m +\n      \u001b[32m'\\x1B[2m    9 × locator resolved to 1 element\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m      - unexpected value \"1\"\\x1B[22m\\n'\u001b[39m,\n    name: \u001b[32m'toHaveCount'\u001b[39m,\n    pass: \u001b[33mfalse\u001b[39m,\n    log: [\n      \u001b[32m'  - expect.toHaveCount with timeout 5000ms'\u001b[39m,\n      \u001b[32m\"  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\"\u001b[39m,\n      \u001b[32m'    9 × locator resolved to 1 element'\u001b[39m,\n      \u001b[32m'      - unexpected value \"1\"'\u001b[39m\n    ],\n    timeout: \u001b[33m5000\u001b[39m\n  },\n  \u001b[32mSymbol(step)\u001b[39m: {\n    stepId: \u001b[32m'expect@93'\u001b[39m,\n    category: \u001b[32m'expect'\u001b[39m,\n    title: \u001b[32m'expect.toHaveCount'\u001b[39m,\n    params: \u001b[90mundefined\u001b[39m,\n    infectParentStepsWithError: \u001b[90mundefined\u001b[39m,\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    location: {\n      file: \u001b[32m'/home/zuzanna/e2e-test-suite/e2e-tests/code_loggedin.spec.js'\u001b[39m,\n      line: \u001b[33m91\u001b[39m,\n      column: \u001b[33m84\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    steps: [],\n    attachmentIndices: [],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1778061310802\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: \\x1B[31mTimed out 5000ms waiting for \\x1B[39m\\x1B[2mexpect(\\x1B[22m\\x1B[31mlocator\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveCount\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m\"Locator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\n\"\u001b[39m +\n        \u001b[32m'Expected: \\x1B[32m0\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[31m1\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - expect.toHaveCount with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\x1B[22m\\n\"\u001b[39m +\n        \u001b[32m'\\x1B[2m    9 × locator resolved to 1 element\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m      - unexpected value \"1\"\\x1B[22m\\n'\u001b[39m,\n      stack: \u001b[32m'Error: \\x1B[31mTimed out 5000ms waiting for \\x1B[39m\\x1B[2mexpect(\\x1B[22m\\x1B[31mlocator\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveCount\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m\"Locator: locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\n\"\u001b[39m +\n        \u001b[32m'Expected: \\x1B[32m0\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[31m1\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - expect.toHaveCount with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m\"\\x1B[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.CodeMirror-code').getByText('Some more test text by anon')\\x1B[22m\\n\"\u001b[39m +\n        \u001b[32m'\\x1B[2m    9 × locator resolved to 1 element\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m      - unexpected value \"1\"\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'    at /home/zuzanna/e2e-test-suite/e2e-tests/code_loggedin.spec.js:91:84'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m,\n      matcherResult: \u001b[36m[Object]\u001b[39m\n    }\n  }\n}\n"
+        ],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - doc - import template",
+        "status": "failed",
+        "duration": 38994,
+        "start": 1778061312,
+        "stop": 1778061351,
+        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"example template content\"\u001b[39m\nReceived string:    \u001b[31m\"http://localhost:3000/code/#/2/code/edit/5TTw77Kc+nmt3ev14qTZwwTH/\"\u001b[39m",
+        "trace": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"example template content\"\u001b[39m\nReceived string:    \u001b[31m\"http://localhost:3000/code/#/2/code/edit/5TTw77Kc+nmt3ev14qTZwwTH/\"\u001b[39m\n    at /home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js:59:35",
+        "rawStatus": "failed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > doc_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [
+          "ExpectError: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"example template content\"\u001b[39m\nReceived string:    \u001b[31m\"http://localhost:3000/code/#/2/code/edit/5TTw77Kc+nmt3ev14qTZwwTH/\"\u001b[39m\n    at \u001b[90m/home/zuzanna/e2e-test-suite/\u001b[39me2e-tests/doc_loggedin.spec.js:59:35 {\n  matcherResult: {\n    message: \u001b[32m'\\x1B[2mexpect(\\x1B[22m\\x1B[31mreceived\\x1B[39m\\x1B[2m).\\x1B[22mtoContain\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m) // indexOf\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m'Expected substring: \\x1B[32m\"example template content\"\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Received string:    \\x1B[31m\"http://localhost:3000/code/#/2/code/edit/5TTw77Kc+nmt3ev14qTZwwTH/\"\\x1B[39m'\u001b[39m,\n    pass: \u001b[33mfalse\u001b[39m\n  },\n  \u001b[32mSymbol(step)\u001b[39m: {\n    stepId: \u001b[32m'expect@57'\u001b[39m,\n    category: \u001b[32m'expect'\u001b[39m,\n    title: \u001b[32m'expect.toContain'\u001b[39m,\n    params: { expected: \u001b[32m'example template content'\u001b[39m },\n    infectParentStepsWithError: \u001b[90mundefined\u001b[39m,\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    location: {\n      file: \u001b[32m'/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js'\u001b[39m,\n      line: \u001b[33m59\u001b[39m,\n      column: \u001b[33m35\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    steps: [],\n    attachmentIndices: [],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1778061351499\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: \\x1B[2mexpect(\\x1B[22m\\x1B[31mreceived\\x1B[39m\\x1B[2m).\\x1B[22mtoContain\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m) // indexOf\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Expected substring: \\x1B[32m\"example template content\"\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received string:    \\x1B[31m\"http://localhost:3000/code/#/2/code/edit/5TTw77Kc+nmt3ev14qTZwwTH/\"\\x1B[39m'\u001b[39m,\n      stack: \u001b[32m'Error: \\x1B[2mexpect(\\x1B[22m\\x1B[31mreceived\\x1B[39m\\x1B[2m).\\x1B[22mtoContain\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m) // indexOf\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Expected substring: \\x1B[32m\"example template content\"\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received string:    \\x1B[31m\"http://localhost:3000/code/#/2/code/edit/5TTw77Kc+nmt3ev14qTZwwTH/\"\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'    at /home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js:59:35'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m,\n      matcherResult: \u001b[36m[Object]\u001b[39m\n    }\n  }\n}\n"
+        ],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - document - snapshot (history)",
+        "status": "skipped",
+        "duration": 5224,
+        "start": 1778061352,
+        "stop": 1778061358,
+        "rawStatus": "skipped",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > doc_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": [
+            {
+              "type": "skip"
+            }
+          ]
+        }
+      },
+      {
+        "name": "screenshot loggedin - doc - insert image",
+        "status": "failed",
+        "duration": 10490,
+        "start": 1778061358,
+        "stop": 1778061369,
+        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n  722177 pixels (ratio 0.79 of all image pixels) are different.\n\nExpected: \u001b[33m/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png\u001b[39m\nReceived: \u001b[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png\u001b[39m\n    Diff: \u001b[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png\u001b[39m\n\nCall log:\n\u001b[2m  - expect.toHaveScreenshot with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\u001b[22m\n\u001b[2m  - waiting 100ms before taking screenshot\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - captured a stable screenshot\u001b[22m\n\u001b[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\u001b[22m\n",
+        "trace": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n  722177 pixels (ratio 0.79 of all image pixels) are different.\n\nExpected: \u001b[33m/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png\u001b[39m\nReceived: \u001b[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png\u001b[39m\n    Diff: \u001b[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png\u001b[39m\n\nCall log:\n\u001b[2m  - expect.toHaveScreenshot with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\u001b[22m\n\u001b[2m  - waiting 100ms before taking screenshot\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - captured a stable screenshot\u001b[22m\n\u001b[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\u001b[22m\n\n    at /home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js:121:24",
+        "rawStatus": "failed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > doc_loggedin.spec.js",
+        "attachments": [
+          {
+            "name": "screenshot-loggedin---doc---insert-image-1-expected.png",
+            "contentType": "image/png",
+            "path": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png"
+          },
+          {
+            "name": "screenshot-loggedin---doc---insert-image-1-actual.png",
+            "contentType": "image/png",
+            "path": "/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png"
+          },
+          {
+            "name": "screenshot-loggedin---doc---insert-image-1-diff.png",
+            "contentType": "image/png",
+            "path": "/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png"
+          }
+        ],
+        "stdout": [
+          "ExpectError: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n  722177 pixels (ratio 0.79 of all image pixels) are different.\n\nExpected: \u001b[33m/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png\u001b[39m\nReceived: \u001b[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png\u001b[39m\n    Diff: \u001b[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png\u001b[39m\n\nCall log:\n\u001b[2m  - expect.toHaveScreenshot with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\u001b[22m\n\u001b[2m  - waiting 100ms before taking screenshot\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - captured a stable screenshot\u001b[22m\n\u001b[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\u001b[22m\n\n    at \u001b[90m/home/zuzanna/e2e-test-suite/\u001b[39me2e-tests/doc_loggedin.spec.js:121:24 {\n  matcherResult: {\n    name: \u001b[32m'toHaveScreenshot'\u001b[39m,\n    expected: \u001b[32m'/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png'\u001b[39m,\n    actual: \u001b[32m'/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png'\u001b[39m,\n    diff: \u001b[32m'/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png'\u001b[39m,\n    pass: \u001b[33mfalse\u001b[39m,\n    message: \u001b[32m'\\x1B[2mexpect(\\x1B[22m\\x1B[31mpage\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveScreenshot\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m'  722177 pixels (ratio 0.79 of all image pixels) are different.\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m'Expected: \\x1B[33m/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Received: \\x1B[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'    Diff: \\x1B[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m'Call log:\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - expect.toHaveScreenshot with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m    - verifying given screenshot expectation\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - taking page screenshot\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m    - disabled all CSS animations\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - waiting for fonts to load...\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - fonts loaded\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - waiting 100ms before taking screenshot\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - taking page screenshot\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m    - disabled all CSS animations\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - waiting for fonts to load...\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - fonts loaded\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - captured a stable screenshot\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\x1B[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\\x1B[22m\\n'\u001b[39m,\n    log: [\n      \u001b[32m'  - expect.toHaveScreenshot with timeout 5000ms'\u001b[39m,\n      \u001b[32m'    - verifying given screenshot expectation'\u001b[39m,\n      \u001b[32m'  - taking page screenshot'\u001b[39m,\n      \u001b[32m'    - disabled all CSS animations'\u001b[39m,\n      \u001b[32m'  - waiting for fonts to load...'\u001b[39m,\n      \u001b[32m'  - fonts loaded'\u001b[39m,\n      \u001b[32m'  - 722177 pixels (ratio 0.79 of all image pixels) are different.'\u001b[39m,\n      \u001b[32m'  - waiting 100ms before taking screenshot'\u001b[39m,\n      \u001b[32m'  - taking page screenshot'\u001b[39m,\n      \u001b[32m'    - disabled all CSS animations'\u001b[39m,\n      \u001b[32m'  - waiting for fonts to load...'\u001b[39m,\n      \u001b[32m'  - fonts loaded'\u001b[39m,\n      \u001b[32m'  - captured a stable screenshot'\u001b[39m,\n      \u001b[32m'  - 722177 pixels (ratio 0.79 of all image pixels) are different.'\u001b[39m\n    ]\n  },\n  \u001b[32mSymbol(step)\u001b[39m: {\n    stepId: \u001b[32m'expect@15'\u001b[39m,\n    category: \u001b[32m'expect'\u001b[39m,\n    title: \u001b[32m'expect.toHaveScreenshot'\u001b[39m,\n    params: { expected: \u001b[36m[Object]\u001b[39m },\n    infectParentStepsWithError: \u001b[90mundefined\u001b[39m,\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    location: {\n      file: \u001b[32m'/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js'\u001b[39m,\n      line: \u001b[33m121\u001b[39m,\n      column: \u001b[33m24\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    steps: [],\n    attachmentIndices: [ \u001b[33m0\u001b[39m, \u001b[33m1\u001b[39m, \u001b[33m2\u001b[39m ],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1778061368938\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: \\x1B[2mexpect(\\x1B[22m\\x1B[31mpage\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveScreenshot\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'  722177 pixels (ratio 0.79 of all image pixels) are different.\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Expected: \\x1B[33m/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'    Diff: \\x1B[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - expect.toHaveScreenshot with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m    - verifying given screenshot expectation\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - taking page screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m    - disabled all CSS animations\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - waiting for fonts to load...\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - fonts loaded\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - waiting 100ms before taking screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - taking page screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m    - disabled all CSS animations\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - waiting for fonts to load...\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - fonts loaded\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - captured a stable screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\\x1B[22m\\n'\u001b[39m,\n      stack: \u001b[32m'Error: \\x1B[2mexpect(\\x1B[22m\\x1B[31mpage\\x1B[39m\\x1B[2m).\\x1B[22mtoHaveScreenshot\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m)\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'  722177 pixels (ratio 0.79 of all image pixels) are different.\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Expected: \\x1B[33m/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js-snapshots/screenshot-loggedin---doc---insert-image-1-chrome-linux.png\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-actual.png\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'    Diff: \\x1B[33m/home/zuzanna/e2e-test-suite/test-results/doc_loggedin-screenshot-loggedin---doc---insert-image-chrome/screenshot-loggedin---doc---insert-image-1-diff.png\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Call log:\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - expect.toHaveScreenshot with timeout 5000ms\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m    - verifying given screenshot expectation\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - taking page screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m    - disabled all CSS animations\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - waiting for fonts to load...\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - fonts loaded\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - waiting 100ms before taking screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - taking page screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m    - disabled all CSS animations\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - waiting for fonts to load...\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - fonts loaded\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - captured a stable screenshot\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\x1B[2m  - 722177 pixels (ratio 0.79 of all image pixels) are different.\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'    at /home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js:121:24'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m,\n      matcherResult: \u001b[36m[Object]\u001b[39m\n    }\n  }\n}\n"
+        ],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - doc - history (restore)",
+        "status": "failed",
+        "duration": 10534,
+        "start": 1778061370,
+        "stop": 1778061380,
+        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"\"\u001b[39m\nReceived: \u001b[31m\"test text\"\u001b[39m",
+        "trace": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"\"\u001b[39m\nReceived: \u001b[31m\"test text\"\u001b[39m\n    at /home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js:159:59",
+        "rawStatus": "failed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > doc_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [
+          "ExpectError: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"\"\u001b[39m\nReceived: \u001b[31m\"test text\"\u001b[39m\n    at \u001b[90m/home/zuzanna/e2e-test-suite/\u001b[39me2e-tests/doc_loggedin.spec.js:159:59 {\n  matcherResult: {\n    actual: \u001b[32m'test text'\u001b[39m,\n    expected: \u001b[32m''\u001b[39m,\n    message: \u001b[32m'\\x1B[2mexpect(\\x1B[22m\\x1B[31mreceived\\x1B[39m\\x1B[2m).\\x1B[22mtoEqual\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m) // deep equality\\x1B[22m\\n'\u001b[39m +\n      \u001b[32m'\\n'\u001b[39m +\n      \u001b[32m'Expected: \\x1B[32m\"\"\\x1B[39m\\n'\u001b[39m +\n      \u001b[32m'Received: \\x1B[31m\"test text\"\\x1B[39m'\u001b[39m,\n    name: \u001b[32m'toEqual'\u001b[39m,\n    pass: \u001b[33mfalse\u001b[39m\n  },\n  \u001b[32mSymbol(step)\u001b[39m: {\n    stepId: \u001b[32m'expect@31'\u001b[39m,\n    category: \u001b[32m'expect'\u001b[39m,\n    title: \u001b[32m'expect.toEqual'\u001b[39m,\n    params: \u001b[90mundefined\u001b[39m,\n    infectParentStepsWithError: \u001b[90mundefined\u001b[39m,\n    boxedStack: \u001b[90mundefined\u001b[39m,\n    location: {\n      file: \u001b[32m'/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js'\u001b[39m,\n      line: \u001b[33m159\u001b[39m,\n      column: \u001b[33m59\u001b[39m,\n      function: \u001b[90mundefined\u001b[39m\n    },\n    steps: [],\n    attachmentIndices: [],\n    complete: \u001b[36m[Function: complete]\u001b[39m,\n    endWallTime: \u001b[33m1778061381105\u001b[39m,\n    error: {\n      message: \u001b[32m'Error: \\x1B[2mexpect(\\x1B[22m\\x1B[31mreceived\\x1B[39m\\x1B[2m).\\x1B[22mtoEqual\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m) // deep equality\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Expected: \\x1B[32m\"\"\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[31m\"test text\"\\x1B[39m'\u001b[39m,\n      stack: \u001b[32m'Error: \\x1B[2mexpect(\\x1B[22m\\x1B[31mreceived\\x1B[39m\\x1B[2m).\\x1B[22mtoEqual\\x1B[2m(\\x1B[22m\\x1B[32mexpected\\x1B[39m\\x1B[2m) // deep equality\\x1B[22m\\n'\u001b[39m +\n        \u001b[32m'\\n'\u001b[39m +\n        \u001b[32m'Expected: \\x1B[32m\"\"\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'Received: \\x1B[31m\"test text\"\\x1B[39m\\n'\u001b[39m +\n        \u001b[32m'    at /home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js:159:59'\u001b[39m,\n      cause: \u001b[90mundefined\u001b[39m,\n      matcherResult: \u001b[36m[Object]\u001b[39m\n    }\n  }\n}\n"
+        ],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - doc - import file (doc)",
+        "status": "passed",
+        "duration": 21274,
+        "start": 1778061382,
+        "stop": 1778061403,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > doc_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - doc - import file (odt)",
+        "status": "passed",
+        "duration": 20563,
+        "start": 1778061404,
+        "stop": 1778061424,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/doc_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > doc_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - profile",
+        "status": "passed",
+        "duration": 4693,
+        "start": 1778061425,
+        "stop": 1778061429,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - contacts",
+        "status": "passed",
+        "duration": 4644,
+        "start": 1778061429,
+        "stop": 1778061434,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - calendar",
+        "status": "passed",
+        "duration": 4883,
+        "start": 1778061434,
+        "stop": 1778061439,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - support",
+        "status": "passed",
+        "duration": 4748,
+        "start": 1778061439,
+        "stop": 1778061444,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - teams",
+        "status": "passed",
+        "duration": 4757,
+        "start": 1778061444,
+        "stop": 1778061448,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  user menu - log out",
+        "status": "passed",
+        "duration": 5161,
+        "start": 1778061448,
+        "stop": 1778061453,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  upgrade account",
+        "status": "skipped",
+        "duration": 1160,
+        "start": 1778061453,
+        "stop": 1778061455,
+        "rawStatus": "skipped",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
         "attachments": [],
         "stdout": [],
         "stderr": [],
@@ -36,9 +492,355 @@
           "annotations": [
             {
               "type": "skip",
-              "description": "mobile incompatibility with evaluating 2nd window text content"
+              "description": "no option to upgrade on local dev instance"
             }
           ]
+        }
+      },
+      {
+        "name": "loggedin - drive -  upload file",
+        "status": "passed",
+        "duration": 6857,
+        "start": 1778061455,
+        "stop": 1778061462,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  recent files",
+        "status": "passed",
+        "duration": 12788,
+        "start": 1778061462,
+        "stop": 1778061474,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive -  notifications panel",
+        "status": "passed",
+        "duration": 9879,
+        "start": 1778061474,
+        "stop": 1778061484,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive - filter",
+        "status": "passed",
+        "duration": 4744,
+        "start": 1778061484,
+        "stop": 1778061489,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive - create link",
+        "status": "passed",
+        "duration": 9911,
+        "start": 1778061489,
+        "stop": 1778061499,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive - create folder",
+        "status": "passed",
+        "duration": 10110,
+        "start": 1778061499,
+        "stop": 1778061509,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive - toggle sidebar",
+        "status": "passed",
+        "duration": 7461,
+        "start": 1778061509,
+        "stop": 1778061516,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - drive - search",
+        "status": "passed",
+        "duration": 4686,
+        "start": 1778061516,
+        "stop": 1778061521,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - can download drive contents",
+        "status": "skipped",
+        "duration": 1554,
+        "start": 1778061521,
+        "stop": 1778061523,
+        "rawStatus": "skipped",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/drive_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > drive_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": [
+            {
+              "type": "skip"
+            }
+          ]
+        }
+      },
+      {
+        "name": "loggedin - form - share with contact (author)",
+        "status": "passed",
+        "duration": 11505,
+        "start": 1778061523,
+        "stop": 1778061534,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - form - share with contact (auditor)",
+        "status": "passed",
+        "duration": 10181,
+        "start": 1778061534,
+        "stop": 1778061544,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - form - share with contact (participant)",
+        "status": "passed",
+        "duration": 10289,
+        "start": 1778061544,
+        "stop": 1778061555,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - form - (guest) access - blocked",
+        "status": "passed",
+        "duration": 25927,
+        "start": 1778061555,
+        "stop": 1778061581,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - form - view history (different authors)",
+        "status": "passed",
+        "duration": 10190,
+        "start": 1778061581,
+        "stop": 1778061591,
+        "rawStatus": "passed",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - form - create quick scheduling poll",
+        "status": "failed",
+        "duration": 150161,
+        "start": 1778061591,
+        "stop": 1778061741,
+        "message": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m",
+        "trace": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m",
+        "rawStatus": "timedOut",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [
+          "locator.waitFor: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().locator('.cp-poll-cell.cp-form-poll-choice').first() to be visible\u001b[22m\n\n    at \u001b[90m/home/zuzanna/e2e-test-suite/\u001b[39me2e-tests/form_loggedin.spec.js:236:33\n"
+        ],
+        "stderr": [],
+        "extra": {
+          "annotations": []
+        }
+      },
+      {
+        "name": "loggedin - form - protect with password",
+        "status": "failed",
+        "duration": 3320,
+        "start": 1778061743,
+        "stop": 1778061746,
+        "message": "Error: locator.waitFor: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().getByRole('button', { name: 'Create' }) to be visible\u001b[22m\n",
+        "trace": "Error: locator.waitFor: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('#sbox-iframe').contentFrame().getByRole('button', { name: 'Create' }) to be visible\u001b[22m\n\n    at /home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js:26:32",
+        "rawStatus": "interrupted",
+        "tags": [],
+        "type": "e2e",
+        "filePath": "/home/zuzanna/e2e-test-suite/e2e-tests/form_loggedin.spec.js",
+        "retries": 0,
+        "flaky": false,
+        "steps": [],
+        "suite": "chrome > form_loggedin.spec.js",
+        "attachments": [],
+        "stdout": [],
+        "stderr": [],
+        "extra": {
+          "annotations": []
         }
       }
     ]
