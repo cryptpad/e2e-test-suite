@@ -22,6 +22,9 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 
   await page.goto(`${url}/teams`);
   fileActions = new FileActions(page);
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
 });
 
 test('loggedin - user menu - make and delete team', async ({ page }) => {

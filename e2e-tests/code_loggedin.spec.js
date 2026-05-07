@@ -23,6 +23,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/code`);
   fileActions = new FileActions(page);
   await fileActions.createFile.waitFor();
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
+  
 });
 
 test('loggedin - code - save as and import template', async ({ page }) => {

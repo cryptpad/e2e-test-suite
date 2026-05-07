@@ -16,6 +16,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   fileActions = new FileActions(page);
   cleanUp = new Cleanup(page);
   await page.goto(`${url}/drive`);
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
+  
 });
 
 const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];

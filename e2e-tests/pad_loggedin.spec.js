@@ -25,6 +25,9 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   fileActions = new FileActions(page);
   await fileActions.createFile.waitFor();
   await fileActions.createFile.click();
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
 });
 
 test('loggedin - pad - save as and import template', async ({ page }) => {

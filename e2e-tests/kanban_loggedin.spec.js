@@ -24,11 +24,16 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/kanban`);
   fileActions = new FileActions(page);
   await fileActions.createFile.waitFor();
+  await fileActions.createFile.click();
+
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
+  
 });
 
 test('loggedin - kanban - save as and import template', async ({ page }) => {
   try {
-    await fileActions.createFile.click();
 
     await fileActions.addItem.first().waitFor();
     await fileActions.addItem.first().click();
@@ -62,7 +67,6 @@ test('loggedin - kanban - save as and import template', async ({ page }) => {
 if (!mobile) {
   test('loggedin - kanban - history (previous author)', async ({ page, browser }) => {
     try {
-      await fileActions.createFile.click();
 
       await fileActions.addItem.first().waitFor();
       await fileActions.addItem.first().click();

@@ -24,11 +24,15 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.goto(`${url}/slide`);
   fileActions = new FileActions(page);
   await fileActions.createFile.waitFor();
+  await fileActions.createFile.click();
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
+
 });
 
 test('loggedin - slide - save as and import template', async ({ page }) => {
   try {
-    await fileActions.createFile.click();
     await fileActions.fileSaved.waitFor();
     await fileActions.codeEditor.waitFor();
     await fileActions.codeEditor.click();
@@ -60,7 +64,6 @@ test('loggedin - slide - save as and import template', async ({ page }) => {
 
 test('loggedin - slide - history (previous author)', async ({ page, browser }) => {
   try {
-    await fileActions.createFile.click();
 
     await fileActions.codeEditor.click();
     await fileActions.codeEditor.type('Test text');

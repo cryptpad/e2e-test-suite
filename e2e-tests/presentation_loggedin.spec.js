@@ -21,7 +21,11 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/presentation`);
   await fileActions.createFile.waitFor();
   await fileActions.createFile.click();
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
   await fileActions.fileSaved.waitFor();
+
 });
 
 test('loggedin - presentation - import template', async ({ page, context }) => {

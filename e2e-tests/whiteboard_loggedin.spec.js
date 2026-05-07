@@ -20,11 +20,15 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/whiteboard`);
   fileActions = new FileActions(page);
   await fileActions.createFile.waitFor();
+  await fileActions.createFile.click();
+
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
 });
 
 test('screenshot loggedin - whiteboard - display history (previous author)', async ({ page, browser }) => {
   try {
-    await fileActions.createFile.click();
 
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
@@ -81,7 +85,6 @@ test('screenshot loggedin - whiteboard - display history (previous author)', asy
 
 test('screenshot loggedin - whiteboard - save as and import template', async ({ page }) => {
   try {
-    await fileActions.createFile.click();
 
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({

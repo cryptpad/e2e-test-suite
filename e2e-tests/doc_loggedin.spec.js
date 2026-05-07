@@ -22,6 +22,10 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.goto(`${url}/doc`);
   await fileActions.createFile.waitFor();
   await fileActions.createFile.click();
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
+  
   await fileActions.fileSaved.waitFor();
 });
 
