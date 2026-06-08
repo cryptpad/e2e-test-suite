@@ -29,6 +29,12 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await cleanUp.cleanFiles(titles);
   await page.goto(`${url}/${name}`);
   await fileActions.createFile.waitFor();
+  if (!testInfo.title.includes('create without owner') && !testInfo.title.includes('password')) {
+    await fileActions.createFile.click();
+  }
+  if (await fileActions.dismissFunding.isVisible()) {
+    await fileActions.dismissFunding.click();
+  }
 });
 
 // const docNames = ['form'];
@@ -103,7 +109,6 @@ docNames.forEach(function (name) {
 
   test(`loggedin - ${name} - tag`, async ({ page }) => {
     try {
-      await fileActions.createFile.click();
       await (new StoreModal(filePage)).storeButton.click();
 
       await fileActions.filemenuClick(mobile);
@@ -138,7 +143,6 @@ docNames.forEach(function (name) {
   test(`loggedin - ${name} - edit document owners #1264`, async ({ page, browser }) => {
     // test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
     try {
-      await fileActions.createFile.click();
 
       // add test-user3 as owner
       await fileActions.fileSaved.waitFor();
@@ -185,6 +189,8 @@ docNames.forEach(function (name) {
       await fileActions.closeButtonSecure.click();
 
       await page2.reload();
+          await page.waitForTimeout(10000)
+
       await fileActions2.access(mobile);
 
       await expect(fileActions2.ownersGrid('test-user3')).toBeHidden();
@@ -222,7 +228,6 @@ docNames.forEach(function (name) {
 
   test(`loggedin - ${name} - move to trash and empty`, async ({ page }) => {
     try {
-      await fileActions.createFile.click();
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 });
 
       await (new StoreModal(filePage)).storeButton.click();
@@ -321,7 +326,6 @@ docNames.forEach(function (name) {
 
     test(`loggedin - ${name} - share with contact (to view)`, async ({ page, browser }) => {
       try {
-        await fileActions.createFile.click();
         await fileActions.shareWithContact(/^View$/, 'test-user3', false, mobile);
 
         ///
@@ -357,7 +361,6 @@ docNames.forEach(function (name) {
     test(`loggedin - ${name} - share with contact - edit #1264`, async ({ page, browser }) => {
       test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
       try {
-        await fileActions.createFile.click();
         await fileActions.shareWithContact('Edit', 'test-user3', false, mobile);
 
         ///
@@ -406,7 +409,6 @@ docNames.forEach(function (name) {
     test(`loggedin - ${name} - share with contact - view and delete`, async ({ page, browser }) => {
       // test.skip()
       try {
-        await fileActions.createFile.click();
         await fileActions.shareWithContact('View', 'test-user3', true, mobile);
 
         ///
@@ -450,7 +452,6 @@ docNames.forEach(function (name) {
       // test.skip()
       test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878');
       try {
-        await fileActions.createFile.click();
 
         await fileActions.share(mobile);
         await fileActions.clickLinkTab(mobile);
@@ -488,7 +489,6 @@ docNames.forEach(function (name) {
     test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
       test.skip('#1957');
       try {
-        await fileActions.createFile.click();
 
         // enable access list and add test-user3 to it
         await fileActions.fileSaved.waitFor();

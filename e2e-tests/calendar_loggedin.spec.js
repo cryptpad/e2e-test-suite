@@ -15,13 +15,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/calendar`);
   fileActions = new FileActions(page, mobile);
   cleanUp = new Cleanup(page);
-  await cleanUp.cleanCalendar();
-  
-  if (await fileActions.dismissFunding.isVisible()) {
-    await fileActions.dismissFunding.click();
-  }
-  
-
+  await cleanUp.cleanCalendar();  
 });
 
 test('loggedin - create and delete event in calendar', async ({ page }) => {

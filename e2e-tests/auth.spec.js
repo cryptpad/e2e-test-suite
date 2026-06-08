@@ -8,6 +8,9 @@ setup('authenticate test-user', async ({ page }) => {
   setup.setTimeout(2400000);
   const userActions = new UserActions(page);
   await userActions.login('test-user', mainAccountPassword);
+  await page.evaluate(() => {
+    Cryptpad.setAttribute(['general', 'crowdfunding'], false);
+  });
   await page.context().storageState({ path: authFileMainAccount });
 });
 
@@ -17,6 +20,9 @@ setup('authenticate testuser', async ({ page }) => {
   setup.setTimeout(2400000);
   const userActions = new UserActions(page);
   await userActions.login('testuser', testUserPassword);
+  await page.evaluate(() => {
+    Cryptpad.setAttribute(['general', 'crowdfunding'], false);
+  });
   await page.context().storageState({ path: authFileTestUser });
 });
 
@@ -26,6 +32,9 @@ setup('authenticate test-user2', async ({ page }) => {
   setup.setTimeout(2400000);
   const userActions = new UserActions(page);
   await userActions.login('test-user2', testUser2Password);
+  await page.evaluate(() => {
+    Cryptpad.setAttribute(['general', 'crowdfunding'], false);
+  });
   await page.context().storageState({ path: authFileTestUser2 });
 });
 
@@ -35,5 +44,8 @@ setup('authenticate test-user3', async ({ page }) => {
   setup.setTimeout(2400000);
   const userActions = new UserActions(page);
   await userActions.login('test-user3', testUser3Password);
+  await page.evaluate(() => {
+    Cryptpad.setAttribute(['general', 'crowdfunding'], false);
+  });
   await page.context().storageState({ path: authFileTestUser3 });
 });
