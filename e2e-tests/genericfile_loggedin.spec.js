@@ -149,6 +149,9 @@ docNames.forEach(function (name) {
 
       await expect(fileActions.fileTitle(name)).toBeVisible();
       await fileActions.access(mobile);
+      await page.waitForTimeout(3000)
+            await fileActions.owners.waitFor();
+
       await fileActions.owners.click();
       await fileActions.secureFrame.getByText('test-user3').nth(1).waitFor();
       await fileActions.secureFrame.getByText('test-user3').nth(1).click({ timeout: 5000 });
@@ -189,8 +192,6 @@ docNames.forEach(function (name) {
       await fileActions.closeButtonSecure.click();
 
       await page2.reload();
-          await page.waitForTimeout(10000)
-
       await fileActions2.access(mobile);
 
       await expect(fileActions2.ownersGrid('test-user3')).toBeHidden();
