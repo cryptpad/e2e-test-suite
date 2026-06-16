@@ -401,7 +401,7 @@ export class FileActions {
   }
 
   removeOwner (user) {
-    return this.secureFrame.locator('.cp-usergrid-user.large').filter({ hasText: user }).locator('.fa.fa-times');
+    return this.secureFrame.locator('.cp-usergrid-user.large').filter({ hasText: user }).getByRole('button');
   }
 
   ownersGrid (user) {
