@@ -8,7 +8,7 @@ on:
 jobs:
   desktop-chrome-test-testsuiteupdate:
     if: github.event_name == 'push'
-    name: Desktop Chrome - test branch
+    name: Desktop Chrome - staging branch
     runs-on: ubuntu-latest 
     steps:
       - name: Clone CryptPad repository
