@@ -23,9 +23,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout staging
           git branch
-          git rebase remove_donation
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
