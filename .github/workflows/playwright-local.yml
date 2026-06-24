@@ -25,6 +25,7 @@ jobs:
         run: |
           git checkout staging
           git branch
+          git rebase remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1

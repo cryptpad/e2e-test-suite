@@ -27,6 +27,15 @@ test.beforeEach(async ({ page }, testInfo) => {
     await fileActions.dismissFunding.click();
   }
   await fileActions.fileSaved.waitFor();
+  await page.frameLocator('#sbox-iframe')
+  .locator('body')
+  .evaluate(async () => {
+    await window.CryptPad_common?.setAttribute?.(
+      ['general', 'crowdfunding'],
+      false
+    );
+  });
+
 });
 
 test('loggedin - sheet - import template', async ({ page, context }) => {

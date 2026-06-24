@@ -25,6 +25,15 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   if (await fileActions.dismissFunding.isVisible()) {
     await fileActions.dismissFunding.click();
   }
+  await page.frameLocator('#sbox-iframe')
+  .locator('body')
+  .evaluate(async () => {
+    await window.CryptPad_common?.setAttribute?.(
+      ['general', 'crowdfunding'],
+      false
+    );
+  });
+
 });
 
 test('loggedin - user menu - make and delete team', async ({ page }) => {
