@@ -15,22 +15,13 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/calendar`);
   fileActions = new FileActions(page, mobile);
   cleanUp = new Cleanup(page);
-  await cleanUp.cleanCalendar();  
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
+  await cleanUp.cleanCalendar();
 });
 
 test('loggedin - create and delete event in calendar', async ({ page }) => {
   try {
     // create event
-    
+
     await fileActions.newCalendarEvent(mobile);
 
     await fileActions.setEventTitle();

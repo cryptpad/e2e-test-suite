@@ -18,5 +18,13 @@ export default [
     rules: {
       semi: [2, 'always']
     }
+  },
+  {
+    ignores: [
+      'playwright-report/**',
+      'test-results/**',
+      'ctrf/**',
+      'node_modules/**'
+    ]
   }
 ];

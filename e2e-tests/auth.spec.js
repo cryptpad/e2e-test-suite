@@ -4,40 +4,10 @@ const { UserActions } = require('./useractions.js');
 
 const authFileMainAccount = 'auth/mainuser.json';
 
-
 setup('authenticate test-user', async ({ page }) => {
-
-  // const userActions = new UserActions(page); await userActions.login('test-user', mainAccountPassword); console.log( await page.evaluate(() => ({ href: location.href, cryptpad: window.Cryptpad, })) ); await page.pause();
-
-
   setup.setTimeout(2400000);
   const userActions = new UserActions(page);
   await userActions.login('test-user', mainAccountPassword);
-
-await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
-
-  const value = await page.frameLocator('#sbox-iframe')
-    .locator('body').evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.CryptPad_common.getAttribute(
-        ['general', 'crowdfunding'],
-        (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-        }
-      );
-    });
-  });
-
-  console.log('value:', value);
 
   await page.context().storageState({ path: authFileMainAccount });
 });
@@ -49,32 +19,6 @@ setup('authenticate testuser', async ({ page }) => {
   const userActions = new UserActions(page);
   await userActions.login('testuser', testUserPassword);
 
-await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
-
-  const value = await page.frameLocator('#sbox-iframe')
-    .locator('body').evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.CryptPad_common.getAttribute(
-        ['general', 'crowdfunding'],
-        (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-        }
-      );
-    });
-  });
-
-
-  console.log('value:', value);
-
   await page.context().storageState({ path: authFileTestUser });
 });
 
@@ -85,32 +29,6 @@ setup('authenticate test-user2', async ({ page }) => {
   const userActions = new UserActions(page);
   await userActions.login('test-user2', testUser2Password);
 
-await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
-
-  const value = await page.frameLocator('#sbox-iframe')
-    .locator('body').evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.CryptPad_common.getAttribute(
-        ['general', 'crowdfunding'],
-        (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-        }
-      );
-    });
-  });
-
-
-  console.log('value:', value);
-
   await page.context().storageState({ path: authFileTestUser2 });
 });
 
@@ -120,32 +38,6 @@ setup('authenticate test-user3', async ({ page }) => {
   setup.setTimeout(2400000);
   const userActions = new UserActions(page);
   await userActions.login('test-user3', testUser3Password);
-
-await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
-
-  const value = await page.frameLocator('#sbox-iframe')
-    .locator('body').evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.CryptPad_common.getAttribute(
-        ['general', 'crowdfunding'],
-        (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-        }
-      );
-    });
-  });
-
-
-  console.log('value:', value);
 
   await page.context().storageState({ path: authFileTestUser3 });
 });

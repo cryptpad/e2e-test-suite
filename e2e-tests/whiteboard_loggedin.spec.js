@@ -25,20 +25,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   if (await fileActions.dismissFunding.isVisible()) {
     await fileActions.dismissFunding.click();
   }
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
 });
 
 test('screenshot loggedin - whiteboard - display history (previous author)', async ({ page, browser }) => {
   try {
-
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
       position: {
@@ -94,7 +84,6 @@ test('screenshot loggedin - whiteboard - display history (previous author)', asy
 
 test('screenshot loggedin - whiteboard - save as and import template', async ({ page }) => {
   try {
-
     await fileActions.whiteBoardCanvas.waitFor();
     await fileActions.whiteBoardCanvas.hover({
       position: {

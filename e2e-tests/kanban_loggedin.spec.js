@@ -29,21 +29,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   if (await fileActions.dismissFunding.isVisible()) {
     await fileActions.dismissFunding.click();
   }
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
-  
 });
 
 test('loggedin - kanban - save as and import template', async ({ page }) => {
   try {
-
     await fileActions.addItem.first().waitFor();
     await fileActions.addItem.first().click();
     await fileActions.editItem.fill('example item');
@@ -76,7 +65,6 @@ test('loggedin - kanban - save as and import template', async ({ page }) => {
 if (!mobile) {
   test('loggedin - kanban - history (previous author)', async ({ page, browser }) => {
     try {
-
       await fileActions.addItem.first().waitFor();
       await fileActions.addItem.first().click();
       await fileActions.editItem.fill('test text by test-user');

@@ -1,7 +1,8 @@
 require('dotenv').config();
+
 const cp = require('child_process');
 const clientPlaywrightVersion = cp
-  // .execSync('npx playwright --version')
+  .execSync('npx playwright --version')
   .toString()
   .trim()
   .split(' ')[1];
@@ -11,10 +12,11 @@ const BrowserStackLocal = require('browserstack-local');
 
 const caps = {
   name: 'my playwright test',
-  build: 'localhost-5',
+  build: `debug-${Date.now()}`,
   'browserstack.username': process.env.BROWSERSTACK_USERNAME,
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
-  // 'browserstack.local': !!process.env.PW_URL.includes('localhost'),
+  'browserstack.local': !!process.env.PW_URL.includes('localhost'),
+
   // "browserstack.idleTimeout" : "300",
   'browserstack.playwrightVersion': clientPlaywrightVersion,
   'bstack:options': {

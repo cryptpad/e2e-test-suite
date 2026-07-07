@@ -28,16 +28,6 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (await fileActions.dismissFunding.isVisible()) {
     await fileActions.dismissFunding.click();
   }
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
-
 });
 
 test('loggedin - slide - save as and import template', async ({ page }) => {
@@ -73,7 +63,6 @@ test('loggedin - slide - save as and import template', async ({ page }) => {
 
 test('loggedin - slide - history (previous author)', async ({ page, browser }) => {
   try {
-
     await fileActions.codeEditor.click();
     await fileActions.codeEditor.type('Test text');
 

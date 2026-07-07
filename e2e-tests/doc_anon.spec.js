@@ -77,15 +77,20 @@ test('anon - doc - history (previous version)', async ({ page, context }) => {
     await fileActions.docEditor.dispatchEvent('select');
 
     await fileActions.docEditorInput.fill('test text');
+    expect(await fileActions.docEditorInput.inputValue()).toContain('test text');
+
     await page.keyboard.press('Enter');
 
     await fileActions.history(mobile);
-    await fileActions.historyFastPrev.click();
+    await fileActions.historyFastPrev.click({ force: true });
     await fileActions.fileHistory.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
     await expect(fileActions.warningModal).toHaveCount(0);
+    await fileActions.docEditor.click({ force: true });
+    await fileActions.docEditor.dispatchEvent('focus');
+    await fileActions.docEditor.dispatchEvent('select');
 
-    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
+    await expect(fileActions.docEditorInput).toHaveValue('');
 
     await fileActions.toSuccess('Can browse Document history');
   } catch (e) {

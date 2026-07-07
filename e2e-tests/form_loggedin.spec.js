@@ -24,15 +24,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   await page.goto(`${url}/form`);
   fileActions = new FileActions(page, testInfo.title, isMobile);
   await fileActions.createFile.waitFor();
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
 });
 
 test('loggedin - form - share with contact (author)', async ({ page, browser }) => {

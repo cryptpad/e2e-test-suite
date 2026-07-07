@@ -25,17 +25,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (await fileActions.dismissFunding.isVisible()) {
     await fileActions.dismissFunding.click();
   }
-  
-  await fileActions.fileSaved.waitFor();
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
 
+  await fileActions.fileSaved.waitFor();
 });
 
 test('loggedin - doc - import template', async ({ page, context }) => {
@@ -168,7 +159,7 @@ test('loggedin - doc - history (restore)', async ({ page, context }) => {
     await fileActions.fileHistory.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
     await expect(fileActions.warningModal).toHaveCount(0);
-    await page.waitForTimeout(10000)
+    await page.waitForTimeout(10000);
 
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
     await fileActions.restore.click();

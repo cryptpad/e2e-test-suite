@@ -35,15 +35,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   if (await fileActions.dismissFunding.isVisible()) {
     await fileActions.dismissFunding.click();
   }
-  await page.frameLocator('#sbox-iframe')
-  .locator('body')
-  .evaluate(async () => {
-    await window.CryptPad_common?.setAttribute?.(
-      ['general', 'crowdfunding'],
-      false
-    );
-  });
-
 });
 
 // const docNames = ['form'];
@@ -152,14 +143,13 @@ docNames.forEach(function (name) {
   test(`loggedin - ${name} - edit document owners #1264`, async ({ page, browser }) => {
     // test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
     try {
-
       // add test-user3 as owner
       await fileActions.fileSaved.waitFor();
 
       await expect(fileActions.fileTitle(name)).toBeVisible();
       await fileActions.access(mobile);
-      await page.waitForTimeout(3000)
-            await fileActions.owners.waitFor();
+      await page.waitForTimeout(3000);
+      await fileActions.owners.waitFor();
 
       await fileActions.owners.click();
       await fileActions.secureFrame.getByText('test-user3').nth(1).waitFor();
@@ -462,7 +452,6 @@ docNames.forEach(function (name) {
       // test.skip()
       test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878');
       try {
-
         await fileActions.share(mobile);
         await fileActions.clickLinkTab(mobile);
         await fileActions.viewOnce.click({ timeout: 3000 });
@@ -499,7 +488,6 @@ docNames.forEach(function (name) {
     test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
       test.skip('#1957');
       try {
-
         // enable access list and add test-user3 to it
         await fileActions.fileSaved.waitFor();
 

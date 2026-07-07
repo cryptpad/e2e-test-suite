@@ -133,8 +133,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout staging
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -235,8 +237,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-test
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -337,8 +341,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-rc
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -439,8 +445,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout staging
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -541,8 +549,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-rc
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -643,8 +653,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-test
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -745,8 +757,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout staging
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -847,8 +861,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-rc
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -949,8 +965,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-test
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -1051,8 +1069,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout staging
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -1153,8 +1173,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-rc
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -1255,8 +1277,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-test
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -1357,8 +1381,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout staging
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -1459,8 +1485,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-rc
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
@@ -1561,8 +1589,10 @@ jobs:
       - name: Checkout branch
         working-directory: cryptpad
         run: |
+          git fetch origin remove_donation
           git checkout 2026.4-test
           git branch
+          git rebase origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
