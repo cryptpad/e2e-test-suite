@@ -26,7 +26,7 @@ jobs:
           git fetch origin remove_donation
           git checkout staging
           git branch
-          git rebase origin/remove_donation
+          git merge origin/remove_donation
       - name: Install dependencies
         run: npm install --prefix cryptpad
       - name: Install components 1
