@@ -151,7 +151,6 @@ test('anon - presentation - export (pptx)', async ({ page, context }) => {
 });
 
 test('anon - presentation - history (previous version)', async ({ page, context }) => {
-  test.skip('#1772');
   try {
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');
@@ -174,7 +173,6 @@ test('anon - presentation - history (previous version)', async ({ page, context 
 });
 
 test('anon - presentation - history (share)', async ({ page, browser, context }) => {
-  test.skip('#1772');
   try {
     await fileActions.docEditor.click({ force: true });
     await fileActions.docEditor.dispatchEvent('focus');

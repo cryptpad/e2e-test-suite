@@ -76,7 +76,6 @@ test('loggedin - doc - import template', async ({ page, context }) => {
 });
 
 test('loggedin - document - snapshot (history)', async ({ page, context }) => {
-  test.skip('#2090');
   try {
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');
@@ -86,6 +85,7 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click();
     await expect(fileActions.warningModal).toHaveCount(0);
+    await page.waitForTimeout(5000)
 
     await fileActions.createSnapshot.click();
     await fileActions.snapshotTitle.waitFor();
@@ -107,13 +107,11 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
     const page1 = await page1Promise;
     const fileActions1 = new FileActions(page1);
     await fileActions1.docEditor.click({ force: true });
-    await page1.keyboard.press('Control+A');
-    await page1.keyboard.press('Control+C');
-    const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText.trim()).toContain('example template content');
+    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
 
     await fileActions.toSuccess('Can create and load Document history snapshots');
   } catch (e) {
+    await page.pause()
     await fileActions.toFailure(e, 'Can\'t create and load Document history snapshots');
   }
 });

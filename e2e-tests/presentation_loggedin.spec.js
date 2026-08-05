@@ -102,7 +102,6 @@ test('loggedin - presentation - import file (odp)', async ({ page, context }) =>
 });
 
 test('loggedin - presentation - history (restore)', async ({ page, context }) => {
-  test.skip('#1772');
   try {
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');
@@ -137,7 +136,6 @@ test('loggedin - presentation - history (restore)', async ({ page, context }) =>
 });
 
 test('loggedin - presentation - snapshot (history)', async ({ page, context }) => {
-  test.skip('#2090');
   try {
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');

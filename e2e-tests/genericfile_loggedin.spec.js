@@ -37,7 +37,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   }
 });
 
-// const docNames = ['form'];
+// const docNames = ['presentation'];
 const docNames = ['pad', 'code', 'slide', 'kanban', 'whiteboard', 'form', 'diagram', 'sheet', 'doc', 'presentation'];
 
 docNames.forEach(function (name) {
@@ -407,7 +407,6 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - share with contact - view and delete`, async ({ page, browser }) => {
-      // test.skip()
       try {
         await fileActions.shareWithContact('View', 'test-user3', true, mobile);
 
@@ -449,8 +448,6 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - share (link) - view and delete`, async ({ page, browser }) => {
-      // test.skip()
-      test.skip(name === 'diagram' | name === 'whiteboard', 'copy link button doesn\'t display #1878');
       try {
         await fileActions.share(mobile);
         await fileActions.clickLinkTab(mobile);
@@ -486,7 +483,6 @@ docNames.forEach(function (name) {
     });
 
     test(`loggedin - ${name} - enable and add to access list`, async ({ page, browser }) => {
-      test.skip('#1957');
       try {
         // enable access list and add test-user3 to it
         await fileActions.fileSaved.waitFor();

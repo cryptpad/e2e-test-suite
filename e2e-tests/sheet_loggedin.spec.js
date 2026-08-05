@@ -149,7 +149,6 @@ test('loggedin - sheet - import file (ods)', async ({ page, context }) => {
 test('loggedin - sheet - snapshot (history)', async ({ page, context }) => {
   test.skip(mobile, 'mobile incompatibility with evaluating 2nd window text content');
 
-  test.skip('#2090');
   try {
     await fileActions.docEditor.click();
     await fileActions.docEditor.dispatchEvent('focus');

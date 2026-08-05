@@ -224,26 +224,25 @@ test('anon - kanban -  share at a moment in history', async ({ page, context }) 
   }
 });
 
-// test('(screenshot) anon - kanban -  can drag boards #1372', async ({ page }) => {
-//   test.skip();
-//   try {
-//     await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'To Do' }).hover();
-//     await page.mouse.down();
-//     await page.mouse.move(100, 0);
-//     await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).hover();
-//     await page.mouse.up();
+test('screenshot anon - kanban -  can drag boards', async ({ page }) => {
+  try {
+    await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'To Do' }).hover();
+    await page.mouse.down();
+    await page.mouse.move(100, 0);
+    await fileActions.mainFrame.getByRole('banner').filter({ hasText: 'Done' }).hover();
+    await page.mouse.up();
 
-//     await expect(page).toHaveScreenshot({ maxDiffPixels: 3500 });
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 3500 });
 
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag boards', status: 'passed', reason: 'Can drag Kanban boards' } })}`);
-//   } catch (e) {
-//     console.log(e);
-//     await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag boards', status: 'failed', reason: 'Can\'t drag Kanban boards' } })}`);
-//   }
-// });
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag boards', status: 'passed', reason: 'Can drag Kanban boards' } })}`);
+  } catch (e) {
+    console.log(e);
+    await page.evaluate(_ => {}, `browserstack_executor: ${JSON.stringify({ action: 'setSessionStatus', arguments: { name: 'anon - kanban -  can drag boards', status: 'failed', reason: 'Can\'t drag Kanban boards' } })}`);
+  }
+});
 
 // test('(screenshot) anon - kanban -  can drag items', async ({ page }) => {
-//   test.skip();
+//   // test.skip();
 //   try {
 //     await fileActions.mainFrame.locator('div').filter({ hasText: /^Item 1$/ }).first().waitFor()
 

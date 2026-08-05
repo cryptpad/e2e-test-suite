@@ -238,7 +238,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-test
+          git checkout 2026.9-test
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -342,7 +342,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-rc
+          git checkout 2026.9-rc
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -550,7 +550,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-rc
+          git checkout 2026.9-rc
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -654,7 +654,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-test
+          git checkout 2026.9-test
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -862,7 +862,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-rc
+          git checkout 2026.9-rc
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -966,7 +966,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-test
+          git checkout 2026.9-test
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -1174,7 +1174,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-rc
+          git checkout 2026.9-rc
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -1278,7 +1278,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-test
+          git checkout 2026.9-test
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -1486,7 +1486,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-rc
+          git checkout 2026.9-rc
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
@@ -1590,7 +1590,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout 2026.4-test
+          git checkout 2026.9-test
           git branch
           git rebase origin/remove_donation
       - name: Install dependencies
