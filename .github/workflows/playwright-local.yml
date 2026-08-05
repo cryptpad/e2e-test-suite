@@ -20,6 +20,11 @@ jobs:
         working-directory: cryptpad
         run: unzip -o database_seed_2025.6.zip
         if: always()
+      - name: Configure Git
+        working-directory: cryptpad
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"  
       - name: Checkout branch
         working-directory: cryptpad
         run: |
