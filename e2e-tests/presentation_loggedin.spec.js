@@ -111,9 +111,10 @@ test('loggedin - presentation - history (restore)', async ({ page, context }) =>
 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click();
-    await fileActions.fileSaved.waitFor();
+    await fileActions.fileHistory.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
     await expect(fileActions.warningModal).toHaveCount(0);
+    await page.waitForTimeout(5000);
 
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
     await fileActions.restore.click();
@@ -122,12 +123,9 @@ test('loggedin - presentation - history (restore)', async ({ page, context }) =>
     await fileActions.fileSaved.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
     await expect(fileActions.warningModal).toHaveCount(0);
-
+    await page.waitForTimeout(5000);
     await fileActions.docEditor.click({ force: true });
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Control+C');
-    const clipboardText2 = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText2.trim()).toEqual('');
+    expect(await fileActions.docEditorInput.inputValue()).toEqual('');
 
     await fileActions.toSuccess('Can restore history in Presentation document');
   } catch (e) {
@@ -145,11 +143,13 @@ test('loggedin - presentation - snapshot (history)', async ({ page, context }) =
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click();
     await expect(fileActions.warningModal).toHaveCount(0);
+    await page.waitForTimeout(5000);
 
     await fileActions.createSnapshot.click();
     await fileActions.snapshotTitle.waitFor();
     await fileActions.snapshotTitle.fill('test snapshot');
     await fileActions.newSnapshot.click();
+
     await fileActions.closeSnapshots.click();
     await fileActions.closeHistory.click();
     await fileActions.fileSaved.waitFor();
@@ -162,6 +162,7 @@ test('loggedin - presentation - snapshot (history)', async ({ page, context }) =
     await fileActions.openButton.click();
     const page1 = await page1Promise;
     const fileActions1 = new FileActions(page1);
+    await fileActions1.fileSaved.waitFor();
 
     await fileActions1.docEditor.click({ force: true });
     await page1.keyboard.press('Control+A');

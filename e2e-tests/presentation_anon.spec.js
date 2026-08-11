@@ -160,8 +160,9 @@ test('anon - presentation - history (previous version)', async ({ page, context 
 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click();
-    await fileActions.fileSaved.waitFor();
+    await fileActions.fileHistory.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
+    await page.waitForTimeout(5000);
 
     await expect(fileActions.warningModal).toHaveCount(0);
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
@@ -182,8 +183,10 @@ test('anon - presentation - history (share)', async ({ page, browser, context })
 
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click();
-    await fileActions.fileSaved.waitFor();
+    await fileActions.fileHistory.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
+    await page.waitForTimeout(5000);
+
     await expect(fileActions.warningModal).toHaveCount(0);
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
 

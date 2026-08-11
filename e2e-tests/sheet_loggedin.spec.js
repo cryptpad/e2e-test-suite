@@ -46,6 +46,7 @@ test('loggedin - sheet - import template', async ({ page, context }) => {
     await page.waitForTimeout(3000);
     await page.goto(`${url}/sheet/`);
     await fileActions.createFile.click();
+
     await fileActions.importTemplate(mobile);
     await fileActions.templateSpan('example sheet template').click();
     await page.waitForTimeout(5000);

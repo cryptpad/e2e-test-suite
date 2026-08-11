@@ -63,10 +63,7 @@ test('anon - sheet - make a copy', async ({ page, context }) => {
     await page1.waitForTimeout(1000);
 
     await page1.keyboard.press('Control+A');
-    await page1.waitForTimeout(1000);
     await page1.keyboard.press('Control+C');
-    await page1.waitForTimeout(1000);
-
     const clipboardText = await page1.evaluate(() => navigator.clipboard.readText());
     expect(clipboardText.trim()).toContain('test text');
 

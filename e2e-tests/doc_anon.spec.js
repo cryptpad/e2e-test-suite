@@ -206,13 +206,12 @@ test('anon - doc - history (browse with line breaks)', async ({ page, context })
     await fileActions.fileHistory.waitFor();
     await fileActions.waitForSync.waitFor({ state: 'hidden' });
     await expect(fileActions.warningModal).toHaveCount(0);
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(5000);
 
     expect(await fileActions.docEditorInput.inputValue()).toEqual('');
 
     await fileActions.toSuccess('Can browse history in Document with line breaks');
   } catch (e) {
-    await page.pause();
     await fileActions.toFailure(e, 'Can\'t browse history in Document with line breaks');
   }
 });

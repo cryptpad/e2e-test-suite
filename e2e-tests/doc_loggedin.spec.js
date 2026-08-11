@@ -85,7 +85,7 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
     await fileActions.history(mobile);
     await fileActions.historyFastPrev.click();
     await expect(fileActions.warningModal).toHaveCount(0);
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(5000);
 
     await fileActions.createSnapshot.click();
     await fileActions.snapshotTitle.waitFor();
@@ -111,7 +111,6 @@ test('loggedin - document - snapshot (history)', async ({ page, context }) => {
 
     await fileActions.toSuccess('Can create and load Document history snapshots');
   } catch (e) {
-    await page.pause()
     await fileActions.toFailure(e, 'Can\'t create and load Document history snapshots');
   }
 });

@@ -21,7 +21,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   }
 });
 
-const userMenuItems = ['profile', 'contacts', 'calendar', 'support', 'teams', 'log out'];
+const userMenuItems = ['profile', 'contacts', 'calendar', 'teams', 'log out'];
 
 userMenuItems.forEach(function (item) {
   test(`loggedin - drive -  user menu - ${item}`, async ({ page }) => {

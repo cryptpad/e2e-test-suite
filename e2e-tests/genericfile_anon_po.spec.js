@@ -213,9 +213,9 @@ test.describe('Save/Remove ', () => {
 
 const onlyOffice = ['sheet', 'doc', 'presentation'];
 
-test.describe('Test loading', () => {
+test.describe('test loading', () => {
   onlyOffice.forEach(function (name) {
-    test(`anon - save and remove for ${name}`, async ({ page, context }, testInfo) => {
+    test(`anon - test loading for ${name}`, async ({ page, context }, testInfo) => {
       try {
         const messages = [];
         page.on('console', msg => {
