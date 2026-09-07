@@ -140,7 +140,7 @@ docNames.forEach(function (name) {
     }
   });
 
-  test(`loggedin - ${name} - edit document owners #1264`, async ({ page, browser }) => {
+  test(`loggedin - ${name} - edit document owners`, async ({ page, browser }) => {
     // test.fixme(name === 'whiteboard' | name === 'diagram', 'diagram/whiteboard participant status bug');
     try {
       // add test-user3 as owner
