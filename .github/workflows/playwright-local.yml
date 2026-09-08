@@ -48,7 +48,7 @@ jobs:
           git -C cryptpad rev-parse HEAD
           test -f cryptpad/install-onlyoffice.sh && echo "SCRIPT EXISTS" || echo "SCRIPT MISSING"
       - name: Install OnlyOffice
-        run: cryptpad/install-onlyoffice.sh -a 
+        run: cryptpad/install-office.sh -a 
         if: always()
       - name: Run local server
         timeout-minutes: 180
