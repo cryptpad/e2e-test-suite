@@ -38,6 +38,15 @@ jobs:
         run: npm ci --prefix cryptpad
       - name: Install components 2
         run: npm run install:components --prefix cryptpad
+      - name: Debug OnlyOffice script
+        run: |
+          pwd
+          ls -la
+          ls -la cryptpad
+          git -C cryptpad status
+          git -C cryptpad branch --show-current
+          git -C cryptpad rev-parse HEAD
+          test -f cryptpad/install-onlyoffice.sh && echo "SCRIPT EXISTS" || echo "SCRIPT MISSING"
       - name: Install OnlyOffice
         run: cryptpad/install-onlyoffice.sh -a 
         if: always()
