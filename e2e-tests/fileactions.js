@@ -149,6 +149,8 @@ export class FileActions {
     this.codeToolbar = this.mainFrame.locator('.cp-markdown-toolbar');
 
     // form
+    this.confirmCopy = this.secureFrame.getByRole('button', { name: 'Continue to public link' })
+    this.publicLinkCopyConfirm = this.secureFrame.getByRole('button', { name: 'Copy public link' })
     this.copyPublicLink = this.mainFrame.getByRole('button', { name: 'Copy public link' });
     this.formSettings = this.mainFrame.getByRole('button', { name: 'Form settings' });
     this.closeModal = this.mainFrame.locator('.cp-modal-close');
@@ -686,7 +688,7 @@ export class FileActions {
     let clipboardText = await this.page.evaluate('navigator.clipboard.readText()');
     if (clipboardText === '') {
       await this.page.waitForTimeout(2000);
-      await this.copyPublicLink.click();
+      await this.publicLinkCopyConfirm.click();
       await this.page.waitForTimeout(2000);
       clipboardText = await this.page.evaluate(() => navigator.clipboard.readText());
     }
@@ -740,6 +742,13 @@ export class FileActions {
   async publicLinkCopy () {
     await this.copyPublicLink.waitFor();
     await this.copyPublicLink.click();
+    await this.page.waitForTimeout(1000);
+    return this.getLinkAfterCopyForm();
+  }
+
+  async publicLinkConfirmCopy () {
+    await this.publicLinkCopyConfirm.waitFor();
+    await this.publicLinkCopyConfirm.click();
     await this.page.waitForTimeout(1000);
     return this.getLinkAfterCopyForm();
   }

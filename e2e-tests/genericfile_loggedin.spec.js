@@ -109,7 +109,7 @@ docNames.forEach(function (name) {
 
   test(`loggedin - ${name} - tag`, async ({ page }) => {
     try {
-      await (new StoreModal(filePage)).storeButton.click();
+      
 
       await fileActions.filemenuClick(mobile);
       await fileActions.clickTags(local);
@@ -230,7 +230,7 @@ docNames.forEach(function (name) {
     try {
       await expect(page).toHaveURL(new RegExp(`^${url}/${name}/#/`), { timeout: 100000 });
 
-      await (new StoreModal(filePage)).storeButton.click();
+      
 
       await fileActions.filemenuClick(mobile);
       await fileActions.moveToTrash.click();

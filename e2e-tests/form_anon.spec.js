@@ -26,7 +26,9 @@ test('anon - form - submission (one time no edit)', async ({ page, context }) =>
     await fileActions.openFormSettings();
     await fileActions.oneTimeOnly.click();
     await fileActions.closeModal.click();
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -50,7 +52,9 @@ test('anon - form - submission (multiple times no edit)', async ({ page, context
     await fileActions.multipleTimes.click();
     await fileActions.closeModal.click();
 
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -72,7 +76,9 @@ test('anon - form - submission (multiple times no edit)', async ({ page, context
 
 test('anon - form - submission (one time) - delete', async ({ page, context }) => {
   try {
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -100,7 +106,9 @@ test('anon - form - submission (multiple times) - delete', async ({ page, contex
     await fileActions.multipleTimesEdit.click();
     await fileActions.closeModal.click();
 
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -128,7 +136,9 @@ test('anon - form - submission (multiple times) - edit', async ({ page, context 
     await fileActions.multipleTimesEdit.click();
     await fileActions.closeModal.click();
 
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -154,7 +164,9 @@ test('anon - form - submission (multiple times) - edit', async ({ page, context 
 
 test('anon - form - submission (one time) - edit', async ({ page, context }) => {
   try {
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -233,7 +245,9 @@ test('anon - form - add and respond to checkbox question', async ({ page, contex
     await fileActions.textbox.nth(1).fill('box1');
     await fileActions.textbox.nth(2).fill('box2');
     await fileActions.textbox.nth(3).fill('box3');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -272,7 +286,9 @@ test('anon - form - close and open', async ({ page, context }) => {
 
     await expect(fileActions.formContainer.getByText(`This form was closed on ${dateTodaySlashFormat}`)).toBeVisible();
 
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -353,7 +369,9 @@ test('anon - form - anonymize responses', async ({ page, context }) => {
   test.skip(browserName === 'playwright-webkit', 'playwright webkit bug');
 
   try {
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
@@ -386,7 +404,9 @@ test('anon - form - anonymize responses', async ({ page, context }) => {
 
 test('anon - form - publish responses', async ({ page, context }) => {
   try {
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
@@ -538,7 +558,9 @@ test('anon - form - add description', async ({ page, context }) => {
     await fileActions.editQuestion.first().click();
     await fileActions.mainFrame.locator('span').filter({ hasText: 'Your text here' }).click();
     await fileActions.mainFrame.locator('span').filter({ hasText: 'Your text here' }).fill('New description');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -562,7 +584,9 @@ test('anon - form - add submission message', async ({ page, context }) => {
     await fileActions.mainFrame.getByRole('button', { name: 'Add submit message' }).click();
 
     await fileActions.mainFrame.locator('pre').nth(1).fill('Thank you for submitting your answer!');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -585,7 +609,9 @@ test('anon - form - anon (guest) access - allowed', async ({ page, context }) =>
     await fileActions.editQuestion.nth(1).click();
     await fileActions.optionPlaceholder('Option 1').fill('sleep');
     await fileActions.optionPlaceholder('Option 2').fill('eat');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -610,7 +636,9 @@ test('anon - form - add and respond to text question', async ({ page, context })
     await fileActions.textButton.click();
     await fileActions.textbox.nth(1).click();
     await fileActions.textbox.nth(1).fill('What is your name?');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -634,7 +662,9 @@ test('anon - form - add and respond to text question', async ({ page, context })
 
 test('anon - form - edit response', async ({ page, context }) => {
   try {
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -659,7 +689,9 @@ test('anon - form - edit response', async ({ page, context }) => {
 test('anon - form - delete response', async ({ page, context }) => {
   test.skip(browserName === 'playwright-firefox' || browserName === 'playwright-webkit');
   try {
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -690,7 +722,9 @@ test('anon - form - add and respond to paragraph question', async ({ page, conte
     await fileActions.paragraphQuestion.click();
     await fileActions.paragraphQuestionContent.click();
     await fileActions.paragraphQuestionContent.fill('Tell me about yourself');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -727,7 +761,9 @@ test('anon - form - add and respond to choice question (optional)', async ({ pag
     await fileActions.addOption.click();
     await fileActions.choiceQuestionInput.nth(2).click();
     await fileActions.choiceQuestionInput.nth(2).fill('test option three');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -762,7 +798,9 @@ test('anon - form - add and respond to choice question (required)', async ({ pag
     await fileActions.choiceQuestionInput.nth(2).click();
     await fileActions.choiceQuestionInput.nth(2).fill('test option three');
     await fileActions.requiredQuestion.click();
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -796,7 +834,9 @@ test('anon - form - add and respond to choice grid question', async ({ page, con
     await fileActions.choiceGridOption.first().fill('Choice1');
     await fileActions.choiceGridItem.nth(1).fill('Particular');
     await fileActions.choiceGridOption.nth(1).fill('Choice2');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -827,7 +867,9 @@ test('anon - form - add and respond to date question', async ({ page, context })
 
     await fileActions.dateQuestion.click();
     await fileActions.textbox.first().fill('What is today\'s date?');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -861,7 +903,9 @@ test('anon - form - add and respond to checkbox grid question', async ({ page, c
     await fileActions.choiceGridOption.first().fill('Box1');
     await fileActions.choiceGridOption.nth(1).fill('Box2');
     await fileActions.choiceGridOption.nth(2).fill('Box3');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -894,7 +938,9 @@ test('anon - form - add and respond to ordered list question (schulze method)', 
     await fileActions.addOption.click();
     await fileActions.optionPlaceholder('New option').fill('test option 3');
 
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -948,7 +994,9 @@ test('anon - form - add and respond to ordered list question', async ({ page, co
     await fileActions.addOption.click();
     await fileActions.optionPlaceholder('New option').fill('test option 3');
 
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -999,7 +1047,9 @@ test('anon - form - add and respond to poll question', async ({ page, context })
     await fileActions.textbox.first().fill('Hiking');
     await fileActions.textbox.nth(1).fill('Yoga');
     await fileActions.textbox.nth(2).fill('Campfire');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -1026,7 +1076,9 @@ test('anon - form - add and respond to form with page break', async ({ page, con
     await fileActions.textButton.click();
     await fileActions.textbox.nth(1).click();
     await fileActions.textbox.nth(1).fill('Question two');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -1076,7 +1128,9 @@ test('anon - form - add and respond to conditional section question (OR)', async
     await fileActions.textQuestionInsideConditional.click();
 
     await fileActions.textbox.nth(1).fill('example question two?');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -1118,7 +1172,9 @@ test('anon - form - add and respond to conditional section question (AND)', asyn
     await fileActions.addQuestionInsideConditional.click();
     await fileActions.textQuestionInsideConditional.click();
     await fileActions.textbox.nth(1).fill('example question two?');
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -1143,7 +1199,9 @@ test('anon - form - export responses as .csv', async ({ page, context }) => {
     await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -1183,7 +1241,9 @@ test('anon - form - export responses as .json', async ({ page, context }) => {
     await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
     const fileActions1 = new FileActions(page1);
@@ -1219,7 +1279,9 @@ test('anon - form - export responses (to sheet document)', async ({ page, contex
     await fileActions.clearFormQuestions();
 
     await fileActions.checkbox.click();
-    const clipboardText = await fileActions.publicLinkCopy();
+    await fileActions.publicLinkCopy();
+    await fileActions.confirmCopy.click()
+    const clipboardText = await fileActions.publicLinkConfirmCopy();
 
     page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
