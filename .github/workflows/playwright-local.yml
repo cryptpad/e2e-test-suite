@@ -29,7 +29,7 @@ jobs:
         working-directory: cryptpad
         run: |
           git fetch origin remove_donation
-          git checkout staging
+          git checkout staging 
           git branch
           git merge origin/remove_donation
       - name: Install dependencies
