@@ -28,6 +28,7 @@ test('anon - form - submission (one time no edit)', async ({ page, context }) =>
     await fileActions.closeModal.click();
     await fileActions.publicLinkCopy();
     await fileActions.confirmCopy.click()
+    
     const clipboardText = await fileActions.publicLinkConfirmCopy();
     const page1 = await context.newPage();
     await page1.goto(`${clipboardText}`);
